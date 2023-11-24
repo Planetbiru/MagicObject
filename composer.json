@@ -1,6 +1,7 @@
 {
     "name": "planetbiru/magic-object",
     "description": "Magic object",
+    "license": "GPL",
     "autoload": {
         "psr-4": {
             "MagicObject\\": ""
