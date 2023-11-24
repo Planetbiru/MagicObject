@@ -2,6 +2,7 @@
 
 namespace MagicObject\Util;
 
+use MagicObject\Exceptions\InvalidClassExceptio;
 use ReflectionClass;
 use RuntimeException;
 
@@ -59,7 +60,7 @@ class ExtendedReflectionClass extends ReflectionClass {
 		}
 
 		if (!$this->isUserDefined()) {
-			throw new RuntimeException('Must parse use statements from user defined classes.');
+			throw new InvalidClassExceptio('Must parse use statements from user defined classes.');
 		}
 
 		$source = $this->readFileSource();
@@ -105,7 +106,8 @@ class ExtendedReflectionClass extends ReflectionClass {
 	 * @param string $source
 	 * @return array
 	 */
-	private function tokenizeSource($source) {
+	private function tokenizeSource($source) //NOSONAR
+	{
 
 		$tokens = token_get_all($source);
 
