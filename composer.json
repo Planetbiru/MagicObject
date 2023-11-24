@@ -3,7 +3,7 @@
     "description": "Magic object",
     "autoload": {
         "psr-4": {
-            "Planetbiru\\MagicObject\\": ""
+            "MagicObject\\": ""
         }
     },
     "authors": [
