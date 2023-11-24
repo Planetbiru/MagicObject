@@ -1,10 +1,10 @@
 <?php
 
-namespace MagicObject\Pico\Database;
+namespace MagicObject\Database;
 
 use Pico\DynamicObject\DynamicObject;
-use MagicObject\Pico\Exceptions\MandatoryTableNameException;
-use MagicObject\Pico\Util\PicoAnnotationParser;
+use MagicObject\Exceptions\MandatoryTableNameException;
+use MagicObject\Util\PicoAnnotationParser;
 use stdClass;
 
 class PicoDatabaseStructure

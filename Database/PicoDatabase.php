@@ -1,12 +1,12 @@
 <?php
 
-namespace MagicObject\Pico\Database;
+namespace MagicObject\Database;
 
 use PDO;
 use PDOException;
 use PDOStatement;
 use Pico\Constants\PicoConstants;
-use MagicObject\Pico\Exceptions\NullPointerException;
+use MagicObject\Exceptions\NullPointerException;
 
 class PicoDatabase
 {

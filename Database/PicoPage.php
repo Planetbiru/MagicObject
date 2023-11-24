@@ -1,5 +1,5 @@
 <?php
-namespace MagicObject\Pico\Database;
+namespace MagicObject\Database;
 
 class PicoPage
 {

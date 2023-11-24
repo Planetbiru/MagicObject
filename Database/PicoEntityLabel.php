@@ -1,9 +1,9 @@
 <?php
 
-namespace MagicObject\Pico\Database;
+namespace MagicObject\Database;
 
 use Pico\DynamicObject\DynamicObject;
-use MagicObject\Pico\Util\PicoAnnotationParser;
+use MagicObject\Util\PicoAnnotationParser;
 use stdClass;
 
 class PicoEntityLabel

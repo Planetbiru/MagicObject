@@ -1,5 +1,5 @@
 <?php
-namespace MagicObject\Pico\Exceptions;
+namespace MagicObject\Exceptions;
 
 use Exception;
 use Throwable;

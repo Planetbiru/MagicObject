@@ -2,7 +2,7 @@
 
 namespace MagicObject;
 
-use MagicObject\Pico\Util\PicoAnnotationParser;
+use MagicObject\Util\PicoAnnotationParser;
 use ReflectionClass;
 use stdClass;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace MagicObject\Pico\Util;
+namespace MagicObject\Util;
 
-use MagicObject\Pico\Exceptions\ZeroArgumentException;
+use MagicObject\Exceptions\ZeroArgumentException;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;

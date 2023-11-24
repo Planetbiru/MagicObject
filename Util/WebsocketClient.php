@@ -1,6 +1,6 @@
 <?php
 
-namespace MagicObject\Pico\Util;
+namespace MagicObject\Util;
 
 /*----------------------------------------------------------------------------*\
   Websocket client

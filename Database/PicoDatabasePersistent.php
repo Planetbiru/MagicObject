@@ -1,19 +1,19 @@
 <?php
-namespace MagicObject\Pico\Database;
+namespace MagicObject\Database;
 
 use DateTime;
 use Exception;
 use PDO;
 use PDOException;
 use PDOStatement;
-use MagicObject\Pico\Exceptions\EmptyResultException;
-use MagicObject\Pico\Exceptions\InvalidFilterException;
-use MagicObject\Pico\Exceptions\NoInsertableColumnException;
-use MagicObject\Pico\Exceptions\NoColumnMatchException;
-use MagicObject\Pico\Exceptions\NoUpdatableColumnException;
-use MagicObject\Pico\Exceptions\NoPrimaryKeyDefinedException;
-use MagicObject\Pico\Util\ExtendedReflectionClass;
-use MagicObject\Pico\Util\PicoAnnotationParser;
+use MagicObject\Exceptions\EmptyResultException;
+use MagicObject\Exceptions\InvalidFilterException;
+use MagicObject\Exceptions\NoInsertableColumnException;
+use MagicObject\Exceptions\NoColumnMatchException;
+use MagicObject\Exceptions\NoUpdatableColumnException;
+use MagicObject\Exceptions\NoPrimaryKeyDefinedException;
+use MagicObject\Util\ExtendedReflectionClass;
+use MagicObject\Util\PicoAnnotationParser;
 use stdClass;
 
 class PicoDatabasePersistent // NOSONAR

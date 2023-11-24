@@ -1,6 +1,6 @@
 <?php
 
-namespace MagicObject\Pico\Database;
+namespace MagicObject\Database;
 
 use Pico\DynamicObject\DynamicObject;
 use stdClass;

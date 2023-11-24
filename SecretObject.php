@@ -2,8 +2,8 @@
 
 namespace MagicObject;
 
-use MagicObject\Pico\Util\PicoAnnotationParser;
-use MagicObject\Pico\Util\PicoEnvironmentVariable;
+use MagicObject\Util\PicoAnnotationParser;
+use MagicObject\Util\PicoEnvironmentVariable;
 use MagicObject\Secret\PicoSecret;
 use ReflectionClass;
 use stdClass;
