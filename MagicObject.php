@@ -21,8 +21,8 @@ use stdClass;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Class to create dynamic object. 
- * Dynamic object is and object created from any class so that user can add any property with any name and value, load data from INI file, Yaml file, JSON file and database. 
+ * Class to create magic object. 
+ * Magic object is an object created from any class so that user can add any property with any name and value, load data from INI file, Yaml file, JSON file and database. 
  * User can create entity from a table of database, insert, select, update and delete record from database. 
  * User can also create property from other entity with full name of class (namespace + class name)
  */

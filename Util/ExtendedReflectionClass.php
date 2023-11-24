@@ -143,6 +143,8 @@ class ExtendedReflectionClass extends ReflectionClass {
 					case T_NS_SEPARATOR:
 						$builtNamespace .= $token[1];
 						break;
+					default:
+						break;
 				}
 
 				continue;
@@ -190,6 +192,8 @@ class ExtendedReflectionClass extends ReflectionClass {
 								$currentUse[$record] .= $token[1];
 							}
 
+							break;
+						default:
 							break;
 					}
 				}
