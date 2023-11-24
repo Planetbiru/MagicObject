@@ -1,5 +1,21 @@
 # MagicObject
-Magic Object with PHP
+
+# Introduction
+
+MagicObject is a library for making applications in the PHP language very easily. MagicObject can be derived into other classes with various intended uses.
+
+Some examples of using MagicObject are as follows:
+
+1. create dynamic objects
+2. create objects with setters and getters
+3. access the database
+4. serialize and deserialize objects in JSON format
+5. reads INI, Yaml, and JSON files
+6. Get the environment variable value
+7. encrypt and decrypt application configuration
+8. debug objects 
+
+
 
 # Installation
 
