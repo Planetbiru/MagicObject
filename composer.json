@@ -1,11 +1,6 @@
 {
     "name": "planetbiru/magic-object",
     "description": "Magic object",
-    "autoload": {
-        "psr-4": {
-            "Planetbiru\\MagicObject\\": "src/"
-        }
-    },
     "authors": [
         {
             "name": "Kamshory"
