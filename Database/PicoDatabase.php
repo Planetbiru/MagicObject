@@ -5,7 +5,7 @@ namespace MagicObject\Database;
 use PDO;
 use PDOException;
 use PDOStatement;
-use Pico\Constants\PicoConstants;
+use MagicObject\Constants\PicoConstants;
 use MagicObject\Exceptions\NullPointerException;
 
 class PicoDatabase

@@ -2,9 +2,9 @@
 
 namespace MagicObject\Database;
 
-use Pico\DynamicObject\PicoSecretObject;
+use MagicObject\SecretObject;
 
-class PicoDatabaseCredentials extends PicoSecretObject
+class PicoDatabaseCredentials extends SecretObject
 {
 	/**
 	 * Database driver
