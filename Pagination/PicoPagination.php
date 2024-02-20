@@ -157,7 +157,7 @@ class PicoPagination
      * Get order type
      *
      * @var string $defaultOrderType
-     * @return  string
+     * @return string
      */ 
     public function getOrderType($defaultOrderType = null)
     {
@@ -184,7 +184,7 @@ class PicoPagination
     /**
      * Get current page
      *
-     * @return  integer
+     * @return integer
      */ 
     public function getCurrentPage()
     {
@@ -194,7 +194,7 @@ class PicoPagination
     /**
      * Get page size
      *
-     * @return  integer
+     * @return integer
      */ 
     public function getPageSize()
     {
@@ -204,7 +204,7 @@ class PicoPagination
     /**
      * Get offset
      *
-     * @return  integer
+     * @return integer
      */ 
     public function getOffset()
     {

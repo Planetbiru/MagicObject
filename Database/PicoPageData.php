@@ -141,7 +141,7 @@ class PicoPageData
     /**
      * Get result
      *
-     * @return  DynamicObject[]
+     * @return DynamicObject[]
      */ 
     public function getResult()
     {
@@ -151,7 +151,7 @@ class PicoPageData
     /**
      * Get page number
      *
-     * @return  integer
+     * @return integer
      */ 
     public function getPageNumber()
     {
@@ -161,7 +161,7 @@ class PicoPageData
     /**
      * Get total page
      *
-     * @return  integer
+     * @return integer
      */ 
     public function getTotalPage()
     {
@@ -171,7 +171,7 @@ class PicoPageData
     /**
      * Get page size
      *
-     * @return  integer
+     * @return integer
      */ 
     public function getPageSize()
     {
@@ -194,7 +194,7 @@ class PicoPageData
     /**
      * Get execution time
      *
-     * @return  float
+     * @return float
      */ 
     public function getExecutionTime()
     {
@@ -212,7 +212,7 @@ class PicoPageData
     /**
      * Get total match
      *
-     * @return  integer
+     * @return integer
      */ 
     public function getTotalResult()
     {

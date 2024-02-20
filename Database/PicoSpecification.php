@@ -126,7 +126,7 @@ class PicoSpecification
     /**
      * Get predicate
      *
-     * @return  array
+     * @return array
      */ 
     public function getSpecifications()
     {
@@ -138,7 +138,7 @@ class PicoSpecification
     /**
      * Get parent filter logic
      *
-     * @return  string
+     * @return string
      */ 
     public function getParentFilterLogic()
     {
@@ -150,7 +150,7 @@ class PicoSpecification
      *
      * @param  string  $parentFilterLogic  Parent filter logic
      *
-     * @return  self
+     * @return self
      */ 
     public function setParentFilterLogic($parentFilterLogic)
     {

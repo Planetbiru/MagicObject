@@ -352,7 +352,7 @@ class PicoDatabase
 	/**
 	 * Get indication that database is connected or not
 	 *
-	 * @return  boolean
+	 * @return boolean
 	 */ 
 	public function isConnected()
 	{
@@ -362,7 +362,7 @@ class PicoDatabase
 	/**
 	 * Get database type
 	 *
-	 * @return  string
+	 * @return string
 	 */ 
 	public function getDatabaseType()
 	{
