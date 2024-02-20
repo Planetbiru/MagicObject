@@ -1,10 +1,9 @@
 <?php
+namespace MagicObject\Response\Generated;
 
-namespace Pico\Response\Generated;
-
-use Exception;
-use MagicObject\Database\PicoSortable;
-use MagicObject\MagicObject;
+use PDO;
+use MagicObject\Database\PicoDatabase;
+use MagicObject\Database\PicoDatabaseQueryBuilder;
 
 class PicoSelectOption
 {
