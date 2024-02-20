@@ -1,5 +1,5 @@
 <?php
-namespace Pico\Response\Generated;
+namespace MagicObject\Response\Generated;
 
 use PDO;
 use MagicObject\Database\PicoDatabase;

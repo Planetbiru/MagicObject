@@ -1,6 +1,6 @@
 <?php
 
-namespace Pico\Response\Generated;
+namespace MagicObject\Response\Generated;
 
 use Exception;
 use MagicObject\Database\PicoSortable;
