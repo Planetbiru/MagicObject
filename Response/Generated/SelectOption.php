@@ -5,7 +5,7 @@ use PDO;
 use MagicObject\Database\PicoDatabase;
 use MagicObject\Database\PicoDatabaseQueryBuilder;
 
-class PicoSelectOption
+class SelectOption
 {
     private $data = array();
 
