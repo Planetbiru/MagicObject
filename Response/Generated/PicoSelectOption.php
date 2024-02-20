@@ -2,8 +2,8 @@
 namespace Pico\Response\Generated;
 
 use PDO;
-use Pico\Database\PicoDatabase;
-use Pico\Database\PicoDatabaseQueryBuilder;
+use MagicObject\Database\PicoDatabase;
+use MagicObject\Database\PicoDatabaseQueryBuilder;
 
 class PicoSelectOption
 {

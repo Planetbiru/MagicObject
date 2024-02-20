@@ -1,9 +1,9 @@
 <?php
 
-namespace Pico\Response;
+namespace MagicObject\Response;
 
-use Pico\Constants\PicoConstants;
-use Pico\Constants\PicoHttpStatus;
+use MagicObject\Constants\PicoConstants;
+use MagicObject\Constants\PicoHttpStatus;
 use \stdClass;
 
 class PicoResponse
