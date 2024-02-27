@@ -643,7 +643,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Check if JSON naming strategy is snake case or not
      *
-     * @return bool
+     * @return boolean
      */
     protected function _snake()
     {
@@ -656,7 +656,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      *  Check if JSON naming strategy is upper camel case or not
      *
-     * @return bool
+     * @return boolean
      */
     protected function isUpperCamel()
     {
@@ -669,7 +669,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Check if JSON naming strategy is camel case or not
      *
-     * @return bool
+     * @return boolean
      */
     protected function _camel()
     {
@@ -679,7 +679,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Check if JSON naming strategy is snake case or not
      *
-     * @return bool
+     * @return boolean
      */
     protected function _pretty()
     {
@@ -693,7 +693,7 @@ class MagicObject extends stdClass // NOSONAR
      * Check if data is not null and not empty
      *
      * @param mixed $value
-     * @return bool
+     * @return boolean
      */
     private function _notNullAndNotEmpty($value)
     {
@@ -941,7 +941,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param string $method
      * @param mixed $params
      * @param string $orderType
-     * @return bool
+     * @return boolean
      */
     private function existsBy($method, $params)
     {
