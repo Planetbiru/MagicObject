@@ -59,11 +59,17 @@ class Dms
      * Print Dms
      *
      * @param boolean $trim
+     * @param boolean $rounded
      * @return string
      */
-    public function printDms($trim)
+    public function printDms($trim = false, $rounded = false)
     {
-        $result = $this->deg.":".$this->min.":".$this->sec;
+        $sec = $this->sec;
+        if($rounded)
+        {
+            $sec = (int) $sec;
+        }
+        $result = $this->deg.":".$this->min.":".$sec;
         if($trim)
         {
             $result = ltrim($result, '0:');
