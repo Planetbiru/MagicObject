@@ -136,7 +136,7 @@ class PicoDatabasePersistent // NOSONAR
     /**
      * Set flag to skip null column
      *
-     * @param bool $skip
+     * @param boolean $skip
      * @return self
      */
     public function includeNull($skip)
@@ -326,7 +326,7 @@ class PicoDatabasePersistent // NOSONAR
     /**
      * Save data to database
      *
-     * @param bool $includeNull
+     * @param boolean $includeNull
      * @return PDOStatement
      */
     public function save($includeNull = false)
@@ -629,7 +629,7 @@ class PicoDatabasePersistent // NOSONAR
      * Add generated value
      *
      * @param stdClass $info
-     * @param bool $fisrtCall
+     * @param boolean $fisrtCall
      * @return void
      */
     private function addGeneratedValue($info, $fisrtCall)
@@ -687,7 +687,7 @@ class PicoDatabasePersistent // NOSONAR
     /**
      * Insert data
      *
-     * @param bool $includeNull
+     * @param boolean $includeNull
      * @return PDOStatement
      */
     public function insert($includeNull = false)

@@ -314,7 +314,7 @@ class SecretObject extends stdClass //NOSONAR
      * Load data from INI file
      *
      * @param string $path
-     * @param bool $systemEnv
+     * @param boolean $systemEnv
      * @return self
      */
     public function loadIniFile($path, $systemEnv = false)
@@ -334,7 +334,7 @@ class SecretObject extends stdClass //NOSONAR
      * Load data from Yaml file
      *
      * @param string $path
-     * @param bool $systemEnv
+     * @param boolean $systemEnv
      * @return self
      */
     public function loadYamlFile($path, $systemEnv = false, $asObject = false)
@@ -362,7 +362,7 @@ class SecretObject extends stdClass //NOSONAR
      * Load data from JSON file
      *
      * @param string $path
-     * @param bool $systemEnv
+     * @param boolean $systemEnv
      * @return self
      */
     public function loadJsonFile($path, $systemEnv = false, $asObject = false)
@@ -391,7 +391,7 @@ class SecretObject extends stdClass //NOSONAR
      *
      * @param string $propertyName
      * @param mixed|null
-     * @param bool $skipModifyNullProperties
+     * @param boolean $skipModifyNullProperties
      * @return self
      */
     public function set($propertyName, $propertyValue, $skipModifyNullProperties = false)
@@ -437,7 +437,7 @@ class SecretObject extends stdClass //NOSONAR
      *
      * @param self|mixed $source
      * @param array $filter
-     * @param bool $includeNull
+     * @param boolean $includeNull
      * @return void
      */
     public function copyValueFrom($source, $filter = null, $includeNull = false)
