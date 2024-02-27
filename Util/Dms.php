@@ -58,11 +58,17 @@ class Dms
     /**
      * Print Dms
      *
+     * @param boolean $trim
      * @return string
      */
-    public function printDms()
+    public function printDms($trim)
     {
-        return $this->deg.":".$this->min.":".$this->sec;
+        $result = $this->deg.":".$this->min.":".$this->sec;
+        if($trim)
+        {
+            $result = ltrim($result, '0:');
+        }
+        return $result;
     }
     
     /**
