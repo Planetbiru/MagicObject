@@ -1040,6 +1040,8 @@ class MagicObject extends stdClass // NOSONAR
      * booleanToTextBy &raquo; convert bool value to yes/no or true/false depend on parameters given. Example: $result = booleanToTextByActive("Yes", "No"); If $obj->active is true, $result will be "Yes" otherwise "No". This method not require database connection.
      * booleanToSelectedBy &raquo; Create attribute selected="selected" for form. This method not require database connection.
      * booleanToCheckedBy &raquo; Create attribute checked="checked" for form. This method not require database connection.
+     * startsWith &raquo; Check that value starts with any string. This method not require database connection.
+     * endsWith &raquo; Check that value ends with any string. This method not require database connection.
      *
      * @param string $method Method name
      * @param mixed $params Parameters
