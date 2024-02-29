@@ -259,6 +259,29 @@ try
     $data["duration"] = 300;
     $album1 = new Album($data, $database);
     
+    
+    // get value from form
+    // this way is not safe
+    $album1 = new Album($_POST, $database);
+    
+    // we can use other way
+    
+    $inputPost = new InputPost();
+    // we can apply filter
+    $inputPost->filterName(PicoFilterConstant::FILTER_SANITIZE_SPECIAL_CHARS);
+    $inputPost->filterDescription(PicoFilterConstant::FILTER_SANITIZE_SPECIAL_CHARS);
+    
+    // if property not present in $inputPost, we can set default value
+    $inputPost->checkboxActive(false);
+    $inputPost->checkboxAsDraft(true);
+    
+    // we can remove any property data from object $inputPost before apply it to entity
+    // it will not saved to database
+    $inputPost->setSortOrder(null);
+    
+    $album1 = new Album($inputPost, $database);
+
+    
     // insert to database
     $album1->insert();
     
