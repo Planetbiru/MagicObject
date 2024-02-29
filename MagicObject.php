@@ -1197,14 +1197,14 @@ class MagicObject extends stdClass // NOSONAR
         else if (strncasecmp($method, "startsWith", 10) === 0) {
             $var = lcfirst(substr($method, 13));
             $value = $params[0];
-            $caseSensitive = $params[1];    
+            $caseSensitive = isset($params[1]) && $params[1];    
             $haystack = $this->$var;
             return $this->startsWith($haystack, $value, $caseSensitive);
         }  
         else if (strncasecmp($method, "endsWith", 8) === 0) {
             $var = lcfirst(substr($method, 13));
             $value = $params[0];
-            $caseSensitive = $params[1];    
+            $caseSensitive = isset($params[1]) && $params[1];  
             $haystack = $this->$var;
             return $this->endsWith($haystack, $value, $caseSensitive);
         } 
