@@ -58,8 +58,8 @@ class Dms
     /**
      * Print Dms
      *
-     * @param boolean $trim
-     * @param boolean $rounded
+     * @param bool $trim
+     * @param bool $rounded
      * @return string
      */
     public function printDms($trim = false, $rounded = false)

@@ -158,7 +158,7 @@ class Getter extends stdClass
     /**
      * Check if JSON naming strategy is snake case or not
      *
-     * @return boolean
+     * @return bool
      */
     private function isSnake()
     {
@@ -171,7 +171,7 @@ class Getter extends stdClass
     /**
      * Check if JSON naming strategy is snake case or not
      *
-     * @return boolean
+     * @return bool
      */
     private function isPretty()
     {

@@ -243,7 +243,7 @@ class SecretObject extends stdClass //NOSONAR
      * Check if value is required to be encrypted before stored
      *
      * @param string $var
-     * @return boolean
+     * @return bool
      */
     private function needInputEncryption($var)
     {
@@ -254,7 +254,7 @@ class SecretObject extends stdClass //NOSONAR
      * Check if value is required to be decrypted after read
      *
      * @param string $var
-     * @return boolean
+     * @return bool
      */
     private function needOutputDecryption($var)
     {
@@ -265,7 +265,7 @@ class SecretObject extends stdClass //NOSONAR
      * Check if value is required to be encrypted after read
      *
      * @param string $var
-     * @return boolean
+     * @return bool
      */
     private function needOutputEncryption($var)
     {
@@ -276,7 +276,7 @@ class SecretObject extends stdClass //NOSONAR
      * Check if value is required to be decrypted before stored
      *
      * @param string $var
-     * @return boolean
+     * @return bool
      */
     private function needInputDecryption($var)
     {
@@ -314,7 +314,7 @@ class SecretObject extends stdClass //NOSONAR
      * Load data from INI file
      *
      * @param string $path
-     * @param boolean $systemEnv
+     * @param bool $systemEnv
      * @return self
      */
     public function loadIniFile($path, $systemEnv = false)
@@ -334,7 +334,7 @@ class SecretObject extends stdClass //NOSONAR
      * Load data from Yaml file
      *
      * @param string $path
-     * @param boolean $systemEnv
+     * @param bool $systemEnv
      * @return self
      */
     public function loadYamlFile($path, $systemEnv = false, $asObject = false)
@@ -362,7 +362,7 @@ class SecretObject extends stdClass //NOSONAR
      * Load data from JSON file
      *
      * @param string $path
-     * @param boolean $systemEnv
+     * @param bool $systemEnv
      * @return self
      */
     public function loadJsonFile($path, $systemEnv = false, $asObject = false)
@@ -391,7 +391,7 @@ class SecretObject extends stdClass //NOSONAR
      *
      * @param string $propertyName
      * @param mixed|null
-     * @param boolean $skipModifyNullProperties
+     * @param bool $skipModifyNullProperties
      * @return self
      */
     public function set($propertyName, $propertyValue, $skipModifyNullProperties = false)
@@ -437,7 +437,7 @@ class SecretObject extends stdClass //NOSONAR
      *
      * @param self|mixed $source
      * @param array $filter
-     * @param boolean $includeNull
+     * @param bool $includeNull
      * @return void
      */
     public function copyValueFrom($source, $filter = null, $includeNull = false)
@@ -567,7 +567,7 @@ class SecretObject extends stdClass //NOSONAR
     /**
      * Check if JSON naming strategy is snake case or not
      *
-     * @return boolean
+     * @return bool
      */
     protected function _snake()
     {
@@ -580,7 +580,7 @@ class SecretObject extends stdClass //NOSONAR
     /**
      *  Check if JSON naming strategy is upper camel case or not
      *
-     * @return boolean
+     * @return bool
      */
     protected function isUpperCamel()
     {
@@ -593,7 +593,7 @@ class SecretObject extends stdClass //NOSONAR
     /**
      * Check if JSON naming strategy is camel case or not
      *
-     * @return boolean
+     * @return bool
      */
     protected function _camel()
     {
