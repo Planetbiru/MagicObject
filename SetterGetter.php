@@ -188,7 +188,7 @@ class SetterGetter
     /**
      * Check if JSON naming strategy is snake case or not
      *
-     * @return boolean
+     * @return bool
      */
     private function isSnake()
     {
@@ -201,7 +201,7 @@ class SetterGetter
     /**
      * Check if JSON naming strategy is camel case or not
      *
-     * @return boolean
+     * @return bool
      */
     protected function isCamel()
     {
@@ -211,7 +211,7 @@ class SetterGetter
     /**
      * Check if JSON naming strategy is snake case or not
      *
-     * @return boolean
+     * @return bool
      */
     private function isPretty()
     {

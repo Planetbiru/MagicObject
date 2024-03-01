@@ -444,7 +444,7 @@ class PicoRequestTool extends stdClass
     /**
      * Check if JSON naming strategy is snake case or not
      *
-     * @return boolean
+     * @return bool
      */
     private function isSnake()
     {
@@ -457,7 +457,7 @@ class PicoRequestTool extends stdClass
     /**
      * Check if JSON naming strategy is camel case or not
      *
-     * @return boolean
+     * @return bool
      */
     protected function isCamel()
     {
@@ -467,7 +467,7 @@ class PicoRequestTool extends stdClass
     /**
      * Check if JSON naming strategy is snake case or not
      *
-     * @return boolean
+     * @return bool
      */
     private function isPretty()
     {
@@ -480,7 +480,7 @@ class PicoRequestTool extends stdClass
     /**
      * Check if request is empty
      *
-     * @return boolean
+     * @return bool
      */
     public function isEmpty()
     {

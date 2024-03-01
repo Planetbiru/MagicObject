@@ -136,7 +136,7 @@ class PicoDatabasePersistent // NOSONAR
     /**
      * Set flag to skip null column
      *
-     * @param boolean $skip
+     * @param bool $skip
      * @return self
      */
     public function includeNull($skip)
@@ -311,7 +311,7 @@ class PicoDatabasePersistent // NOSONAR
      * Get match row
      *
      * @param PDOStatement $stmt
-     * @return boolean
+     * @return bool
      */
     public function matchRow($stmt)
     {
@@ -326,7 +326,7 @@ class PicoDatabasePersistent // NOSONAR
     /**
      * Save data to database
      *
-     * @param boolean $includeNull
+     * @param bool $includeNull
      * @return PDOStatement
      */
     public function save($includeNull = false)
@@ -595,7 +595,7 @@ class PicoDatabasePersistent // NOSONAR
      *
      * @param string $columnName
      * @param array $primaryKeys
-     * @return boolean
+     * @return bool
      */
     public function isPrimaryKeys($columnName, $primaryKeys)
     {
@@ -629,7 +629,7 @@ class PicoDatabasePersistent // NOSONAR
      * Add generated value
      *
      * @param stdClass $info
-     * @param boolean $fisrtCall
+     * @param bool $fisrtCall
      * @return void
      */
     private function addGeneratedValue($info, $fisrtCall)
@@ -687,7 +687,7 @@ class PicoDatabasePersistent // NOSONAR
     /**
      * Insert data
      *
-     * @param boolean $includeNull
+     * @param bool $includeNull
      * @return PDOStatement
      */
     public function insert($includeNull = false)
@@ -1046,7 +1046,7 @@ class PicoDatabasePersistent // NOSONAR
      *
      * @param string[] $primaryKeys
      * @param array $propertyValues
-     * @return boolean
+     * @return bool
      */
     private function isValidPrimaryKeyValues($primaryKeys, $propertyValues)
     {
@@ -1356,7 +1356,7 @@ class PicoDatabasePersistent // NOSONAR
      *
      * @param string $propertyName
      * @param mixed $propertyValue
-     * @return boolean
+     * @return bool
      */
     public function existsBy($propertyName, $propertyValue)
     {
@@ -1619,7 +1619,7 @@ class PicoDatabasePersistent // NOSONAR
      * Check if filter is valid or not
      *
      * @param string $filter
-     * @return boolean
+     * @return bool
      */
     private function isValidFilter($filter)
     {
@@ -1630,7 +1630,7 @@ class PicoDatabasePersistent // NOSONAR
      * Check if data is not null and not empty and not a space
      *
      * @param string $value
-     * @return boolean
+     * @return bool
      */
     private function notNullAndNotEmptyAndNotSpace($value)
     {
@@ -1724,7 +1724,7 @@ class PicoDatabasePersistent // NOSONAR
      * Boolean value
      *
      * @param mixed $value
-     * @return boolean
+     * @return bool
      */
     private function boolval($value)
     {
@@ -1795,7 +1795,7 @@ class PicoDatabasePersistent // NOSONAR
     /**
      * Check if date time is NULL
      * @param string $value
-     * @return boolean
+     * @return bool
      */
     private function isDateTimeNull($value)
     {
@@ -1903,7 +1903,7 @@ class PicoDatabasePersistent // NOSONAR
     /**
      * Update
      *
-     * @param boolean $includeNull
+     * @param bool $includeNull
      * @return PDOStatement
      */
     public function update($includeNull = false)
