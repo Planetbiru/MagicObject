@@ -192,6 +192,8 @@ class Album extends MagicObject
 }
 ```
 
+MagicObject will not update `time_create`, `admin_create`, and `ip_create` because `updatable=false`. So, even if the application wants to update this value, this column will be ignored when performing an update query to the database.
+
 ## Usage
 
 ```php
@@ -264,14 +266,16 @@ try
     // this way is not safe
     $album1 = new Album($_POST, $database);
     
-    // we can use other way
     
+    // we can use other way
     $inputPost = new InputPost();
+    
     // we can apply filter
     $inputPost->filterName(PicoFilterConstant::FILTER_SANITIZE_SPECIAL_CHARS);
     $inputPost->filterDescription(PicoFilterConstant::FILTER_SANITIZE_SPECIAL_CHARS);
     
     // if property not present in $inputPost, we can set default value
+    // please note that user can modify form and add update any unwanted properties to be updated
     $inputPost->checkboxActive(false);
     $inputPost->checkboxAsDraft(true);
     
@@ -280,7 +284,6 @@ try
     $inputPost->setSortOrder(null);
     
     $album1 = new Album($inputPost, $database);
-
     
     // insert to database
     $album1->insert();
