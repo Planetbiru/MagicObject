@@ -28,6 +28,182 @@ echo $someObject;
 error_log($someObject);
 ```
 
+### Unset Properties
+
+```php
+<?php
+use MagicObject\MagicObject;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$someObject = new MagicObject();
+$someObject->setId(1);
+$someObject->setRealName("Someone");
+$someObject->setPhone("+62811111111");
+$someObject->setEmail("someone@domain.tld");
+
+echo "ID        : " . $someObject->getId() . "\r\n";
+echo "Real Name : " . $someObject->getRealName() . "\r\n";
+echo "Phone     : " . $someObject->getPhone() . "\r\n";
+echo "Email     : " . $someObject->getEmail() . "\r\n";
+
+$someObject->unsetPhone();
+echo "Phone     : " . $someObject->getPhone() . "\r\n";
+
+// get JSON string of the object
+echo $someObject;
+
+// or you can debug with
+error_log($someObject);
+```
+
+### Check if Properties has Value
+
+```php
+<?php
+use MagicObject\MagicObject;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$someObject = new MagicObject();
+$someObject->setId(1);
+$someObject->setRealName("Someone");
+$someObject->setPhone("+62811111111");
+$someObject->setEmail("someone@domain.tld");
+
+echo "ID        : " . $someObject->getId() . "\r\n";
+echo "Real Name : " . $someObject->getRealName() . "\r\n";
+echo "Phone     : " . $someObject->getPhone() . "\r\n";
+echo "Email     : " . $someObject->getEmail() . "\r\n";
+
+$someObject->unsetPhone();
+if($someObject->hasValuePhone())
+{
+    echo "Phone     : " . $someObject->getPhone() . "\r\n";
+}
+else
+{
+    echo "Phone value is not set\r\n";
+}
+// get JSON string of the object
+echo $someObject;
+
+// or you can debug with
+error_log($someObject);
+```
+
+## Multilevel Object
+
+```php
+<?php
+use MagicObject\MagicObject;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$car = new MagicObject();
+$tire = new MagicObject();
+$body = new MagicObject();
+
+$tire->setDiameter(12);
+$tire->setPressure(60);
+
+$body->setLength(320);
+$body->setWidth(160);
+$body->Height(140);
+$body->setColor("red");
+
+$car->setTire($tire);
+$car->setBody($body);
+
+echo $car;
+
+/*
+{"tire":{"diameter":12,"pressure":60},"body":{"length":320,"width":160,"height":140,"color":"red"}}
+*/
+
+// to get color
+
+echo $car->getBody()->getColor();
+
+```
+
+## Object from Yaml File
+
+```yaml
+# config.yml
+
+tire: 
+  diameter: 12
+  pressure: 60
+body: 
+  length: 320
+  width: 160
+  height: 140
+  color: red
+
+```
+
+```php
+<?php
+use MagicObject\MagicObject;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$car = new MagicObject();
+// load file config.yml
+// will not replace value with environment variable
+// load as object instead of associated array
+$car->loadYamlFile("config.yml", false, true);
+
+echo $car;
+/*
+{"tire":{"diameter":12,"pressure":60},"body":{"length":320,"width":160,"height":140,"color":"red"}}
+*/
+
+// to get color
+
+echo $car->getBody()->getColor();
+
+```
+
+## Replace Value with Environment Variable
+
+```yaml
+# config.yml
+
+tire: 
+  diameter: ${TIRE_DIAMETER}
+  pressure: ${TIRE_PRESSURE}
+body: 
+  length: ${BODY_LENGTH}
+  width: ${BODY_WIDTH}
+  height: ${BODY_HEIGHT}
+  color: ${BODY_COLOR}
+
+```
+
+Before execute this script, user must set environment variable for `TIRE_DIAMETER`, `TIRE_PRESSURE`, `BODY_LENGTH`, `BODY_WIDTH`, `BODY_HEIGHT`, and `BODY_COLOR`.
+
+```php
+<?php
+use MagicObject\MagicObject;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$car = new MagicObject();
+// load file config.yml
+// will replace value with environment variable
+// load as object instead of associated array
+$car->loadYamlFile("config.yml", true, true);
+
+echo $car;
+
+// to get color
+
+echo $car->getBody()->getColor();
+
+```
+
 ## Input GET/POST/REQUEST/COOKIE
 
 ### Input GET
