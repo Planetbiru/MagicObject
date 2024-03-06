@@ -45,8 +45,14 @@ php composer.phar remove planetbiru/magic-object
 
 To install composer on your PC or download latest composer.phar, click https://getcomposer.org/download/ 
 
+# Tutorial
+
+Tutorial is provided here https://github.com/Planetbiru/MagicObject/blob/main/tutorial.md
+
 
 # Example
+
+## Simple Object
 
 ## Yaml
 
