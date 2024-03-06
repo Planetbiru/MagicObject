@@ -13,7 +13,8 @@ Some examples of using MagicObject are as follows:
 5. reads INI, Yaml, and JSON files
 6. Get the environment variable value
 7. encrypt and decrypt application configuration
-8. debug objects 
+8. annotations
+9. debug objects 
 
 
 
