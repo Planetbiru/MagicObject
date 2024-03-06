@@ -1,6 +1,36 @@
-# Input GET/POST/REQUEST/COOKIE
+# Tutorial and Example
 
-## Input GET
+## Simpe Object
+
+### Set and Get Properties Value
+
+```php
+<?php
+use MagicObject\MagicObject;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$someObject = new MagicObject();
+$someObject->setId(1);
+$someObject->setRealName("Someone");
+$someObject->setPhone("+62811111111");
+$someObject->setEmail("someone@domain.tld");
+
+echo "ID        : " . $someObject->getId() . "\r\n";
+echo "Real Name : " . $someObject->getRealName() . "\r\n";
+echo "Phone     : " . $someObject->getPhone() . "\r\n";
+echo "Email     : " . $someObject->getEmail() . "\r\n";
+
+// get JSON string of the object
+echo $someObject;
+
+// or you can debug with
+error_log($someObject);
+```
+
+## Input GET/POST/REQUEST/COOKIE
+
+### Input GET
 
 ```php
 
@@ -16,7 +46,7 @@ $name = $_GET['real_name'];
 
 ```
 
-## Input Post
+### Input Post
 
 ```php
 
@@ -32,7 +62,7 @@ $name = $_POST['real_name'];
 
 ```
 
-## Input Request
+### Input Request
 
 ```php
 
@@ -48,7 +78,7 @@ $name = $_REQUEST['real_name'];
 
 ```
 
-## Input Cookie
+### Input Cookie
 
 ```php
 
@@ -64,7 +94,7 @@ $name = $_COOKIE['real_name'];
 
 ```
 
-## Filter Input
+### Filter Input
 
 Filter input from InputGet, InputPost, InputRequest and InputCookie
 
