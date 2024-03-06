@@ -624,6 +624,18 @@ class Album extends MagicObject
 }
 ```
 
+Strategy to generate auto value:
+
+**1. GenerationType.UUID**
+
+Generate 20 bytes unique ID
+ - 14 byte hexadecimal of uniqid https://www.php.net/manual/en/function.uniqid.php
+ - 6 byte hexadecimal or random number
+
+**2. GenerationType.IDENTITY**
+
+Autoincrement using database feature
+
 MagicObject will not update `time_create`, `admin_create`, and `ip_create` because `updatable=false`. So, even if the application wants to update this value, this column will be ignored when performing an update query to the database.
 
 ### Usage
@@ -767,14 +779,3 @@ catch(Exception $e)
 
 ```
 
-Strategy to generate auto value:
-
-**GenerationType.UUID**
-
-Generate 20 bytes unique ID
- - 14 byte hexadecimal of uniqid https://www.php.net/manual/en/function.uniqid.php
- - 6 byte hexadecimal or random number
-
-**GenerationType.IDENTITY**
-
-Autoincrement using database feature
