@@ -766,3 +766,15 @@ catch(Exception $e)
 }
 
 ```
+
+Strategy to generate auto value:
+
+**GenerationType.UUID**
+
+Generate 20 bytes unique ID
+ - 14 byte hexadecimal of uniqid https://www.php.net/manual/en/function.uniqid.php
+ - 6 byte hexadecimal or random number
+
+**GenerationType.IDENTITY**
+
+Autoincrement using database feature
