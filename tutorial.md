@@ -1,4 +1,4 @@
-# Tutorial and Example
+# MagicObject Tutorial and Example
 
 ## Simpe Object
 
