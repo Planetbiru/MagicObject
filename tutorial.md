@@ -779,9 +779,188 @@ catch(Exception $e)
 
 ```
 
+## Pagination
+
+```php
+<?php
+
+use MagicObject\Database\PicoDatabase;
+use MagicObject\Database\PicoDatabaseCredentials;
+use MusicProductionManager\Config\ConfigApp;
+
+use MusicProductionManager\Config\ConfigApp;
+
+use MagicObject\Database\PicoPagable;
+use MagicObject\Database\PicoPage;
+use MagicObject\Database\PicoSort;
+use MagicObject\Database\PicoSortable;
+use MagicObject\Pagination\PicoPagination;
+use MagicObject\Request\PicoFilterConstant;
+use MagicObject\Request\InputGet;
+use MagicObject\Response\Generated\PicoSelectOption;
+use MusicProductionManager\Constants\ParamConstant;
+use MusicProductionManager\Data\Entity\Album;
+use MusicProductionManager\Data\Entity\Artist;
+use MusicProductionManager\Data\Entity\EntitySong;
+use MusicProductionManager\Data\Entity\EntitySongComment;
+use MusicProductionManager\Data\Entity\Genre;
+
+use MusicProductionManager\Utility\SpecificationUtil;
+use MusicProductionManager\Utility\UserUtil;
+
+require_once dirname(__DIR__)."/vendor/autoload.php";
+
+$cfg = new ConfigApp(null, true);
+$cfg->loadYamlFile(dirname(__DIR__)."/.cfg/app.yml", true, true);
+
+$databaseCredentials = new PicoDatabaseCredentials($cfg->getDatabase());
+$database = new PicoDatabase($databaseCredentials);
+try
+{
+    $database->connect();
+    $orderMap = array(
+        'name'=>'name', 
+        'title'=>'title', 
+        'rating'=>'rating',
+        'albumId'=>'albumId', 
+        'album'=>'albumId', 
+        'trackNumber'=>'trackNumber',
+        'genreId'=>'genreId', 
+        'genre'=>'genreId',
+        'artistVocalId'=>'artistVocalId',
+        'artistVocalist'=>'artistVocalId',
+        'artistComposerId'=>'artistComposerId',
+        'artistComposer'=>'artistComposerId',
+        'duration'=>'duration',
+        'lyricComplete'=>'lyricComplete',
+        'vocal'=>'vocal',
+        'active'=>'active'
+    );
+    $defaultOrderBy = 'albumId';
+    $defaultOrderType = 'desc';
+    $pagination = new PicoPagination($cfg->getResultPerPage());
+
+    $spesification = SpecificationUtil::createSongSpecification($inputGet);
+
+    if($pagination->getOrderBy() == '')
+    {
+    $sortable = new PicoSortable();
+    $sort1 = new PicoSort('albumId', PicoSortable::ORDER_TYPE_DESC);
+    $sortable->addSortable($sort1);
+    $sort2 = new PicoSort('trackNumber', PicoSortable::ORDER_TYPE_ASC);
+    $sortable->addSortable($sort2);
+    }
+    else
+    {
+    $sortable = new PicoSortable($pagination->getOrderBy($orderMap, $defaultOrderBy), $pagination->getOrderType($defaultOrderType));
+    }
+
+    $pagable = new PicoPagable(new PicoPage($pagination->getCurrentPage(), $pagination->getPageSize()), $sortable);
+
+    $songEntity = new EntitySong(null, $database);
+    $rowData = $songEntity->findAll($spesification, $pagable, $sortable, true);
+
+    $result = $rowData->getResult();
+    
+    if(!empty($result))
+    {
+    ?>
+    <div class="pagination">
+        <div class="pagination-number">
+        <?php
+        foreach($rowData->getPagination() as $pg)
+        {
+            ?><span class="page-selector<?php echo $pg['selected'] ? ' page-selected':'';?>" data-page-number="<?php echo $pg['page'];?>"><a href="#"><?php echo $pg['page'];?></a></span><?php
+        }
+        ?>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+            <th scope="col" width="20"><i class="ti ti-edit"></i></th>
+            <th scope="col" width="20"><i class="ti ti-trash"></i></th>
+            <th scope="col" width="20"><i class="ti ti-player-play"></i></th>
+            <th scope="col" width="20"><i class="ti ti-download"></i></th>
+            <th scope="col" width="20">#</th>
+            <th scope="col" class="col-sort" data-name="name">Name</th>
+            <th scope="col" class="col-sort" data-name="title">Title</th>
+            <th scope="col" class="col-sort" data-name="rating">Rating</th>
+            <th scope="col" class="col-sort" data-name="album_id">Album</th>
+            <th scope="col" class="col-sort" data-name="track_number">Track</th>
+            <th scope="col" class="col-sort" data-name="genre_id">Genre</th>
+            <th scope="col" class="col-sort" data-name="artist_vocalist">Vocalist</th>
+            <th scope="col" class="col-sort" data-name="artist_composer">Composer</th>
+            <th scope="col" class="col-sort" data-name="duration">Duration</th>
+            <th scope="col" class="col-sort" data-name="vocal">Vocal</th>
+            <th scope="col" class="col-sort" data-name="lyric_complete">Lyric</th>
+            <th scope="col" class="col-sort" data-name="active">Active</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $no = $pagination->getOffset();
+            foreach($result as $song)
+            {
+            $no++;
+            $songId = $song->getSongId();
+            $linkEdit = basename($_SERVER['PHP_SELF'])."?action=edit&song_id=".$songId;
+            $linkDetail = basename($_SERVER['PHP_SELF'])."?action=detail&song_id=".$songId;
+            $linkDelete = basename($_SERVER['PHP_SELF'])."?action=delete&song_id=".$songId;
+            $linkDownload = "read-file.php?type=all&song_id=".$songId;
+            ?>
+            <tr data-id="<?php echo $songId;?>">
+            <th scope="row"><a href="<?php echo $linkEdit;?>" class="edit-data"><i class="ti ti-edit"></i></a></th>
+            <th scope="row"><a href="<?php echo $linkDelete;?>" class="delete-data"><i class="ti ti-trash"></i></a></th>
+            <th scope="row"><a href="#" class="play-data" data-url="<?php echo $cfg->getSongBaseUrl()."/".$song->getFileName();?>?hash=<?php echo str_replace(array(' ', '-', ':'), '', $song->getLastUploadTime());?>"><i class="ti ti-player-play"></i></a></th>
+            <th scope="row"><a href="<?php echo $linkDownload;?>"><i class="ti ti-download"></i></a></th>
+            <th class="text-right" scope="row"><?php echo $no;?></th>
+            <td><a href="<?php echo $linkDetail;?>" class="text-data text-data-name"><?php echo $song->getName();?></a></td>
+            <td><a href="<?php echo $linkDetail;?>" class="text-data text-data-title"><?php echo $song->getTitle();?></a></td>
+            <td class="text-data text-data-rating"><?php echo $song->hasValueRating() ? $song->getRating() : "";?></td>
+            <td class="text-data text-data-album-name"><?php echo $song->hasValueAlbum() ? $song->getAlbum()->getName() : "";?></td>
+            <td class="text-data text-data-track-number"><?php echo $song->hasValueTrackNumber() ? $song->getTrackNumber() : "";?></td>
+            <td class="text-data text-data-genre-name"><?php echo $song->hasValueGenre() ? $song->getGenre()->getName() : "";?></td>
+            <td class="text-data text-data-artist-vocal-name"><?php echo $song->hasValueVocalist() ? $song->getVocalist()->getName() : "";?></td>
+            <td class="text-data text-data-artist-composer-name"><?php echo $song->hasValueComposer() ? $song->getComposer()->getName() : "";?></td>
+            <td class="text-data text-data-duration"><?php echo $song->getDuration();?></td>
+            <td class="text-data text-data-vocal"><?php echo $song->isVocal() ? 'Yes' : 'No';?></td>
+            <td class="text-data text-data-lyric-complete"><?php echo $song->isLyricComplete() ? 'Yes' : 'No';?></td>
+            <td class="text-data text-data-active"><?php echo $song->isActive() ? 'Yes' : 'No';?></td>
+            </tr>
+            <?php
+            }
+            ?>
+            
+        </tbody>
+        </table>
+
+
+        <div class="pagination">
+        <div class="pagination-number">
+        <?php
+        foreach($rowData->getPagination() as $pg)
+        {
+            ?><span class="page-selector<?php echo $pg['selected'] ? ' page-selected':'';?>" data-page-number="<?php echo $pg['page'];?>"><a href="#"><?php echo $pg['page'];?></a></span><?php
+        }
+        ?>
+        </div>
+    </div>
+
+    <?php
+    }
+}
+catch(Exception $e)
+{
+    
+}
+
+```
+
 ## Database Query Builder
 
 ```php
+<?php
 
 use MagicObject\Database\PicoDatabaseQueryBuilder;
 
