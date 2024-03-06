@@ -781,6 +781,10 @@ catch(Exception $e)
 
 ## Pagination
 
+Example parameters:
+
+`genre_id=0648d4e176da4df4472d&album_id=&artist_vocal_id=&name=&vocal=&lyric_complete=&active=&page=2&orderby=title&ordertype=asc`
+
 ```php
 <?php
 
@@ -818,6 +822,9 @@ $database = new PicoDatabase($databaseCredentials);
 try
 {
     $database->connect();
+    
+    $inputGet = new InputGet();
+    
     $orderMap = array(
         'name'=>'name', 
         'title'=>'title', 
@@ -955,6 +962,113 @@ catch(Exception $e)
     
 }
 
+```
+
+Define method `createSongSpecification`
+
+```php
+<?php
+
+namespace MusicProductionManager\Utility;
+
+use MagicObject\Database\PicoPredicate;
+use MagicObject\Database\PicoSpecification;
+use MagicObject\Request\PicoRequestTool;
+
+
+class SpecificationUtil
+{
+    /**
+     * Create Song specification
+     * @param PicoRequestTool $inputGet
+     * @param array $additional
+     * @return PicoSpecification
+     */
+    public static function createSongSpecification($inputGet, $additional = null)
+    {
+        $spesification = new PicoSpecification();
+
+        if($inputGet->getSongId() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1->equals('songId', $inputGet->getSongId());
+            $spesification->addAnd($predicate1);
+        }
+
+        if($inputGet->getGenreId() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1->equals('genreId', $inputGet->getGenreId());
+            $spesification->addAnd($predicate1);
+        }
+
+        if($inputGet->getAlbumId() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1->equals('albumId', $inputGet->getAlbumId());
+            $spesification->addAnd($predicate1);
+        }
+
+        if($inputGet->getName() != "")
+        {
+            $spesificationTitle = new PicoSpecification();
+            $predicate1 = new PicoPredicate();
+            $predicate1->like('name', PicoPredicate::generateCenterLike($inputGet->getName()));
+            $spesificationTitle->addOr($predicate1);
+            $predicate2 = new PicoPredicate();
+            $predicate2->like('title', PicoPredicate::generateCenterLike($inputGet->getName()));
+            $spesificationTitle->addOr($predicate2);
+            $spesification->addAnd($spesificationTitle);
+        }
+
+        if($inputGet->getSubtitle() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1->like('subtitle', PicoPredicate::generateCenterLike($inputGet->getSubtitle()));
+            $spesification->addAnd($predicate1);
+        }
+
+        if($inputGet->getArtistVocalistId() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1->equals('artistVocalId', $inputGet->getArtistVocalistId());
+            $spesification->addAnd($predicate1);
+        }
+
+        if($inputGet->getLyricComplete() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1->equals('lyricComplete', $inputGet->getLyricComplete());
+            $spesification->addAnd($predicate1);
+        }
+
+        if($inputGet->getVocal() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1->equals('vocal', $inputGet->getVocal());
+            $spesification->addAnd($predicate1);
+        }
+
+        if($inputGet->getActive() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1->equals('active', $inputGet->getActive());
+            $spesification->addAnd($predicate1);
+        }
+
+        if(isset($additional) && is_array($additional))
+        {
+            foreach($additional as $key=>$value)
+            {
+                $predicate2 = new PicoPredicate();          
+                $predicate2->equals($key, $value);
+                $spesification->addAnd($predicate2);
+            }
+        }
+        
+        return $spesification;
+    }
+}
 ```
 
 ## Database Query Builder
