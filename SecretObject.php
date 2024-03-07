@@ -232,7 +232,7 @@ class SecretObject extends stdClass //NOSONAR
      */
     private function encryptValue($plaintext, $hexKey) 
     {
-        $key = ($hexKey);
+        $key = $hexKey;
         $method = "AES-256-CBC";
         $iv = openssl_random_pseudo_bytes(16);   
         $ciphertext = openssl_encrypt($plaintext, $method, $key, OPENSSL_RAW_DATA, $iv);
@@ -250,7 +250,7 @@ class SecretObject extends stdClass //NOSONAR
     private function decryptValue($ciphertext, $hexKey) 
     {
         $ivHashCiphertext = base64_decode($ciphertext);
-        $key = ($hexKey);
+        $key = $hexKey;
         $method = "AES-256-CBC";
         $iv = substr($ivHashCiphertext, 0, 16);
         $hash = substr($ivHashCiphertext, 16, 32);
