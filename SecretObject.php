@@ -71,23 +71,7 @@ class SecretObject extends stdClass //NOSONAR
      */
     private $readonly = false;
     
-    /**
-     * Constructor
-     *
-     * @param self|array|object $data
-     */
-    public function __construct($data = null, $secureCallback = null)
-    {
-        $this->_objectInfo();
-        if($data != null)
-        {
-            $this->loadData($data);
-        }
-        if(is_callable($secureCallback))
-        {
-            $this->getSecure = $secureCallback;
-        }
-    }
+    private $secureFunction = null;
     
     /**
      * Get secure
@@ -96,7 +80,32 @@ class SecretObject extends stdClass //NOSONAR
      */
     private function getSecure()
     {
-        return PicoSecret::RANDOM_KEY_1.PicoSecret::RANDOM_KEY_2;
+        if($this->secureFunction != null && is_callable($this->secureFunction))
+        {
+            return call_user_func($this->secureFunction);
+        }
+        else
+        {
+            return PicoSecret::RANDOM_KEY_1.PicoSecret::RANDOM_KEY_2;
+        }
+    }
+    
+    /**
+     * Constructor
+     *
+     * @param self|array|object $data
+     */
+    public function __construct($data = null, $secureCallback = null)
+    {
+        $this->_objectInfo();
+        if($secureCallback != null && is_callable($secureCallback))
+        {
+            $this->secureFunction = $secureCallback;
+        }
+        if($data != null)
+        {
+            $this->loadData($data);
+        }
     }
     
     /**
