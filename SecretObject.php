@@ -76,13 +76,27 @@ class SecretObject extends stdClass //NOSONAR
      *
      * @param self|array|object $data
      */
-    public function __construct($data = null)
+    public function __construct($data = null, $secureCallback = null)
     {
         $this->_objectInfo();
         if($data != null)
         {
             $this->loadData($data);
         }
+        if(is_callable($secureCallback))
+        {
+            $this->getSecure = $secureCallback;
+        }
+    }
+    
+    /**
+     * Get secure
+     *
+     * @return string
+     */
+    private function getSecure()
+    {
+        return PicoSecret::RANDOM_KEY_1.PicoSecret::RANDOM_KEY_2;
     }
     
     /**
@@ -160,11 +174,11 @@ class SecretObject extends stdClass //NOSONAR
     {
         if($this->needInputEncryption($var))
         {
-            $value = $this->encryptValue($value, PicoSecret::RANDOM_KEY_1.PicoSecret::RANDOM_KEY_2);
+            $value = $this->encryptValue($value, $this->getSecure());
         }
         else if($this->needInputDecryption($var))
         {
-            $value = $this->decryptValue($value, PicoSecret::RANDOM_KEY_1.PicoSecret::RANDOM_KEY_2);
+            $value = $this->decryptValue($value, $this->getSecure());
         }
         $this->$var = $value;
     }
@@ -180,11 +194,11 @@ class SecretObject extends stdClass //NOSONAR
         $value = $this->_getValue($var);
         if($this->needOutputEncryption($var))
         {
-            $value = $this->encryptValue($value, PicoSecret::RANDOM_KEY_1.PicoSecret::RANDOM_KEY_2);
+            $value = $this->encryptValue($value, $this->getSecure());
         }
         else if($this->needOutputDecryption($var))
         {
-            $value = $this->decryptValue($value, PicoSecret::RANDOM_KEY_1.PicoSecret::RANDOM_KEY_2);
+            $value = $this->decryptValue($value, $this->getSecure());
         }
         return $value;
     }
@@ -714,7 +728,7 @@ class SecretObject extends stdClass //NOSONAR
             }
             else if(is_string($val))
             {
-                $array[$key] = $this->encryptValue($val, PicoSecret::RANDOM_KEY_1.PicoSecret::RANDOM_KEY_2);
+                $array[$key] = $this->encryptValue($val, $this->getSecure());
             }
         }
         return $array;
