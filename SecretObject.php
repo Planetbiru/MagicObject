@@ -98,6 +98,7 @@ class SecretObject extends stdClass //NOSONAR
     public function __construct($data = null, $secureCallback = null)
     {
         $this->_objectInfo();
+        // set callback secure before load default data
         if($secureCallback != null && is_callable($secureCallback))
         {
             $this->secureFunction = $secureCallback;
