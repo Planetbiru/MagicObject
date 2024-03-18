@@ -9,6 +9,11 @@ use MagicObject\Constants\PicoConstants;
 use MagicObject\Exceptions\NullPointerException;
 use stdClass;
 
+/**
+ * Database connection for MagicObject
+ * Developer: Kamshory
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoDatabase //NOSONAR
 {
 	const QUERY_INSERT = "insert";
@@ -417,9 +422,9 @@ class PicoDatabase //NOSONAR
 	public function __toString()
 	{
 		$val = new stdClass;
-		$val->databaseType = $this->getDatabaseType();
+		$val->databaseType = $this->databaseType;
 		$val->autocommit = $this->autocommit;
-		$val->connected = $this->isConnected();
+		$val->connected = $this->connected;
 		return json_encode($val);
 	}
 }
