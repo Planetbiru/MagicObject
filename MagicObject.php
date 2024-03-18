@@ -7,6 +7,7 @@ use PDOException;
 use PDOStatement;
 use MagicObject\Database\PicoDatabase;
 use MagicObject\Database\PicoDatabasePersistent;
+use MagicObject\Database\PicoDatabaseQueryBuilder;
 use MagicObject\Database\PicoDatabaseStructure;
 use MagicObject\Database\PicoPagable;
 use MagicObject\Database\PicoPageData;
@@ -284,6 +285,25 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
+     * Query of save data
+     * @param bool $includeNull If TRUE, all column will be saved to database include null. If FALSE, only column with not null value will be saved to database
+     * @return PicoDatabaseQueryBuilder
+     * NoDatabaseConnectionException|NoRecordFoundException
+     */
+    public function saveQuery($includeNull = false)
+    {
+        if($this->database != null && ($this->database->getDatabaseType() == null || $this->database->getDatabaseType() == ""))
+        {
+            $persist = new PicoDatabasePersistent($this->database, $this);
+            return $persist->saveQuery($includeNull);
+        }
+        else
+        {
+            throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
+        }
+    }
+
+    /**
      * Select data from database
      *
      * @return self
@@ -301,6 +321,25 @@ class MagicObject extends stdClass // NOSONAR
             }
             $this->loadData($data);
             return $this;
+        }
+        else
+        {
+            throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
+        }
+    }
+
+    /**
+     * Query of select data
+     *
+     * @return PicoDatabaseQueryBuilder
+     * @throws NoDatabaseConnectionException|NoRecordFoundException|PDOException
+     */
+    public function selectQuery()
+    {
+        if($this->database != null && ($this->database->getDatabaseType() == null || $this->database->getDatabaseType() == ""))
+        {
+            $persist = new PicoDatabasePersistent($this->database, $this);
+            return $persist->selectQuery();
         }
         else
         {
@@ -329,6 +368,26 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
+     * Get query of insert data
+     *
+     * @param bool $includeNull If TRUE, all column will be saved to database include null. If FALSE, only column with not null value will be saved to database
+     * @return PicoDatabaseQueryBuilder
+     * @throws NoDatabaseConnectionException
+     */
+    public function insertQuery($includeNull = false)
+    {
+        if($this->database != null && ($this->database->getDatabaseType() == null || $this->database->getDatabaseType() == ""))
+        {
+            $persist = new PicoDatabasePersistent($this->database, $this);
+            return $persist->insertQuery($includeNull);
+        }
+        else
+        {
+            throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
+        }
+    }
+
+    /**
      * Update data on database
      *
      * @param bool $includeNull If TRUE, all column will be saved to database include null. If FALSE, only column with not null value will be saved to database
@@ -349,6 +408,26 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
+     * Get query of update data
+     *
+     * @param bool $includeNull If TRUE, all column will be saved to database include null. If FALSE, only column with not null value will be saved to database
+     * @return PicoDatabaseQueryBuilder
+     * @throws NoDatabaseConnectionException
+     */
+    public function updateQuery($includeNull = false)
+    {
+        if($this->database != null && ($this->database->getDatabaseType() == null || $this->database->getDatabaseType() == ""))
+        {
+            $persist = new PicoDatabasePersistent($this->database, $this);
+            return $persist->updateQuery($includeNull);
+        }
+        else
+        {
+            throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
+        }
+    }
+
+    /**
      * Delete data from database
      *
      * @return PDOStatement
@@ -360,6 +439,25 @@ class MagicObject extends stdClass // NOSONAR
         {
             $persist = new PicoDatabasePersistent($this->database, $this);
             return $persist->delete();
+        }
+        else
+        {
+            throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
+        }
+    }
+
+    /**
+     * Query of delete dat
+     *
+     * @return PicoDatabaseQueryBuilder
+     * @throws NoDatabaseConnectionException
+     */
+    public function deleteQuery()
+    {
+        if($this->database != null && ($this->database->getDatabaseType() == null || $this->database->getDatabaseType() == ""))
+        {
+            $persist = new PicoDatabasePersistent($this->database, $this);
+            return $persist->deleteQuery();
         }
         else
         {
