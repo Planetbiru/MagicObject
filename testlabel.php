@@ -10,6 +10,3 @@ class Label extends DataLabel
      */
     protected $name;
 }
-
-$label = new Label(null);
-$label->test = "OK";
