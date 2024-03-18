@@ -16,6 +16,7 @@ use MagicObject\Exceptions\NoDatabaseConnectionException;
 use MagicObject\Exceptions\NoRecordFoundException;
 use MagicObject\Util\PicoAnnotationParser;
 use MagicObject\Util\PicoEnvironmentVariable;
+use MagicObject\Util\StringUtil;
 use ReflectionClass;
 use stdClass;
 use Symfony\Component\Yaml\Yaml;
@@ -110,13 +111,13 @@ class MagicObject extends stdClass // NOSONAR
             {
                 $values = $data->value();
                 foreach ($values as $key => $value) {
-                    $key2 = $this->camelize($key);
+                    $key2 = StringUtil::camelize($key);
                     $this->set($key2, $value, true);
                 }
             }
             else if (is_array($data) || is_object($data)) {
                 foreach ($data as $key => $value) {
-                    $key2 = $this->camelize($key);
+                    $key2 = StringUtil::camelize($key);
                     $this->set($key2, $value, true);
                 }
             }
@@ -371,34 +372,6 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
-     * Convert snake case to camel case
-     *
-     * @param string $input
-     * @param string $separator
-     * @return string
-     */
-    protected function camelize($input, $separator = '_')
-    {
-        return lcfirst(str_replace($separator, '', ucwords($input, $separator)));
-    }
-
-    /**
-     * Convert camel case to snake case
-     *
-     * @param string $input
-     * @param string $glue
-     * @return string
-     */
-    protected function snakeize($input, $glue = '_') {
-        return ltrim(
-            preg_replace_callback('/[A-Z]/', function ($matches) use ($glue) {
-                return $glue . strtolower($matches[0]);
-            }, $input),
-            $glue
-        );
-    } 
-
-    /**
      * Modify null properties
      *
      * @param string $propertyName
@@ -428,7 +401,7 @@ class MagicObject extends stdClass // NOSONAR
     public function set($propertyName, $propertyValue, $skipModifyNullProperties = false)
     {
         $var = lcfirst($propertyName);
-        $var = $this->camelize($var);
+        $var = StringUtil::camelize($var);
         $this->{$var} = $propertyValue;
         if(!$skipModifyNullProperties && $propertyValue === null)
         {
@@ -446,7 +419,7 @@ class MagicObject extends stdClass // NOSONAR
     public function get($propertyName)
     {
         $var = lcfirst($propertyName);
-        $var = $this->camelize($var);
+        $var = StringUtil::camelize($var);
         return isset($this->$var) ? $this->$var : null;
     }
     
@@ -454,15 +427,39 @@ class MagicObject extends stdClass // NOSONAR
      * Get property value 
      *
      * @param string $propertyName
+     * @param mixed|null $defaultValue
      * @return mixed|null
      */
     public function getOrDefault($propertyName, $defaultValue = null)
     {
         $var = lcfirst($propertyName);
-        $var = $this->camelize($var);
+        $var = StringUtil::camelize($var);
         return isset($this->$var) ? $this->$var : $defaultValue;
     }
     
+    /**
+     * Set property value
+     *
+     * @param string $propertyName
+     * @param mixed|null
+     */
+    public function __set($propertyName, $propertyValue)
+    {
+        $this->set($propertyName, $propertyValue);
+    }
+
+    /**
+     * Get property value 
+     *
+     * @param string $propertyName
+     * @return mixed|null
+     */
+    public function __get($propertyName)
+    {
+        return $this->get($propertyName);
+    }
+    
+
     /**
      * Copy value from other object
      *
@@ -479,7 +476,7 @@ class MagicObject extends stdClass // NOSONAR
             $index = 0;
             foreach($filter as $val)
             {
-                $tmp[$index] = trim($this->camelize($val));               
+                $tmp[$index] = trim(StringUtil::camelize($val));               
                 $index++;
             }
             $filter = $tmp;
@@ -530,7 +527,7 @@ class MagicObject extends stdClass // NOSONAR
                     $columnName = trim($column[self::KEY_NAME]);
                     if($snakeCase)
                     {
-                        $col = $this->snakeize($columnName);
+                        $col = StringUtil::snakeize($columnName);
                     }
                     else
                     {
@@ -592,7 +589,7 @@ class MagicObject extends stdClass // NOSONAR
         {
             $value2 = new stdClass;
             foreach ($value as $key => $val) {
-                $key2 = $this->snakeize($key);
+                $key2 = StringUtil::snakeize($key);
                 $value2->$key2 = $val;
             }
             return $value2;
@@ -1201,55 +1198,15 @@ class MagicObject extends stdClass // NOSONAR
             $value = $params[0];
             $caseSensitive = isset($params[1]) && $params[1];    
             $haystack = $this->$var;
-            return $this->startsWith($haystack, $value, $caseSensitive);
+            return StringUtil::startsWith($haystack, $value, $caseSensitive);
         }  
         else if (strncasecmp($method, "endsWith", 8) === 0) {
             $var = lcfirst(substr($method, 13));
             $value = $params[0];
             $caseSensitive = isset($params[1]) && $params[1];  
             $haystack = $this->$var;
-            return $this->endsWith($haystack, $value, $caseSensitive);
+            return StringUtil::endsWith($haystack, $value, $caseSensitive);
         } 
-    }
-    
-    /**
-     * Check if string is starts with substring
-     *
-     * @param string $haystack
-     * @param string $value
-     * @param bool $caseSensitive
-     * @return bool
-     */
-    private function startsWith($haystack, $value, $caseSensitive = false)
-    {
-        if($caseSensitive)
-        {
-            return isset($haystack) && str_starts_with(strtolower($haystack), strtolower($value));
-        }
-        else
-        {
-            return isset($haystack) && str_starts_with($haystack, $value);
-        }
-    }
-    
-    /**
-     * Check if string is ends with substring
-     *
-     * @param string $haystack
-     * @param string $value
-     * @param bool $caseSensitive
-     * @return bool
-     */
-    private function endsWith($haystack, $value, $caseSensitive = false)
-    {
-        if($caseSensitive)
-        {
-            return isset($haystack) && str_ends_with(strtolower($haystack), strtolower($value));
-        }
-        else
-        {
-            return isset($haystack) && str_ends_with($haystack, $value);
-        }
     }
     
     /**
