@@ -11,7 +11,7 @@ class UplodFile
     /**
      * Uploaded file
      *
-     * @var UploadFileObject[]
+     * @var UploadFileContainer[]
      */
     private $values = array();
 
@@ -27,6 +27,14 @@ class UplodFile
             )
         );
         */
+        $_FILES = array(
+            'test' => array(
+                'error' => 1, 
+                'tmp_name' => 'apa saja',
+                'name' => 'coba.mp3',
+                'size' => 6000
+            )
+        );
         $this->initMap();
     }
 
@@ -36,15 +44,26 @@ class UplodFile
             $var = lcfirst(substr($method, 3));
             $camel = StringUtil::camelize($var);
             $key = $this->map[$camel];
-            return isset($this->values[$key]) ? new UploadFileObject($this->values[$key]) : new UploadFileObject();
+            return isset($this->values[$key]) ? new UploadFileContainer($this->values[$key]) : new UploadFileContainer();
         }
+    }
+    
+    /**
+     * Get uploaded file
+     *
+     * @param string $name
+     * @return UploadFileContainer|mixed
+     */
+    public function get($name)
+    {
+        return $this->__get($name);
     }
 
     /**
      * Get uploaded file by key
      *
      * @param string $name
-     * @return UploadFileObject|mixed
+     * @return UploadFileContainer|mixed
      */
     public function __get($name)
     {
@@ -55,7 +74,7 @@ class UplodFile
                 return $this->values[$key];
             }
         }
-        return new UploadFileObject();
+        return new UploadFileContainer();
     }
 
     /**
@@ -69,7 +88,7 @@ class UplodFile
         foreach ($keys as $key) {
             $camel = StringUtil::camelize($key);
             $this->map[$camel] = $key;
-            $this->values[$key] = new UploadFileObject($_FILES[$key]);
+            $this->values[$key] = new UploadFileContainer($_FILES[$key]);
         }
     }
 }

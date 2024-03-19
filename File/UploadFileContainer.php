@@ -2,7 +2,7 @@
 
 namespace MagicObject\File;
 
-class UploadFileObject
+class UploadFileContainer
 {
     private $values = array();
     public function __construct($file = null)
@@ -49,6 +49,31 @@ class UploadFileObject
     }
     
     /**
+     * Get all file
+     *
+     * @return UploadFileItem[]
+     */
+    public function getAll()
+    {
+        $result = array();
+        if($this->isMultiple())
+        {
+            // multiple file
+            $count = $this->getFileCount();
+            for($i = 0; $i < $count; $i++)
+            {
+                $result[] = new UploadFileItem($this->getItem($i));
+            }
+        }
+        else
+        {
+            // single file
+            $result[] = new UploadFileItem($this->values);
+        }
+        return $result;
+    }
+    
+    /**
      * Get one file
      *
      * @param integer $index
@@ -81,31 +106,6 @@ class UploadFileObject
         }
         
         return $file;
-    }
-    
-    /**
-     * Copy file to destination path
-     *
-     * @param integer $index
-     * @param string $destination
-     * @return self
-     */
-    public function copy($index, $userFunction)
-    {
-        $file = array();
-        if($this->isMultiple() && $this->isExists($index))
-        {
-            $file = $this->getItem($index);
-        }
-        else
-        {
-            $file = $this->values;
-        }
-        if($userFunction != null && is_callable($userFunction))
-        {
-            call_user_func($userFunction, $file);
-        }
-        return $this;
     }
     
     /**
