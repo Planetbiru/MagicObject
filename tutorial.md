@@ -1608,10 +1608,10 @@ $targetDir = __DIR__;
 
 foreach($file1->getAll() as $fileItem)
 {
-    $temporaryName = $fileItem->getTmpName();
-    $name = $fileItem->getName();
-    $size = $fileItem->getSize();
-    echo "$name | $temporaryName | $size\r\n";
+	$temporaryName = $fileItem->getTmpName();
+	$name = $fileItem->getName();
+	$size = $fileItem->getSize();
+	echo "$name | $temporaryName | $size\r\n";
 	move_uploaded_file($temporaryName, $targetDir."/".$name);
 }
 
