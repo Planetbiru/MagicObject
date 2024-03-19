@@ -1590,3 +1590,43 @@ When the developer decides to change the form from single file to multiple files
      <input type="submit" />
 </form>
 ```
+
+```php
+<?php
+
+use MagicObject\File\UplodFile;
+
+require_once "vendor/autoload.php";
+
+$files = new UplodFile();
+
+$file1 = $files->get('myupload');
+// or 
+// $file1 = $files->myupload;
+
+$targetDir = __DIR__;
+
+foreach($file1->getAll() as $fileItem)
+{
+    $temporaryName = $fileItem->getTmpName();
+    $name = $fileItem->getName();
+    $size = $fileItem->getSize();
+    echo "$name | $temporaryName | $size\r\n";
+	move_uploaded_file($temporaryName, $targetDir."/".$name);
+}
+
+```
+
+Developers simply retrieve data using the `getAll` method and developers will get all files uploaded by users either via single file or multiple file forms. If necessary, the developer can check whether the file was uploaded using a single file or multiple file form with the `isMultiple()` method
+
+```php
+
+if($file1->isMultiple())
+{
+	// do something here
+}
+else
+{
+	// do something here
+}
+```
