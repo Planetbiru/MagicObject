@@ -1566,3 +1566,27 @@ catch(Ecxeption $e)
 {
     
 }
+```
+
+## Upload File
+
+Uploading lots of files with arrays is difficult for some developers, especially novice developers. There is a significant difference between uploading a single file and multiple files.
+
+When the developer decides to change the form from single file to multiple files or vice versa, the backend developer must change the code to handle the uploaded files.
+
+```html
+<!-- single file -->
+<form action="" method="post" enctype="multipart/form-data">
+     <input name="myupload" type="file" />
+     <input type="submit" />
+</form>
+```
+
+
+```html
+<!-- multiple files -->
+<form action="" method="post" enctype="multipart/form-data">
+     <input name="myupload[]" type="file" webkitdirectory multiple />
+     <input type="submit" />
+</form>
+```
