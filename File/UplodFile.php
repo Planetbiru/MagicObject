@@ -27,14 +27,6 @@ class UplodFile
             )
         );
         */
-        $_FILES = array(
-            'test' => array(
-                'error' => 1, 
-                'tmp_name' => 'apa saja',
-                'name' => 'coba.mp3',
-                'size' => 6000
-            )
-        );
         $this->initMap();
     }
 
