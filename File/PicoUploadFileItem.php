@@ -7,6 +7,12 @@ use MagicObject\Exceptions\FileNotFoundException;
 class PicoUploadFileItem
 {
     private $value = array();
+    
+    /**
+     * Constructor
+     *
+     * @param array $file
+     */
     public function __construct($file)
     {
         $this->value = $file;

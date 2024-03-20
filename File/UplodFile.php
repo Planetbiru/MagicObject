@@ -4,7 +4,7 @@ namespace MagicObject\File;
 
 use MagicObject\Util\StringUtil;
 
-class PicoUplodFile
+class UplodFile
 {
     private $map = array();
 
@@ -40,7 +40,7 @@ class PicoUplodFile
      * @param array $arguments
      * @return mixed
      */
-    public function __call($method, $arguments) //NOSONAR
+    public function __call($method, $arguments)
     {
         if (strncasecmp($method, "get", 3) === 0) {
             $var = lcfirst(substr($method, 3));
