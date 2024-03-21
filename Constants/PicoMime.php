@@ -2,7 +2,7 @@
 
 namespace MagicObject\Constants;
 
-class PicoMimeMap
+class PicoMime
 {
     const APPLICATION_STEP = "application/STEP";
     const APPLICATION_ANDREW_INSET = "application/andrew-inset";
