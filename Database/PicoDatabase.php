@@ -110,6 +110,20 @@ class PicoDatabase //NOSONAR
 	}
 	
 	/**
+	 * Set time zone offset
+	 * Time zone offset is difference to Greenwich time (GMT) with colon between hours and minutes. See date("P") on PHP manual
+	 *
+	 * @param string $timezoneOffset
+	 * @return self
+	 */
+	public function setTimeZoneOffset($timezoneOffset)
+	{
+		$sql = "SET time_zone = '$timezoneOffset';";
+		$this->execute($sql);
+		return $this;
+	}
+	
+	/**
 	 * Set autocommit ON of OFF
 	 * When it set to OFF, user MUST call commit or rollback manualy. Default action is rollback
 	 *
