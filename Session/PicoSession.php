@@ -39,8 +39,14 @@ class PicoSession
     {
         if (!isset(self::$instance)) {
             self::$instance = new self();
-            self::$instance->setSessionName($name);
-            self::$instance->setSessionMaxLifeTime($maxLifeTime);
+            if(isset($name))
+            {
+                self::$instance->setSessionName($name);
+            }
+            if($maxLifeTime > 0)
+            {
+                self::$instance->setSessionMaxLifeTime($maxLifeTime);
+            }
         }
 
         self::$instance->startSession();
