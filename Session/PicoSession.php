@@ -19,9 +19,12 @@ class PicoSession
     private static $instance;
 
 
-    private function __construct()
+    /**
+     * Use this constructor if you want set other parameter before start sessiion
+     */
+    public function __construct()
     {
-        // private constructor
+        // constructor
     }
 
     /**
@@ -29,17 +32,18 @@ class PicoSession
      * The session is automatically initialized if it wasn't.
      * 
      * @param string $name
+     * @param integer $maxLifeTime
      * @return object
      **/
-    public static function getInstance($name = null)
+    public static function getInstance($name = null, $maxLifeTime = 0)
     {
         if (!isset(self::$instance)) {
             self::$instance = new self();
             self::$instance->setSessionName($name);
+            self::$instance->setSessionMaxLifeTime($maxLifeTime);
         }
 
         self::$instance->startSession();
-
         return self::$instance;
     }
 
