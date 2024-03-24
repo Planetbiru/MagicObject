@@ -13,6 +13,7 @@ class PicoSession
 
     // The state of the session
     private $sessionState = self::SESSION_NOT_STARTED;
+    private $sessionStarted = false;
 
     // THE only instance of the class
     private static $instance;
@@ -53,8 +54,18 @@ class PicoSession
         if ($this->sessionState == self::SESSION_NOT_STARTED) {
             $this->sessionState = session_start();
         }
-
+        $this->sessionStarted = true;
         return $this->sessionState;
+    }
+
+    /**
+     * Check if session has been started or not
+     *
+     * @return boolean
+     */
+    public function isSessionStarted()
+    {
+        return $this->sessionStarted;
     }
 
     /**
