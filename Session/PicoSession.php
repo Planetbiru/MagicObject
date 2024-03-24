@@ -11,29 +11,43 @@ class PicoSession
     const SAME_SITE_STRICT = "Strict";
     const SAME_SIZE_NONE = "None";
 
-    // The state of the session
+    /**
+     * The state of the session
+     *
+     * @var bool
+     */
     private $sessionState = self::SESSION_NOT_STARTED;
-    private $sessionStarted = false;
-
-    // THE only instance of the class
+ 
+    /**
+     * The instance of the object
+     *
+     * @var self
+     */
     private static $instance;
 
 
     /**
      * Use this constructor if you want set other parameter before start sessiion
      */
-    public function __construct()
+    public function __construct($name = null, $maxLifeTime = 0)
     {
-        // constructor
+        if(isset($name))
+        {
+            $this->setSessionName($name);
+        }
+        if($maxLifeTime > 0)
+        {
+            $this->setSessionMaxLifeTime($maxLifeTime);
+        }
     }
 
     /**
-     * Returns THE instance of 'Session'.
+     * Returns the instance of 'PicoSession'.
      * The session is automatically initialized if it wasn't.
      * 
      * @param string $name
      * @param integer $maxLifeTime
-     * @return object
+     * @return self
      **/
     public static function getInstance($name = null, $maxLifeTime = 0)
     {
@@ -71,11 +85,11 @@ class PicoSession
     /**
      * Check if session has been started or not
      *
-     * @return boolean
+     * @return bool
      */
     public function isSessionStarted()
     {
-        return $this->sessionStarted;
+        return $this->sessionState;
     }
 
     /**
