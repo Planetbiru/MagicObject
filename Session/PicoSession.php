@@ -18,24 +18,23 @@ class PicoSession
     private static $instance;
 
 
-    public function __construct($name = null)
+    private function __construct()
     {
-        if($name != null)
-        {
-            $this->setSessionName($name);
-        }
+        // private constructor
     }
 
     /**
      * Returns THE instance of 'Session'.
      * The session is automatically initialized if it wasn't.
      * 
-     * @return    object
+     * @param string $name
+     * @return object
      **/
-    public static function getInstance()
+    public static function getInstance($name = null)
     {
         if (!isset(self::$instance)) {
-            self::$instance = new self;
+            self::$instance = new self();
+            self::$instance->setSessionName($name);
         }
 
         self::$instance->startSession();
