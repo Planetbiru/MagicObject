@@ -21,7 +21,7 @@ foreach($file1->getAll() as $fileItem)
 }
 
 
-$systemSession = new PicoSession();
+$systemSession = new PicoSession("TEST");
 $systemSession->startSession();
 if(!isset($systemSession->coba))
 {

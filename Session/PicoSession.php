@@ -18,9 +18,12 @@ class PicoSession
     private static $instance;
 
 
-    public function __construct()
+    public function __construct($name = null)
     {
-        // just constructor
+        if($name != null)
+        {
+            $this->setSessionName($name);
+        }
     }
 
     /**
@@ -118,7 +121,7 @@ class PicoSession
      * @param string $samesite
      * @return self
      */
-    public function setCookieParams($maxlifetime, $secure, $httponly, $samesite = self::SAME_SIZE_NONE)
+    public function setSessionCookieParams($maxlifetime, $secure, $httponly, $samesite = self::SAME_SIZE_NONE)
     {
         if (PHP_VERSION_ID < 70300) {
             session_set_cookie_params($maxlifetime, '/; samesite=' . $samesite, $_SERVER['HTTP_HOST'], $secure, $httponly);
@@ -151,7 +154,7 @@ class PicoSession
      * @param string $samesite
      * @return self
      */
-    function setCookieSameSite($name, $value, $expire, $path, $domain, $secure, $httponly, $samesite = self::SAME_SIZE_NONE) //NOSONAR
+    function setSessionCookieSameSite($name, $value, $expire, $path, $domain, $secure, $httponly, $samesite = self::SAME_SIZE_NONE) //NOSONAR
     {
         if (PHP_VERSION_ID < 70300) {
             setcookie($name, $value, $expire, $path . '; samesite=' . $samesite, $domain, $secure, $httponly);
@@ -170,14 +173,67 @@ class PicoSession
     }
 
     /**
+     * Set session name
+     *
+     * @param string $ame
+     * @return self
+     */
+    public function setSessionName($ame)
+    {
+        session_name($ame);
+        return $this;
+    }
+
+    /**
      * Set path
      *
      * @param string $path
      * @return string|false
      */
-    public function setSavePath($path)
+    public function setSessionSavePath($path)
     {
         return session_save_path($path);
     }
+
+    /**
+     * Set maximum lifetime
+     *
+     * @param integer $lifeTime
+     * @return self
+     */
+    public function setSessionMaxLifeTime($lifeTime)
+    {
+        ini_set("session.gc_maxlifetime", $lifeTime);
+        ini_set("session.cookie_lifetime", $lifeTime);
+        return $this;
+    }
     
+    /**
+     * Save session to redis
+     *
+     * @param string $host Redis host
+     * @param integer $port Redis port
+     * @param string $auth Redis auth
+     * @return self
+     */
+    public function saveToRedis($host, $port, $auth)
+    {
+        $path = sprintf("tcp://%s:%d?auth=%s", $host, $port, $auth);
+        ini_set("session.save_handler ", "redis");
+        ini_set("session.save_path ", $path);
+        return $this;
+    }
+
+    /**
+     * Save session to files
+     *
+     * @param string $path Directory
+     * @return self
+     */
+    public function saveToFiles($path)
+    {
+        ini_set("session.save_handler ", "files");
+        ini_set("session.save_path ", $path);
+        return $this;
+    }
 }
