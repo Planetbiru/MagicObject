@@ -4,12 +4,7 @@
     "license": "GPL-3.0-only",
     "autoload": {
         "psr-4": {
-            "MagicObject\\src": ""
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
+            "MagicObject\\": ""
         }
     },
     "authors": [
