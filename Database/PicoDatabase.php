@@ -429,6 +429,17 @@ class PicoDatabase //NOSONAR
 	}
 
 	/**
+	 * Get last insert ID
+	 *
+	 * @param string $name
+	 * @return string|false
+	 */
+	public function lastInsertId($name = null)
+	{
+		return $this->databaseConnection->lastInsertId($name);
+	}
+
+	/**
 	 * Get the value of databaseCredentials
 	 * @return PicoDatabaseCredentials
 	 */
