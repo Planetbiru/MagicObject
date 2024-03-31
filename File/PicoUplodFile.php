@@ -70,6 +70,18 @@ class PicoUplodFile
     }
 
     /**
+     * Check if file is exists
+     *
+     * @param string $name
+     * @return boolean
+     */
+    public function __isset($name)
+    {
+        $camel = StringUtil::camelize($name);
+        return isset($this->map[$camel]);
+    }
+
+    /**
      * Init map
      *
      * @return void
