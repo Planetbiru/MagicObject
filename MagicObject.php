@@ -6,7 +6,7 @@ use Exception;
 use PDOException;
 use PDOStatement;
 use MagicObject\Database\PicoDatabase;
-use MagicObject\Database\PicoDatabasePersistent;
+use MagicObject\Database\PicoDatabasePersistence;
 use MagicObject\Database\PicoDatabaseQueryBuilder;
 use MagicObject\Database\PicoDatabaseStructure;
 use MagicObject\Database\PicoPagable;
@@ -275,7 +275,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->database != null && $this->database->isConnected())
         {
-            $persist = new PicoDatabasePersistent($this->database, $this);
+            $persist = new PicoDatabasePersistence($this->database, $this);
             return $persist->save($includeNull);
         }
         else
@@ -294,7 +294,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->database != null && ($this->database->getDatabaseType() != null && $this->database->getDatabaseType() != ""))
         {
-            $persist = new PicoDatabasePersistent($this->database, $this);
+            $persist = new PicoDatabasePersistence($this->database, $this);
             return $persist->saveQuery($includeNull);
         }
         else
@@ -313,7 +313,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->database != null && $this->database->isConnected())
         {
-            $persist = new PicoDatabasePersistent($this->database, $this);
+            $persist = new PicoDatabasePersistence($this->database, $this);
             $data = $persist->select();
             if($data == null)
             {
@@ -338,7 +338,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->database != null && ($this->database->getDatabaseType() != null && $this->database->getDatabaseType() != ""))
         {
-            $persist = new PicoDatabasePersistent($this->database, $this);
+            $persist = new PicoDatabasePersistence($this->database, $this);
             return $persist->selectQuery();
         }
         else
@@ -358,7 +358,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->database != null && $this->database->isConnected())
         {
-            $persist = new PicoDatabasePersistent($this->database, $this);
+            $persist = new PicoDatabasePersistence($this->database, $this);
             return $persist->insert($includeNull);
         }
         else
@@ -378,7 +378,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->database != null && ($this->database->getDatabaseType() != null && $this->database->getDatabaseType() != ""))
         {
-            $persist = new PicoDatabasePersistent($this->database, $this);
+            $persist = new PicoDatabasePersistence($this->database, $this);
             return $persist->insertQuery($includeNull);
         }
         else
@@ -398,7 +398,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->database != null && $this->database->isConnected())
         {
-            $persist = new PicoDatabasePersistent($this->database, $this);
+            $persist = new PicoDatabasePersistence($this->database, $this);
             return $persist->update($includeNull);
         }
         else
@@ -418,7 +418,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->database != null && ($this->database->getDatabaseType() != null && $this->database->getDatabaseType() != ""))
         {
-            $persist = new PicoDatabasePersistent($this->database, $this);
+            $persist = new PicoDatabasePersistence($this->database, $this);
             return $persist->updateQuery($includeNull);
         }
         else
@@ -437,7 +437,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->database != null && $this->database->isConnected())
         {
-            $persist = new PicoDatabasePersistent($this->database, $this);
+            $persist = new PicoDatabasePersistence($this->database, $this);
             return $persist->delete();
         }
         else
@@ -456,7 +456,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->database != null && ($this->database->getDatabaseType() != null && $this->database->getDatabaseType() != ""))
         {
-            $persist = new PicoDatabasePersistent($this->database, $this);
+            $persist = new PicoDatabasePersistence($this->database, $this);
             return $persist->deleteQuery();
         }
         else
@@ -642,7 +642,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function defatultValue($snakeCase = false)
     {
-        $persist = new PicoDatabasePersistent($this->database, $this);
+        $persist = new PicoDatabasePersistence($this->database, $this);
         $tableInfo = $persist->getTableInfo();
         $defaultValue = new stdClass;
         if(isset($tableInfo->defaultValue))
@@ -863,7 +863,7 @@ class MagicObject extends stdClass // NOSONAR
             $pageData = null;
             if($this->database != null && $this->database->isConnected())
             {
-                $persist = new PicoDatabasePersistent($this->database, $this);
+                $persist = new PicoDatabasePersistence($this->database, $this);
                 $result = $persist->findAll($specification, $pagable, $sortable);
                 $match = $persist->countAll($specification);
                 if($this->_notNullAndNotEmpty($result))
@@ -897,7 +897,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->database != null && $this->database->isConnected())
         {
-            $persist = new PicoDatabasePersistent($this->database, $this);
+            $persist = new PicoDatabasePersistence($this->database, $this);
             $result = $persist->find($params);
             if($this->_notNullAndNotEmpty($result))
             {
@@ -934,7 +934,7 @@ class MagicObject extends stdClass // NOSONAR
             $pageData = null;
             if($this->database != null && $this->database->isConnected())
             {
-                $persist = new PicoDatabasePersistent($this->database, $this);
+                $persist = new PicoDatabasePersistence($this->database, $this);
                 $result = $persist->findBy($method, $params, $pagable, $sortable);
                 $match = $persist->countBy($method, $params);
                 if($this->_notNullAndNotEmpty($result))
@@ -969,7 +969,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->database != null && $this->database->isConnected())
         {
-            $persist = new PicoDatabasePersistent($this->database, $this);
+            $persist = new PicoDatabasePersistence($this->database, $this);
             return $persist->countBy($method, $params);
         }
         else
@@ -989,7 +989,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->database != null && $this->database->isConnected())
         {
-            $persist = new PicoDatabasePersistent($this->database, $this);
+            $persist = new PicoDatabasePersistence($this->database, $this);
             return $persist->deleteBy($method, $params);
         }
         else
@@ -1010,7 +1010,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->database != null && $this->database->isConnected())
         {
-            $persist = new PicoDatabasePersistent($this->database, $this);
+            $persist = new PicoDatabasePersistence($this->database, $this);
             $result = $persist->findOneBy($method, $params, $sortable);
             if($this->_notNullAndNotEmpty($result))
             {
@@ -1040,7 +1040,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->database != null && $this->database->isConnected())
         {
-            $persist = new PicoDatabasePersistent($this->database, $this);
+            $persist = new PicoDatabasePersistence($this->database, $this);
             return $persist->existsBy($method, $params);
         }
         else
@@ -1178,11 +1178,11 @@ class MagicObject extends stdClass // NOSONAR
         }
         else if (strncasecmp($method, "findFirstBy", 11) === 0) {
             $var = lcfirst(substr($method, 11));
-            return $this->findOneBy($var, $params, PicoDatabasePersistent::ORDER_ASC);
+            return $this->findOneBy($var, $params, PicoDatabasePersistence::ORDER_ASC);
         }
         else if (strncasecmp($method, "findLastBy", 10) === 0) {
             $var = lcfirst(substr($method, 10));
-            return $this->findOneBy($var, $params, PicoDatabasePersistent::ORDER_DESC);
+            return $this->findOneBy($var, $params, PicoDatabasePersistence::ORDER_DESC);
         }
         else if (strncasecmp($method, "findBy", 6) === 0) {
             $var = lcfirst(substr($method, 6));
@@ -1200,7 +1200,7 @@ class MagicObject extends stdClass // NOSONAR
             $pagable = PicoDatabaseUtil::pagableFromParams($params);
             // filter param
             $parameters = PicoDatabaseUtil::valuesFromParams($params);
-            return $this->findBy($var, $parameters, $pagable, PicoDatabasePersistent::ORDER_ASC);
+            return $this->findBy($var, $parameters, $pagable, PicoDatabasePersistence::ORDER_ASC);
         }
         else if (strncasecmp($method, "findDescBy", 10) === 0) {
             $var = lcfirst(substr($method, 10));
@@ -1208,7 +1208,7 @@ class MagicObject extends stdClass // NOSONAR
             $pagable = PicoDatabaseUtil::pagableFromParams($params);
             // filter param
             $parameters = PicoDatabaseUtil::valuesFromParams($params);
-            return $this->findBy($var, $parameters, $pagable, PicoDatabasePersistent::ORDER_DESC);
+            return $this->findBy($var, $parameters, $pagable, PicoDatabasePersistence::ORDER_DESC);
         }
         else if (strncasecmp($method, "listBy", 6) === 0) {
             $var = lcfirst(substr($method, 6));
@@ -1226,7 +1226,7 @@ class MagicObject extends stdClass // NOSONAR
             $pagable = PicoDatabaseUtil::pagableFromParams($params);
             // filter param
             $parameters = PicoDatabaseUtil::valuesFromParams($params);
-            return $this->findBy($var, $parameters, $pagable, PicoDatabasePersistent::ORDER_ASC, true);
+            return $this->findBy($var, $parameters, $pagable, PicoDatabasePersistence::ORDER_ASC, true);
         }
         else if (strncasecmp($method, "listDescBy", 10) === 0) {
             $var = lcfirst(substr($method, 10));
@@ -1234,21 +1234,21 @@ class MagicObject extends stdClass // NOSONAR
             $pagable = PicoDatabaseUtil::pagableFromParams($params);
             // filter param
             $parameters = PicoDatabaseUtil::valuesFromParams($params);
-            return $this->findBy($var, $parameters, $pagable, PicoDatabasePersistent::ORDER_DESC, true);
+            return $this->findBy($var, $parameters, $pagable, PicoDatabasePersistence::ORDER_DESC, true);
         }
         else if ($method == "listAllAsc") {
             // get spefification
             $specification = PicoDatabaseUtil::specificationFromParams($params);
             // get pagable
             $pagable = PicoDatabaseUtil::pagableFromParams($params);
-            return $this->findAll($specification, $pagable, PicoDatabasePersistent::ORDER_ASC, true);
+            return $this->findAll($specification, $pagable, PicoDatabasePersistence::ORDER_ASC, true);
         }
         else if ($method == "listAllDesc") {
             // get spefification
             $specification = PicoDatabaseUtil::specificationFromParams($params);
             // get pagable
             $pagable = PicoDatabaseUtil::pagableFromParams($params);
-            return $this->findAll($specification, $pagable, PicoDatabasePersistent::ORDER_DESC, true);
+            return $this->findAll($specification, $pagable, PicoDatabasePersistence::ORDER_DESC, true);
         }
         else if (strncasecmp($method, "countBy", 6) === 0) {
             $var = lcfirst(substr($method, 6));
