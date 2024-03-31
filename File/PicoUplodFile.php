@@ -95,4 +95,19 @@ class PicoUplodFile
             $this->values[$key] = new PicoUploadFileContainer($_FILES[$key]);
         }
     }
+
+    /**
+     * Method to debug object
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        $arr = array();
+        foreach($this->values as $key=>$value)
+        {
+            $arr[$key] = json_decode($value);
+        }
+        return json_encode($arr);
+    }
 }
