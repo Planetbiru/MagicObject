@@ -697,9 +697,34 @@ class MagicObject extends stdClass // NOSONAR
      * Get object value
      * @return stdClass
      */
-    public function valueObject($snakeCase = false)
+    public function valueObject($snakeCase = null)
     {
-        return $this->value($snakeCase);
+        if($snakeCase === null)
+        {
+            $snake = $this->_snake();
+        }
+        else
+        {
+            $snake = $snakeCase;
+        }
+        $obj = clone $this;
+        foreach($obj as $key=>$value)
+        {
+            if($value instanceof self)
+            {
+                $value = $this->stringifyObject($value, $snake);
+                $obj->set($key, $value);
+            }
+        }
+        $upperCamel = $this->isUpperCamel();
+        if($upperCamel)
+        {         
+            return json_decode(json_encode($this->valueArrayUpperCamel()));
+        }
+        else 
+        {
+            return $obj->value($snake);
+        }
     }
 
     /**
