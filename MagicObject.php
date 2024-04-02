@@ -1535,7 +1535,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Parse recursive
      */
-    public static function parseRecursive($data)
+    private static function parseRecursive($data)
     {
         $magicObject = new self();
         if($data != null)
