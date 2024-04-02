@@ -127,6 +127,26 @@ class MagicObject extends stdClass // NOSONAR
         }
         return $this;
     }
+    
+    /**
+     * Load data from INI string
+     *
+     * @param string $rawData
+     * @param bool $systemEnv
+     * @return self
+     */
+    public function loadIniString($rawData, $systemEnv = false)
+    {
+        // Parse without sections
+        $data = parse_ini_string($rawData);
+        if($systemEnv)
+        {
+            $env = new PicoEnvironmentVariable();
+            $data = $env->replaceSysEnvAll($data, true);
+        }
+        $this->loadData($data);
+        return $this;
+    }
 
     /**
      * Load data from INI file
@@ -148,6 +168,34 @@ class MagicObject extends stdClass // NOSONAR
         return $this;
     }
 
+    /**
+     * Load data from Yaml string
+     *
+     * @param string $rawData
+     * @param bool $systemEnv
+     * @return self
+     */
+    public function loadYamlString($rawData, $systemEnv = false, $asObject = false)
+    {
+        $data = Yaml::parse($rawData);
+        if($systemEnv)
+        {
+            $env = new PicoEnvironmentVariable();
+            $data = $env->replaceSysEnvAll($data, true);
+        }
+        if($asObject)
+        {
+            // convert to object
+            $obj = json_decode(json_encode((object) $data), false);
+            $this->loadData($obj);
+        }
+        else
+        {
+            $this->loadData($data);
+        }
+        return $this;
+    }
+    
     /**
      * Load data from Yaml file
      *
@@ -176,6 +224,34 @@ class MagicObject extends stdClass // NOSONAR
         return $this;
     }
 
+    /**
+     * Load data from JSON string
+     *
+     * @param string $rawData
+     * @param bool $systemEnv
+     * @return self
+     */
+    public function loadJsonString($rawData, $systemEnv = false, $asObject = false)
+    {
+        $data = json_decode($rawData);
+        if($systemEnv)
+        {
+            $env = new PicoEnvironmentVariable();
+            $data = $env->replaceSysEnvAll($data, true);
+        }
+        if($asObject)
+        {
+            // convert to object
+            $obj = json_decode(json_encode((object) $data), false);
+            $this->loadData($obj);
+        }
+        else
+        {
+            $this->loadData($data);
+        }
+        return $this;
+    }
+    
     /**
      * Load data from JSON file
      *
