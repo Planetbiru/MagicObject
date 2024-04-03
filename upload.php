@@ -34,4 +34,12 @@ $systemSession->coba++;
 
 echo $systemSession->coba;
 
-$magicObject = new MagicObject(MagicObject::parseRecursive($data));
+$magicObject = new MagicObject();
+
+$magicObject->loadIniString("
+data1:
+  data2:
+    data3:
+      data4: apa
+      data5: 6666
+", true, true, true);
