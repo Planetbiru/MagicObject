@@ -10,8 +10,8 @@ use stdClass;
 class DataTable extends SetterGetter
 {
     
-    const ATTRIBUTES = "@Attributes";
-    const CLASS_LIST = "@ClassList";
+    const ANNOTATION_ATTRIBUTES = "Attributes";
+    const CLASS_LIST = "ClassList";
     const ANNOTATION_ID = "@Id";
     const ANNOTATION_COLUMN = "@Column";
     const ANNOTATION_VAR = "@var";
@@ -71,10 +71,10 @@ class DataTable extends SetterGetter
     {
         $className = get_class($this);
         $reflexClass = new PicoAnnotationParser($className);
-        $attributesAnnotation = $reflexClass->getParameter(self::ATTRIBUTES);
-
-        $attributes = $reflexClass->parseKeyValue($attributesAnnotation);
-        print_r($attributesAnnotation);
+        $attributes = $reflexClass->parseKeyValue($reflexClass->getParameter(self::ANNOTATION_ATTRIBUTES));
+        $classList = $reflexClass->parseKeyValue($reflexClass->getParameter(self::CLASS_LIST));
+        
+        
         
         
         $obj = clone $this;
@@ -84,8 +84,9 @@ class DataTable extends SetterGetter
         
         $doc = new DOMDocument();
         $table = $doc->appendChild($doc->createElement('table'));
+        $table->setAttribute('class', implode(' ', $classList));
         $tbody = $table->appendChild($doc->createElement('tbody'));
-
+        
 
 
         
@@ -111,7 +112,7 @@ class DataTable extends SetterGetter
     public function getTableInfo() // NOSONAR
     {
         $reflexClass = new PicoAnnotationParser($this->className);
-        $attributesAnnotation = $reflexClass->getParameter(self::ATTRIBUTES);
+        $attributesAnnotation = $reflexClass->getParameter(self::ANNOTATION_ATTRIBUTES);
 
         $attributes = $reflexClass->parseKeyValue($attributesAnnotation);
         
