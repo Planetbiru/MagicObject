@@ -2,15 +2,112 @@
 
 namespace MagicObject;
 
+use DOMDocument;
 use MagicObject\Util\PicoAnnotationParser;
+use MagicObject\Util\StringUtil;
+use stdClass;
 
 class DataTable extends SetterGetter
 {
-    /*
+    
     const ATTRIBUTES = "@Attributes";
     const CLASS_LIST = "@ClassList";
-    const ID = "@Id";
+    const ANNOTATION_ID = "@Id";
+    const ANNOTATION_COLUMN = "@Column";
+    const ANNOTATION_VAR = "@var";
+    const ANNOTATION_GENERATED_VALUE = "@GeneratedValue";
+    
+    const ANNOTATION_NOT_NULL = "@NotNull";
+    const ANNOTATION_DEFAULT_COLUMN = "@DefaultColumn";
+    
+    const KEY_PROPERTY_TYPE = "property_type";
+    const KEY_PROPERTY_NAME = "property_name";
+    
+    const KEY_NAME = "name";
+    
     private $className = "";
+    
+    /**
+     * Constructor
+     *
+     * @param MagicObject|self|stdClass|array $data
+     */
+    public function __construct($data = null)
+    {
+        if(isset($data))
+        {
+            $this->loadData($data);
+        }
+    }
+    
+    /**
+     * Load data to object
+     * @param mixed $data
+     * @return self
+     */
+    public function loadData($data)
+    {
+        if($data != null)
+        {
+            if($data instanceof MagicObject)
+            {
+                $values = $data->value();
+                foreach ($values as $key => $value) {
+                    $key2 = StringUtil::camelize($key);
+                    $this->set($key2, $value, true);
+                }
+            }
+            else if (is_array($data) || is_object($data)) {
+                foreach ($data as $key => $value) {
+                    $key2 = StringUtil::camelize($key);
+                    $this->set($key2, $value, true);
+                }
+            }
+        }
+        return $this;
+    }
+    
+    public function __toString()
+    {
+        $className = get_class($this);
+        $reflexClass = new PicoAnnotationParser($className);
+        $attributesAnnotation = $reflexClass->getParameter(self::ATTRIBUTES);
+
+        $attributes = $reflexClass->parseKeyValue($attributesAnnotation);
+        print_r($attributesAnnotation);
+        
+        
+        $obj = clone $this;
+        $data = $obj->value($this->isSnake());
+        
+        
+        
+        $doc = new DOMDocument();
+        $table = $doc->appendChild($doc->createElement('table'));
+        $tbody = $table->appendChild($doc->createElement('tbody'));
+
+
+
+        
+        $doc->formatOutput = true;
+      
+        
+        
+        foreach($data as $key=>$value)
+        {
+            $tr = $tbody->appendChild($doc->createElement('tr'));
+            $td1 = $tr->appendChild($doc->createElement('td'));
+            $td2 = $tr->appendChild($doc->createElement('td'));
+            
+            $td1->setAttribute("class", "td-label");
+            $td2->setAttribute("class", "td-label");
+            
+            $td1->textContent = $key;
+            $td2->textContent = $value;
+        }
+        return $doc->saveHTML();
+    }
+    
     public function getTableInfo() // NOSONAR
     {
         $reflexClass = new PicoAnnotationParser($this->className);
@@ -63,30 +160,7 @@ class DataTable extends SetterGetter
                     }
                 }
             }
-            
-            // get join column name of each parameters
-            foreach($parameters as $param=>$val)
-            {
-                if(strcasecmp($param, self::ANNOTATION_JOIN_COLUMN) == 0)
-                {
-                    $values = $reflexProp->parseKeyValue($val);
-                    if(!empty($values))
-                    {
-                        $joinColumns[$prop->name] = $values;
-                    }
-                }
-            }
-            
-            // set join column type
-            foreach($parameters as $param=>$val)
-            {
-                if(strcasecmp($param, self::ANNOTATION_VAR) == 0 && isset($joinColumns[$prop->name]))
-                {
-                    $type = explode(' ', trim($val, " \r\n\t "))[0];
-                    $joinColumns[$prop->name][self::KEY_PROPERTY_TYPE] = $type;
-                    $joinColumns[$prop->name][self::KEY_ENTITY_OBJECT] = true;
-                }
-            }          
+               
 
             // list primary key
             foreach($parameters as $param=>$val)
@@ -148,5 +222,5 @@ class DataTable extends SetterGetter
         $info->notNullColumns = $notNullColumns;
         return $info;
     }
-    */
+    
 }
