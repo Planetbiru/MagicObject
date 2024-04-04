@@ -3,6 +3,7 @@
 use MagicObject\DataTable;
 use MagicObject\Util\ObjectParser;
 
+error_reporting(E_ALL);
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 /**
@@ -12,6 +13,9 @@ require_once dirname(__DIR__) . "/vendor/autoload.php";
  * @ClassList(content="table table-responsive")
  * @DefaultColumnName(content="label")
  * @Language(content="en")
+ * @JSON(property-naming-strategy=SNAKE_CASE)
+ * @Table(name="album")
+ * @Id(content="house")
  */
 class Rumah extends DataTable
 {
@@ -41,6 +45,15 @@ class Rumah extends DataTable
      * @var string
      */
     protected $color;
+
+    /**
+     * Time Create
+     *
+     * @Label(content="Time Create")
+     * @Column(name="timeCreate")
+     * @var DateTime
+     */
+    protected $timeCreate;
     
 }
 
