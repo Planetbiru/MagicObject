@@ -105,5 +105,16 @@ class StringUtil
         return !isset($value) || empty($value);
     }
     
+    /**
+     * Select not null value
+     *
+     * @param mixed $value1
+     * @param mixed $value2
+     * @return mixed
+     */
+    public static function selectNotNull($value1, $value2)
+    {
+        return isset($value1) ? $value1 : $value2;
+    }
     
 }

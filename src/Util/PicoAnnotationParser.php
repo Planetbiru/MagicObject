@@ -342,6 +342,10 @@ class PicoAnnotationParser
      */
     public function parseKeyValueAsObject($queryString)
     {
+        if(StringUtil::isNullOrEmpty($queryString))
+        {
+            return new ParameterObject();
+        }
         return new ParameterObject($this->parseKeyValue($queryString));
     }
 }

@@ -9,9 +9,9 @@ require_once dirname(__DIR__) . "/vendor/autoload.php";
 /**
  * House
  * 
- * @Attributes(id="house" widh="100%" style="border-collapse:collapse; color:#333333")
+ * @Attributes(id="house" width="100%" style="border-collapse:collapse; color:#333333")
  * @ClassList(content="table table-responsive")
- * @DefaultColumnLabel(content="Label->content")
+ * @DefaultColumnLabel(content="Language")
  * @Language(content="en")
  * @JSON(property-naming-strategy=SNAKE_CASE)
  * @Table(name="album")
@@ -57,6 +57,17 @@ class House extends DataTable
     
 }
 
+class BahasaIndonesia extends stdClass
+{
+    public $id = "ID";
+    
+    public $address = "Alamat";
+    
+    public $color = "Warna";
+
+    public $timeCreate = "Waktu Buat";
+}
+
 $data = ObjectParser::parseYamlRecursive(
 "id: 1
 address: Jalan Inspeksi no 9
@@ -64,7 +75,16 @@ color: blue
 "
 );
 
+$language = new BahasaIndonesia();
+
 $rumah = new House($data);
-$rumah->addClass("coba");
-$rumah->removeClass('table');
+$rumah->addLanguage('id', $language);
+$rumah->selectLanguage('id');
+
+$rumah->replaceClass('table', 'coba');
+$rumah->addClass('coba');
+$rumah->addClass('coba');
+$rumah->addClass('coba');
+$rumah->addClass('coba');
+
 echo $rumah;
