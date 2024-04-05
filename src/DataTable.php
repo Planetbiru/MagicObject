@@ -31,7 +31,13 @@ class DataTable extends SetterGetter
     
     private $attributes = array();
     private $classList = array();
-    private $tableIdentity = array();
+    
+    /**
+     * Table identity
+     *
+     * @var ParameterObject
+     */
+    private $tableIdentity;
       
     /**
      * Constructor
@@ -73,91 +79,18 @@ class DataTable extends SetterGetter
         }
         return $this;
     }
-
-    private function propertyInfo()
-    {
-        $className = get_class($this);
-        $reflexClass = new PicoAnnotationParser($className);
-        $props = $reflexClass->getProperties();
-        $defaultValue = array();
-
-        // iterate each properties of the class
-        foreach($props as $prop)
-        {
-            $reflexProp = new PicoAnnotationParser($className, $prop->name, PicoAnnotationParser::PROPERTY);
-            $parameters = $reflexProp->getParameters();
-
-            // get column name of each parameters
-            foreach($parameters as $param=>$val)
-            {
-                if(strcasecmp($param, self::ANNOTATION_COLUMN) == 0)
-                {
-                    $values = $reflexProp->parseKeyValue($val);
-                    if(!empty($values))
-                    {
-                        $columns[$prop->name] = $values;
-                    }
-                }
-            }
-            // set column type
-            foreach($parameters as $param=>$val)
-            {
-                if(strcasecmp($param, self::ANNOTATION_VAR) == 0 && isset($columns[$prop->name]))
-                {
-                    $type = explode(' ', trim($val, " \r\n\t "))[0];
-                    $columns[$prop->name][self::KEY_PROPERTY_TYPE] = $type;
-                }
-                if(strcasecmp($param, self::SQL_DATE_TIME_FORMAT) == 0)
-                {
-                    $values = $reflexProp->parseKeyValue($val);
-                    if(isset($values['pattern']))
-                    {
-                        $columns[$prop->name][self::DATE_TIME_FORMAT] = $values['pattern'];
-                    }
-                }
-            }
-
-            
-            // define default column value
-            foreach($parameters as $param=>$val)
-            {
-                if(strcasecmp($param, self::ANNOTATION_DEFAULT_COLUMN) == 0)
-                {
-                    $vals = $reflexClass->parseKeyValue($val);
-                    if(isset($vals[self::KEY_VALUE]))
-                    {
-                        $defaultValue[$prop->name] = array(
-                            self::KEY_NAME=>isset($columns[$prop->name][self::KEY_NAME])?$columns[$prop->name][self::KEY_NAME]:null,
-                            self::KEY_VALUE=>$vals[self::KEY_VALUE],
-                            self::KEY_PROPERTY_TYPE=>$columns[$prop->name][self::KEY_PROPERTY_TYPE]
-                        );
-                    }
-                }
-            }
-
-            // list not null column
-            foreach($parameters as $param=>$val)
-            {
-                if(strcasecmp($param, self::ANNOTATION_NOT_NULL) == 0 && isset($columns[$prop->name]))
-                {
-                    $notNullColumns[$prop->name] = array(self::KEY_NAME=>$columns[$prop->name][self::KEY_NAME]);
-                }
-            }
-        }
-    }
     
     private function init()
     {
         $className = get_class($this);
         $reflexClass = new PicoAnnotationParser($className);
         $this->attributes = TableUtil::parseElementAttributes($reflexClass->getParameter(self::ANNOTATION_ATTRIBUTES));    
-        $classList = $reflexClass->parseKeyValue($reflexClass->getParameter(self::CLASS_LIST));
- 
-        if(isset($classList) && isset($classList['content']))
+        $classList = $reflexClass->parseKeyValueAsObject($reflexClass->getParameter(self::CLASS_LIST));
+        if($classList->issetContent())
         {
-            $this->classList = explode(" ", preg_replace('/\s+/', ' ', $classList['content']));
+            $this->classList = explode(" ", preg_replace('/\s+/', ' ', $classList->getContent()));
         }
-        $this->tableIdentity = $reflexClass->parseKeyValue($reflexClass->getParameter(self::ANNOTATION_TABLE));
+        $this->tableIdentity = $reflexClass->parseKeyValueAsObject($reflexClass->getParameter(self::ANNOTATION_TABLE));
     }
     
     /**
@@ -264,101 +197,6 @@ class DataTable extends SetterGetter
         return $doc->saveHTML();
     }
     
-    public function getTableInfo() // NOSONAR
-    {
-        $className = get_class($this);
-        $reflexClass = new PicoAnnotationParser($className);
-        
-        $attributes = $reflexClass->parseKeyValue($reflexClass->getParameter(self::ANNOTATION_ATTRIBUTES));
-        $classList = $reflexClass->parseKeyValue($reflexClass->getParameter(self::CLASS_LIST));
-        $tableIdentity = $reflexClass->parseKeyValue($reflexClass->getParameter(self::ANNOTATION_TABLE));
-        
-        $tableName = isset($tableIdentity) && isset($tableIdentity['name']) ? $tableIdentity['name'] : null;
-
-        $columns = array();
-        $notNullColumns = array();
-        $props = $reflexClass->getProperties();
-        $defaultValue = array();
-
-        // iterate each properties of the class
-        foreach($props as $prop)
-        {
-            $reflexProp = new PicoAnnotationParser($className, $prop->name, PicoAnnotationParser::PROPERTY);
-            $parameters = $reflexProp->getParameters();
-
-            // get column name of each parameters
-            foreach($parameters as $param=>$val)
-            {
-                if(strcasecmp($param, self::ANNOTATION_COLUMN) == 0)
-                {
-                    $values = $reflexProp->parseKeyValue($val);
-                    if(!empty($values))
-                    {
-                        $columns[$prop->name] = $values;
-                    }
-                }
-            }
-            // set column type
-            foreach($parameters as $param=>$val)
-            {
-                if(strcasecmp($param, self::ANNOTATION_VAR) == 0 && isset($columns[$prop->name]))
-                {
-                    $type = explode(' ', trim($val, " \r\n\t "))[0];
-                    $columns[$prop->name][self::KEY_PROPERTY_TYPE] = $type;
-                }
-                if(strcasecmp($param, self::SQL_DATE_TIME_FORMAT) == 0)
-                {
-                    $values = $reflexProp->parseKeyValue($val);
-                    if(isset($values['pattern']))
-                    {
-                        $columns[$prop->name][self::DATE_TIME_FORMAT] = $values['pattern'];
-                    }
-                }
-            }
-               
-
-            // list primary key
-            foreach($parameters as $param=>$val)
-            {
-                if(strcasecmp($param, self::ANNOTATION_ID) == 0 && isset($columns[$prop->name]))
-                {
-                    $primaryKeys[$prop->name] = array(self::KEY_NAME=>$columns[$prop->name][self::KEY_NAME]);
-                }
-            }
-
-            
-            // define default column value
-            foreach($parameters as $param=>$val)
-            {
-                if(strcasecmp($param, self::ANNOTATION_DEFAULT_COLUMN) == 0)
-                {
-                    $vals = $reflexClass->parseKeyValue($val);
-                    if(isset($vals[self::KEY_VALUE]))
-                    {
-                        $defaultValue[$prop->name] = array(
-                            self::KEY_NAME=>isset($columns[$prop->name][self::KEY_NAME])?$columns[$prop->name][self::KEY_NAME]:null,
-                            self::KEY_VALUE=>$vals[self::KEY_VALUE],
-                            self::KEY_PROPERTY_TYPE=>$columns[$prop->name][self::KEY_PROPERTY_TYPE]
-                        );
-                    }
-                }
-            }
-
-            // list not null column
-            foreach($parameters as $param=>$val)
-            {
-                if(strcasecmp($param, self::ANNOTATION_NOT_NULL) == 0 && isset($columns[$prop->name]))
-                {
-                    $notNullColumns[$prop->name] = array(self::KEY_NAME=>$columns[$prop->name][self::KEY_NAME]);
-                }
-            }
-        }
-        // bring it together
-        $info = new stdClass;
-        $info->tableName = $tableName;
-        $info->columns = $columns;
-        $info->notNullColumns = $notNullColumns;
-        return $info;
-    }
+    
     
 }

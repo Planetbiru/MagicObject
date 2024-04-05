@@ -46,17 +46,14 @@ class TableUtil
      * Set identity
      *
      * @param DOMElement $node
-     * @param array $annotationIdentity
+     * @param ParameterObject $identity
      * @return DOMElement
      */
-    public static function setIdentity($node, $annotationIdentity)
+    public static function setIdentity($node, $identity)
     {
-        if(isset($annotationIdentity) && is_array($annotationIdentity))
+        if(isset($identity) && $identity->issetName())
         {
-            if(isset($annotationIdentity["name"]))
-            {
-                $node->setAttribute("name", $annotationIdentity["name"]);
-            }      
+            $node->setAttribute("name", $identity->getName());      
         }
         return $node;
     }
