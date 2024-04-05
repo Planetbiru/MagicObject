@@ -55,11 +55,11 @@ class StringUtil
     {
         if($caseSensitive)
         {
-            return isset($haystack) && str_starts_with(strtolower($haystack), strtolower($value));
+            return isset($haystack) && substr($haystack, 0, strlen($value)) == $value;
         }
         else
         {
-            return isset($haystack) && str_starts_with($haystack, $value);
+            return isset($haystack) && strtolower(substr($haystack, 0, strlen($value))) == strtolower($value);
         }
     }
     
@@ -75,11 +75,35 @@ class StringUtil
     {
         if($caseSensitive)
         {
-            return isset($haystack) && str_ends_with(strtolower($haystack), strtolower($value));
+            return isset($haystack) && substr($haystack, strlen($haystack) - strlen($value)) == $value;
         }
         else
         {
-            return isset($haystack) && str_ends_with($haystack, $value);
+            return isset($haystack) && strtolower(substr($haystack, strlen($haystack) - strlen($value))) == strtolower($value);
         }
     }
+    
+    /**
+     * Check if string is not null and not empty
+     *
+     * @param string $value
+     * @return boolean
+     */
+    public static function isNotNullAndNotEmpty($value)
+    {
+        return isset($value) && !empty($value);
+    }
+    
+    /**
+     * Check if string is null or empty
+     *
+     * @param string $value
+     * @return boolean
+     */
+    public static function isNullOrEmpty($value)
+    {
+        return !isset($value) || empty($value);
+    }
+    
+    
 }

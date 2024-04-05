@@ -65,5 +65,6 @@ color: blue
 );
 
 $rumah = new Rumah($data);
-
+$rumah->addClass("coba");
+$rumah->removeClass('table');
 echo $rumah;

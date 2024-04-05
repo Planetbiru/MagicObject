@@ -29,7 +29,10 @@ class DataTable extends SetterGetter
     const SQL_DATE_TIME_FORMAT = "Y-m-d H:i:s";
     const DATE_TIME_FORMAT = "datetimeformat";
     
-    
+    private $attributes = array();
+    private $classList = array();
+    private $tableIdentity = array();
+      
     /**
      * Constructor
      *
@@ -41,6 +44,7 @@ class DataTable extends SetterGetter
         {
             $this->loadData($data);
         }
+        $this->init();
     }
     
     /**
@@ -142,16 +146,80 @@ class DataTable extends SetterGetter
         }
     }
     
-    public function __toString()
+    private function init()
     {
         $className = get_class($this);
         $reflexClass = new PicoAnnotationParser($className);
-
-        $attributes = $reflexClass->parseKeyValue($reflexClass->getParameter(self::ANNOTATION_ATTRIBUTES));
-        
+        $this->attributes = TableUtil::parseElementAttributes($reflexClass->getParameter(self::ANNOTATION_ATTRIBUTES));    
         $classList = $reflexClass->parseKeyValue($reflexClass->getParameter(self::CLASS_LIST));
-        $tableIdentity = $reflexClass->parseKeyValue($reflexClass->getParameter(self::ANNOTATION_TABLE));
-        
+ 
+        if(isset($classList) && isset($classList['content']))
+        {
+            $this->classList = explode(" ", preg_replace('/\s+/', ' ', $classList['content']));
+        }
+        $this->tableIdentity = $reflexClass->parseKeyValue($reflexClass->getParameter(self::ANNOTATION_TABLE));
+    }
+    
+    /**
+     * Add class to table
+     *
+     * @param string $className
+     * @return self
+     */
+    public function addClass($className)
+    {
+        if(TableUtil::isValidClassName($className))
+        {
+            $this->classList[] = $className;
+        }
+        return $this;
+    }
+    
+    /**
+     * Remove class from table
+     *
+     * @param string $className
+     * @return self
+     */
+    public function removeClass($className)
+    {
+        if(TableUtil::isValidClassName($className))
+        {
+            $tmp = array();
+            foreach($this->classList as $cls)
+            {
+                if($cls != $className)
+                {
+                    $tmp[] = $cls;
+                }
+            }
+            $this->classList = $tmp;
+        }
+        return $this;
+    }
+    
+    /**
+     * Replace class of the table
+     *
+     * @param string $search
+     * @param string $replace
+     * @return self
+     */
+    public function replaceClass($search, $replace)
+    {
+        $this->removeClass($search);
+        $this->addClass($replace);
+        return $this;
+    }
+    
+    /**
+     * Magic method to string
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        $className = get_class($this);
         
         $obj = clone $this;
         $data = $obj->value($this->isSnake());
@@ -159,10 +227,9 @@ class DataTable extends SetterGetter
         $doc = new DOMDocument();
         $table = $doc->appendChild($doc->createElement('table'));
 
-        TableUtil::setClassList($table, $classList);
-        TableUtil::setAttributes($table, $attributes);
-        TableUtil::setIdentity($table, $tableIdentity);
-
+        TableUtil::setAttributes($table, $this->attributes);
+        TableUtil::setClassList($table, $this->classList);
+        TableUtil::setIdentity($table, $this->tableIdentity);
        
         $tbody = $table->appendChild($doc->createElement('tbody'));
         $doc->formatOutput = true;
