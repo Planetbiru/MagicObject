@@ -32,13 +32,10 @@ class PicoSession
      */
     public function __construct($sessConf = null)
     {
-        if(isset($name))
+
+        if($sessConf->getName() != "")
         {
-            $this->setSessionName($name);
-        }
-        if($sessConf->getName() > 0)
-        {
-            $this->setSessionMaxLifeTime($sessConf->getName());
+            $this->setSessionName($sessConf->getName());
         }
         
         if($sessConf->getMaxLifeTime() > 0)
@@ -57,7 +54,6 @@ class PicoSession
         {
             $this->saveToFiles($sessConf->getSavePath());
         }
-        
         
     }
 
