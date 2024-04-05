@@ -11,7 +11,7 @@ require_once dirname(__DIR__) . "/vendor/autoload.php";
  * 
  * @Attributes(id="house" widh="100%" style="border-collapse:collapse; color:#333333")
  * @ClassList(content="table table-responsive")
- * @DefaultColumnName(content="Label->content")
+ * @DefaultColumnLabel(content="Label->content")
  * @Language(content="en")
  * @JSON(property-naming-strategy=SNAKE_CASE)
  * @Table(name="album")

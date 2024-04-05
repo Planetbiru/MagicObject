@@ -20,7 +20,7 @@ class DataTable extends SetterGetter
     const ANNOTATION_GENERATED_VALUE = "GeneratedValue";
     const ANNOTATION_NOT_NULL = "NotNull";
     const ANNOTATION_DEFAULT_COLUMN = "DefaultColumn";
-    const ANNOTATION_DEFAULT_COLUMN_NAME = "DefaultColumnName";
+    const ANNOTATION_DEFAULT_COLUMN_LABEL = "DefaultColumnLabel";
     const KEY_PROPERTY_TYPE = "property_type";
     const KEY_PROPERTY_NAME = "property_name";
     
@@ -98,7 +98,7 @@ class DataTable extends SetterGetter
         $reflexClass = new PicoAnnotationParser($className);
         $this->attributes = TableUtil::parseElementAttributes($reflexClass->getParameter(self::ANNOTATION_ATTRIBUTES));    
         $classList = $reflexClass->parseKeyValueAsObject($reflexClass->getParameter(self::CLASS_LIST));
-        $defaultColumnName = $reflexClass->parseKeyValueAsObject($reflexClass->getParameter(self::ANNOTATION_DEFAULT_COLUMN_NAME));
+        $defaultColumnName = $reflexClass->parseKeyValueAsObject($reflexClass->getParameter(self::ANNOTATION_DEFAULT_COLUMN_LABEL));
         if($defaultColumnName->issetContent())
         {
             $this->defaultColumnName = $defaultColumnName->getContent();
