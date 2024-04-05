@@ -6,6 +6,7 @@ use DOMDocument;
 use MagicObject\Util\PicoAnnotationParser;
 use MagicObject\Util\StringUtil;
 use MagicObject\Util\TableUtil;
+use ReflectionClass;
 use stdClass;
 
 class DataTable extends SetterGetter
@@ -146,6 +147,43 @@ class DataTable extends SetterGetter
     }
     
     /**
+     * Property list
+     * @var bool $reflectSelf
+     * @var bool $asArrayProps
+     * @return array
+     */
+    protected function propertyList($reflectSelf = false, $asArrayProps = false)
+    {
+        $reflectionClass = $reflectSelf ? self::class : get_called_class();
+        $class = new ReflectionClass($reflectionClass);
+
+        // filter only the calling class properties
+        // skip parent properties
+        $properties = array_filter(
+            $class->getProperties(),
+            function($property) use($class) {
+                return $property->getDeclaringClass()->getName() == $class->getName();
+            }
+        );
+        if($asArrayProps)
+        {
+            $result = array();
+            $index = 0;
+            foreach ($properties as $key) {
+                $prop = $key->name;
+                $result[$index] = $prop;
+                
+                $index++;
+            }
+            return $result;
+        }
+        else
+        {
+            return $properties;
+        }
+    }
+    
+    /**
      * Magic method to string
      *
      * @return string
@@ -167,11 +205,13 @@ class DataTable extends SetterGetter
         $tbody = $table->appendChild($doc->createElement('tbody'));
         $doc->formatOutput = true;
         
-        foreach($data as $key=>$value)
+        $props = $this->propertyList();
+        
+        foreach($props as $prop)
         {
-
-            
+            $key = $prop->name;
             $label = $key;
+            $value = $this->get($key);
             $tr = $tbody->appendChild($doc->createElement('tr'));
             
             $reflexProp = new PicoAnnotationParser($className, $key, PicoAnnotationParser::PROPERTY);
