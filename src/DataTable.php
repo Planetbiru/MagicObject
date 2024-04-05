@@ -3,6 +3,7 @@
 namespace MagicObject;
 
 use DOMDocument;
+use MagicObject\Util\ParameterObject;
 use MagicObject\Util\PicoAnnotationParser;
 use MagicObject\Util\StringUtil;
 use MagicObject\Util\TableUtil;
@@ -251,7 +252,7 @@ class DataTable extends SetterGetter
      * @param ParameterObject $parameters
      * @param string $key
      * @param string $defaultLabel
-     * @return void
+     * @return string
      */
     private function label($reflexProp, $parameters, $key, $defaultLabel)
     {
@@ -286,7 +287,7 @@ class DataTable extends SetterGetter
      * @param ParameterObject $parameters
      * @param string $key
      * @param string $defaultLabel
-     * @return void
+     * @return mixed|null
      */
     private function annotationContent($reflexProp, $parameters, $annotation, $attribute)
     {
