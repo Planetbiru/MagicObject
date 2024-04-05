@@ -18,20 +18,31 @@ class DataTable extends SetterGetter
     const ANNOTATION_COLUMN = "Column";
     const ANNOTATION_VAR = "var";
     const ANNOTATION_GENERATED_VALUE = "GeneratedValue";
-    
     const ANNOTATION_NOT_NULL = "NotNull";
     const ANNOTATION_DEFAULT_COLUMN = "DefaultColumn";
-    
+    const ANNOTATION_DEFAULT_COLUMN_NAME = "DefaultColumnName";
     const KEY_PROPERTY_TYPE = "property_type";
     const KEY_PROPERTY_NAME = "property_name";
     
     const KEY_NAME = "name";
+    const KEY_CLASS = "class";
     const KEY_VALUE = "value";
     const SQL_DATE_TIME_FORMAT = "Y-m-d H:i:s";
     const DATE_TIME_FORMAT = "datetimeformat";
     
+    const TAG_TABLE = "table";
+    const TAG_THEAD = "thead";
+    const TAG_TBODY = "tbody";
+    const TAG_TR = "tr";
+    const TAG_TH = "th";
+    const TAG_TD = "td";
+    
+    const TD_LABEL = "td-label";
+    const TD_VALUE = "td-value";
+    
     private $attributes = array();
     private $classList = array();
+    private $defaultColumnName = "key";
     
     /**
      * Table identity
@@ -87,6 +98,11 @@ class DataTable extends SetterGetter
         $reflexClass = new PicoAnnotationParser($className);
         $this->attributes = TableUtil::parseElementAttributes($reflexClass->getParameter(self::ANNOTATION_ATTRIBUTES));    
         $classList = $reflexClass->parseKeyValueAsObject($reflexClass->getParameter(self::CLASS_LIST));
+        $defaultColumnName = $reflexClass->parseKeyValueAsObject($reflexClass->getParameter(self::ANNOTATION_DEFAULT_COLUMN_NAME));
+        if($defaultColumnName->issetContent())
+        {
+            $this->defaultColumnName = $defaultColumnName->getContent();
+        }    
         if($classList->issetContent())
         {
             $this->classList = explode(" ", preg_replace('/\s+/', ' ', $classList->getContent()));
@@ -184,6 +200,32 @@ class DataTable extends SetterGetter
     }
     
     /**
+     * Define label
+     *
+     * @param PicoAnnotationParser $reflexProp
+     * @param ParameterObject $parameters
+     * @param string $defaultLabel
+     * @return void
+     */
+    private function label($reflexProp, $parameters, $defaultLabel)
+    {
+        $label = $defaultLabel;
+        if(stripos($this->defaultColumnName, "->"))
+        {
+            $cn = explode("->", $this->defaultColumnName);
+            if($parameters->get(trim($cn[0])) != null)
+            {
+                $attrs = $reflexProp->parseKeyValueAsObject($parameters->get(trim($cn[0])));
+                if($attrs->get(trim($cn[1])) != null)
+                {
+                    $label = $attrs->get(trim($cn[1]));
+                }
+            }
+        }
+        return $label;
+    }
+    
+    /**
      * Magic method to string
      *
      * @return string
@@ -191,18 +233,14 @@ class DataTable extends SetterGetter
     public function __toString()
     {
         $className = get_class($this);
-        
-        $obj = clone $this;
-        $data = $obj->value($this->isSnake());
-        
         $doc = new DOMDocument();
-        $table = $doc->appendChild($doc->createElement('table'));
+        $table = $doc->appendChild($doc->createElement(self::TAG_TABLE));
 
         TableUtil::setAttributes($table, $this->attributes);
         TableUtil::setClassList($table, $this->classList);
         TableUtil::setIdentity($table, $this->tableIdentity);
        
-        $tbody = $table->appendChild($doc->createElement('tbody'));
+        $tbody = $table->appendChild($doc->createElement(self::TAG_TBODY));
         $doc->formatOutput = true;
         
         $props = $this->propertyList();
@@ -212,27 +250,26 @@ class DataTable extends SetterGetter
             $key = $prop->name;
             $label = $key;
             $value = $this->get($key);
-            $tr = $tbody->appendChild($doc->createElement('tr'));
+            $tr = $tbody->appendChild($doc->createElement(self::TAG_TR));
             
             $reflexProp = new PicoAnnotationParser($className, $key, PicoAnnotationParser::PROPERTY);
+            
             if($reflexProp != null)
             {
                 $parameters = $reflexProp->getParametersAsObject();
                 if($parameters->issetLabel())
                 {
-                    $attrs = $reflexProp->parseKeyValueAsObject($parameters->getLabel());
-                    $label = $attrs->issetContent() ? $attrs->getContent() : $label;
+                    $label = $this->label($reflexProp, $parameters, $label);
                 }
             }
 
-            $td1 = $tr->appendChild($doc->createElement('td'));
-            $td2 = $tr->appendChild($doc->createElement('td'));
-            
-            $td1->setAttribute("class", "td-label");
-            $td2->setAttribute("class", "td-value");
-            
+            $td1 = $tr->appendChild($doc->createElement(self::TAG_TD));
+            $td1->setAttribute(self::KEY_CLASS, self::TD_LABEL);
             $td1->textContent = $label;
-            $td2->textContent = $value;
+            
+            $td2 = $tr->appendChild($doc->createElement(self::TAG_TD));         
+            $td2->setAttribute(self::KEY_CLASS, self::TD_VALUE);
+            $td2->textContent = isset($value) ? $value : "";
         }
         return $doc->saveHTML();
     }

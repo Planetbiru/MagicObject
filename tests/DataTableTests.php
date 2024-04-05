@@ -7,17 +7,17 @@ error_reporting(E_ALL);
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 /**
- * Rumah
+ * House
  * 
- * @Attributes(id="rumah" widh="100%" style="border-collapse:collapse; color:#333333")
+ * @Attributes(id="house" widh="100%" style="border-collapse:collapse; color:#333333")
  * @ClassList(content="table table-responsive")
- * @DefaultColumnName(content="label")
+ * @DefaultColumnName(content="Label->content")
  * @Language(content="en")
  * @JSON(property-naming-strategy=SNAKE_CASE)
  * @Table(name="album")
  * @Id(content="house")
  */
-class Rumah extends DataTable
+class House extends DataTable
 {
     /**
      * ID
@@ -64,7 +64,7 @@ color: blue
 "
 );
 
-$rumah = new Rumah($data);
+$rumah = new House($data);
 $rumah->addClass("coba");
 $rumah->removeClass('table');
 echo $rumah;

@@ -35,7 +35,6 @@ class TableUtil
         {
             foreach($annotationAttributes as $attributeName=>$attributeValue)
             {
-                //echo "$attributeName, $attributeValue\r\n";
                 $node->setAttribute($attributeName, $attributeValue);
             }            
         }
