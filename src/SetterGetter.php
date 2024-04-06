@@ -33,7 +33,7 @@ class SetterGetter
             }
             catch(InvalidQueryInputException $e)
             {
-                throw new InvalidAnnotationException("Invalid annootation @"+$paramName);
+                throw new InvalidAnnotationException("Invalid annootation @".$paramName);
             }  
         }
     }

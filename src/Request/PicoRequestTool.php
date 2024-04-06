@@ -27,7 +27,7 @@ class PicoRequestTool extends stdClass
         {
             if(is_array($paramValue))
             {
-                throw new InvalidAnnotationException("Invalid annootation @"+$paramName);
+                throw new InvalidAnnotationException("Invalid annootation @".$paramName);
             }
             $vals = $jsonAnnot->parseKeyValue($paramValue);
             $this->classParams[$paramName] = $vals;
