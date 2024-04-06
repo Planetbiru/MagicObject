@@ -286,6 +286,28 @@ class PicoAnnotationParser
     }
 
     /**
+     * Combine and merge array
+     *
+     * @param array $matches2
+     * @param array $pair1
+     * @return array
+     */
+    private function combineAndMerge($matches2, $pair1)
+    {
+        if(isset($matches2[1]) && isset($matches2[2]) && is_array($matches2[1]) && is_array($matches2[2]))
+        {
+            $pair2 = array_combine($matches2[1], $matches2[2]);
+            // merge $pair1 and $pair2 into $pair3
+            $pair3 = array_merge($pair1, $pair2);
+        }
+        else
+        {
+            $pair3 = $pair1;
+        }
+        return $pair3;
+    }
+
+    /**
      * Parse parameters. Note that all numeric attributes will be started with underscore (_). Do not use it as is
      *
      * @param string $queryString
@@ -293,7 +315,11 @@ class PicoAnnotationParser
      */
     public function parseKeyValue($queryString)
     {
-        if(!isset($queryString) || empty($queryString) || is_array($queryString))
+        if(!isset($queryString) || empty($queryString))
+        {
+            return array();
+        }
+        if(is_array($queryString))
         {
             throw new InvalidQueryInputException("Invalid query input");
         }
@@ -308,16 +334,8 @@ class PicoAnnotationParser
         // parse attributes without quotes
         $regex2 = '/([_\-\w+]+)\=([a-zA-Z0-9._]+)/m'; // NOSONAR
         preg_match_all($regex2, $queryString, $matches2);
-        if(isset($matches2[1]) && isset($matches2[2]) && is_array($matches2[1]) && is_array($matches2[2]))
-        {
-            $pair2 = array_combine($matches2[1], $matches2[2]);
-            // merge $pair1 and $pair2 into $pair3
-            $pair3 = array_merge($pair1, $pair2);
-        }
-        else
-        {
-            $pair3 = $pair1;
-        }
+
+        $pair3 = $this->combineAndMerge($matches2, $pair1);
         
         // parse attributes without any value
         $regex3 = '/([\w\=\-\_"]+)/m'; // NOSONAR
@@ -329,7 +347,7 @@ class PicoAnnotationParser
             $keys = array_keys($pair3);
             foreach($matches3[0] as $val)
             {
-                if(stripos($val, '=') === false && stripos($val, '"') === false && stripos($val, "'") === false && !in_array($val, $keys))
+                if($this->matchArgs($keys, $val))
                 {
                     if(is_numeric($val))
                     {
@@ -346,6 +364,18 @@ class PicoAnnotationParser
         
         // merge $pair3 and $pair4 into result
         return array_merge($pair3, $pair4);
+    }
+
+    /**
+     * Check if argument is match
+     *
+     * @param array $keys
+     * @param string $val
+     * @return bool
+     */
+    private function matchArgs($keys, $val)
+    {
+        return stripos($val, '=') === false && stripos($val, '"') === false && stripos($val, "'") === false && !in_array($val, $keys);
     }
     /**
      * Parse parameters as object. Note that all numeric attributes will be started with underscore (_). Do not use it as is
