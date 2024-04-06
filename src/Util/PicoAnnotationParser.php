@@ -2,6 +2,8 @@
 
 namespace MagicObject\Util;
 
+use MagicObject\Exceptions\InvalidAnnotationException;
+use MagicObject\Exceptions\InvalidQueryInputException;
 use MagicObject\Exceptions\ZeroArgumentException;
 use ReflectionClass;
 use ReflectionMethod;
@@ -293,7 +295,7 @@ class PicoAnnotationParser
     {
         if(!isset($queryString) || empty($queryString) || is_array($queryString))
         {
-            return array();
+            throw new InvalidQueryInputException("Invalid query input");
         }
 
         // For every modification, please test regular expression with https://regex101.com/
@@ -316,8 +318,6 @@ class PicoAnnotationParser
         {
             $pair3 = $pair1;
         }
-
-        
         
         // parse attributes without any value
         $regex3 = '/([\w\=\-\_"]+)/m'; // NOSONAR
@@ -358,6 +358,10 @@ class PicoAnnotationParser
         if(StringUtil::isNullOrEmpty($queryString))
         {
             return new PicoGenericObject();
+        }
+        if(is_array($queryString))
+        {
+            throw new InvalidAnnotationException("Invalid query string");
         }
         return new PicoGenericObject($this->parseKeyValue($queryString));
     }
