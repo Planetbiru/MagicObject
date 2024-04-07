@@ -66,7 +66,7 @@ class PicoLanguage
      * Check if property value is set
      *
      * @param string $propertyName
-     * @return bool
+     * @return boolean
      */
     public function isset($propertyName)
     {

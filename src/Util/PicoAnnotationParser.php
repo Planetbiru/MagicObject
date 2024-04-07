@@ -394,7 +394,7 @@ class PicoAnnotationParser
      *
      * @param array $keys
      * @param string $val
-     * @return bool
+     * @return boolean
      */
     private function matchArgs($keys, $val)
     {
