@@ -239,7 +239,7 @@ class PicoEntityGenerator
 
         $rows = $this->database->fetchAll($sql);
 
-        $attrs = [];
+        $attrs = array();
         if(is_array($rows))
         {
             foreach($rows as $row)
