@@ -13,8 +13,25 @@ class PicoDtoGenerator
      * @var PicoDatabase
      */
     private $database;
+    /**
+     * Base directory
+     *
+     * @var string
+     */
     private $baseDir = "";
+
+    /**
+     * Base namespace
+     *
+     * @var string
+     */
     private $baseNamespace = "";
+
+    /**
+     * Table name
+     *
+     * @var string
+     */
     private $tableName = "";
     
     /**
@@ -162,7 +179,11 @@ class PicoDtoGenerator
         );    
     }
 
-    
+    /**
+     * Generate DTO
+     *
+     * @return string
+     */
     public function generate()
     {
         $typeMap = $this->getTypeMap();
