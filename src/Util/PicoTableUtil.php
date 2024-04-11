@@ -5,7 +5,7 @@ use DOMDocument;
 use DOMElement;
 use MagicObject\Exceptions\InvalidParameterException;
 
-class TableUtil
+class PicoTableUtil
 {
     /**
      * Set class
