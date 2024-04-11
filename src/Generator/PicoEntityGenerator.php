@@ -5,6 +5,11 @@ namespace MagicObject\Geneator;
 use MagicObject\Database\PicoDatabase;
 use MagicObject\Util\StringUtil;
 
+/**
+ * PicoEntityGenerator is an entity generator for automatically generating PHP code. 
+ * This class is optimized on the MariaDB database. 
+ * Users must provide appropriate parameters so that the entity class can be directly used in the application.
+ */
 class PicoEntityGenerator
 {
     /**
@@ -13,8 +18,26 @@ class PicoEntityGenerator
      * @var PicoDatabase
      */
     private $database;
+
+    /**
+     * Base directory
+     *
+     * @var string
+     */
     private $baseDir = "";
+
+    /**
+     * Base namespace
+     *
+     * @var string
+     */
     private $baseNamespace = "";
+
+    /**
+     * Table name
+     *
+     * @var string
+     */
     private $tableName = "";
     
     /**
@@ -220,6 +243,11 @@ class PicoEntityGenerator
         );    
     }
 
+    /**
+     * Generate entity
+     *
+     * @return string
+     */
     public function generate()
     {
         $typeMap = $this->getTypeMap();
