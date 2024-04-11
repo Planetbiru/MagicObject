@@ -421,7 +421,7 @@ class PicoAnnotationParser
      */
     public function parseKeyValueAsObject($queryString)
     {
-        if(StringUtil::isNullOrEmpty($queryString))
+        if(PicoStringUtil::isNullOrEmpty($queryString))
         {
             return new PicoGenericObject();
         }

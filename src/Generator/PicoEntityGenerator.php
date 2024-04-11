@@ -3,7 +3,7 @@
 namespace MagicObject\Geneator;
 
 use MagicObject\Database\PicoDatabase;
-use MagicObject\Util\StringUtil;
+use MagicObject\Util\PicoStringUtil;
 
 /**
  * PicoEntityGenerator is an entity generator for automatically generating PHP code. 
@@ -70,7 +70,7 @@ class PicoEntityGenerator
      */
     private function createProperty($typeMap, $columnName, $columnType, $columnKey, $columnNull, $columnDefault, $columnExtra)
     {
-        $propertyName = StringUtil::camelize($columnName);
+        $propertyName = PicoStringUtil::camelize($columnName);
         $description = $this->getPropertyName($columnName);
         $docs = array();
         $docStart = "\t/**";
@@ -253,7 +253,7 @@ class PicoEntityGenerator
         $typeMap = $this->getTypeMap();
         $picoTableName = $this->tableName;
 
-        $className = ucfirst(StringUtil::camelize($picoTableName));
+        $className = ucfirst(PicoStringUtil::camelize($picoTableName));
         $fileName = $this->baseNamespace."/".$className;
         $path = $this->baseDir."/".$fileName.".php";
         $path = str_replace("\\", "/", $path);
