@@ -8,7 +8,7 @@ use MagicObject\Util\PicoAnnotationParser;
 use ReflectionClass;
 use stdClass;
 
-class PicoRequestTool extends stdClass
+class PicoRequestTool extends stdClass //NOSONAR
 {
     /**
      * Class parameter
@@ -237,7 +237,7 @@ class PicoRequestTool extends stdClass
             $ret = array();
             foreach($val as $k=>$v)
             {
-                $ret[$key] = $this->filterValueSingle($v, $filter, $escapeSQL, $nullIfEmpty);
+                $ret[$k] = $this->filterValueSingle($v, $filter, $escapeSQL, $nullIfEmpty);
             }
         }
         else if(is_object($val))
@@ -245,7 +245,7 @@ class PicoRequestTool extends stdClass
             $ret = new stdClass();
             foreach($val as $k=>$v)
             {
-                $ret->{$key} = $this->filterValueSingle($v, $filter, $escapeSQL, $nullIfEmpty);
+                $ret->{$k} = $this->filterValueSingle($v, $filter, $escapeSQL, $nullIfEmpty);
             }
         }
         return $ret;  
@@ -260,7 +260,7 @@ class PicoRequestTool extends stdClass
      * @param boolean $nullIfEmpty
      * @return mixed
      */
-    public function filterValueSingle($val, $filter = PicoFilterConstant::FILTER_DEFAULT, $escapeSQL = false, $nullIfEmpty = false))
+    public function filterValueSingle($val, $filter = PicoFilterConstant::FILTER_DEFAULT, $escapeSQL = false, $nullIfEmpty = false) //NOSONAR
     {
         // add filter
         if($filter == PicoFilterConstant::FILTER_SANITIZE_EMAIL)
@@ -394,7 +394,6 @@ class PicoRequestTool extends stdClass
         {
             return null;
         }
-
         return $val;
     }
 
