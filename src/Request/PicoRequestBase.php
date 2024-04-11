@@ -8,7 +8,7 @@ use MagicObject\Util\PicoAnnotationParser;
 use ReflectionClass;
 use stdClass;
 
-class PicoRequestTool extends stdClass //NOSONAR
+class PicoRequestBase extends stdClass //NOSONAR
 {
     /**
      * Class parameter
