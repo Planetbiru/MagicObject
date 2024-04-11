@@ -79,8 +79,7 @@ class PicoTableUtil
             $attributes = trim($attributes);
             $attributes = PicoStringUtil::lTrim($attributes, "(", 1);
             $attributes = PicoStringUtil::rTrim($attributes, ")", 1);
-            
-            
+
             $doc = new DOMDocument();
             $doc->loadHTML("<html><body><div $attributes></div></body></html>");
             $div = $doc->getElementsByTagName("div")->item(0);
