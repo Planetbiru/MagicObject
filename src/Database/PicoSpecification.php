@@ -153,7 +153,7 @@ class PicoSpecification
     /**
      * Set parent filter logic
      *
-     * @param  string  $parentFilterLogic  Parent filter logic
+     * @param string $parentFilterLogic  Parent filter logic
      *
      * @return self
      */ 
