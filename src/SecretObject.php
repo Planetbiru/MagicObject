@@ -596,35 +596,6 @@ class SecretObject extends stdClass //NOSONAR
     }
     
     /**
-     * Convert snake case to camel case
-     *
-     * @param string $input
-     * @param string $separator
-     * @return string
-     */
-    protected function camelize($input, $separator = '_')
-    {
-        return lcfirst(str_replace($separator, '', ucwords($input, $separator)));
-    }
-
-    /**
-     * Convert camel case to snake case
-     *
-     * @param string $input
-     * @param string $glue
-     * @return string
-     */
-    protected function snakeize($input, $glue = '_') {
-        return ltrim(
-            preg_replace_callback('/[A-Z]/', function ($matches) use ($glue) {
-                return $glue . strtolower($matches[0]);
-            }, $input),
-            $glue
-        );
-    } 
-    
-    
-    /**
      * Property list
      * @var boolean $reflectSelf
      * @var boolean $asArrayProps
