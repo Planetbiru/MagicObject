@@ -162,8 +162,8 @@ class PicoSortable
     private function createWithMapping($tableInfo)
     {
         $ret = null;
-        $columns = $tableInfo->columns;
-        $joinColumns = $tableInfo->joinColumns;
+        $columns = $tableInfo->getColumns();
+        $joinColumns = $tableInfo->getJoinColumns();
         $columnList = array_merge($columns, $joinColumns);
         $columnNames = array();
         foreach($columnList as $column)
