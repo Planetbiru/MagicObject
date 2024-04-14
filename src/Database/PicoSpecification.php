@@ -122,6 +122,11 @@ class PicoSpecification
     }
 
 
+    /**
+     * Check id specification is empty or not
+     *
+     * @return boolean
+     */
     public function isEmpty()
     {
         return empty($this->specifications);
@@ -137,8 +142,6 @@ class PicoSpecification
     {
         return $this->specifications;
     }
-
-    
 
     /**
      * Get parent filter logic
