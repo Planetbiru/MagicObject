@@ -9,7 +9,7 @@ class PicoTableInfo
      *
      * @var string
      */
-    private $tableName = "";
+    private $tableName = null;
 
     /**
      * Columns
