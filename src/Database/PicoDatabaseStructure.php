@@ -7,7 +7,6 @@ use MagicObject\Exceptions\InvalidQueryInputException;
 use MagicObject\Exceptions\MandatoryTableNameException;
 use MagicObject\MagicObject;
 use MagicObject\Util\PicoAnnotationParser;
-use stdClass;
 
 class PicoDatabaseStructure
 {
