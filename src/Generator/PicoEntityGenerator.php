@@ -72,6 +72,8 @@ class PicoEntityGenerator
     {
         $propertyName = PicoStringUtil::camelize($columnName);
         $description = $this->getPropertyName($columnName);
+        $type = $this->getDataType($typeMap, $columnType);
+
         $docs = array();
         $docStart = "\t/**";
         $docEnd = "\t */";
@@ -134,7 +136,6 @@ class PicoEntityGenerator
             $docs[] = "\t * @DefaultColumn(value=\"".$columnDefault."\")";        
         }
 
-        $type = $this->getDataType($typeMap, $columnType);
 
         $docs[] = "\t * @Label(content=\"$description\")";
         $docs[] = "\t * @var $type";
