@@ -13,14 +13,27 @@ class Polygon
      */
     private $points = array();
 
-    public function readPolygon()
+    /**
+     * Add point
+     *
+     * @param Point $point
+     * @return self
+     */
+    public function addPoint($point)
+    {
+        $this->points[] = $point;
+        return $this;
+    }
+
+    /**
+     * Clear polygon
+     *
+     * @return self
+     */
+    public function clearPolygon()
     {
         $this->points = array();
-        // Read input from standard input (stdin) and create Point objects
-        while ($line = trim(fgets(STDIN))) {
-            list($x, $y) = explode(',', $line);
-            $this->points[] = new Point($x, $y);
-        }
+        return $this;
     }
 
     /**
