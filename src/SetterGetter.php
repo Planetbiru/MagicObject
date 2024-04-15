@@ -50,8 +50,7 @@ class SetterGetter
      */
     public function set($propertyName, $propertyValue)
     {
-        $var = lcfirst($propertyName);
-        $var = PicoStringUtil::camelize($var);
+        $var = PicoStringUtil::camelize($propertyName);
         $this->$var = $propertyValue;
         return $this;
     }
@@ -64,8 +63,7 @@ class SetterGetter
      */
     public function get($propertyName)
     {
-        $var = lcfirst($propertyName);
-        $var = PicoStringUtil::camelize($var);
+        $var = PicoStringUtil::camelize($propertyName);
         return isset($this->$var) ? $this->$var : null;
     }
     

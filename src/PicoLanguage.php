@@ -3,6 +3,7 @@
 namespace MagicObject;
 
 use MagicObject\Util\PicoStringUtil;
+use stdClass;
 
 class PicoLanguage
 {
