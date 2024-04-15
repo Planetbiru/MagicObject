@@ -4,6 +4,7 @@ namespace MagicObject\Geneator;
 
 use MagicObject\Database\PicoDatabase;
 use MagicObject\Database\PicoDatabaseType;
+use MagicObject\Util\Database\PicoDatabaseUtilMySql;
 
 class PicoColumnGenerator
 {
