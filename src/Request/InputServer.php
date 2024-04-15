@@ -8,7 +8,7 @@ namespace MagicObject\Request;
  * Available methods:
  * getPhpSelf() return $_SERVER['PHP_SELF']
  * getGatewayInterface() return $_SERVER['GATEWAY_INTERFACE']
- * getServerAddress() return $_SERVER['SERVER_ADDR']
+ * getServerAddr() return $_SERVER['SERVER_ADDR']
  * getScriptName() return $_SERVER['SERVER_NAME']
  * getServerSoftware() return $_SERVER['SERVER_SOFTWARE']
  * getServerProtocol() return $_SERVER['SERVER_PROTOCOL']
@@ -18,7 +18,7 @@ namespace MagicObject\Request;
  * getQueryString() return $_SERVER['QUERY_STRING']
  * getDocumentRoot() return $_SERVER['DOCUMENT_ROOT']
  * getHttps() return $_SERVER['HTTPS']
- * getRemoteAddress() return $_SERVER['REMOTE_ADDR']
+ * getRemoteAddr() return $_SERVER['REMOTE_ADDR']
  * getRemotePort() return $_SERVER['REMOTE_PORT']
  * getRemoteUser() return $_SERVER['REMOTE_USER']
  * getRedirectRemoteUser() return $_SERVER['REDIRECT_REMOTE_USER']
