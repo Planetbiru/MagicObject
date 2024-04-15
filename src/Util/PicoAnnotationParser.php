@@ -50,7 +50,7 @@ class PicoAnnotationParser
     private $parsedAll = false;
 
     /**
-     * Reflection
+     * Reflection object
      * @var ReflectionClass|ReflectionMethod|ReflectionProperty
      */
     private $reflection;
@@ -157,9 +157,8 @@ class PicoAnnotationParser
     private function parse()
     {
         $pattern = "/@(?=(.*)" . $this->endPattern . ")/U";
-
         preg_match_all($pattern, $this->rawDocBlock, $matches);
-
+        
         foreach ($matches[1] as $rawParameter) {
             if (preg_match("/^(" . $this->keyPattern . ")(.*)$/", $rawParameter, $match)) {
                 $parsedValue = $this->parseValue($match[2]);
@@ -358,9 +357,9 @@ class PicoAnnotationParser
         {
             return array();
         }
-        if(is_array($queryString))
+        if(!is_string($queryString))
         {
-            throw new InvalidQueryInputException("Invalid query input");
+            throw new InvalidAnnotationException("Invalid query string");
         }
 
         // For every modification, please test regular expression with https://regex101.com/
@@ -429,7 +428,7 @@ class PicoAnnotationParser
         {
             return new PicoGenericObject();
         }
-        if(is_array($queryString))
+        if(!is_string($queryString))
         {
             throw new InvalidAnnotationException("Invalid query string");
         }
