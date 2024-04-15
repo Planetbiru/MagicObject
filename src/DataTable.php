@@ -3,6 +3,7 @@
 namespace MagicObject;
 
 use DOMDocument;
+use MagicObject\Language\PicoLanguage;
 use MagicObject\Util\PicoGenericObject;
 use MagicObject\Util\PicoAnnotationParser;
 use MagicObject\Util\PicoStringUtil;
@@ -106,6 +107,7 @@ class DataTable extends SetterGetter
         }
         return $this;
     }
+    
     /**
      * Add language
      *
@@ -118,9 +120,25 @@ class DataTable extends SetterGetter
         $this->lableLanguage[$code] = new PicoLanguage($reference);
         return $this;
     }
+
+    /**
+     * Remove language
+     *
+     * @param string $code
+     * @param stdClass|array $reference
+     * @return self
+     */
+    public function removeLanguage($code)
+    {
+        if(isset($this->lableLanguage[$code]))
+        {
+            unset($this->lableLanguage[$code]);
+        }
+        return $this;
+    }
     
     /**
-     * Add language
+     * Set current language
      *
      * @param string $code
      * @return self
