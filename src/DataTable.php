@@ -168,7 +168,7 @@ class DataTable extends SetterGetter
         }    
         if($classList->issetContent())
         {
-            $this->classList = explode(" ", preg_replace('/\s+/', ' ', $classList->getContent()));
+            $this->classList = explode(" ", preg_replace('/\s+/', " ", $classList->getContent()));
             $this->classList = array_unique($this->classList);
         }
         if($prefLanguage->issetContent())
@@ -190,6 +190,7 @@ class DataTable extends SetterGetter
         if(PicoTableUtil::isValidClassName($className))
         {
             $this->classList[] = $className;
+            // fix duplicated class
             $this->classList = array_unique($this->classList);
         }
         return $this;
