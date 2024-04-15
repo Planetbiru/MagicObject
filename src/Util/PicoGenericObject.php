@@ -1,6 +1,8 @@
 <?php
 
 namespace MagicObject\Util;
+
+use MagicObject\MagicObject;
 use stdClass;
 
 class PicoGenericObject extends stdClass
@@ -8,7 +10,7 @@ class PicoGenericObject extends stdClass
     /**
      * Constructor
      *
-     * @param stdClass|array $data
+     * @param MagicObject|self|stdClass|array $data
      */
     public function __construct($data = null)
     {
@@ -73,7 +75,6 @@ class PicoGenericObject extends stdClass
     {
         $this->set($name, $value);
     }
-
 
     /**
      * Gets datas from the property.
