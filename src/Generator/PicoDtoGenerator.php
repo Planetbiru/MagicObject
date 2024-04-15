@@ -67,13 +67,11 @@ class PicoDtoGenerator
         $docEnd = "\t */";
 
         $description = $this->getPropertyName($columnName);
+        $type = $this->getDataType($typeMap, $columnType);
 
         $docs[] = $docStart;
         $docs[] = "\t * ".$description;
         $docs[] = "\t * ";
-
-        $type = $this->getDataType($typeMap, $columnType);
-
         $docs[] = "\t * @Label(content=\"$description\")";
         $docs[] = "\t * @var $type";
         $docs[] = $docEnd;
