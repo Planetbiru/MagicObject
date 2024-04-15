@@ -198,9 +198,8 @@ class PicoDtoGenerator
         $path = $this->baseDir."/".$fileName."Dto.php";
         $path = str_replace("\\", "/", $path);
 
-        $sql = "SHOW COLUMNS FROM $picoTableName";
-
-        $rows = $this->database->fetchAll($sql);
+        $rows = PicoColumnGenerator::getColumnList($this->database, $picoTableName);
+        
         $attrs = [];
         if(is_array($rows))
         {
@@ -212,8 +211,8 @@ class PicoDtoGenerator
                 $prop = $this->createProperty($typeMap, $columnName, $columnType);
                 $attrs[] = $prop;
             }
-            $valueOf = $this->createValueOf($picoTableName, $rows);
-            $attrs[] = $valueOf;
+            $prop = $this->createValueOf($picoTableName, $rows);
+            $attrs[] = $prop;
         }
 
         $uses = array();
