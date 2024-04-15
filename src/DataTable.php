@@ -4,8 +4,8 @@ namespace MagicObject;
 
 use DOMDocument;
 use MagicObject\Language\PicoLanguage;
+use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\PicoGenericObject;
-use MagicObject\Util\PicoAnnotationParser;
 use MagicObject\Util\PicoStringUtil;
 use MagicObject\Util\PicoTableUtil;
 use ReflectionClass;
