@@ -57,6 +57,7 @@ class PicoAnnotationParser
 
     /**
      * Constructor
+     * @throws ZeroArgumentException|InvalidParameterException
      */
     public function __construct()
     {
@@ -207,6 +208,7 @@ class PicoAnnotationParser
      * @param mixed $declaration
      * @param string $name
      * @return string[]
+     * @throws InvalidArgumentException
      */
     private function parseVariableDeclaration($declaration, $name)
     {
@@ -326,22 +328,21 @@ class PicoAnnotationParser
      * Combine and merge array
      *
      * @param array $matches2
-     * @param array $pair1
+     * @param array $pair
      * @return array
      */
-    private function combineAndMerge($matches2, $pair1)
+    private function combineAndMerge($matches2, $pair)
     {
         if(isset($matches2[1]) && isset($matches2[2]) && is_array($matches2[1]) && is_array($matches2[2]))
         {
             $pair2 = array_combine($matches2[1], $matches2[2]);
-            // merge $pair1 and $pair2 into $pair3
-            $pair3 = array_merge($pair1, $pair2);
+            // merge $pair and $pair2 into $pair3
+            return array_merge($pair, $pair2);
         }
         else
         {
-            $pair3 = $pair1;
+            return $pair;
         }
-        return $pair3;
     }
 
     /**
@@ -349,6 +350,7 @@ class PicoAnnotationParser
      *
      * @param string $queryString
      * @return string[]
+     * @throws InvalidQueryInputException 
      */
     public function parseKeyValue($queryString)
     {
@@ -419,6 +421,7 @@ class PicoAnnotationParser
      *
      * @param string $queryString
      * @return PicoGenericObject
+     * @throws InvalidAnnotationException
      */
     public function parseKeyValueAsObject($queryString)
     {
