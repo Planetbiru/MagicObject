@@ -454,4 +454,6 @@ class Song extends MagicObject
 $song = new Song();
 $dump = new PicoDatabaseDump();
 echo $dump->dumpStructure($song, 'mysql', true, true);
+
+$pageData = $song;
 echo $dump->dumpData($pageData, 'mysql');

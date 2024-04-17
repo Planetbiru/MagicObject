@@ -15,7 +15,7 @@ class PicoDatabaseDump
     /**
      * Dump table structure
      *
-     * @param MagicObject $enitity Entity to be dump
+     * @param MagicObject $entity Entity to be dump
      * @param string $databaseType Target database type
      * @param boolean $createIfNotExists Add DROP TABLE IF EXISTS before create table
      * @param boolean $dropIfExists Add IF NOT EXISTS on create table
@@ -23,9 +23,9 @@ class PicoDatabaseDump
      * @param string $charset Default charset
      * @return string
      */
-    public function dumpStructure($enitity, $databaseType, $createIfNotExists = false, $dropIfExists = false, $engine = 'InnoDB', $charset = 'utf8mb4')
+    public function dumpStructure($entity, $databaseType, $createIfNotExists = false, $dropIfExists = false, $engine = 'InnoDB', $charset = 'utf8mb4')
     {
-        $databasePersist = new PicoDatabasePersistence(null, $enitity);
+        $databasePersist = new PicoDatabasePersistence(null, $entity);
         $tableInfo = $databasePersist->getTableInfo();
         $picoTableName = $tableInfo->getTableName();
         
@@ -43,15 +43,16 @@ class PicoDatabaseDump
      * Dump data
      *
      * @param MagicObject|PicoPageData $data
-     * @param [type] $databaseType
+     * @param string $databaseType
      * @return void
      */
     public function dumpData($data, $databaseType)
     {
-        $enitity = null;
+        
+        $entity = null;
         if($data instanceof PicoPageData && isset($data->getResult()[0]))
         {
-            $enitity = $data->getResult()[0];
+            $entity = $data->getResult()[0];
         }
         else if($data instanceof MagicObject)
         {
@@ -66,7 +67,7 @@ class PicoDatabaseDump
             return "";
         }
         
-        $databasePersist = new PicoDatabasePersistence(null, $enitity);
+        $databasePersist = new PicoDatabasePersistence(null, $entity);
         $tableInfo = $databasePersist->getTableInfo();
         $picoTableName = $tableInfo->getTableName();
         

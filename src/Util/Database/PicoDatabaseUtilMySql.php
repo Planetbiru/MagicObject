@@ -178,7 +178,7 @@ class PicoDatabaseUtilMySql
         {
             if(isset($columns[$key]))
             {
-                $rec[$columns[$key]['name']] = $value;
+                $rec[$columns[$key]['name']] = $val;
             }
         }
         $queryBuilder = new PicoDatabaseQueryBuilder(PicoDatabaseType::DATABASE_TYPE_MYSQL);
