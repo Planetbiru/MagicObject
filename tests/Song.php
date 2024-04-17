@@ -1,5 +1,6 @@
 <?php
 
+use MagicObject\Generator\PicoDatabaseDump;
 use MagicObject\Generator\PicoDatabaseStructureGenerator;
 use MagicObject\MagicObject;
 
@@ -290,12 +291,8 @@ class Song extends MagicObject
 	 * Subtitle Complete
 	 * 
 	 * @Column(name="subtitle_complete", type="tinyint(1)", length=1, nullable=true)
-<<<<<<< HEAD
 	 * @Label(content="Subtitle Complete")
 	 * @var boolean
-=======
-	 * @var boolean
->>>>>>> id3-tag
 	 */
 	protected $subtitleComplete;
 
@@ -330,12 +327,8 @@ class Song extends MagicObject
 	 * Vocal
 	 * 
 	 * @Column(name="vocal", type="tinyint(1)", length=1, nullable=true)
-<<<<<<< HEAD
 	 * @Label(content="Vocal")
 	 * @var boolean
-=======
-	 * @var boolean
->>>>>>> id3-tag
 	 */
 	protected $vocal;
 
@@ -454,11 +447,11 @@ class Song extends MagicObject
 	 * @DefaultColumn(value="1")
 	 * @Label(content="Active")
 	 * @var boolean
-	 * @var boolean
 	 */
 	protected $active;
 
 }
 $song = new Song();
-$structure = new PicoDatabaseStructureGenerator($song, null, 'mysql');
-echo $structure->dumpStructure(true, true);
+$dump = new PicoDatabaseDump();
+echo $dump->dumpStructure($song, 'mysql', true, true);
+echo $dump->dumpData($pageData, 'mysql');
