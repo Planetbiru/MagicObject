@@ -64,9 +64,9 @@ class PicoDatabaseDump
      * Dump data to SQL. 
      * WARNING!!! Use different instance to dump different entity
      *
-     * @param MagicObject|PicoPageData $data
-     * @param string $databaseType
-     * @return void
+     * @param MagicObject|PicoPageData $data Data to be dump
+     * @param string $databaseType Target database type
+     * @return string
      */
     public function dumpData($data, $databaseType)
     {

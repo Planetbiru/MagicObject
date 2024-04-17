@@ -185,7 +185,7 @@ class PicoDatabasePersistence // NOSONAR
         }
         catch(InvalidQueryInputException $e)
         {
-            throw new InvalidAnnotationException("Invalid annootation @".$parameter);
+            throw new InvalidAnnotationException("Invalid annotation @".$parameter);
         } 
     }
 
@@ -433,7 +433,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Get object values
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @param PicoDatabaseQueryBuilder $queryBuilder
      * @return array
      */
@@ -456,7 +456,7 @@ class PicoDatabasePersistence // NOSONAR
 
     /**
      * Get null column set manualy
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return array
      */
     private function getNullCols($info)
@@ -479,7 +479,7 @@ class PicoDatabasePersistence // NOSONAR
     
     /**
      * Get noninsertable column
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return array
      */
     private function getNonInsertableCols($info)
@@ -501,7 +501,7 @@ class PicoDatabasePersistence // NOSONAR
     
     /**
      * Get nonupdatable column
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return array
      */
     private function getNonUpdatableCols($info)
@@ -524,7 +524,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Get SET statement
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @param PicoDatabaseQueryBuilder $queryBuilder
      * @return string
      */
@@ -565,7 +565,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Get WHERE statement
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @param PicoDatabaseQueryBuilder $queryBuilder
      * @return string
      */
@@ -596,7 +596,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Get primary keys
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return array
      */
     public function getPrimaryKeys($info = null)
@@ -616,7 +616,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Get columns
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return array
      */
     public function getColumns($info = null)
@@ -636,7 +636,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Get join columns
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return array
      */
     public function getJoinColumns($info = null)
@@ -668,7 +668,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Get primary key with autoincrement value
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return array
      */
     public function getPrimaryKeyAutoIncrement($info)
@@ -691,7 +691,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Add generated value
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @param boolean $fisrtCall
      * @return void
      */
@@ -778,7 +778,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Insert data
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @param PicoDatabaseQueryBuilder $queryBuilder
      * @return PDOStatement
      */
@@ -797,7 +797,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Insert data
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @param PicoDatabaseQueryBuilder $queryBuilder
      * @return PicoDatabaseQueryBuilder
      */
@@ -828,7 +828,7 @@ class PicoDatabasePersistence // NOSONAR
      * Fix insertable values
      *
      * @param array $values
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return array
      */
     private function fixInsertableValues($values, $info = null)
@@ -883,7 +883,7 @@ class PicoDatabasePersistence // NOSONAR
      * Implode array keys to field list
      *
      * @param array $values
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return string
      */
     public function createStatementFields($values)
@@ -948,7 +948,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Ger column map
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return array
      */
     private function getColumnMap($info)
@@ -1040,7 +1040,7 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param PicoDatabaseQueryBuilder $sqlQuery
      * @param PicoSpecification $specification
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return string
      */
     private function createWhereFromSpecification($sqlQuery, $specification, $info)
@@ -1215,7 +1215,7 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param PicoDatabaseQueryBuilder $sqlQuery
      * @param PicoSpecification|array $specification
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return PicoDatabaseQueryBuilder
      */
     private function setSpecification($sqlQuery, $specification, $info)
@@ -1260,7 +1260,7 @@ class PicoDatabasePersistence // NOSONAR
      * @param PicoDatabaseQueryBuilder $sqlQuery
      * @param PicoPagable|null $pagable
      * @param PicoSortable|string|null $pagable
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return PicoDatabaseQueryBuilder
      */
     private function setSortable($sqlQuery, $pagable, $sortable, $info)
@@ -1666,7 +1666,7 @@ class PicoDatabasePersistence // NOSONAR
      * 
      * @param mixed $data Object
      * @param array $row Row
-     * @param PicoTableInfo $info Table info
+     * @param PicoTableInfo $info Table information
      * @return object
      */
     private function join($data, $row, $info)
@@ -1734,7 +1734,7 @@ class PicoDatabasePersistence // NOSONAR
      * Fix data type
      *
      * @param array $data
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return array
      */
     private function fixDataType($data, $info)
@@ -1911,7 +1911,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Create type map
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return array
      */
     private function createTypeMap($info)
@@ -1956,7 +1956,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Select record from database with primary keys given
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @param PicoDatabaseQueryBuilder $queryBuilder
      * @param string $where
      * @return mixed
@@ -2009,7 +2009,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Select record from database with primary keys given
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @param PicoDatabaseQueryBuilder $queryBuilder
      * @param string $where
      * @return PicoDatabaseQueryBuilder
@@ -2072,7 +2072,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Update record on database with primary keys given
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @param PicoDatabaseQueryBuilder $queryBuilder
      * @param string $where
      * @return PDOStatement
@@ -2087,7 +2087,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Update record on database with primary keys given
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @param PicoDatabaseQueryBuilder $queryBuilder
      * @param string $where
      * @return PicoDatabaseQueryBuilder
@@ -2148,7 +2148,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Delete record from database with primary keys given
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @param PicoDatabaseQueryBuilder $queryBuilder
      * @param string $where
      * @return PDOStatement
@@ -2162,7 +2162,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Delete record from database with primary keys given
      *
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @param PicoDatabaseQueryBuilder $queryBuilder
      * @param string $where
      * @return PicoDatabaseQueryBuilder
