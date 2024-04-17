@@ -420,6 +420,7 @@ class PicoDatabasePersistence // NOSONAR
             // get column name of each parameters
             $columns = $this->addColumnName($columns, $reflexProp, $prop, $parameters);
             
+            
             // set column type
             $columns = $this->addColumnType($columns, $reflexProp, $prop, $parameters);
             
