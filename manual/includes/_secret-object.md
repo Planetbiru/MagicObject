@@ -1,5 +1,7 @@
 ## Secret Object
 
+### Definition
+
 Secret Objects are very important in applications that use very sensitive and secret configurations. This configuration must be encrypted so that it cannot be seen either when someone tries to open the configuration file, environment variables, or even when the developer accidentally debugs an object related to the database so that the properties of the database object are exposed including the host name, database name, username and even password.
 
 ```php
@@ -149,4 +151,104 @@ class PicoDatabaseCredentials extends SecretObject
 	 */
 	protected $timeZone = "Asia/Jakarta";
 }
+```
+
+### Create Secret
+
+```php
+<?php
+
+namespace MagicObject\Database;
+
+use MagicObject\SecretObject;
+
+class SecretGenerator extends SecretObject
+{
+	/**
+	 * Database driver
+	 *
+	 * @var string
+	 */
+	protected $driver = 'mysql';
+
+	/**
+	 * Database server host
+	 *
+	 * @EncryptOut
+	 * @var string
+	 */
+	protected $host = 'localhost';
+
+	/**
+	 * Database server port
+	 * @var integer
+	 */
+	protected $port = 3306;
+
+	/**
+	 * Database username
+	 *
+	 * @EncryptOut
+	 * @var string
+	 */
+	protected $username = "";
+
+	/**
+	 * Database user password
+	 *
+	 * @EncryptOut
+	 * @var string
+	 */
+	protected $password = "";
+
+	/**
+	 * Database name
+	 *
+	 * @EncryptOut
+	 * @var string
+	 */
+	protected $databaseName = "";
+
+	/**
+	 * Database schema
+	 *
+	 * @EncryptOut
+	 * @var string
+	 */
+	protected $databseSchema = "public";
+
+	/**
+	 * Application time zone
+	 *
+	 * @var string
+	 */
+	protected $timeZone = "Asia/Jakarta";
+}
+```
+
+```php
+
+$yaml = "  
+time_zone_system: Asia/Jakarta
+default_charset: utf8
+driver: mysql
+host: localhost
+port: 3306
+username: root
+password: password
+database_name: music
+database_schema: public
+time_zone: Asia/Jakarta
+salt: GaramDapur
+";
+
+$config = new MagicObject();
+$config->loadYamlString($yaml);
+$generator = new SecretGenerator($config);
+
+echo $generator; // will print JSON
+
+$secretYaml = $generator->dumpYaml(2, 4, 0); // will print secret yaml
+
+file_put_content("secret.yaml", $secretYaml); // will dump to file secret.yaml
 ```
