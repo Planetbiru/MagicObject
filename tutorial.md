@@ -1,6 +1,6 @@
 # MagicObject Tutorial and Example
 
-## Simpe Object
+## Simple Object
 
 ### Set and Get Properties Value
 

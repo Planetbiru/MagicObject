@@ -1,0 +1,1724 @@
+
+
+<h2>Simple Object</h2>
+<h3>Set and Get Properties Value</h3>
+<pre><code class="language-php">&lt;?php
+use MagicObject\MagicObject;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$someObject = new MagicObject();
+$someObject-&gt;setId(1);
+$someObject-&gt;setRealName("Someone");
+$someObject-&gt;setPhone("+62811111111");
+$someObject-&gt;setEmail("someone@domain.tld");
+
+echo "ID        : " . $someObject-&gt;getId() . "\r\n";
+echo "Real Name : " . $someObject-&gt;getRealName() . "\r\n";
+echo "Phone     : " . $someObject-&gt;getPhone() . "\r\n";
+echo "Email     : " . $someObject-&gt;getEmail() . "\r\n";
+
+// get JSON string of the object
+echo $someObject;
+
+// or you can debug with error_log
+error_log($someObject);</code></pre>
+<h3>Unset Properties</h3>
+<pre><code class="language-php">&lt;?php
+use MagicObject\MagicObject;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$someObject = new MagicObject();
+$someObject-&gt;setId(1);
+$someObject-&gt;setRealName("Someone");
+$someObject-&gt;setPhone("+62811111111");
+$someObject-&gt;setEmail("someone@domain.tld");
+
+echo "ID        : " . $someObject-&gt;getId() . "\r\n";
+echo "Real Name : " . $someObject-&gt;getRealName() . "\r\n";
+echo "Phone     : " . $someObject-&gt;getPhone() . "\r\n";
+echo "Email     : " . $someObject-&gt;getEmail() . "\r\n";
+
+$someObject-&gt;unsetPhone();
+echo "Phone     : " . $someObject-&gt;getPhone() . "\r\n";
+
+// get JSON string of the object
+echo $someObject;
+
+// or you can debug with
+error_log($someObject);</code></pre>
+<h3>Check if Properties has Value</h3>
+<pre><code class="language-php">&lt;?php
+use MagicObject\MagicObject;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$someObject = new MagicObject();
+$someObject-&gt;setId(1);
+$someObject-&gt;setRealName("Someone");
+$someObject-&gt;setPhone("+62811111111");
+$someObject-&gt;setEmail("someone@domain.tld");
+
+echo "ID        : " . $someObject-&gt;getId() . "\r\n";
+echo "Real Name : " . $someObject-&gt;getRealName() . "\r\n";
+echo "Phone     : " . $someObject-&gt;getPhone() . "\r\n";
+echo "Email     : " . $someObject-&gt;getEmail() . "\r\n";
+
+$someObject-&gt;unsetPhone();
+if($someObject-&gt;hasValuePhone())
+{
+    echo "Phone     : " . $someObject-&gt;getPhone() . "\r\n";
+}
+else
+{
+    echo "Phone value is not set\r\n";
+}
+// another way
+if($someObject-&gt;issetPhone())
+{
+    echo "Phone     : " . $someObject-&gt;getPhone() . "\r\n";
+}
+else
+{
+    echo "Phone value is not set\r\n";
+}
+// get JSON string of the object
+echo $someObject;
+
+// or you can debug with
+error_log($someObject);</code></pre>
+<h2>Multilevel Object</h2>
+<pre><code class="language-php">&lt;?php
+use MagicObject\MagicObject;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$car = new MagicObject();
+$tire = new MagicObject();
+$body = new MagicObject();
+
+$tire-&gt;setDiameter(12);
+$tire-&gt;setPressure(60);
+
+$body-&gt;setLength(320);
+$body-&gt;setWidth(160);
+$body-&gt;Height(140);
+$body-&gt;setColor("red");
+
+$car-&gt;setTire($tire);
+$car-&gt;setBody($body);
+
+echo $car;
+
+/*
+{"tire":{"diameter":12,"pressure":60},"body":{"length":320,"width":160,"height":140,"color":"red"}}
+*/
+
+// to get color
+
+echo $car-&gt;getBody()-&gt;getColor();
+</code></pre>
+<h2>Object from Yaml</h2>
+<h3>From Yaml String</h3>
+<pre><code class="language-php">&lt;?php
+use MagicObject\MagicObject;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$car = new MagicObject();
+// load yaml string
+// will not replace value with environment variable
+// load as object instead of associated array
+$car-&gt;loadYamlString("
+tire: 
+  diameter: 12
+  pressure: 60
+body: 
+  length: 320
+  width: 160
+  height: 140
+  color: red
+", false, true, true);
+
+echo $car;
+/*
+{"tire":{"diameter":12,"pressure":60},"body":{"length":320,"width":160,"height":140,"color":"red"}}
+*/
+
+// to get color
+
+echo $car-&gt;getBody()-&gt;getColor();
+</code></pre>
+<h3>From Yaml File</h3>
+<pre><code class="language-yaml"># config.yml
+
+tire: 
+  diameter: 12
+  pressure: 60
+body: 
+  length: 320
+  width: 160
+  height: 140
+  color: red
+</code></pre>
+<pre><code class="language-php">&lt;?php
+use MagicObject\MagicObject;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$car = new MagicObject();
+// load file config.yml
+// will not replace value with environment variable
+// load as object instead of associated array
+$car-&gt;loadYamlFile("config.yml", false, true, true);
+
+echo $car;
+/*
+{"tire":{"diameter":12,"pressure":60},"body":{"length":320,"width":160,"height":140,"color":"red"}}
+*/
+
+// to get color
+
+echo $car-&gt;getBody()-&gt;getColor();
+</code></pre>
+<h2>Replace Value with Environment Variable</h2>
+<pre><code class="language-yaml"># config.yml
+
+tire: 
+  diameter: ${TIRE_DIAMETER}
+  pressure: ${TIRE_PRESSURE}
+body: 
+  length: ${BODY_LENGTH}
+  width: ${BODY_WIDTH}
+  height: ${BODY_HEIGHT}
+  color: ${BODY_COLOR}
+</code></pre>
+<p>Before execute this script, user must set environment variable for <code>TIRE_DIAMETER</code>, <code>TIRE_PRESSURE</code>, <code>BODY_LENGTH</code>, <code>BODY_WIDTH</code>, <code>BODY_HEIGHT</code>, and <code>BODY_COLOR</code> depend on the operating system used.</p>
+<pre><code class="language-php">&lt;?php
+use MagicObject\MagicObject;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$car = new MagicObject();
+// load file config.yml
+// will replace value with environment variable
+// load as object instead of associated array
+$car-&gt;loadYamlFile("config.yml", true, true);
+
+echo $car;
+
+// to get color
+
+echo $car-&gt;getBody()-&gt;getColor();
+</code></pre>
+<h2>Secret Object</h2>
+<p>Secret Objects are very important in applications that use very sensitive and secret configurations. This configuration must be encrypted so that it cannot be seen either when someone tries to open the configuration file, environment variables, or even when the developer accidentally debugs an object related to the database so that the properties of the database object are exposed including the host name, database name, username and even password.</p>
+<pre><code class="language-php">&lt;?php
+
+namespace MagicObject\Database;
+
+use MagicObject\SecretObject;
+
+class PicoDatabaseCredentials extends SecretObject
+{
+    /**
+     * Database driver
+     *
+     * @var string
+     */
+    protected $driver = 'mysql';
+
+    /**
+     * Database server host
+     *
+     * @EncryptIn
+     * @DecryptOut
+     * @var string
+     */
+    protected $host = 'localhost';
+
+    /**
+     * Database server port
+     * @var integer
+     */
+    protected $port = 3306;
+
+    /**
+     * Database username
+     *
+     * @EncryptIn
+     * @DecryptOut
+     * @var string
+     */
+    protected $username = "";
+
+    /**
+     * Database user password
+     *
+     * @EncryptIn
+     * @DecryptOut
+     * @var string
+     */
+    protected $password = "";
+
+    /**
+     * Database name
+     *
+     * @EncryptIn
+     * @DecryptOut
+     * @var string
+     */
+    protected $databaseName = "";
+
+    /**
+     * Database schema
+     *
+     * @EncryptIn
+     * @DecryptOut
+     * @var string
+     */
+    protected $databseSchema = "public";
+
+    /**
+     * Application time zone
+     *
+     * @var string
+     */
+    protected $timeZone = "Asia/Jakarta";
+}</code></pre>
+<p>The <code>@EncryptIn</code> annotation will encrypt the value before it is assigned to the associated property with the <code>set</code> method. The <code>@DecryptOut</code> annotation will decrypt the property value after it is retrieved by the <code>get</code> method. Once all values are encrypted, the user does not need to annotate <code>@EncryptIn</code> again.</p>
+<pre><code class="language-php">&lt;?php
+
+namespace MagicObject\Database;
+
+use MagicObject\SecretObject;
+
+class PicoDatabaseCredentials extends SecretObject
+{
+    /**
+     * Database driver
+     *
+     * @var string
+     */
+    protected $driver = 'mysql';
+
+    /**
+     * Database server host
+     *
+     * @DecryptOut
+     * @var string
+     */
+    protected $host = 'localhost';
+
+    /**
+     * Database server port
+     * @var integer
+     */
+    protected $port = 3306;
+
+    /**
+     * Database username
+     *
+     * @DecryptOut
+     * @var string
+     */
+    protected $username = "";
+
+    /**
+     * Database user password
+     *
+     * @DecryptOut
+     * @var string
+     */
+    protected $password = "";
+
+    /**
+     * Database name
+     *
+     * @DecryptOut
+     * @var string
+     */
+    protected $databaseName = "";
+
+    /**
+     * Database schema
+     *
+     * @DecryptOut
+     * @var string
+     */
+    protected $databseSchema = "public";
+
+    /**
+     * Application time zone
+     *
+     * @var string
+     */
+    protected $timeZone = "Asia/Jakarta";
+}</code></pre>
+<h2>Input GET/POST/REQUEST/COOKIE/SERVER</h2>
+<h3>Input POST</h3>
+<pre><code class="language-php">
+use MagicObject\Request\InputPost;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$inputPost = new InputPost();
+
+$name = $inputPost-&gt;getRealName();
+// equivalen to 
+$name = $_POST['real_name'];
+</code></pre>
+<h3>Input GET</h3>
+<pre><code class="language-php">
+use MagicObject\Request\InputGet;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$inputGet = new InputGet();
+
+$name = $inputGet-&gt;getRealName();
+// equivalen to 
+$name = $_GET['real_name'];
+</code></pre>
+<h3>Input COOKIE</h3>
+<pre><code class="language-php">
+use MagicObject\Request\InputCookie;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$inputCookie = new InputCookie();
+
+$name = $inputCookie-&gt;getRealName();
+// equivalen to 
+$name = $_COOKIE['real_name'];
+</code></pre>
+<h3>Input SERVER</h3>
+<pre><code class="language-php">
+use MagicObject\Request\InputServer;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$inputServer = new InputServer();
+
+$remoteAddress = $inputServer-&gt;getRemoteAddr();
+// equivalen to 
+$remoteAddress = $_SERVER_['REMOTE_ADDR'];
+</code></pre>
+<h3>Input REQUEST</h3>
+<pre><code class="language-php">
+use MagicObject\Request\InputRequest;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$inputRequest = new InputRequest();
+
+$name = $inputRequest-&gt;getRealName();
+// equivalen to 
+$name = $_REQUEST['real_name'];
+</code></pre>
+<h3>Filter Input</h3>
+<p>Filter input from InputGet, InputPost, InputRequest and InputCookie</p>
+<pre><code class="language-php">
+use MagicObject\Request\InputGet;
+use MagicObject\Request\PicoFilterConstant;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$inputGet = new InputGet();
+
+$name = $inputGet-&gt;getRealName(PicoFilterConstant::FILTER_SANITIZE_SPECIAL_CHARS);
+// equivalen to 
+$name =  filter_input(
+    INPUT_GET,
+    'real_name',
+    FILTER_SANITIZE_SPECIAL_CHARS
+);
+
+// another way to filter input
+$inputGet-&gt;filterRealName(PicoFilterConstant::FILTER_SANITIZE_SPECIAL_CHARS);
+$name = $inputGet-&gt;getRealName();
+</code></pre>
+<p>List of filter</p>
+<pre><code>FILTER_SANITIZE_NO_DOUBLE_SPACE = 512;
+FILTER_SANITIZE_PASSWORD = 511;
+FILTER_SANITIZE_ALPHA = 510;
+FILTER_SANITIZE_ALPHANUMERIC = 509;
+FILTER_SANITIZE_ALPHANUMERICPUNC = 506;
+FILTER_SANITIZE_NUMBER_UINT = 508;
+FILTER_SANITIZE_NUMBER_INT = 519;
+FILTER_SANITIZE_URL = 518;
+FILTER_SANITIZE_NUMBER_FLOAT = 520;
+FILTER_SANITIZE_STRING_NEW = 513;
+FILTER_SANITIZE_ENCODED = 514;
+FILTER_SANITIZE_STRING_INLINE = 507;
+FILTER_SANITIZE_STRING_BASE64 = 505;
+FILTER_SANITIZE_IP = 504;
+FILTER_SANITIZE_NUMBER_OCTAL = 503;
+FILTER_SANITIZE_NUMBER_HEXADECIMAL = 502;
+FILTER_SANITIZE_COLOR = 501;
+FILTER_SANITIZE_POINT = 500;
+FILTER_SANITIZE_BOOL = 600;
+FILTER_VALIDATE_URL = 273;
+FILTER_VALIDATE_EMAIL = 274;
+FILTER_SANITIZE_EMAIL = 517;
+FILTER_SANITIZE_SPECIAL_CHARS = 515;
+FILTER_SANITIZE_ASCII = 601;</code></pre>
+<h2>Entity</h2>
+<pre><code class="language-php">&lt;?php
+
+namespace MusicProductionManager\Data\Entity;
+
+use MagicObject\MagicObject;
+
+/**
+ * @Entity
+ * @JSON(property-naming-strategy=SNAKE_CASE)
+ * @Table(name="album")
+ */
+class Album extends MagicObject
+{
+    /**
+     * Album ID
+     * 
+     * @Id
+     * @GeneratedValue(strategy=GenerationType.UUID)
+     * @NotNull
+     * @Column(name="album_id", type="varchar(50)", length=50, nullable=false)
+     * @Label(content="Album ID")
+     * @var string
+     */
+    protected $albumId;
+
+    /**
+     * Name
+     * 
+     * @Column(name="name", type="varchar(50)", length=50, nullable=true)
+     * @Label(content="Name")
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * Title
+     * 
+     * @Column(name="title", type="text", nullable=true)
+     * @Label(content="Title")
+     * @var string
+     */
+    protected $title;
+
+    /**
+     * Description
+     * 
+     * @Column(name="description", type="longtext", nullable=true)
+     * @Label(content="Description")
+     * @var string
+     */
+    protected $description;
+
+    /**
+     * Producer ID
+     * 
+     * @Column(name="producer_id", type="varchar(40)", length=40, nullable=true)
+     * @Label(content="Producer ID")
+     * @var string
+     */
+    protected $producerId;
+
+    /**
+     * Release Date
+     * 
+     * @Column(name="release_date", type="date", nullable=true)
+     * @Label(content="Release Date")
+     * @var string
+     */
+    protected $releaseDate;
+
+    /**
+     * Number Of Song
+     * 
+     * @Column(name="number_of_song", type="int(11)", length=11, nullable=true)
+     * @Label(content="Number Of Song")
+     * @var integer
+     */
+    protected $numberOfSong;
+
+    /**
+     * Duration
+     * 
+     * @Column(name="duration", type="float", nullable=true)
+     * @Label(content="Duration")
+     * @var double
+     */
+    protected $duration;
+
+    /**
+     * Image Path
+     * 
+     * @Column(name="image_path", type="text", nullable=true)
+     * @Label(content="Image Path")
+     * @var string
+     */
+    protected $imagePath;
+
+    /**
+     * Sort Order
+     * 
+     * @Column(name="sort_order", type="int(11)", length=11, nullable=true)
+     * @Label(content="Sort Order")
+     * @var integer
+     */
+    protected $sortOrder;
+
+    /**
+     * Time Create
+     * 
+     * @Column(name="time_create", type="timestamp", length=19, nullable=true, updatable=false)
+     * @Label(content="Time Create")
+     * @var string
+     */
+    protected $timeCreate;
+
+    /**
+     * Time Edit
+     * 
+     * @Column(name="time_edit", type="timestamp", length=19, nullable=true)
+     * @Label(content="Time Edit")
+     * @var string
+     */
+    protected $timeEdit;
+
+    /**
+     * Admin Create
+     * 
+     * @Column(name="admin_create", type="varchar(40)", length=40, nullable=true, updatable=false)
+     * @Label(content="Admin Create")
+     * @var string
+     */
+    protected $adminCreate;
+
+    /**
+     * Admin Edit
+     * 
+     * @Column(name="admin_edit", type="varchar(40)", length=40, nullable=true)
+     * @Label(content="Admin Edit")
+     * @var string
+     */
+    protected $adminEdit;
+
+    /**
+     * IP Create
+     * 
+     * @Column(name="ip_create", type="varchar(50)", length=50, nullable=true, updatable=false)
+     * @Label(content="IP Create")
+     * @var string
+     */
+    protected $ipCreate;
+
+    /**
+     * IP Edit
+     * 
+     * @Column(name="ip_edit", type="varchar(50)", length=50, nullable=true)
+     * @Label(content="IP Edit")
+     * @var string
+     */
+    protected $ipEdit;
+
+    /**
+     * Active
+     * 
+     * @Column(name="active", type="tinyint(1)", length=1, default_value="1", nullable=true)
+     * @DefaultColumn(value="1")
+     * @var boolean
+     */
+    protected $active;
+
+    /**
+     * As Draft
+     * 
+     * @Column(name="as_draft", type="tinyint(1)", length=1, default_value="1", nullable=true)
+     * @DefaultColumn(value="1")
+     * @var boolean
+     */
+    protected $asDraft;
+
+}</code></pre>
+<p>Strategy to generate auto value:</p>
+<p><strong>1. GenerationType.UUID</strong></p>
+<p>Generate 20 bytes unique ID</p>
+<ul>
+<li>14 byte hexadecimal of uniqid <a href="https://www.php.net/manual/en/function.uniqid.php">https://www.php.net/manual/en/function.uniqid.php</a></li>
+<li>6 byte hexadecimal or random number</li>
+</ul>
+<p><strong>2. GenerationType.IDENTITY</strong></p>
+<p>Autoincrement using database feature</p>
+<p>MagicObject will not update <code>time_create</code>, <code>admin_create</code>, and <code>ip_create</code> because <code>updatable=false</code>. So, even if the application wants to update this value, this column will be ignored when performing an update query to the database.</p>
+<h3>Usage</h3>
+<pre><code class="language-php">&lt;?php
+
+use MagicObject\Database\PicoDatabase;
+use MagicObject\Database\PicoDatabaseCredentials;
+use MusicProductionManager\Config\ConfigApp;
+
+use MusicProductionManager\Config\ConfigApp;
+
+use MusicProductionManager\Data\Entity\Album;
+
+require_once dirname(__DIR__)."/vendor/autoload.php";
+
+$cfg = new ConfigApp(null, true);
+$cfg-&gt;loadYamlFile(dirname(__DIR__)."/.cfg/app.yml", true, true);
+
+$databaseCredentials = new PicoDatabaseCredentials($cfg-&gt;getDatabase());
+$database = new PicoDatabase($databaseCredentials);
+try
+{
+    $database-&gt;connect();
+
+    // create new 
+
+    $album1 = new Album(null, $database);
+    $album1-&gt;setAibumId("123456");
+    $album1-&gt;setName("Album 1");
+    $album1-&gt;setAdminCreate("USER1");
+    $album1-&gt;setDuration(300);
+
+    // other way to create object
+    // create object from stdClass or other object with match property (snake case or camel case)
+    $data = new stdClass;
+    // snake case
+    $data-&gt;album_id = "123456";
+    $data-&gt;name = "Album 1";
+    $data-&gt;admin_create = "USER1";
+    $data-&gt;duration = 300;
+
+    // or camel case
+    $data-&gt;albumId = "123456";
+    $data-&gt;name = "Album 1";
+    $data-&gt;adminCreate = "USER1";
+    $data-&gt;duration = 300;
+
+    $album1 = new Album($data, $database); 
+
+    // other way to create object
+    // create object from associated array with match property (snake case or camel case)
+    $data = array();
+    // snake case
+    $data["album_id"] "123456";
+    $data["name"] = "Album 1";
+    $data["admin_create"] = "USER1";
+    $data["duration"] = 300;
+
+    // or camel case
+    $data["albumId"] = "123456";
+    $data["name"] = "Album 1";
+    $data["adminCreate"] = "USER1";
+    $data["duration"] = 300;
+    $album1 = new Album($data, $database);
+
+    // get value from form
+    // this way is not safe
+    $album1 = new Album($_POST, $database);
+
+    // we can use other way
+    $inputPost = new InputPost();
+
+    // we can apply filter
+    $inputPost-&gt;filterName(PicoFilterConstant::FILTER_SANITIZE_SPECIAL_CHARS);
+    $inputPost-&gt;filterDescription(PicoFilterConstant::FILTER_SANITIZE_SPECIAL_CHARS);
+
+    // if property not present in $inputPost, we can set default value
+    // please note that user can modify form and add update any unwanted properties to be updated
+    $inputPost-&gt;checkboxActive(false);
+    $inputPost-&gt;checkboxAsDraft(true);
+
+    // we can remove any property data from object $inputPost before apply it to entity
+    // it will not saved to database
+    $inputPost-&gt;setSortOrder(null);
+
+    $album1 = new Album($inputPost, $database);
+
+    // insert to database
+    $album1-&gt;insert();
+
+    // insert or update
+    $album1-&gt;save();
+
+    // update
+    // NoRecordFoundException if ID not found
+    $album1-&gt;update();
+
+    // convert to JSON
+    $json = $album1-&gt;toString();
+    // or
+    $json = $album1 . "";
+
+    // send to buffer output
+    // automaticaly converted to string
+    echo $album1;
+
+    // find one by ID
+    $album2 = new Album(null, $database);
+    $album2-&gt;findOneByAlbumId("123456");
+
+    // find multiple
+    $album2 = new Album(null, $database);
+    $albums = $album2-&gt;findByAdminCreate("USER1");
+    $rows = $albums-&gt;getResult();
+    foreach($rows as $albumSaved)
+    {
+        // $albumSaved is instance of Album
+
+        // we can update data
+        $albumSaved-&gt;setAdminEdit("USER1");
+        $albumSaved-&gt;setTimeEdit(date('Y-m-d H:i:s'));
+
+        // this value will not be saved to database because has no column
+        $albumSaved-&gt;setAnyValue("ANY VALUE");
+
+        $albumSaved-&gt;update();
+    }
+
+}
+catch(Exception $e)
+{
+    // do nothing
+}
+</code></pre>
+<pre><code>&lt;?php
+
+use MagicObject\MagicObject;
+
+/**
+ * @Entity
+ * @JSON(property-naming-strategy=SNAKE_CASE)
+ * @Table(name="user_type")
+ */
+class UserType extends MagicObject
+{
+    /**
+     * User Type ID
+     * 
+     * @Id
+     * @GeneratedValue(strategy=GenerationType.UUID)
+     * @NotNull
+     * @Column(name="user_type_id", type="varchar(50)", length=50, nullable=false)
+     * @Label(content="User Type ID")
+     * @var string
+     */
+    protected $userTypeId;
+
+    /**
+     * Name
+     * 
+     * @Column(name="name", type="varchar(255)", length=255, nullable=true)
+     * @Label(content="Name")
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * Admin
+     * 
+     * @Column(name="admin", type="tinyint(1)", length=1, nullable=true)
+     * @var boolean
+     */
+    protected $admin;
+
+    /**
+     * Sort Order
+     * 
+     * @Column(name="sort_order", type="int(11)", length=11, nullable=true)
+     * @Label(content="Sort Order")
+     * @var integer
+     */
+    protected $sortOrder;
+
+    /**
+     * Time Create
+     * 
+     * @Column(name="time_create", type="timestamp", length=19, nullable=true, updatable=false)
+     * @Label(content="Time Create")
+     * @var string
+     */
+    protected $timeCreate;
+
+    /**
+     * Time Edit
+     * 
+     * @Column(name="time_edit", type="timestamp", length=19, nullable=true)
+     * @Label(content="Time Edit")
+     * @var string
+     */
+    protected $timeEdit;
+
+    /**
+     * Admin Create
+     * 
+     * @Column(name="admin_create", type="varchar(40)", length=40, nullable=true, updatable=false)
+     * @Label(content="Admin Create")
+     * @var string
+     */
+    protected $adminCreate;
+
+    /**
+     * Admin Edit
+     * 
+     * @Column(name="admin_edit", type="varchar(40)", length=40, nullable=true)
+     * @Label(content="Admin Edit")
+     * @var string
+     */
+    protected $adminEdit;
+
+    /**
+     * IP Create
+     * 
+     * @Column(name="ip_create", type="varchar(50)", length=50, nullable=true, updatable=false)
+     * @Label(content="IP Create")
+     * @var string
+     */
+    protected $ipCreate;
+
+    /**
+     * IP Edit
+     * 
+     * @Column(name="ip_edit", type="varchar(50)", length=50, nullable=true)
+     * @Label(content="IP Edit")
+     * @var string
+     */
+    protected $ipEdit;
+
+    /**
+     * Active
+     * 
+     * @Column(name="active", type="tinyint(1)", length=1, default_value="1", nullable=true)
+     * @DefaultColumn(value="1")
+     * @var boolean
+     */
+    protected $active;
+
+}</code></pre>
+<pre><code class="language-php">
+
+require_once dirname(__DIR__) . "/vendor/autoload.php";
+
+$userType = new UserType();
+
+// print label of adminCreate property
+echo $userType-&gt;labelAdminCreate();
+// it will print "Admin Create"</code></pre>
+<h2>Pagination</h2>
+<p>Example parameters:</p>
+<p><code>genre_id=0648d4e176da4df4472d&amp;album_id=&amp;artist_vocal_id=&amp;name=&amp;vocal=&amp;lyric_complete=&amp;active=&amp;page=2&amp;orderby=title&amp;ordertype=asc</code></p>
+<p>Create entity according to database</p>
+<pre><code class="language-php">&lt;?php
+
+namespace MusicProductionManager\Data\Entity;
+
+use MagicObject\MagicObject;
+
+/**
+ * @Entity
+ * @JSON(property-naming-strategy=SNAKE_CASE)
+ * @Table(name="song")
+ */
+class EntitySong extends MagicObject
+{
+    /**
+     * Song ID
+     * 
+     * @Id
+     * @GeneratedValue(strategy=GenerationType.UUID)
+     * @NotNull
+     * @Column(name="song_id", type="varchar(50)", length=50, nullable=false)
+     * @var string
+     */
+    protected $songId;
+
+    /**
+     * Random Song ID
+     * 
+     * @Column(name="random_song_id", type="varchar(50)", length=50, nullable=true)
+     * @var string
+     */
+    protected $randomSongId;
+
+    /**
+     * Name
+     * 
+     * @Column(name="name", type="varchar(100)", length=100, nullable=true)
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * Title
+     * 
+     * @Column(name="title", type="text", nullable=true)
+     * @var string
+     */
+    protected $title;
+
+    /**
+     * Album ID
+     * 
+     * @Column(name="album_id", type="varchar(50)", length=50, nullable=true)
+     * @var string
+     */
+    protected $albumId;
+
+    /**
+     * @JoinColumn(name="album_id")
+     * @var Album
+     */
+    protected $album;
+
+    /**
+     * Track Number
+     * 
+     * @Column(name="track_number", type="int(11)", length=11, nullable=true)
+     * @var integer
+     */
+    protected $trackNumber;
+
+    /**
+     * Producer ID
+     * 
+     * @Column(name="producer_id", type="varchar(40)", length=40, nullable=true)
+     * @var string
+     */
+    protected $producerId;
+
+    /**
+     * Producer
+     * 
+     * @JoinColumn(name="producer_id")
+     * @var Producer
+     */
+    protected $producer;
+
+    /**
+     * Artist Vocal
+     * 
+     * @Column(name="artist_vocalist", type="varchar(50)", length=50, nullable=true)
+     * @var string
+     */
+    protected $artistVocalist;
+
+    /**
+     * Artist Vocal
+     * 
+     * @JoinColumn(name="artist_vocalist")
+     * @var Artist
+     */
+    protected $vocalist;
+
+    /**
+     * Artist Composer
+     * 
+     * @Column(name="artist_composer", type="varchar(50)", length=50, nullable=true)
+     * @var string
+     */
+    protected $artistComposer;
+
+    /**
+     * Artist Composer
+     * 
+     * @JoinColumn(name="artist_composer")
+     * @var Artist
+     */
+    protected $composer;
+
+    /**
+     * Artist Arranger
+     * 
+     * @Column(name="artist_arranger", type="varchar(50)", length=50, nullable=true)
+     * @var string
+     */
+    protected $artistArranger;
+
+    /**
+     * Artist Arranger
+     * 
+     * @JoinColumn(name="artist_arranger")
+     * @var Artist
+     */
+    protected $arranger;
+
+    /**
+     * File Path
+     * 
+     * @Column(name="file_path", type="text", nullable=true)
+     * @var string
+     */
+    protected $filePath;
+
+    /**
+     * File Name
+     * 
+     * @Column(name="file_name", type="varchar(100)", length=100, nullable=true)
+     * @var string
+     */
+    protected $fileName;
+
+    /**
+     * File Type
+     * 
+     * @Column(name="file_type", type="varchar(100)", length=100, nullable=true)
+     * @var string
+     */
+    protected $fileType;
+
+    /**
+     * File Extension
+     * 
+     * @Column(name="file_extension", type="varchar(20)", length=20, nullable=true)
+     * @var string
+     */
+    protected $fileExtension;
+
+    /**
+     * File Size
+     * 
+     * @Column(name="file_size", type="bigint(20)", length=20, nullable=true)
+     * @var integer
+     */
+    protected $fileSize;
+
+    /**
+     * File Md5
+     * 
+     * @Column(name="file_md5", type="varchar(32)", length=32, nullable=true)
+     * @var string
+     */
+    protected $fileMd5;
+
+    /**
+     * File Upload Time
+     * 
+     * @Column(name="file_upload_time", type="timestamp", length=19, nullable=true)
+     * @var string
+     */
+    protected $fileUploadTime;
+
+    /**
+     * First Upload Time
+     * 
+     * @Column(name="first_upload_time", type="timestamp", length=19, nullable=true)
+     * @var string
+     */
+    protected $firstUploadTime;
+
+    /**
+     * Last Upload Time
+     * 
+     * @Column(name="last_upload_time", type="timestamp", length=19, nullable=true)
+     * @var string
+     */
+    protected $lastUploadTime;
+
+    /**
+     * File Path Midi
+     * 
+     * @Column(name="file_path_midi", type="text", nullable=true)
+     * @var string
+     */
+    protected $filePathMidi;
+
+    /**
+     * Last Upload Time Midi
+     * 
+     * @Column(name="last_upload_time_midi", type="timestamp", length=19, nullable=true)
+     * @var string
+     */
+    protected $lastUploadTimeMidi;
+
+    /**
+     * File Path Xml
+     * 
+     * @Column(name="file_path_xml", type="text", nullable=true)
+     * @var string
+     */
+    protected $filePathXml;
+
+    /**
+     * Last Upload Time Xml
+     * 
+     * @Column(name="last_upload_time_xml", type="timestamp", length=19, nullable=true)
+     * @var string
+     */
+    protected $lastUploadTimeXml;
+
+    /**
+     * File Path Pdf
+     * 
+     * @Column(name="file_path_pdf", type="text", nullable=true)
+     * @var string
+     */
+    protected $filePathPdf;
+
+    /**
+     * Last Upload Time Pdf
+     * 
+     * @Column(name="last_upload_time_pdf", type="timestamp", length=19, nullable=true)
+     * @var string
+     */
+    protected $lastUploadTimePdf;
+
+    /**
+     * Duration
+     * 
+     * @Column(name="duration", type="float", nullable=true)
+     * @var double
+     */
+    protected $duration;
+
+    /**
+     * Genre ID
+     * 
+     * @Column(name="genre_id", type="varchar(50)", length=50, nullable=true)
+     * @var string
+     */
+    protected $genreId;
+
+    /**
+     * Genre ID
+     * 
+     * @JoinColumn(name="genre_id")
+     * @var Genre
+     */
+    protected $genre;
+
+    /**
+     * Bpm
+     * 
+     * @Column(name="bpm", type="float", nullable=true)
+     * @var double
+     */
+    protected $bpm;
+
+    /**
+     * Time Signature
+     * 
+     * @Column(name="time_signature", type="varchar(40)", length=40, nullable=true)
+     * @var string
+     */
+    protected $timeSignature;
+
+    /**
+     * Subtitle
+     * 
+     * @Column(name="subtitle", type="longtext", nullable=true)
+     * @var string
+     */
+    protected $subtitle;
+
+    /**
+     * Subtitle Complete
+     * 
+     * @Column(name="subtitle_complete", type="tinyint(1)", length=1, nullable=true)
+     * @var boolean
+     */
+    protected $subtitleComplete;
+
+    /**
+     * Lyric Midi
+     * 
+     * @Column(name="lyric_midi", type="longtext", nullable=true)
+     * @var string
+     */
+    protected $lyricMidi;
+
+    /**
+     * Lyric Midi Raw
+     * 
+     * @Column(name="lyric_midi_raw", type="longtext", nullable=true)
+     * @var string
+     */
+    protected $lyricMidiRaw;
+
+    /**
+     * Vocal
+     * 
+     * @Column(name="vocal", type="tinyint(1)", length=1, nullable=true)
+     * @var boolean
+     */
+    protected $vocal;
+
+    /**
+     * Instrument
+     * 
+     * @Column(name="instrument", type="longtext", nullable=true)
+     * @var string
+     */
+    protected $instrument;
+
+    /**
+     * Midi Vocal Channel
+     * 
+     * @Column(name="midi_vocal_channel", type="int(11)", length=11, nullable=true)
+     * @var integer
+     */
+    protected $midiVocalChannel;
+
+    /**
+     * Rating
+     * 
+     * @Column(name="rating", type="float", nullable=true)
+     * @var double
+     */
+    protected $rating;
+
+    /**
+     * Comment
+     * 
+     * @Column(name="comment", type="longtext", nullable=true)
+     * @var string
+     */
+    protected $comment;
+
+    /**
+     * Image Path
+     * 
+     * @Column(name="image_path", type="text", nullable=true)
+     * @var string
+     */
+    protected $imagePath;
+
+    /**
+     * Last Upload Time Image
+     * 
+     * @Column(name="last_upload_time_image", type="timestamp", length=19, nullable=true)
+     * @var string
+     */
+    protected $lastUploadTimeImage;
+
+    /**
+     * Time Create
+     * 
+     * @Column(name="time_create", type="timestamp", length=19, nullable=true, updatable=false)
+     * @var string
+     */
+    protected $timeCreate;
+
+    /**
+     * Time Edit
+     * 
+     * @Column(name="time_edit", type="timestamp", length=19, nullable=true)
+     * @var string
+     */
+    protected $timeEdit;
+
+    /**
+     * IP Create
+     * 
+     * @Column(name="ip_create", type="varchar(50)", length=50, nullable=true, updatable=false)
+     * @var string
+     */
+    protected $ipCreate;
+
+    /**
+     * IP Edit
+     * 
+     * @Column(name="ip_edit", type="varchar(50)", length=50, nullable=true)
+     * @var string
+     */
+    protected $ipEdit;
+
+    /**
+     * Admin Create
+     * 
+     * @Column(name="admin_create", type="varchar(50)", length=50, nullable=true, updatable=false)
+     * @var string
+     */
+    protected $adminCreate;
+
+    /**
+     * Admin Edit
+     * 
+     * @Column(name="admin_edit", type="varchar(50)", length=50, nullable=true)
+     * @var string
+     */
+    protected $adminEdit;
+
+    /**
+     * Active
+     * 
+     * @Column(name="active", type="tinyint(1)", length=1, default_value="1", nullable=true)
+     * @DefaultColumn(value="1")
+     * @var boolean
+     */
+    protected $active;
+}</code></pre>
+<p>Filtering and pagination</p>
+<pre><code class="language-php">&lt;?php
+
+use MagicObject\Database\PicoDatabase;
+use MagicObject\Database\PicoDatabaseCredentials;
+use MusicProductionManager\Config\ConfigApp;
+
+use MusicProductionManager\Config\ConfigApp;
+
+use MagicObject\Database\PicoPagable;
+use MagicObject\Database\PicoPage;
+use MagicObject\Database\PicoSort;
+use MagicObject\Database\PicoSortable;
+use MagicObject\Pagination\PicoPagination;
+use MagicObject\Request\PicoFilterConstant;
+use MagicObject\Request\InputGet;
+use MagicObject\Response\Generated\PicoSelectOption;
+use MusicProductionManager\Constants\ParamConstant;
+use MusicProductionManager\Data\Entity\Album;
+use MusicProductionManager\Data\Entity\Artist;
+use MusicProductionManager\Data\Entity\EntitySong;
+use MusicProductionManager\Data\Entity\EntitySongComment;
+use MusicProductionManager\Data\Entity\Genre;
+
+use MusicProductionManager\Utility\SpecificationUtil;
+use MusicProductionManager\Utility\UserUtil;
+
+require_once dirname(__DIR__)."/vendor/autoload.php";
+
+$cfg = new ConfigApp(null, true);
+$cfg-&gt;loadYamlFile(dirname(__DIR__)."/.cfg/app.yml", true, true);
+
+$databaseCredentials = new PicoDatabaseCredentials($cfg-&gt;getDatabase());
+$database = new PicoDatabase($databaseCredentials);
+try
+{
+    $database-&gt;connect();
+
+    $inputGet = new InputGet();
+
+    $orderMap = array(
+        'name'=&gt;'name', 
+        'title'=&gt;'title', 
+        'rating'=&gt;'rating',
+        'albumId'=&gt;'albumId', 
+        'album'=&gt;'albumId', 
+        'trackNumber'=&gt;'trackNumber',
+        'genreId'=&gt;'genreId', 
+        'genre'=&gt;'genreId',
+        'producerId'=&gt;'producerId',
+        'artistVocalist'=&gt;'artistVocalist',
+        'artistComposer'=&gt;'artistComposer',
+        'artistAranger'=&gt;'artistAranger',
+        'duration'=&gt;'duration',
+        'subtitleComplete'=&gt;'subtitleComplete',
+        'vocal'=&gt;'vocal',
+        'active'=&gt;'active'
+    );
+    $defaultOrderBy = 'albumId';
+    $defaultOrderType = 'desc';
+    $pagination = new PicoPagination($cfg-&gt;getResultPerPage());
+
+    $spesification = SpecificationUtil::createSongSpecification($inputGet);
+
+    if($pagination-&gt;getOrderBy() == '')
+    {
+    $sortable = new PicoSortable();
+    $sort1 = new PicoSort('albumId', PicoSortable::ORDER_TYPE_DESC);
+    $sortable-&gt;addSortable($sort1);
+    $sort2 = new PicoSort('trackNumber', PicoSortable::ORDER_TYPE_ASC);
+    $sortable-&gt;addSortable($sort2);
+    }
+    else
+    {
+    $sortable = new PicoSortable($pagination-&gt;getOrderBy($orderMap, $defaultOrderBy), $pagination-&gt;getOrderType($defaultOrderType));
+    }
+
+    $pagable = new PicoPagable(new PicoPage($pagination-&gt;getCurrentPage(), $pagination-&gt;getPageSize()), $sortable);
+
+    $songEntity = new EntitySong(null, $database);
+    $rowData = $songEntity-&gt;findAll($spesification, $pagable, $sortable, true);
+
+    $result = $rowData-&gt;getResult();
+
+    if(!empty($result))
+    {
+    ?&gt;
+    &lt;div class="pagination"&gt;
+        &lt;div class="pagination-number"&gt;
+        &lt;?php
+        foreach($rowData-&gt;getPagination() as $pg)
+        {
+            ?&gt;&lt;span class="page-selector&lt;?php echo $pg['selected'] ? ' page-selected':'';?&gt;" data-page-number="&lt;?php echo $pg['page'];?&gt;"&gt;&lt;a href="#"&gt;&lt;?php echo $pg['page'];?&gt;&lt;/a&gt;&lt;/span&gt;&lt;?php
+        }
+        ?&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;table class="table"&gt;
+        &lt;thead&gt;
+            &lt;tr&gt;
+            &lt;th scope="col" width="20"&gt;&lt;i class="ti ti-edit"&gt;&lt;/i&gt;&lt;/th&gt;
+            &lt;th scope="col" width="20"&gt;&lt;i class="ti ti-trash"&gt;&lt;/i&gt;&lt;/th&gt;
+            &lt;th scope="col" width="20"&gt;&lt;i class="ti ti-player-play"&gt;&lt;/i&gt;&lt;/th&gt;
+            &lt;th scope="col" width="20"&gt;&lt;i class="ti ti-download"&gt;&lt;/i&gt;&lt;/th&gt;
+            &lt;th scope="col" width="20"&gt;#&lt;/th&gt;
+            &lt;th scope="col" class="col-sort" data-name="name"&gt;Name&lt;/th&gt;
+            &lt;th scope="col" class="col-sort" data-name="title"&gt;Title&lt;/th&gt;
+            &lt;th scope="col" class="col-sort" data-name="rating"&gt;Rating&lt;/th&gt;
+            &lt;th scope="col" class="col-sort" data-name="album_id"&gt;Album&lt;/th&gt;
+            &lt;th scope="col" class="col-sort" data-name="track_number"&gt;Track&lt;/th&gt;
+            &lt;th scope="col" class="col-sort" data-name="genre_id"&gt;Genre&lt;/th&gt;
+            &lt;th scope="col" class="col-sort" data-name="artist_vocalist"&gt;Vocalist&lt;/th&gt;
+            &lt;th scope="col" class="col-sort" data-name="artist_composer"&gt;Composer&lt;/th&gt;
+            &lt;th scope="col" class="col-sort" data-name="artist_arranger"&gt;Arranger&lt;/th&gt;
+            &lt;th scope="col" class="col-sort" data-name="duration"&gt;Duration&lt;/th&gt;
+            &lt;th scope="col" class="col-sort" data-name="vocal"&gt;Vocal&lt;/th&gt;
+            &lt;th scope="col" class="col-sort" data-name="lyric_complete"&gt;subtitle&lt;/th&gt;
+            &lt;th scope="col" class="col-sort" data-name="active"&gt;Active&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+            &lt;?php
+            $no = $pagination-&gt;getOffset();
+            foreach($result as $song)
+            {
+            $no++;
+            $songId = $song-&gt;getSongId();
+            $linkEdit = basename($_SERVER['PHP_SELF'])."?action=edit&amp;song_id=".$songId;
+            $linkDetail = basename($_SERVER['PHP_SELF'])."?action=detail&amp;song_id=".$songId;
+            $linkDelete = basename($_SERVER['PHP_SELF'])."?action=delete&amp;song_id=".$songId;
+            $linkDownload = "read-file.php?type=all&amp;song_id=".$songId;
+            ?&gt;
+            &lt;tr data-id="&lt;?php echo $songId;?&gt;"&gt;
+            &lt;th scope="row"&gt;&lt;a href="&lt;?php echo $linkEdit;?&gt;" class="edit-data"&gt;&lt;i class="ti ti-edit"&gt;&lt;/i&gt;&lt;/a&gt;&lt;/th&gt;
+            &lt;th scope="row"&gt;&lt;a href="&lt;?php echo $linkDelete;?&gt;" class="delete-data"&gt;&lt;i class="ti ti-trash"&gt;&lt;/i&gt;&lt;/a&gt;&lt;/th&gt;
+            &lt;th scope="row"&gt;&lt;a href="#" class="play-data" data-url="&lt;?php echo $cfg-&gt;getSongBaseUrl()."/".$song-&gt;getFileName();?&gt;?hash=&lt;?php echo str_replace(array(' ', '-', ':'), '', $song-&gt;getLastUploadTime());?&gt;"&gt;&lt;i class="ti ti-player-play"&gt;&lt;/i&gt;&lt;/a&gt;&lt;/th&gt;
+            &lt;th scope="row"&gt;&lt;a href="&lt;?php echo $linkDownload;?&gt;"&gt;&lt;i class="ti ti-download"&gt;&lt;/i&gt;&lt;/a&gt;&lt;/th&gt;
+            &lt;th class="text-right" scope="row"&gt;&lt;?php echo $no;?&gt;&lt;/th&gt;
+            &lt;td&gt;&lt;a href="&lt;?php echo $linkDetail;?&gt;" class="text-data text-data-name"&gt;&lt;?php echo $song-&gt;getName();?&gt;&lt;/a&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;a href="&lt;?php echo $linkDetail;?&gt;" class="text-data text-data-title"&gt;&lt;?php echo $song-&gt;getTitle();?&gt;&lt;/a&gt;&lt;/td&gt;
+            &lt;td class="text-data text-data-rating"&gt;&lt;?php echo $song-&gt;hasValueRating() ? $song-&gt;getRating() : "";?&gt;&lt;/td&gt;
+            &lt;td class="text-data text-data-album-name"&gt;&lt;?php echo $song-&gt;hasValueAlbum() ? $song-&gt;getAlbum()-&gt;getName() : "";?&gt;&lt;/td&gt;
+            &lt;td class="text-data text-data-track-number"&gt;&lt;?php echo $song-&gt;hasValueTrackNumber() ? $song-&gt;getTrackNumber() : "";?&gt;&lt;/td&gt;
+            &lt;td class="text-data text-data-genre-name"&gt;&lt;?php echo $song-&gt;hasValueGenre() ? $song-&gt;getGenre()-&gt;getName() : "";?&gt;&lt;/td&gt;
+            &lt;td class="text-data text-data-artist-vocal-name"&gt;&lt;?php echo $song-&gt;hasValueVocalist() ? $song-&gt;getVocalist()-&gt;getName() : "";?&gt;&lt;/td&gt;
+            &lt;td class="text-data text-data-artist-composer-name"&gt;&lt;?php echo $song-&gt;hasValueComposer() ? $song-&gt;getComposer()-&gt;getName() : "";?&gt;&lt;/td&gt;
+            &lt;td class="text-data text-data-artist-arranger-name"&gt;&lt;?php echo $song-&gt;hasValueArranger() ? $song-&gt;getArranger()-&gt;getName() : "";?&gt;&lt;/td&gt;
+            &lt;td class="text-data text-data-duration"&gt;&lt;?php echo $song-&gt;getDuration();?&gt;&lt;/td&gt;
+            &lt;td class="text-data text-data-vocal"&gt;&lt;?php echo $song-&gt;isVocal() ? 'Yes' : 'No';?&gt;&lt;/td&gt;
+            &lt;td class="text-data text-data-subtitle-complete"&gt;&lt;?php echo $song-&gt;issubtitleComplete() ? 'Yes' : 'No';?&gt;&lt;/td&gt;
+            &lt;td class="text-data text-data-active"&gt;&lt;?php echo $song-&gt;isActive() ? 'Yes' : 'No';?&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;?php
+            }
+            ?&gt;
+
+        &lt;/tbody&gt;
+        &lt;/table&gt;
+
+        &lt;div class="pagination"&gt;
+        &lt;div class="pagination-number"&gt;
+        &lt;?php
+        foreach($rowData-&gt;getPagination() as $pg)
+        {
+            ?&gt;&lt;span class="page-selector&lt;?php echo $pg['selected'] ? ' page-selected':'';?&gt;" data-page-number="&lt;?php echo $pg['page'];?&gt;"&gt;&lt;a href="#"&gt;&lt;?php echo $pg['page'];?&gt;&lt;/a&gt;&lt;/span&gt;&lt;?php
+        }
+        ?&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;?php
+    }
+}
+catch(Exception $e)
+{
+
+}
+</code></pre>
+<p>Define method <code>createSongSpecification</code>. In this example, we use predicate (<code>PicoPredicate</code>) and and specification (<code>PicoSpecification</code>)</p>
+<pre><code class="language-php">&lt;?php
+
+namespace MusicProductionManager\Utility;
+
+use MagicObject\Database\PicoPredicate;
+use MagicObject\Database\PicoSpecification;
+use MagicObject\Request\PicoRequestBase;
+
+class SpecificationUtil
+{
+    /**
+     * Create Song specification
+     * @param PicoRequestBase $inputGet
+     * @param array $additional
+     * @return PicoSpecification
+     */
+    public static function createSongSpecification($inputGet, $additional = null)
+    {
+        $spesification = new PicoSpecification();
+
+        if($inputGet-&gt;getSongId() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1-&gt;equals('songId', $inputGet-&gt;getSongId());
+            $spesification-&gt;addAnd($predicate1);
+        }
+
+        if($inputGet-&gt;getGenreId() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1-&gt;equals('genreId', $inputGet-&gt;getGenreId());
+            $spesification-&gt;addAnd($predicate1);
+        }
+
+        if($inputGet-&gt;getAlbumId() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1-&gt;equals('albumId', $inputGet-&gt;getAlbumId());
+            $spesification-&gt;addAnd($predicate1);
+        }
+
+        if($inputGet-&gt;getName() != "")
+        {
+            $spesificationTitle = new PicoSpecification();
+            $predicate1 = new PicoPredicate();
+            $predicate1-&gt;like('name', PicoPredicate::generateCenterLike($inputGet-&gt;getName()));
+            $spesificationTitle-&gt;addOr($predicate1);
+            $predicate2 = new PicoPredicate();
+            $predicate2-&gt;like('title', PicoPredicate::generateCenterLike($inputGet-&gt;getName()));
+            $spesificationTitle-&gt;addOr($predicate2);
+            $spesification-&gt;addAnd($spesificationTitle);
+        }
+
+        if($inputGet-&gt;getSubtitle() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1-&gt;like('subtitle', PicoPredicate::generateCenterLike($inputGet-&gt;getSubtitle()));
+            $spesification-&gt;addAnd($predicate1);
+        }
+
+        if($inputGet-&gt;getArtistVocalist() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1-&gt;equals('artistVocalist', $inputGet-&gt;getArtistVocalist());
+            $spesification-&gt;addAnd($predicate1);
+        }
+
+        if($inputGet-&gt;getsubtitleComplete() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1-&gt;equals('subtitleComplete', $inputGet-&gt;getsubtitleComplete());
+            $spesification-&gt;addAnd($predicate1);
+        }
+
+        if($inputGet-&gt;getVocal() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1-&gt;equals('vocal', $inputGet-&gt;getVocal());
+            $spesification-&gt;addAnd($predicate1);
+        }
+
+        if($inputGet-&gt;getActive() != "")
+        {
+            $predicate1 = new PicoPredicate();
+            $predicate1-&gt;equals('active', $inputGet-&gt;getActive());
+            $spesification-&gt;addAnd($predicate1);
+        }
+
+        if(isset($additional) &amp;&amp; is_array($additional))
+        {
+            foreach($additional as $key=&gt;$value)
+            {
+                $predicate2 = new PicoPredicate();  
+                $predicate2-&gt;equals($key, $value);
+                $spesification-&gt;addAnd($predicate2);
+            }
+        }
+
+        return $spesification;
+    }
+}</code></pre>
+<h2>Database Query Builder</h2>
+<pre><code class="language-php">&lt;?php
+
+use MagicObject\Database\PicoDatabaseQueryBuilder;
+
+use MagicObject\Database\PicoDatabase;
+use MagicObject\Database\PicoDatabaseCredentials;
+use MusicProductionManager\Config\ConfigApp;
+
+use MusicProductionManager\Config\ConfigApp;
+
+use MusicProductionManager\Data\Entity\Album;
+
+require_once dirname(__DIR__)."/vendor/autoload.php";
+
+$cfg = new ConfigApp(null, true);
+$cfg-&gt;loadYamlFile(dirname(__DIR__)."/.cfg/app.yml", true, true);
+
+$databaseCredentials = new PicoDatabaseCredentials($cfg-&gt;getDatabase());
+$database = new PicoDatabase($databaseCredentials);
+try
+{
+    $database-&gt;connect();
+
+    $queryBuilder = new PicoDatabaseQueryBuilder($database);
+
+    $queryBuilder
+        -&gt;newQuery()
+        -&gt;select("u.*")
+        -&gt;from("user")
+        -&gt;alias("u")
+        -&gt;where("u.username = ? and u.password = ? and u.active = ?", $username, $password, true)
+        ;
+    $stmt = $database-&gt;executeQuery($queryBuilder);
+    $rows = $stmt-&gt;fetchAll(PDO::FETCH_ASSOC);
+    foreach($rows as $user)
+    {
+        var_dump($user);
+    }
+
+}
+catch(Ecxeption $e)
+{
+
+}</code></pre>
+<h2>Upload File</h2>
+<p>Uploading lots of files with arrays is difficult for some developers, especially novice developers. There is a significant difference between uploading a single file and multiple files.</p>
+<p>When the developer decides to change the form from single file to multiple files or vice versa, the backend developer must change the code to handle the uploaded files.</p>
+<pre><code class="language-html">&lt;!-- single file --&gt;
+&lt;form action="" method="post" enctype="multipart/form-data"&gt;
+     &lt;input name="myupload" type="file" /&gt;
+     &lt;input type="submit" /&gt;
+&lt;/form&gt;</code></pre>
+<pre><code class="language-html">&lt;!-- multiple files --&gt;
+&lt;form action="" method="post" enctype="multipart/form-data"&gt;
+     &lt;input name="myupload[]" type="file" webkitdirectory multiple /&gt;
+     &lt;input type="submit" /&gt;
+&lt;/form&gt;</code></pre>
+<pre><code class="language-php">&lt;?php
+
+use MagicObject\File\PicoUplodFile;
+
+require_once "vendor/autoload.php";
+
+$files = new UplodFile();
+
+$file1 = $files-&gt;get('myupload');
+// or 
+// $file1 = $files-&gt;myupload;
+
+$targetDir = __DIR__;
+
+foreach($file1-&gt;getAll() as $fileItem)
+{
+    $temporaryName = $fileItem-&gt;getTmpName();
+    $name = $fileItem-&gt;getName();
+    $size = $fileItem-&gt;getSize();
+    echo "$name | $temporaryName | $size\r\n";
+    move_uploaded_file($temporaryName, $targetDir."/".$name);
+}
+</code></pre>
+<p>Developers simply retrieve data using the <code>getAll</code> method and developers will get all files uploaded by users either via single file or multiple file forms. If necessary, the developer can check whether the file was uploaded using a single file or multiple file form with the <code>isMultiple()</code> method</p>
+<pre><code class="language-php">
+if($file1-&gt;isMultiple())
+{
+    // do something here
+}
+else
+{
+    // do something here
+}</code></pre>

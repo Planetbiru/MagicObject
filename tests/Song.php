@@ -2,7 +2,6 @@
 
 use MagicObject\Database\PicoDatabaseType;
 use MagicObject\Generator\PicoDatabaseDump;
-use MagicObject\Generator\PicoDatabaseStructureGenerator;
 use MagicObject\MagicObject;
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";

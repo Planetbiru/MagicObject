@@ -1,0 +1,14 @@
+---
+includes:
+  - simple-object
+  - multilevel-object
+  - object-from-yaml
+  - environment-variable
+  - secret-object
+  - input
+  - entity
+  - object-label
+  - pagination
+  - database-query-builder
+  - upload-file
+---
