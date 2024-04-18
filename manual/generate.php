@@ -25,8 +25,8 @@ function processBlock($block)
 	$parsedown->setSafeMode(true);
 
 
-    
-    foreach($arr as $k=>$line)
+    $fp = fopen(dirname(__DIR__) . "/tutorial.md", "w+");
+    foreach($arr as $line)
     {
 
         if(!empty($line) && $lastCommand == "includes")
@@ -35,7 +35,9 @@ function processBlock($block)
             if(file_exists($file))
             {
                 // Echo the HTML from the Markdown text submitted by the user. Note: Additional escaping functions should be implemented based on the context.
-                $buffer .= "\r\n".$parsedown->text(file_get_contents($file));
+                $markdown = file_get_contents($file);
+                $buffer = "\r\n".$parsedown->text($markdown);
+                fwrite($fp, $markdown."\r\n");
             }
         }
         
@@ -47,6 +49,7 @@ function processBlock($block)
         }
         
     }
+    fclose($fp);
     return $buffer;
 }
 
