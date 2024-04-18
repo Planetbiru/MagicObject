@@ -1,5 +1,6 @@
 ---
 includes:
+  - preface
   - simple-object
   - multilevel-object
   - object-from-yaml
