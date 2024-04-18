@@ -13,7 +13,6 @@
         }
     ],
     "require": {
-        "symfony/yaml": "^3.4",
-        "erusev/parsedown": "^1.7"
+        "symfony/yaml": "^3.4"
     }
 }

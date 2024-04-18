@@ -5,6 +5,7 @@ includes:
   - simple-object
   - multilevel-object
   - object-from-yaml
+  - object-from-ini
   - environment-variable
   - secret-object
   - input
