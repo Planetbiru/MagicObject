@@ -445,7 +445,7 @@ class SecretGenerator extends SecretObject
 	 *
 	 * @var string
 	 */
-	protected $driver = 'mysql';
+	protected $driver;
 
 	/**
 	 * Database server host
@@ -453,13 +453,13 @@ class SecretGenerator extends SecretObject
 	 * @EncryptOut
 	 * @var string
 	 */
-	protected $host = 'localhost';
+	protected $host;
 
 	/**
 	 * Database server port
 	 * @var integer
 	 */
-	protected $port = 3306;
+	protected $port;
 
 	/**
 	 * Database username
@@ -467,7 +467,7 @@ class SecretGenerator extends SecretObject
 	 * @EncryptOut
 	 * @var string
 	 */
-	protected $username = "";
+	protected $username;
 
 	/**
 	 * Database user password
@@ -475,7 +475,7 @@ class SecretGenerator extends SecretObject
 	 * @EncryptOut
 	 * @var string
 	 */
-	protected $password = "";
+	protected $password;
 
 	/**
 	 * Database name
@@ -483,7 +483,7 @@ class SecretGenerator extends SecretObject
 	 * @EncryptOut
 	 * @var string
 	 */
-	protected $databaseName = "";
+	protected $databaseName;
 
 	/**
 	 * Database schema
@@ -491,14 +491,14 @@ class SecretGenerator extends SecretObject
 	 * @EncryptOut
 	 * @var string
 	 */
-	protected $databseSchema = "public";
+	protected $databseSchema;
 
 	/**
 	 * Application time zone
 	 *
 	 * @var string
 	 */
-	protected $timeZone = "Asia/Jakarta";
+	protected $timeZone;
 }
 ```
 
