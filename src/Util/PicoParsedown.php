@@ -23,7 +23,7 @@ class PicoParsedown
 
     # ~
 
-    function text($text)
+    public function text($text)
     {
         # make sure no definitions are set
         $this->DefinitionData = array();
@@ -50,7 +50,7 @@ class PicoParsedown
     # Setters
     #
 
-    function setBreaksEnabled($breaksEnabled)
+    public function setBreaksEnabled($breaksEnabled)
     {
         $this->breaksEnabled = $breaksEnabled;
 
@@ -59,7 +59,7 @@ class PicoParsedown
 
     protected $breaksEnabled;
 
-    function setMarkupEscaped($markupEscaped)
+    public function setMarkupEscaped($markupEscaped)
     {
         $this->markupEscaped = $markupEscaped;
 
@@ -68,7 +68,7 @@ class PicoParsedown
 
     protected $markupEscaped;
 
-    function setUrlsLinked($urlsLinked)
+    public function setUrlsLinked($urlsLinked)
     {
         $this->urlsLinked = $urlsLinked;
 
@@ -77,7 +77,7 @@ class PicoParsedown
 
     protected $urlsLinked = true;
 
-    function setSafeMode($safeMode)
+    public function setSafeMode($safeMode)
     {
         $this->safeMode = (bool) $safeMode;
 
@@ -1577,7 +1577,7 @@ class PicoParsedown
     # Deprecated Methods
     #
 
-    function parse($text)
+    public function parse($text)
     {
         $markup = $this->text($text);
 
@@ -1655,7 +1655,7 @@ class PicoParsedown
         }
     }
 
-    static function instance($name = 'default')
+    public static function instance($name = 'default')
     {
         if (isset(self::$instances[$name]))
         {
