@@ -1,4 +1,4 @@
-## Input GET/POST/REQUEST/COOKIE/SERVER
+## Input POST/GET/COOKIE/REQUEST/SERVER
 
 ### Input POST
 
@@ -48,22 +48,6 @@ $name = $_COOKIE['real_name'];
 
 ```
 
-### Input SERVER
-
-```php
-
-use MagicObject\Request\InputServer;
-
-require_once __DIR__ . "/vendor/autoload.php";
-
-$inputServer = new InputServer();
-
-$remoteAddress = $inputServer->getRemoteAddr();
-// equivalen to 
-$remoteAddress = $_SERVER_['REMOTE_ADDR'];
-
-```
-
 ### Input REQUEST
 
 ```php
@@ -77,6 +61,22 @@ $inputRequest = new InputRequest();
 $name = $inputRequest->getRealName();
 // equivalen to 
 $name = $_REQUEST['real_name'];
+
+```
+
+### Input SERVER
+
+```php
+
+use MagicObject\Request\InputServer;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+$inputServer = new InputServer();
+
+$remoteAddress = $inputServer->getRemoteAddr();
+// equivalen to 
+$remoteAddress = $_SERVER_['REMOTE_ADDR'];
 
 ```
 
