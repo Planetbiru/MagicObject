@@ -1,1 +1,1 @@
-# Implementation of MagicObject
+# MagicObject Implementation
