@@ -1,6 +1,7 @@
 ---
 includes:
-  - preface
+  - installation
+  - implementation
   - simple-object
   - multilevel-object
   - object-from-yaml
