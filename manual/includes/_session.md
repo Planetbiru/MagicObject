@@ -1,6 +1,6 @@
 ## Session
 
-Session variables hold information about one single user, and are available to all pages in one application.
+Session variables keep information about one single user, and are available to all pages in one application.
 
 ### Session with File
 
