@@ -1506,7 +1506,7 @@ class MagicObject extends stdClass // NOSONAR
             {
                 $var = PicoStringUtil::camelize($params[0]);
             }
-            if(!isset($this->label[$var]))
+            if(!empty($var) && !isset($this->label[$var]))
             {
                 $reflexProp = new PicoAnnotationParser(get_class($this), $var, PicoAnnotationParser::PROPERTY);
                 $parameters = $reflexProp->getParameters();   
@@ -1517,7 +1517,11 @@ class MagicObject extends stdClass // NOSONAR
                 } 
                 
             }
-            return $this->label[$var];
+            if(isset($this->label[$var]))
+            {
+                return $this->label[$var];
+            }
+            return "";
         } 
     }
 
