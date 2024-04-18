@@ -1,4 +1,4 @@
-# Tutorial Using MagicObject
+# Implementation of MagicObject
 ## Simple Object
 
 ### Set and Get Properties Value
