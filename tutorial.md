@@ -519,6 +519,7 @@ class Album extends MagicObject
 	 * @GeneratedValue(strategy=GenerationType.UUID)
 	 * @NotNull
 	 * @Column(name="album_id", type="varchar(50)", length=50, nullable=false)
+	 * @Label(content="Album ID")
 	 * @var string
 	 */
 	protected $albumId;
@@ -527,22 +528,43 @@ class Album extends MagicObject
 	 * Name
 	 * 
 	 * @Column(name="name", type="varchar(50)", length=50, nullable=true)
+	 * @Label(content="Name")
 	 * @var string
 	 */
 	protected $name;
 
 	/**
+	 * Title
+	 * 
+	 * @Column(name="title", type="text", nullable=true)
+	 * @Label(content="Title")
+	 * @var string
+	 */
+	protected $title;
+
+	/**
 	 * Description
 	 * 
 	 * @Column(name="description", type="longtext", nullable=true)
+	 * @Label(content="Description")
 	 * @var string
 	 */
 	protected $description;
 
 	/**
+	 * Producer ID
+	 * 
+	 * @Column(name="producer_id", type="varchar(40)", length=40, nullable=true)
+	 * @Label(content="Producer ID")
+	 * @var string
+	 */
+	protected $producerId;
+
+	/**
 	 * Release Date
 	 * 
 	 * @Column(name="release_date", type="date", nullable=true)
+	 * @Label(content="Release Date")
 	 * @var string
 	 */
 	protected $releaseDate;
@@ -551,6 +573,7 @@ class Album extends MagicObject
 	 * Number Of Song
 	 * 
 	 * @Column(name="number_of_song", type="int(11)", length=11, nullable=true)
+	 * @Label(content="Number Of Song")
 	 * @var integer
 	 */
 	protected $numberOfSong;
@@ -559,14 +582,25 @@ class Album extends MagicObject
 	 * Duration
 	 * 
 	 * @Column(name="duration", type="float", nullable=true)
+	 * @Label(content="Duration")
 	 * @var double
 	 */
 	protected $duration;
 
 	/**
+	 * Image Path
+	 * 
+	 * @Column(name="image_path", type="text", nullable=true)
+	 * @Label(content="Image Path")
+	 * @var string
+	 */
+	protected $imagePath;
+
+	/**
 	 * Sort Order
 	 * 
 	 * @Column(name="sort_order", type="int(11)", length=11, nullable=true)
+	 * @Label(content="Sort Order")
 	 * @var integer
 	 */
 	protected $sortOrder;
@@ -575,6 +609,7 @@ class Album extends MagicObject
 	 * Time Create
 	 * 
 	 * @Column(name="time_create", type="timestamp", length=19, nullable=true, updatable=false)
+	 * @Label(content="Time Create")
 	 * @var string
 	 */
 	protected $timeCreate;
@@ -583,6 +618,7 @@ class Album extends MagicObject
 	 * Time Edit
 	 * 
 	 * @Column(name="time_edit", type="timestamp", length=19, nullable=true)
+	 * @Label(content="Time Edit")
 	 * @var string
 	 */
 	protected $timeEdit;
@@ -591,6 +627,7 @@ class Album extends MagicObject
 	 * Admin Create
 	 * 
 	 * @Column(name="admin_create", type="varchar(40)", length=40, nullable=true, updatable=false)
+	 * @Label(content="Admin Create")
 	 * @var string
 	 */
 	protected $adminCreate;
@@ -599,6 +636,7 @@ class Album extends MagicObject
 	 * Admin Edit
 	 * 
 	 * @Column(name="admin_edit", type="varchar(40)", length=40, nullable=true)
+	 * @Label(content="Admin Edit")
 	 * @var string
 	 */
 	protected $adminEdit;
@@ -607,6 +645,7 @@ class Album extends MagicObject
 	 * IP Create
 	 * 
 	 * @Column(name="ip_create", type="varchar(50)", length=50, nullable=true, updatable=false)
+	 * @Label(content="IP Create")
 	 * @var string
 	 */
 	protected $ipCreate;
@@ -615,6 +654,7 @@ class Album extends MagicObject
 	 * IP Edit
 	 * 
 	 * @Column(name="ip_edit", type="varchar(50)", length=50, nullable=true)
+	 * @Label(content="IP Edit")
 	 * @var string
 	 */
 	protected $ipEdit;
