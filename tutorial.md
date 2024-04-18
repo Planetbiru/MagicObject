@@ -531,7 +531,10 @@ $name =  filter_input(
 
 
 // another way to filter input
+// it will update value taken from $_GET['real_name']
 $inputGet->filterRealName(PicoFilterConstant::FILTER_SANITIZE_SPECIAL_CHARS);
+
+// so you can use it later
 $name = $inputGet->getRealName();
 
 ```
@@ -566,6 +569,8 @@ FILTER_SANITIZE_ASCII = 601;
 ```
 
 ## Session
+
+Session variables hold information about one single user, and are available to all pages in one application.
 
 ### Session with File
 
