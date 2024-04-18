@@ -722,7 +722,7 @@ try
     // create new 
   
     $album1 = new Album(null, $database);
-    $album1->setAibumId("123456");
+    $album1->setAlbumId("123456");
     $album1->setName("Album 1");
     $album1->setAdminCreate("USER1");
     $album1->setDuration(300);

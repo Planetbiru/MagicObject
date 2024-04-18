@@ -224,7 +224,7 @@ try
     // create new 
   
     $album1 = new Album(null, $database);
-    $album1->setAibumId("123456");
+    $album1->setAlbumId("123456");
     $album1->setName("Album 1");
     $album1->setAdminCreate("USER1");
     $album1->setDuration(300);
@@ -336,4 +336,580 @@ catch(Exception $e)
     // do nothing
 }
 
+```
+
+
+### Insert
+
+Insert new record
+
+```php
+$album1 = new Album(null, $database);
+$album1->setAlbumId("123456");
+$album1->setName("Album 1");
+$album1->setAdminCreate("USER1");
+$album1->setDuration(300);
+try
+{
+	$album->insert();
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+To insert with any column value `NULL`
+
+```php
+$album1 = new Album(null, $database);
+$album1->setAlbumId("123456");
+$album1->setName("Album 1");
+$album1->setAdminCreate("USER1");
+$album1->setDuration(300);
+$album1->setReleaseDate(null);
+$album1->setNumberOfSong(null);
+try
+{
+	// releaseDate and numberOfSong will set to NULL
+	$album->insert(true);
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+### Save
+
+Insert new record if not exists, otherwise update the record
+
+```php
+$album1 = new Album(null, $database);
+$album1->setAlbumId("123456");
+$album1->setName("Album 1");
+$album1->setAdminCreate("USER1");
+$album1->setAdminEdit("USER1");
+$album1->setDuration(300);
+try
+{
+	$album->save();
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+Note: If operation is update, nonupdatable column will not be updated
+
+### Update
+
+Update existing record
+
+```php
+$album1 = new Album(null, $database);
+$album1->setAlbumId("123456");
+$album1->setName("Album 1");
+$album1->setAdminEdit("USER1");
+$album1->setDuration(300);
+try
+{
+	$album->update();
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+To update any column value to `NULL`
+
+```php
+$album1 = new Album(null, $database);
+$album1->setAlbumId("123456");
+$album1->setName("Album 1");
+$album1->setAdminEdit("USER1");
+$album1->setDuration(300);
+$album1->setReleaseDate(null);
+$album1->setNumberOfSong(null);
+try
+{
+	// releaseDate and numberOfSong will set to NULL
+	$album->update(true);
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+### Select One By Specific Column
+
+```php
+$album1 = new Album(null, $database);
+try
+{
+	$album1->findOneByAlbumId("123456");
+
+	// to update the record
+
+	// update begin
+	$album1->setName("Album 1");
+	$album1->setAdminEdit("USER1");
+	$album1->setDuration(300);
+	$album->update();
+	// update end
+
+	// to delete the record
+
+	// delete begin
+	$album->delete();
+	// delete end
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+### Select One By Combination of Columns
+
+Logic `OR`
+
+```php
+$album1 = new Album(null, $database);
+try
+{
+	$album1->findOneByAlbumIdOrNumbefOfSong("123456", 3);
+
+	// to update the record
+
+	// update begin
+	$album1->setAdminEdit("USER1");
+	$album1->setDuration(300);
+	$album->update();
+	// update end
+
+	// to delete the record
+
+	// delete begin
+	$album->delete();
+	// delete end
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+Logic `AND`
+
+```php
+$album1 = new Album(null, $database);
+try
+{
+	$album1->findOneByAdminCreateAndNumbefOfSong("USER1", 3);
+
+	// to update the record
+
+	// update begin
+	$album1->setAdminEdit("USER1");
+	$album1->setDuration(300);
+	$album->update();
+	// update end
+
+	// to delete the record
+
+	// delete begin
+	$album->delete();
+	// delete end
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+### Select Multiple By Combination of Columns
+
+Logic `OR`
+
+```php
+$albumSelector = new Album(null, $database);
+try
+{
+	$albums = $albumSelector->findByAlbumIdOrNumbefOfSong("123456", 3);
+	
+	$result = $albums->getResult();
+	foreach($result as $album1)
+	{
+		// to update the record
+
+		// update begin
+		$album1->setAdminEdit("USER1");
+		$album1->setDuration(300);
+		$album->update();
+		// update end
+
+		// to delete the record
+
+		// delete begin
+		$album->delete();
+		// delete end
+	}
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+Logic `AND`
+
+```php
+$albumSelector = new Album(null, $database);
+try
+{
+	$albums = $albumSelector->findOneByAdminCreateAndNumbefOfSong("USER1", 3);
+	
+	$result = $albums->getResult();
+	foreach($result as $album1)
+	{
+		// to update the record
+
+		// update begin
+		$album1->setAdminEdit("USER1");
+		$album1->setDuration(300);
+		$album->update();
+		// update end
+
+		// to delete the record
+
+		// delete begin
+		$album->delete();
+		// delete end
+	}
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+### Find By Specification
+
+Real applications do not always use simple logic to filter database records. Complex logic cannot be done using just one method. MagicObject provides features to make searches more specific.
+
+**Example 1**
+
+```php
+$album = new Album(null, $database);
+$rowData = array();
+try
+{
+	$album->findOneByAlbumId($inputGet->getAlbumId());
+
+	$sortable = new PicoSortable();
+	$sort2 = new PicoSort('trackNumber', PicoSortable::ORDER_TYPE_ASC);
+	$sortable->addSortable($sort2);
+
+	$spesification = new PicoSpecification();
+
+	$predicate1 = new PicoPredicate();
+	$predicate1->equals('albumId', $inputGet->getAlbumId());
+	$spesification->addAnd($predicate1);
+
+	$predicate2 = new PicoPredicate();
+	$predicate2->equals('active', true);
+	$spesification->addAnd($predicate2);
+	
+	// Up to this point we are still using albumId and active
+
+	$pageData = $player->findAll($spesification, null, $sortable, true);
+	$rowData = $pageData->getResult();
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+
+if(!empty($rowData))
+{
+	foreach($rowData $album)
+	{
+		// do something here
+		// $album is instanceof Album class
+		// You can use all its features
+	}
+}
+```
+
+**Example 2**
+
+Album specification from `$_GET`
+
+```php
+
+/**
+ * Create album specification
+ * @param PicoRequestBase $inputGet
+ * @return PicoSpecification
+ */
+function createAlbumSpecification($inputGet)
+{
+	$spesification = new PicoSpecification();
+
+	if($inputGet->getAlbumId() != "")
+	{
+		$predicate1 = new PicoPredicate();
+		$predicate1->equals('albumId', $inputGet->getAlbumId());
+		$spesification->addAnd($predicate1);
+	}
+
+	if($inputGet->getName() != "" || $inputGet->getTitle() != "")
+	{
+		$spesificationTitle = new PicoSpecification();
+		
+		if($inputGet->getName() != "")
+		{
+			$predicate1 = new PicoPredicate();
+			$predicate1->like('name', PicoPredicate::generateCenterLike($inputGet->getName()));
+			$spesificationTitle->addOr($predicate1);
+			
+			$predicate2 = new PicoPredicate();
+			$predicate2->like('title', PicoPredicate::generateCenterLike($inputGet->getName()));
+			$spesificationTitle->addOr($predicate2);
+		}
+		if($inputGet->getTitle() != "")
+		{
+			$predicate3 = new PicoPredicate();
+			$predicate3->like('name', PicoPredicate::generateCenterLike($inputGet->getTitle()));
+			$spesificationTitle->addOr($predicate3);
+			
+			$predicate4 = new PicoPredicate();
+			$predicate4->like('title', PicoPredicate::generateCenterLike($inputGet->getTitle()));
+			$spesificationTitle->addOr($predicate4);
+		}
+		
+		$spesification->addAnd($spesificationTitle);
+	}
+	
+	
+	if($inputGet->getProducerId() != "")
+	{
+		$predicate1 = new PicoPredicate();
+		$predicate1->equals('producerId', $inputGet->getProducerId());
+		$spesification->addAnd($predicate1);
+	}
+	
+	return $spesification;
+}
+
+$album = new Album(null, $database);
+$rowData = array();
+try
+{
+	$album->findOneByAlbumId($inputGet->getAlbumId());
+
+	$sortable = new PicoSortable();
+	$sort2 = new PicoSort('albumId', PicoSortable::ORDER_TYPE_ASC);
+	$sortable->addSortable($sort2);
+
+	$spesification = createAlbumSpecification(new InputGet());
+
+	$pageData = $player->findAll($spesification, null, $sortable, true);
+	$rowData = $pageData->getResult();
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+
+if(!empty($rowData))
+{
+	foreach($rowData $album)
+	{
+		// do something here
+		// $album is instanceof Album class
+		// You can use all its features
+	}
+}
+```
+
+**Example 3**
+
+Song specification from `$_GET`
+
+```php
+/**
+ * Create Song specification
+ * @param PicoRequestBase $inputGet
+ * $@param array|null $additional
+ * @return PicoSpecification
+ */
+public static function createSongSpecification($inputGet, $additional = null) //NOSONAR
+{
+	$spesification = new PicoSpecification();
+
+	if($inputGet->getSongId() != "")
+	{
+		$predicate1 = new PicoPredicate();
+		$predicate1->equals('songId', $inputGet->getSongId());
+		$spesification->addAnd($predicate1);
+	}
+
+	if($inputGet->getGenreId() != "")
+	{
+		$predicate1 = new PicoPredicate();
+		$predicate1->equals('genreId', $inputGet->getGenreId());
+		$spesification->addAnd($predicate1);
+	}
+
+	if($inputGet->getAlbumId() != "")
+	{
+		$predicate1 = new PicoPredicate();
+		$predicate1->equals('albumId', $inputGet->getAlbumId());
+		$spesification->addAnd($predicate1);
+	}
+
+	if($inputGet->getProducerId() != "")
+	{
+		$predicate1 = new PicoPredicate();
+		$predicate1->equals('producerId', $inputGet->getProducerId());
+		$spesification->addAnd($predicate1);
+	}
+
+	if($inputGet->getName() != "" || $inputGet->getTitle() != "")
+	{
+		$spesificationTitle = new PicoSpecification();
+		
+		if($inputGet->getName() != "")
+		{
+			$predicate1 = new PicoPredicate();
+			$predicate1->like('name', PicoPredicate::generateCenterLike($inputGet->getName()));
+			$spesificationTitle->addOr($predicate1);
+			
+			$predicate2 = new PicoPredicate();
+			$predicate2->like('title', PicoPredicate::generateCenterLike($inputGet->getName()));
+			$spesificationTitle->addOr($predicate2);
+		}
+		if($inputGet->getTitle() != "")
+		{
+			$predicate3 = new PicoPredicate();
+			$predicate3->like('name', PicoPredicate::generateCenterLike($inputGet->getTitle()));
+			$spesificationTitle->addOr($predicate3);
+			
+			$predicate4 = new PicoPredicate();
+			$predicate4->like('title', PicoPredicate::generateCenterLike($inputGet->getTitle()));
+			$spesificationTitle->addOr($predicate4);
+		}
+		
+		$spesification->addAnd($spesificationTitle);
+	}
+
+	if($inputGet->getSubtitle() != "")
+	{
+		$predicate1 = new PicoPredicate();
+		$predicate1->like('subtitle', PicoPredicate::generateCenterLike($inputGet->getSubtitle()));
+		$spesification->addAnd($predicate1);
+	}
+
+	if($inputGet->getVocalist() != "")
+	{
+		$predicate1 = new PicoPredicate();
+		$predicate1->equals('artistVocalist', $inputGet->getVocalist());
+		$spesification->addAnd($predicate1);
+	}
+
+	if($inputGet->getSubtitleComplete() != "")
+	{
+		$predicate1 = new PicoPredicate();
+		$predicate1->equals('subtitleComplete', $inputGet->getSubtitleComplete());
+		$spesification->addAnd($predicate1);
+	}
+
+	if($inputGet->getVocal() != "")
+	{
+		$predicate1 = new PicoPredicate();
+		$predicate1->equals('vocal', $inputGet->getVocal());
+		$spesification->addAnd($predicate1);
+	}
+
+	if($inputGet->getActive() != "")
+	{
+		$predicate1 = new PicoPredicate();
+		$predicate1->equals('active', $inputGet->getActive());
+		$spesification->addAnd($predicate1);
+	}
+
+	if(isset($additional) && is_array($additional))
+	{
+		foreach($additional as $key=>$value)
+		{
+			$predicate2 = new PicoPredicate();          
+			$predicate2->equals($key, $value);
+			$spesification->addAnd($predicate2);
+		}
+	}
+	
+	return $spesification;
+}
+
+
+$orderMap = array(
+    'name'=>'name', 
+    'title'=>'title', 
+    'rating'=>'rating',
+    'albumId'=>'albumId', 
+    'album'=>'albumId', 
+    'trackNumber'=>'trackNumber',
+    'genreId'=>'genreId', 
+    'genre'=>'genreId',
+    'producerId'=>'producerId',
+    'artistVocalId'=>'artistVocalId',
+    'artistVocalist'=>'artistVocalId',
+    'artistComposer'=>'artistComposer',
+    'artistArranger'=>'artistArranger',
+    'duration'=>'duration',
+    'subtitleComplete'=>'subtitleComplete',
+    'vocal'=>'vocal',
+    'active'=>'active'
+);
+$defaultOrderBy = 'albumId';
+$defaultOrderType = 'desc';
+$pagination = new PicoPagination($cfg->getResultPerPage());
+
+$spesification = SpecificationUtil::createSongSpecification($inputGet);
+
+if($pagination->getOrderBy() == '')
+{
+	$sortable = new PicoSortable();
+	$sort1 = new PicoSort('albumId', PicoSortable::ORDER_TYPE_DESC);
+	$sortable->addSortable($sort1);
+	$sort2 = new PicoSort('trackNumber', PicoSortable::ORDER_TYPE_ASC);
+	$sortable->addSortable($sort2);
+}
+else
+{
+	$sortable = new PicoSortable($pagination->getOrderBy($orderMap, $defaultOrderBy), $pagination->getOrderType($defaultOrderType));
+}
+
+$pagable = new PicoPagable(new PicoPage($pagination->getCurrentPage(), $pagination->getPageSize()), $sortable);
+
+$songEntity = new Song(null, $database);
+$pageData = $songEntity->findAll($spesification, $pagable, $sortable, true);
+
+$rowData = $pageData->getResult();
+
+if(!empty($rowData))
+{
+	foreach($rowData $song)
+	{
+		// do something here
+		// $song is instanceof Song class
+		// You can use all its features
+	}
+}
+	
 ```

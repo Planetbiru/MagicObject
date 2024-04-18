@@ -6,9 +6,10 @@ includes:
   - environment-variable
   - secret-object
   - input
+  - session
   - entity
-  - object-label
   - pagination
+  - object-label
   - database-query-builder
   - upload-file
 ---
