@@ -528,6 +528,39 @@ $secretYaml = $generator->dumpYaml(2, 4, 0); // will print secret yaml
 
 file_put_content("secret.yaml", $secretYaml); // will dump to file secret.yaml
 ```
+
+To use you own key
+
+```php
+
+$yaml = "  
+time_zone_system: Asia/Jakarta
+default_charset: utf8
+driver: mysql
+host: localhost
+port: 3306
+username: root
+password: password
+database_name: music
+database_schema: public
+time_zone: Asia/Jakarta
+salt: GaramDapur
+";
+
+$config = new MagicObject();
+$config->loadYamlString($yaml);
+$generator = new SecretGenerator($config, function(){
+	// define your own key here
+	return "6619f3e7a1a9f0e75838d41ff368f72868e656b251e67e8358bef8483ab0d51c";
+});
+
+echo $generator; // will print JSON
+
+$secretYaml = $generator->dumpYaml(2, 4, 0); // will print secret yaml
+
+file_put_content("secret.yaml", $secretYaml); // will dump to file secret.yaml
+```
+
 ## Input POST/GET/COOKIE/REQUEST/SERVER
 
 ### Input POST
