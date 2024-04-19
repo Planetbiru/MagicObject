@@ -139,7 +139,12 @@ Example 5:
 
 ```php
 $queryBuilder = new PicoDatabaseQueryBuilder($database);
-$data = array("song_id"=>'123456', "name"=>'Lagu 0001', "title"=>'Membendung Rindu', "time_create"=>'2024-03-03 10:11:12');
+$data = array(
+    "song_id"=>'123456', 
+    "name"=>'Lagu 0001', 
+    "title"=>'Membendung Rindu', 
+    "time_create"=>'2024-03-03 10:11:12'
+    );
 $queryBuilder->newQuery()
     ->insert()
     ->into("song")
