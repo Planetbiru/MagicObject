@@ -122,6 +122,13 @@ class PicoDatabasePersistence // NOSONAR
      * @var boolean
      */
     private $dbAutoinrementCompleted = false;
+    
+    /**
+     * Table Info
+     *
+     * @var PicoTableInfo
+     */
+    private $tableInfoProp = null;
 
     /**
      * Database connection
@@ -390,13 +397,6 @@ class PicoDatabasePersistence // NOSONAR
         }
         return $notNullColumns;
     }
-    
-    /**
-     * Table Info
-     *
-     * @var PicoTableInfo
-     */
-    private $tableInfoProp = null;
 
     /**
      * Get table information by parsing class and property annotation
