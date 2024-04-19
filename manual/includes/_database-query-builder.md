@@ -66,6 +66,11 @@ $queryBuilder->newQuery()
     ->into("song")
     ->fields("(song_id, name, title, time_create)")
     ->values("('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')");
+/*
+insert into song
+(song_id, name, title, time_create)
+values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
+*/
 ```
 
 **into($query)**
@@ -81,6 +86,11 @@ $queryBuilder->newQuery()
     ->into("song")
     ->fields("(song_id, name, title, time_create)")
     ->values("('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')");
+/*
+insert into song
+(song_id, name, title, time_create)
+values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
+*/
 ```
 
 **fields($query)**
@@ -100,6 +110,11 @@ $queryBuilder->newQuery()
     ->into("song")
     ->fields("(song_id, name, title, time_create)")
     ->values("('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')");
+/*
+insert into song
+(song_id, name, title, time_create)
+values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
+*/
 ```
 
 Example 2:
@@ -111,9 +126,14 @@ $queryBuilder->newQuery()
     ->into("song")
     ->fields("(song_id, name, title, time_create)")
     ->values("(?, ?, ?, ?)", '123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12');
+/*
+insert into song
+(song_id, name, title, time_create)
+values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
+*/
 ```
 
-Example 23:
+Example 3:
 
 ```php
 $queryBuilder = new PicoDatabaseQueryBuilder($database);
@@ -122,6 +142,11 @@ $queryBuilder->newQuery()
     ->into("song")
     ->fields(array("song_id", "name", "title", "time_create"))
     ->values(array('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12'));
+/*
+insert into song
+(song_id, name, title, time_create)
+values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
+*/
 ```
 
 Example 4:
@@ -133,6 +158,11 @@ $queryBuilder->newQuery()
     ->into("song")
     ->fields("(song_id, name, title, time_create)")
     ->values(array('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12'));
+/*
+insert into song
+(song_id, name, title, time_create)
+values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
+*/
 ```
 
 Example 5:
@@ -150,6 +180,11 @@ $queryBuilder->newQuery()
     ->into("song")
     ->fields(array_keys($data))
     ->values(array_values($data));
+/*
+insert into song
+(song_id, name, title, time_create)
+values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
+*/
 ```
 
 **select($query)**
@@ -180,6 +215,21 @@ $queryBuilder->newQuery()
     ->select("*")
     ->from("song")
     ->where("time_create > '2023-01-00' ");
+/*
+select *
+from song
+where time_create > '2023-01-00'
+*/
+
+$queryBuilder->newQuery()
+    ->detele()
+    ->from("song")
+    ->where("time_create > '2023-01-00' ");
+/*
+delete
+from song
+where time_create > '2023-01-00'
+*/
 ```
 
 Example 2
@@ -190,6 +240,11 @@ $queryBuilder->newQuery()
     ->select("song_id, name as song_code, title, time_create")
     ->from("song")
     ->where("time_create > '2023-01-00' ");
+/*
+select song_id, name as song_code, title, time_create
+from song
+where time_create > '2023-01-00'
+*/
 ```
 
 Example 3
@@ -200,6 +255,21 @@ $queryBuilder->newQuery()
     ->select("song_id, name as song_code, title, time_create")
     ->from("song")
     ->where("time_create > ? ", '2023-01-00');
+/*
+select song_id, name as song_code, title, time_create
+from song
+where time_create > '2023-01-00'
+*/
+
+$queryBuilder->newQuery()
+    ->delete()
+    ->from("song")
+    ->where("time_create > ? ", '2023-01-00');
+/*
+delete
+from song
+where time_create > '2023-01-00'
+*/
 ```
 
 Example 4
@@ -210,5 +280,20 @@ $queryBuilder->newQuery()
     ->select("song_id, name as song_code, title, time_create")
     ->from("song")
     ->where("time_create < ? ", date('Y-m-d H:i:s'));
+/*
+select song_id, name as song_code, title, time_create
+from song
+where time_create > '2023-01-00 12:12:12'
+*/
+
+$queryBuilder->newQuery()
+    ->delete()
+    ->from("song")
+    ->where("time_create < ? ", date('Y-m-d H:i:s'));
+/*
+delete
+from song
+where time_create > '2023-01-00 12:12:12'
+*/
 ```
 
