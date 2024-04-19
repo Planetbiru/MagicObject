@@ -76,7 +76,7 @@ color: blue
 
 $language = new BahasaIndonesia();
 
-$rumah = new House($data);
+$rumah = new Rumah($data);
 $rumah->addLanguage('id', $language);
 $rumah->selectLanguage('id');
 

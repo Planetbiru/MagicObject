@@ -16,4 +16,5 @@ includes:
   - object-label
   - database-query-builder
   - upload-file
+  - data-table
 ---
