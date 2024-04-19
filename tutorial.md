@@ -3594,7 +3594,7 @@ values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
 
 `from($query)` is method for query `WHERE`
 
-Example 1
+Example 1:
 
 ```php
 $queryBuilder = new PicoDatabaseQueryBuilder($database);
@@ -3619,7 +3619,7 @@ where time_create > '2023-01-00'
 */
 ```
 
-Example 2
+Example 2:
 
 ```php
 $queryBuilder = new PicoDatabaseQueryBuilder($database);
@@ -3634,7 +3634,7 @@ where time_create > '2023-01-00'
 */
 ```
 
-Example 3
+Example 3:
 
 ```php
 $queryBuilder = new PicoDatabaseQueryBuilder($database);
@@ -3659,7 +3659,7 @@ where time_create > '2023-01-00'
 */
 ```
 
-Example 4
+Example 4:
 
 ```php
 $queryBuilder = new PicoDatabaseQueryBuilder($database);
