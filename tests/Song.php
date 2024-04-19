@@ -453,6 +453,7 @@ class Song extends MagicObject
 }
 $song = new Song();
 $dump = new PicoDatabaseDump();
+
 //echo $dump->dumpStructure($song, PicoDatabaseType::DATABASE_TYPE_MYSQL, true, true);
 
 $pageData = $song;
@@ -508,4 +509,3 @@ foreach($song->getVocalist()->getAgency()->getCompany()->getPic() as $pic)
 	echo "\r\n----\r\n";
 }
 
-print_r($song->tableInfo());
