@@ -1,4 +1,8 @@
-## Replace Value with Environment Variable
+## Environment Variable
+
+Many application use environment variable to store the config. We can replace the config template with the environment variable. We must set the environment variable to the server before run the application.
+
+ 
 
 ```yaml
 # config.yml
