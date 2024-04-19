@@ -2690,7 +2690,9 @@ require_once "inc/footer.php";
 ?>
 ```
 
-## Dump Database To Another Database Type
+## Dump Database
+
+We can dump database to another database type. We do not need any database converter. Just define the target database type when we dump the database.
 
 ```php
 <?php
