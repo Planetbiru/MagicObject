@@ -1997,6 +1997,42 @@ if(!empty($rowData))
 ```
 
 ### Delete
+
+To delete the database record, just invoke the `delete` method of the entity.
+
+**Example 1**
+
+```php
+$album1 = new Album(null, $database);
+try
+{
+	$album1->findOneByAlbumId("123456");
+	$album1->delete();
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+**Example 2**
+
+```php
+$album1 = new Album(null, $database);
+try
+{
+	$pageData = $album1->findByAdminCreate("123456");
+	foreach($pageData->getResult() as $album)
+	{
+		// we can add logic before delete the record
+		$album->delete();
+	}
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
 ## Filtering and Pagination
 
 Example parameters:
