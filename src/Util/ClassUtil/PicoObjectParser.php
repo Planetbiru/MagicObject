@@ -68,8 +68,24 @@ class PicoObjectParser
             {
                 return self::parseMagicObject($data);
             }
-            else if (is_array($data) || is_object($data)) {
-                return self::parseObject($data);
+            else if (is_array($data) || is_object($data) || $data instanceof stdClass) {
+                $obj = new MagicObject();
+                foreach($data as $key=>$val)
+                {
+                    if (is_array($val) || is_object($val) || $data instanceof stdClass)
+                    {
+                        $obj->set($key, self::parseRecursive($val));
+                    }
+                    else
+                    {
+                        $obj->set($key, $val);
+                    }
+                }
+                return $obj;
+            }
+            else
+            {
+                return $data;
             }
         }
         return null;
