@@ -1995,6 +1995,8 @@ if(!empty($rowData))
 }
 	
 ```
+
+### Delete
 ## Filtering and Pagination
 
 Example parameters:
