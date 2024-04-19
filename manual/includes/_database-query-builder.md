@@ -297,3 +297,32 @@ where time_create > '2023-01-00 12:12:12'
 */
 ```
 
+**join($query)**
+
+**leftJoin($query)**
+
+**rightJoin($query)**
+
+**innerJoin($query)**
+
+**outerJoin($query)**
+
+Example
+
+```php
+$queryBuilder = new PicoDatabaseQueryBuilder($database);
+$active = true;
+$queryBuilder->newQuery()
+    ->select("song.*, album.name as album_name")
+    ->from("song")
+    ->leftJoin("album")
+    ->on("album.album_id = song.album_id")
+    ->where("song.active = ? ", $active);
+/*
+select song.*, album.name as album_name
+from song
+left join album
+on album.album_id = song.album_id
+where song.active = true
+*/
+```
