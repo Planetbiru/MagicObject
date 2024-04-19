@@ -1033,6 +1033,8 @@ To delete the database record, just invoke the `delete` method of the entity.
 
 **Example 1**
 
+Delete one record without select first
+
 ```php
 $album1 = new Album(null, $database);
 try
@@ -1046,6 +1048,8 @@ catch(Exception $e)
 ```
 
 **Example 2**
+
+Delete multiple records without select first
 
 ```php
 $album1 = new Album(null, $database);
@@ -1061,6 +1065,8 @@ catch(Exception $e)
 
 **Example 3**
 
+Delete one record with select first
+
 ```php
 $album1 = new Album(null, $database);
 try
@@ -1075,6 +1081,8 @@ catch(Exception $e)
 ```
 
 **Example 4**
+
+Delete multiple records with select first
 
 ```php
 $album1 = new Album(null, $database);
