@@ -1037,6 +1037,34 @@ To delete the database record, just invoke the `delete` method of the entity.
 $album1 = new Album(null, $database);
 try
 {
+	$album1->deleteOneByAlbumId("123456");
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+**Example 2**
+
+```php
+$album1 = new Album(null, $database);
+try
+{
+	$deleted = $album1->deleteByAdminCreate("123456");
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+**Example 3**
+
+```php
+$album1 = new Album(null, $database);
+try
+{
 	$album1->findOneByAlbumId("123456");
 	$album1->delete();
 }
@@ -1046,7 +1074,7 @@ catch(Exception $e)
 }
 ```
 
-**Example 2**
+**Example 4**
 
 ```php
 $album1 = new Album(null, $database);

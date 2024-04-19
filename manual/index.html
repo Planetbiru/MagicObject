@@ -1,48 +1,159 @@
 
 
-<h2>Upload File</h2>
-<p>Uploading lots of files with arrays is difficult for some developers, especially novice developers. There is a significant difference between uploading a single file and multiple files.</p>
-<p>When the developer decides to change the form from single file to multiple files or vice versa, the backend developer must change the code to handle the uploaded files.</p>
-<pre><code class="language-html">&lt;!-- single file --&gt;
-&lt;form action="" method="post" enctype="multipart/form-data"&gt;
-     &lt;input name="myupload" type="file" /&gt;
-     &lt;input type="submit" /&gt;
-&lt;/form&gt;</code></pre>
-<pre><code class="language-html">&lt;!-- multiple files --&gt;
-&lt;form action="" method="post" enctype="multipart/form-data"&gt;
-     &lt;input name="myupload[]" type="file" webkitdirectory multiple /&gt;
-     &lt;input type="submit" /&gt;
-&lt;/form&gt;</code></pre>
+<h2>Language</h2>
+<p>MagicObject supports multilingual applications. MagicObject allows developers to create entities that support a wide variety of languages that users can choose from. At the same time, different users can use different languages.</p>
+<p>To create table with multiple language, create new class from <code>DataTable</code> object. We can copy data from aother object to <code>DataTable</code> easly.</p>
 <pre><code class="language-php">&lt;?php
 
-use MagicObject\File\PicoUplodFile;
+use MagicObject\DataTable;
+use MagicObject\MagicObject;
+use MagicObject\Util\ClassUtil\PicoObjectParser;
 
-require_once "vendor/autoload.php";
+require_once dirname(__DIR__) . "/vendor/autoload.php";
 
-$files = new UplodFile();
-
-$file1 = $files-&gt;get('myupload');
-// or 
-// $file1 = $files-&gt;myupload;
-
-$targetDir = __DIR__;
-
-foreach($file1-&gt;getAll() as $fileItem)
+/**
+ * House
+ * 
+ * @Attributes(id="house" width="100%" style="border-collapse:collapse; color:#333333")
+ * @ClassList(content="table table-responsive")
+ * @DefaultColumnLabel(content="Language")
+ * @Language(content="en")
+ * @JSON(property-naming-strategy=SNAKE_CASE)
+ * @Table(name="album")
+ * @Id(content="house")
+ */
+class Multibahasa extends DataTable
 {
-    $temporaryName = $fileItem-&gt;getTmpName();
-    $name = $fileItem-&gt;getName();
-    $size = $fileItem-&gt;getSize();
-    echo "$name | $temporaryName | $size\r\n";
-    move_uploaded_file($temporaryName, $targetDir."/".$name);
+
 }
+
+$song = new Song(null, $database);
+$song-&gt;findOneBySongId("123456");
+
+$translated = new Multibahasa($song);
+echo $translated;
+
+// add language from array
+$translated-&gt;addLanguage("id", 
+    array(
+        "songId" =&gt; "ID Lagu",
+        "title" =&gt; "Judul",
+        "composer" =&gt; "Pengarang",
+        "vocalist" =&gt; "Penyanyi"
+    )
+);
+$rumah-&gt;selectLanguage('id');
+echo $translated;
+
+// add language from stdClass
+$translator1 = new stdClass;
+
+$translator1-&gt;songId = "ID Lagu";
+$translator1-&gt;title = "Judul";
+$translator1-&gt;composer = "Pengarang";
+$translator1-&gt;vocalist = "Penyanyi";
+
+$translated-&gt;addLanguage("id", $translator1);
+$rumah-&gt;selectLanguage('id');
+echo $translated;
+
+// add language from specific class
+class Bahasa{
+    public $songId = "ID Lagu";
+    public $title = "Judul";
+    public $composer = "Pengarang";
+    public $vocalist = "Penyanyi";
+}
+
+$translator2 = new Bahasa();
+
+$translated-&gt;addLanguage("id", $translator2);
+$rumah-&gt;selectLanguage('id');
+echo $translated;
 </code></pre>
-<p>Developers simply retrieve data using the <code>getAll</code> method and developers will get all files uploaded by users either via single file or multiple file forms. If necessary, the developer can check whether the file was uploaded using a single file or multiple file form with the <code>isMultiple()</code> method</p>
-<pre><code class="language-php">
-if($file1-&gt;isMultiple())
+<pre><code class="language-php">&lt;?php
+
+use MagicObject\DataTable;
+use MagicObject\Util\ClassUtil\PicoObjectParser;
+
+require_once dirname(__DIR__) . "/vendor/autoload.php";
+
+/**
+ * House
+ * 
+ * @Attributes(id="house" width="100%" style="border-collapse:collapse; color:#333333")
+ * @ClassList(content="table table-responsive")
+ * @DefaultColumnLabel(content="Language")
+ * @Language(content="en")
+ * @JSON(property-naming-strategy=SNAKE_CASE)
+ * @Table(name="album")
+ * @Id(content="house")
+ */
+class House extends DataTable
 {
-    // do something here
+    /**
+     * ID
+     *
+     * @Label(content="ID")
+     * @Column(name="id")
+     * @var string
+     */
+    protected $id;
+
+    /**
+     * Address
+     *
+     * @Label(content="Address")
+     * @Column(name="address")
+     * @var string
+     */
+    protected $address;
+
+    /**
+     * Color
+     *
+     * @Label(content="Color")
+     * @Column(name="color")
+     * @var string
+     */
+    protected $color;
+
+    /**
+     * Time Create
+     *
+     * @Label(content="Time Create")
+     * @Column(name="timeCreate")
+     * @var DateTime
+     */
+    protected $timeCreate;
+
 }
-else
+
+class BahasaIndonesia extends stdClass
 {
-    // do something here
-}</code></pre>
+    public $id = "ID";
+
+    public $address = "Alamat";
+
+    public $color = "Warna";
+
+    public $timeCreate = "Waktu Buat";
+}
+
+$data = PicoObjectParser::parseYamlRecursive(
+"id: 1
+address: Jalan Inspeksi no 9
+color: blue
+"
+);
+
+$language = new BahasaIndonesia();
+
+$rumah = new House($data);
+$rumah-&gt;addLanguage('id', $language);
+$rumah-&gt;selectLanguage('id');
+$rumah-&gt;addClass('table');
+
+$apa = $rumah."";
+echo $apa;</code></pre>
+<h3>Define Langauges</h3>
