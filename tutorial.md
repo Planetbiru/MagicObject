@@ -3973,9 +3973,64 @@ To create table with multiple language, create new class from `DataTable` object
 
 use MagicObject\DataTable;
 use MagicObject\MagicObject;
-use MagicObject\Util\ClassUtil\PicoObjectParser;
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";
+
+/**
+ * @Entity
+ * @JSON(property-naming-strategy=SNAKE_CASE)
+ * @Table(name="song")
+ */
+class Song extends MagicObject
+{
+	/**
+	 * Song ID
+	 * 
+	 * @Id
+	 * @GeneratedValue(strategy=GenerationType.UUID)
+	 * @NotNull
+	 * @Column(name="song_id", type="varchar(50)", length=50, nullable=false)
+	 * @Label(content="Song ID")
+	 * @var string
+	 */
+	protected $songId;
+
+	/**
+	 * Name
+	 * 
+	 * @Column(name="name", type="varchar(100)", length=100, nullable=true)
+	 * @Label(content="Name")
+	 * @var string
+	 */
+	protected $name;
+
+	/**
+	 * Title
+	 * 
+	 * @Column(name="title", type="text", nullable=true)
+	 * @Label(content="Title")
+	 * @var string
+	 */
+	protected $title;
+    
+    /**
+	 * Composer
+	 * 
+	 * @Column(name="composer", type="text", nullable=true)
+	 * @Label(content="Composer")
+	 * @var string
+	 */
+	protected $composer;
+    
+    /**
+	 * Vocalist
+	 * 
+	 * @Column(name="vocalist", type="text", nullable=true)
+	 * @Label(content="Vocalist")
+	 * @var string
+	 */
+	protected $vocalist;
+}
 
 /**
  * House
@@ -3993,8 +4048,13 @@ class Multibahasa extends DataTable
     
 }
 
-$song = new Song(null, $database);
-$song->findOneBySongId("123456");
+$song = new Song();
+$song
+    ->setSongId("11111")
+    ->setTitle("Lagu Satu")
+    ->setComposer("Kamshory")
+    ->setVocalist("Roy")
+    ;
 
 $translated = new Multibahasa($song);
 echo $translated;
@@ -4009,7 +4069,7 @@ $translated->addLanguage("id",
         "vocalist" => "Penyanyi"
     )
 );
-$rumah->selectLanguage('id');
+$translated->selectLanguage('id');
 echo $translated;
 
 // add language from stdClass
@@ -4021,11 +4081,12 @@ $translator1->composer = "Pengarang";
 $translator1->vocalist = "Penyanyi";
 
 $translated->addLanguage("id", $translator1);
-$rumah->selectLanguage('id');
+$translated->selectLanguage('id');
 echo $translated;
 
 // add language from specific class
-class Bahasa{
+class Bahasa
+{
     public $songId = "ID Lagu";
     public $title = "Judul";
     public $composer = "Pengarang";
@@ -4035,7 +4096,7 @@ class Bahasa{
 $translator2 = new Bahasa();
 
 $translated->addLanguage("id", $translator2);
-$rumah->selectLanguage('id');
+$translated->selectLanguage('id');
 echo $translated;
 
 ``` 
