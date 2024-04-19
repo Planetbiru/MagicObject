@@ -12,6 +12,7 @@ includes:
   - session
   - entity
   - pagination
+  - database-dump
   - object-label
   - database-query-builder
   - upload-file
