@@ -425,7 +425,7 @@ class Song extends MagicObject
 	/**
 	 * Admin Create
 	 * 
-	 * @Column(name="admin_create", type="varchar(50)", length=50, nullable=true, updatable=false)
+	 * @Column(name="admin_create", type="varchar(50)", length=50, default_value=null, nullable=true, updatable=false)
 	 * @Label(content="Admin Create")
 	 * @var string
 	 */
@@ -434,7 +434,7 @@ class Song extends MagicObject
 	/**
 	 * Admin Edit
 	 * 
-	 * @Column(name="admin_edit", type="varchar(50)", length=50, nullable=true)
+	 * @Column(name="admin_edit", type="varchar(50)", length=50, default_value=null, nullable=true)
 	 * @Label(content="Admin Edit")
 	 * @var string
 	 */
@@ -454,7 +454,7 @@ class Song extends MagicObject
 $song = new Song();
 $dump = new PicoDatabaseDump();
 
-//echo $dump->dumpStructure($song, PicoDatabaseType::DATABASE_TYPE_MYSQL, true, true);
+echo $dump->dumpStructure($song, PicoDatabaseType::DATABASE_TYPE_MYSQL, true, true);
 
 $pageData = $song;
 //echo $dump->dumpData($pageData, PicoDatabaseType::DATABASE_TYPE_MYSQL);
