@@ -13,6 +13,7 @@ use MagicObject\Database\PicoPagable;
 use MagicObject\Database\PicoPageData;
 use MagicObject\Database\PicoSortable;
 use MagicObject\Database\PicoSpecification;
+use MagicObject\Database\PicoTableInfo;
 use MagicObject\Exceptions\InvalidAnnotationException;
 use MagicObject\Exceptions\InvalidQueryInputException;
 use MagicObject\Exceptions\NoDatabaseConnectionException;
@@ -75,6 +76,20 @@ class MagicObject extends stdClass // NOSONAR
      * @var array
      */
     private $label = array();
+    
+    /**
+     * Table info
+     *
+     * @var PicoTableInfo
+     */
+    private $tableInfoProp = null;
+    
+    /**
+     * Database persistence
+     *
+     * @var PicoDatabasePersistence
+     */
+    private $persistProp = null;
 
     /**
      * Get null properties
@@ -807,17 +822,31 @@ class MagicObject extends stdClass // NOSONAR
     }
     
     /**
+     * Get table info
+     *
+     * @return PicoTableInfo
+     */
+    public function tableInfo()
+    {
+        if(!isset($this->tableInfo))
+        {
+            $this->persistProp = new PicoDatabasePersistence($this->database, $this);
+            $this->tableInfoProp = $this->persistProp->getTableInfo();
+        }
+        return $this->tableInfoProp;
+    }
+    
+    /**
      * Get default value
      *
      * @param boolean $snakeCase
      * @return stdClass
      */
     public function defaultValue($snakeCase = false)
-    {
-        $persist = new PicoDatabasePersistence($this->database, $this);
-        $tableInfo = $persist->getTableInfo();
+    {     
         $defaultValue = new stdClass;
-        if($tableInfo->getDefaultValue() != null)
+        $tableInfo = $this->tableInfo();   
+        if(isset($tableInfo) && $tableInfo->getDefaultValue() != null)
         {
             foreach($tableInfo->getDefaultValue() as $column)
             {
@@ -832,7 +861,7 @@ class MagicObject extends stdClass // NOSONAR
                     {
                         $col = $columnName;
                     }
-                    $defaultValue->$col = $persist->fixData($column[self::KEY_VALUE], $column[self::KEY_PROPERTY_TYPE]);
+                    $defaultValue->$col = $this->persistProp->fixData($column[self::KEY_VALUE], $column[self::KEY_PROPERTY_TYPE]);
                 }
             }
         }

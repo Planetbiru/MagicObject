@@ -507,3 +507,5 @@ foreach($song->getVocalist()->getAgency()->getCompany()->getPic() as $pic)
 	echo $pic;
 	echo "\r\n----\r\n";
 }
+
+print_r($song->tableInfo());
