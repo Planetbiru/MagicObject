@@ -69,6 +69,8 @@ class PicoObjectParser
     
     /**
      * Parse recursive
+     * @param mixed $data
+     * @return mixed
      */
     public static function parseRecursiveObject($data)
     {
@@ -83,25 +85,7 @@ class PicoObjectParser
                 $obj = new MagicObject();
                 foreach($data as $key=>$val)
                 {
-                    if (self::isObject($val))
-                    {
-                        $obj->set($key, self::parseRecursiveObject($val));
-                    }
-                    else if (is_array($val))
-                    {
-                        if(self::hasStringKeys($val))
-                        {
-                            $obj->set($key, self::parseRecursiveObject($val));
-                        }
-                        else
-                        {
-                            $obj->set($key, self::parseRecursiveArray($val));
-                        }
-                    }
-                    else
-                    {
-                        $obj->set($key, $val);
-                    }
+                    $obj = self::updateObject($obj, $key, $val);
                 }
                 $result = $obj;
             }
@@ -111,6 +95,38 @@ class PicoObjectParser
             }
         }
         return $result;
+    }
+    
+    /**
+     * Update object
+     *
+     * @param MagicObject $obj
+     * @param string $key
+     * @param mixed $val
+     * @return MagicObject
+     */
+    private static function updateObject($obj, $key, $val)
+    {
+        if (self::isObject($val))
+        {
+            $obj->set($key, self::parseRecursiveObject($val));
+        }
+        else if (is_array($val))
+        {
+            if(self::hasStringKeys($val))
+            {
+                $obj->set($key, self::parseRecursiveObject($val));
+            }
+            else
+            {
+                $obj->set($key, self::parseRecursiveArray($val));
+            }
+        }
+        else
+        {
+            $obj->set($key, $val);
+        }
+        return $obj;
     }
     
     /**
