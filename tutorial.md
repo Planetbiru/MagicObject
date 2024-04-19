@@ -2690,7 +2690,7 @@ require_once "inc/footer.php";
 ?>
 ```
 
-
+## Dump Database To Another Database Type
 
 ```php
 <?php
