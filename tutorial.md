@@ -3383,6 +3383,7 @@ $userType = new UserType();
 // print label of adminCreate property
 echo $userType->labelAdminCreate();
 // it will print "Admin Create"
+```
 
 ## Database Query Builder
 
