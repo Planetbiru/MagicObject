@@ -109,19 +109,19 @@ $queryBuilder = new PicoDatabaseQueryBuilder($database);
 $queryBuilder->newQuery()
     ->insert()
     ->into("song")
-    ->fields(array("song_id", "name", "title", "time_create"))
-    ->values(array('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12'));
+    ->fields("(song_id, name, title, time_create)")
+    ->values("(?, ?, ?, ?)", '123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12');
 ```
 
-Example 3:
+Example 23:
 
 ```php
 $queryBuilder = new PicoDatabaseQueryBuilder($database);
 $queryBuilder->newQuery()
     ->insert()
     ->into("song")
-    ->fields("(song_id, name, title, time_create)")
-    ->values("(?, ?, ?, ?)", '123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12');
+    ->fields(array("song_id", "name", "title", "time_create"))
+    ->values(array('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12'));
 ```
 
 Example 4:
