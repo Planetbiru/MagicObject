@@ -66,4 +66,10 @@ false, true, true
 
 // to get company name
 echo $song->getVocalist()->getAgency()->getCompany()->getName();
+echo "\r\n";
+// add company properties
+$song->getVocalist()->getAgency()->getCompany()->setCompanyAddress("Jalan Jendral Sudirman Nomor 1");
+// get agency
+echo $song->getVocalist()->getAgency();
+echo "\r\n";
 ```

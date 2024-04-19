@@ -189,10 +189,10 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Load data from Yaml string
      *
-     * @param string $rawData
-     * @param boolean $systemEnv
-     * @param boolean $asObject
-     * @param boolean $recursive
+     * @param string $rawData String of Yaml
+     * @param boolean $systemEnv Replace all environment variable value
+     * @param boolean $asObject Result is object instead of array
+     * @param boolean $recursive Convert all object to MagicObject
      * @return self
      */
     public function loadYamlString($rawData, $systemEnv = false, $asObject = false, $recursive = false)
@@ -234,9 +234,9 @@ class MagicObject extends stdClass // NOSONAR
      * Load data from Yaml file
      *
      * @param string $path
-     * @param boolean $systemEnv
-     * @param boolean $asObject
-     * @param boolean $recursive
+     * @param boolean $systemEnv Replace all environment variable value
+     * @param boolean $asObject Result is object instead of array
+     * @param boolean $recursive Convert all object to MagicObject
      * @return self
      */
     public function loadYamlFile($path, $systemEnv = false, $asObject = false, $recursive = false)

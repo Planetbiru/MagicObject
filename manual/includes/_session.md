@@ -41,8 +41,32 @@ session:
   name: MUSICPRODUCTIONMANAGER
   max_life_time: 86400
   save_handler: redis
+  save_path: tcp://127.0.0.1:6379?auth=myredispass
+```
+
+or
+
+```yaml
+session:
+  name: MUSICPRODUCTIONMANAGER
+  max_life_time: 86400
+  save_handler: redis
   save_path: tcp://127.0.0.1:6379?auth=${REDIS_AUTH}
 ```
+
+You can not encrypt the `${REDIS_AUTH}` value. If you want to secure the config, encrypt entire `save_path` instead.
+
+For example:
+
+```yaml
+session:
+  name: MUSICPRODUCTIONMANAGER
+  max_life_time: 86400
+  save_handler: redis
+  save_path: ${SESSION_SAVE_PATH}
+```
+
+`${SESSION_SAVE_PATH}` contains entire of `save_path` that encrypted with you secure key.
 
 **PHP Script**
 

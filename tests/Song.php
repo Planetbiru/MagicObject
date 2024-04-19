@@ -453,12 +453,12 @@ class Song extends MagicObject
 }
 $song = new Song();
 $dump = new PicoDatabaseDump();
-echo $dump->dumpStructure($song, PicoDatabaseType::DATABASE_TYPE_MYSQL, true, true);
+//echo $dump->dumpStructure($song, PicoDatabaseType::DATABASE_TYPE_MYSQL, true, true);
 
 $pageData = $song;
-echo $dump->dumpData($pageData, PicoDatabaseType::DATABASE_TYPE_MYSQL);
+//echo $dump->dumpData($pageData, PicoDatabaseType::DATABASE_TYPE_MYSQL);
 
-echo $song->label('admin_create');
+//echo $song->label('admin_create');
 
 $song = new MagicObject();
 $song->loadYamlString(
@@ -489,3 +489,9 @@ false, true, true
 
 // to get company name
 echo $song->getVocalist()->getAgency()->getCompany()->getName();
+echo "\r\n";
+// add company properties
+$song->getVocalist()->getAgency()->getCompany()->setCompanyAddress("Jalan Jendral Sudirman Nomor 1");
+// get agency
+echo $song->getVocalist()->getAgency();
+echo "\r\n";
