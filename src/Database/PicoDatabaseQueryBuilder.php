@@ -753,7 +753,6 @@ class PicoDatabaseQueryBuilder // NOSONAR
 			$this->buffer .= "lastval()\r\n";
 		}
 		return $this;
-
 	}
 
 	/**
