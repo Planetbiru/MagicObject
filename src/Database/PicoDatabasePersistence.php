@@ -1731,7 +1731,7 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Get all mathced record from database
+     * Get one mathced record from database
      *
      * @param string $propertyName
      * @param array $propertyValues
@@ -1777,6 +1777,41 @@ class PicoDatabasePersistence // NOSONAR
         }
         return $data;   
     }
+    
+    /**
+     * Delete one mathced record from database
+     *
+     * @param string $propertyName
+     * @param array $propertyValues
+     * @return PDOStatement|boolean
+     * @throws EntityException|InvalidFilterException|EmptyResultException
+     */
+    public function deleteOneBy($propertyName, $propertyValue)
+    {
+        $info = $this->getTableInfo();
+        $where = $this->createWhereFromArgs($info, $propertyName, $propertyValue);
+        if(!$this->isValidFilter($where))
+        {
+            throw new InvalidFilterException(self::MESSAGE_INVALID_FILTER);
+        }
+        $queryBuilder = new PicoDatabaseQueryBuilder($this->database);
+        $stmt = null;
+        $sqlQuery = $queryBuilder
+            ->newQuery()
+            ->delete()
+            ->from($info->getTableName())
+            ->where($where);
+        try
+        {
+            $stmt = $this->database->executeQuery($sqlQuery);
+        }
+        catch(Exception $e)
+        {
+            throw new EmptyResultException($e->getMessage());
+        }
+        return $stmt;   
+    }
+
 
     /**
      * Get real class name

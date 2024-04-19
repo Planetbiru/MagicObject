@@ -1254,6 +1254,27 @@ class MagicObject extends stdClass // NOSONAR
     }
     
     /**
+     * Delete one by params
+     *
+     * @param string $method
+     * @param mixed $params
+     * @param PicoSortable|string $sortable
+     * @return PDOStatement|boolean
+     */
+    private function deleteOneBy($method, $params)
+    {
+        if($this->database != null && $this->database->isConnected())
+        {
+            $persist = new PicoDatabasePersistence($this->database, $this);
+            return $persist->deleteOneBy($method, $params);
+        }
+        else
+        {
+            throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
+        }
+    }
+    
+    /**
      * Exists by params
      *
      * @param string $method
@@ -1340,6 +1361,7 @@ class MagicObject extends stdClass // NOSONAR
      * set &raquo; set property value. This method not require database connection.
      * unset &raquo; unset property value. This method not require database connection.
      * findOneBy &raquo; search data from database and return one record. This method require database connection.
+     * deleteOneBy &raquo; delete data from database and return one record. This method require database connection.
      * findFirstBy &raquo; search data from database and return first record. This method require database connection.
      * findLastBy &raquo; search data from database and return last record. This method require database connection.
      * findBy &raquo; search data from database. This method require database connection.
@@ -1404,6 +1426,12 @@ class MagicObject extends stdClass // NOSONAR
             // filter param
             $parameters = PicoDatabaseUtil::valuesFromParams($params);
             return $this->findOneBy($var, $parameters, $sortable);
+        }
+        else if (strncasecmp($method, "deleteOneBy", 11) === 0) {
+            $var = lcfirst(substr($method, 11));
+            // filter param
+            $parameters = PicoDatabaseUtil::valuesFromParams($params);
+            return $this->deleteOneBy($var, $parameters);
         }
         else if (strncasecmp($method, "findFirstBy", 11) === 0) {
             $var = lcfirst(substr($method, 11));
