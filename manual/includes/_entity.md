@@ -1026,3 +1026,5 @@ if(!empty($rowData))
 }
 	
 ```
+
+### Delete
