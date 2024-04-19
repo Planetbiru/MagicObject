@@ -187,6 +187,11 @@ vocalist:
     company:
       companyId: 5678
       name: Company 1
+      pic:
+        - name: Kamshory
+          gender: M
+        - name: Mas Roy
+          gender: M
 timeCreate: 2024-03-03 12:12:12
 timeEdit: 2024-03-03 13:13:13
 ",
@@ -201,6 +206,13 @@ $song->getVocalist()->getAgency()->getCompany()->setCompanyAddress("Jalan Jendra
 // get agency
 echo $song->getVocalist()->getAgency();
 echo "\r\n";
+
+// to get pic
+foreach($song->getVocalist()->getAgency()->getCompany()->getPic() as $pic)
+{
+	echo $pic;
+	echo "\r\n----\r\n";
+}
 ```
 
 ## Object from Yaml

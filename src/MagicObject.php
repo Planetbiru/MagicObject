@@ -209,7 +209,7 @@ class MagicObject extends stdClass // NOSONAR
             $obj = json_decode(json_encode((object) $data), false);
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursive($obj));
+                $this->loadData(PicoObjectParser::parseRecursiveObject($obj));
             }
             else
             {
@@ -220,7 +220,7 @@ class MagicObject extends stdClass // NOSONAR
         {
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursive($data));
+                $this->loadData(PicoObjectParser::parseRecursiveObject($data));
             }
             else
             {
@@ -253,7 +253,7 @@ class MagicObject extends stdClass // NOSONAR
             $obj = json_decode(json_encode((object) $data), false);
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursive($obj));
+                $this->loadData(PicoObjectParser::parseRecursiveObject($obj));
             }
             else
             {
@@ -264,7 +264,7 @@ class MagicObject extends stdClass // NOSONAR
         {
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursive($data));
+                $this->loadData(PicoObjectParser::parseRecursiveObject($data));
             }
             else
             {
@@ -296,7 +296,7 @@ class MagicObject extends stdClass // NOSONAR
             $obj = json_decode(json_encode((object) $data), false);
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursive($obj));
+                $this->loadData(PicoObjectParser::parseRecursiveObject($obj));
             }
             else
             {
@@ -307,7 +307,7 @@ class MagicObject extends stdClass // NOSONAR
         {
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursive($data));
+                $this->loadData(PicoObjectParser::parseRecursiveObject($data));
             }
             else
             {
@@ -339,7 +339,7 @@ class MagicObject extends stdClass // NOSONAR
             $obj = json_decode(json_encode((object) $data), false);
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursive($obj));
+                $this->loadData(PicoObjectParser::parseRecursiveObject($obj));
             }
             else
             {
@@ -350,7 +350,7 @@ class MagicObject extends stdClass // NOSONAR
         {
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursive($data));
+                $this->loadData(PicoObjectParser::parseRecursiveObject($data));
             }
             else
             {
