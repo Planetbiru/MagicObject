@@ -78,6 +78,7 @@ $song->getVocalist()->getAgency()->getCompany()->setCompanyAddress("Jalan Jendra
 echo $song->getVocalist()->getAgency();
 echo "\r\n";
 
+// please note that $song->getVocalist()->getAgency()->getCompany()->getPic() is an array, not a MagicObject
 // to get pic
 foreach($song->getVocalist()->getAgency()->getCompany()->getPic() as $pic)
 {
