@@ -3538,6 +3538,68 @@ $queryBuilder->newQuery()
     ->fields(array_keys($data))
     ->values(array_values($data));
 ```
+
+**select($query)**
+
+`select($query)` is metod for query `SELECT`
+
+**alias($query)**
+
+`alias($query)` is method for query `AS`
+
+**delete()**
+
+`delete` is method for query `DELETE`
+
+**from($query)**
+
+`from($query)` is method for query `FROM`
+
+**where($query)**
+
+`from($query)` is method for query `WHERE`
+
+Example 1
+
+```php
+$queryBuilder = new PicoDatabaseQueryBuilder($database);
+$queryBuilder->newQuery()
+    ->select("*")
+    ->from("song")
+    ->where("time_create > '2023-01-00' ");
+```
+
+Example 2
+
+```php
+$queryBuilder = new PicoDatabaseQueryBuilder($database);
+$queryBuilder->newQuery()
+    ->select("song_id, name as song_code, title, time_create")
+    ->from("song")
+    ->where("time_create > '2023-01-00' ");
+```
+
+Example 3
+
+```php
+$queryBuilder = new PicoDatabaseQueryBuilder($database);
+$queryBuilder->newQuery()
+    ->select("song_id, name as song_code, title, time_create")
+    ->from("song")
+    ->where("time_create > ? ", '2023-01-00');
+```
+
+Example 4
+
+```php
+$queryBuilder = new PicoDatabaseQueryBuilder($database);
+$queryBuilder->newQuery()
+    ->select("song_id, name as song_code, title, time_create")
+    ->from("song")
+    ->where("time_create < ? ", date('Y-m-d H:i:s'));
+```
+
+
 ## Upload File
 
 Uploading lots of files with arrays is difficult for some developers, especially novice developers. There is a significant difference between uploading a single file and multiple files.

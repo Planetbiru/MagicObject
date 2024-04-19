@@ -249,6 +249,7 @@ class PicoTableInfo
     
     public function __toString()
     {
+        // create new object because all properties are private
         $stdClass = new stdClass;
         $stdClass->tableName = $this->tableName;
         $stdClass->columns = $this->columns;
