@@ -2074,7 +2074,7 @@ catch(Exception $e)
 
 Users can join entities with other entities. This joining can be done in stages, not limited to just two levels. Please note that using multi-level joins will reduce application performance and waste resource usage. Consider denormalizing the database for applications with large amounts of data.
 
-The following example is a two-level entity join. Users can develop it, for example by joining the `Album` or `Artist` entity with other new entities.
+The following example is a two-level entity join. Users can expand it into three levels, for example by joining the `Album` or `Artist` entity with another new entity.
 
 WARNING:
 Don't join entities recursively because it will make the system carry out an endless process.
@@ -3325,7 +3325,9 @@ class Genre extends MagicObject
 
 }
 ```
-## Filtering and Pagination
+## Filtering, Ordering and Pagination
+
+MagicObject will filter data according to the given criteria. On the other hand, MagicObject will only retrieve data on the specified page by specifying `limit` and `offset` data in the `select` query.
 
 Example parameters:
 
