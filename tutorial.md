@@ -532,7 +532,20 @@ class PicoDatabaseCredentials extends SecretObject
 }
 ```
 
-The `@EncryptIn` annotation will encrypt the value before it is assigned to the associated property with the `set` method. The `@DecryptOut` annotation will decrypt the property value after it is retrieved by the `get` method. Once all values are encrypted, the user does not need to annotate `@EncryptIn` again.
+### Property Parameters
+
+1. `@EncryptIn` annotation will encrypt the value before it is assigned to the associated property with the `set` method. 
+2. `@DecryptIn` annotation will decrypt the value before it is assigned to the associated property with the `set` method. 
+3. `@EncryptOut` annotation will encrypt the property when application call `get` method. 
+4. `@DecryptOut` annotation will decrypt the property when application call `get` method. 
+
+### Secure Config
+
+Application configuration is usually written in a file or environment variable after being encrypted. This configuration cannot be read by anyone without decrypting it first. MagicObject will retrieve the encrypted value. If a user accidentally dumps an object using `var_dump` or `print_r`, then PHP will only display the encrypted value. When PHP makes a connection to the database using a credential, MagicObject will decrypt it but the value will not be stored in the object's properties.
+
+Thus, to create an application configuration, it is enough to use the `@DecryptOut` annotation. Thus, MagicObject will only decrypt the configuration when it is ready to be used.
+
+**Example 1**
 
 ```php
 <?php
@@ -606,6 +619,8 @@ class PicoDatabaseCredentials extends SecretObject
 ```
 
 ### Create Secret
+
+When creating a secure application configuration, users can simply use the `@EncryptOut` annotation. MagicObject will load the configuration as entered but will encrypt it when dumped to a file. For configurations that will not be encrypted, do not use `@EncryptIn`, `@DecryptIn`, `@EncryptOut`, or `@DecryptOut`. 
 
 ```php
 <?php
@@ -705,7 +720,7 @@ $secretYaml = $generator->dumpYaml(2, 4, 0); // will print secret yaml
 file_put_content("secret.yaml", $secretYaml); // will dump to file secret.yaml
 ```
 
-To use you own key
+Do not use standard encryption keys when creating or using SecretObjects. Always use your own lock. The encryption key must be generated using a callback function. Do not enter it as an object property or constant.
 
 ```php
 
@@ -724,10 +739,47 @@ salt: GaramDapur
 ";
 
 $config = new MagicObject();
-$config->loadYamlString($yaml);
+$config->loadYamlString($yaml, false, true, true);
 $generator = new SecretGenerator($config, function(){
 	// define your own key here
 	return "6619f3e7a1a9f0e75838d41ff368f72868e656b251e67e8358bef8483ab0d51c";
+});
+
+echo $generator; // will print JSON
+
+$secretYaml = $generator->dumpYaml(2, 4, 0); // will print secret yaml
+
+file_put_content("secret.yaml", $secretYaml); // will dump to file secret.yaml
+```
+
+or you can also call another function. 
+
+```php
+
+function getSecure()
+{
+	return "6619f3e7a1a9f0e75838d41ff368f72868e656b251e67e8358bef8483ab0d51c";
+}
+
+$yaml = "  
+time_zone_system: Asia/Jakarta
+default_charset: utf8
+driver: mysql
+host: localhost
+port: 3306
+username: root
+password: password
+database_name: music
+database_schema: public
+time_zone: Asia/Jakarta
+salt: GaramDapur
+";
+
+$config = new MagicObject();
+$config->loadYamlString($yaml, false, true, true);
+$generator = new SecretGenerator($config, function(){
+	// define your own key here
+	return getSecure();
 });
 
 echo $generator; // will print JSON

@@ -268,7 +268,7 @@ $secretYaml = $generator->dumpYaml(2, 4, 0); // will print secret yaml
 file_put_content("secret.yaml", $secretYaml); // will dump to file secret.yaml
 ```
 
-Do not use standard encryption keys when creating or using SecureObjects. Always use your own lock. The encryption key must be generated using a callback function. Do not enter it as an object property or constant.
+Do not use standard encryption keys when creating or using SecretObjects. Always use your own lock. The encryption key must be generated using a callback function. Do not enter it as an object property or constant.
 
 ```php
 
