@@ -52,7 +52,9 @@ php composer.phar remove planetbiru/magic-object
 
 To install composer on your PC or download latest composer.phar, click https://getcomposer.org/download/ 
 
-# Application Scalling
+# Application Scaling
+
+For large applications, users can scale the database and storage. So that a user can access any server, use Redis as a session repository. MagicObject clouds session storage with Redis which can be secured using a password.
 
 ![](https://github.com/Planetbiru/MagicObject/blob/main/scale-up.svg)
 
