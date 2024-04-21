@@ -62,4 +62,4 @@ false, true, true
 $song2 = new SongSecret2();
 $song2->loadYamlString($song1->dumpYaml(10, 4), false, true, true);
 
-echo $song2->dumpYaml(10, 4);
+echo $song2->dumpYaml(null, 4);

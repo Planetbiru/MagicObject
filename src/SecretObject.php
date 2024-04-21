@@ -8,6 +8,7 @@ use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\ClassUtil\PicoObjectParser;
 use MagicObject\Util\PicoGenericObject;
 use MagicObject\Util\PicoStringUtil;
+use MagicObject\Util\PicoYamlUtil;
 use ReflectionClass;
 use stdClass;
 use Symfony\Component\Yaml\Yaml;
@@ -915,17 +916,17 @@ class SecretObject extends stdClass //NOSONAR
      * The dump method, when supplied with an array, will do its best
      * to convert the array into friendly YAML.
      *
-     * @param int   $inline The level where you switch to inline YAML
+     * @param int|null   $inline The level where you switch to inline YAML. If $inline set to NULL, MagicObject will use maximum value of array depth
      * @param int   $indent The amount of spaces to use for indentation of nested nodes
      * @param int   $flags  A bit field of DUMP_* constants to customize the dumped YAML string
      *
      * @return string A YAML string representing the original PHP value
      */
-    public function dumpYaml($inline = 10, $indent = 4, $flags = 0)
+    public function dumpYaml($inline = null, $indent = 4, $flags = 0)
     {
         $snake = $this->_snake();
         $input = $this->valueArray($snake);
-        return Yaml::dump($input, $inline, $indent, $flags);
+        return PicoYamlUtil::dump($input, $inline, $indent, $flags);
     }
     
     /**
