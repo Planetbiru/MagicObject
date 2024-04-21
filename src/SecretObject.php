@@ -2,10 +2,12 @@
 
 namespace MagicObject;
 
+use MagicObject\Exceptions\InvalidAnnotationException;
+use MagicObject\Exceptions\InvalidQueryInputException;
 use MagicObject\Util\PicoEnvironmentVariable;
 use MagicObject\Secret\PicoSecret;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
-use MagicObject\Util\ClassUtil\PicoObjectParser;
+use MagicObject\Util\ClassUtil\PicoSecretParser;
 use MagicObject\Util\PicoGenericObject;
 use MagicObject\Util\PicoStringUtil;
 use MagicObject\Util\PicoYamlUtil;
@@ -78,23 +80,6 @@ class SecretObject extends stdClass //NOSONAR
     private $secureFunction = null;
     
     /**
-     * Get secure
-     *
-     * @return string
-     */
-    private function getSecure()
-    {
-        if($this->secureFunction != null && is_callable($this->secureFunction))
-        {
-            return call_user_func($this->secureFunction);
-        }
-        else
-        {
-            return PicoSecret::RANDOM_KEY_1.PicoSecret::RANDOM_KEY_2;
-        }
-    }
-    
-    /**
      * Constructor
      *
      * @param self|array|object $data
@@ -122,7 +107,21 @@ class SecretObject extends stdClass //NOSONAR
     {
         $className = get_class($this);
         $reflexClass = new PicoAnnotationParser($className);
+        $params = $reflexClass->getParameters();
         $props = $reflexClass->getProperties();
+        
+        foreach($params as $paramName=>$paramValue)
+        {
+            try
+            {
+                $vals = $reflexClass->parseKeyValue($paramValue);
+                $this->classParams[$paramName] = $vals;
+            }
+            catch(InvalidQueryInputException $e)
+            {
+                throw new InvalidAnnotationException("Invalid annotation @".$paramName);
+            }    
+        }
         
         // iterate each properties of the class
         foreach($props as $prop)
@@ -150,6 +149,24 @@ class SecretObject extends stdClass //NOSONAR
                     $this->decryptInProperties[] = $prop->name;
                 }
             }
+        }
+
+    }
+
+    /**
+     * Get secure
+     *
+     * @return string
+     */
+    private function getSecure()
+    {
+        if($this->secureFunction != null && is_callable($this->secureFunction))
+        {
+            return call_user_func($this->secureFunction);
+        }
+        else
+        {
+            return PicoSecret::RANDOM_KEY_1.PicoSecret::RANDOM_KEY_2;
         }
     }
     
@@ -232,7 +249,7 @@ class SecretObject extends stdClass //NOSONAR
     /**
      * Encrypt data
      *
-     * @param MagicObject|PicoGenericObject|array|stdClass|string $data
+     * @param MagicObject|PicoGenericObject|array|stdClass|string|number $data
      * @param string $hexKey
      * @return mixed
      */
@@ -241,13 +258,14 @@ class SecretObject extends stdClass //NOSONAR
         if($data instanceof MagicObject || $data instanceof PicoGenericObject)
         {
             $values = $data->value();
+            print_r($data);
             foreach($values as $key=>$value)
             {
                 $data->set($key, $this->encryptValue($value, $hexKey));
             }
             return $data;
         }
-        else if($data instanceof stdClass)
+        else if($data instanceof self || $data instanceof stdClass)
         {
             foreach($data as $key=>$value)
             {
@@ -265,6 +283,7 @@ class SecretObject extends stdClass //NOSONAR
         }
         else
         {
+            $data = $data."";
             return $this->encryptString($data, $hexKey);
         }
     }
@@ -322,6 +341,7 @@ class SecretObject extends stdClass //NOSONAR
         }
         else
         {
+            $data = $data."";
             return $this->decryptString($data, $hexKey);
         }
     }
@@ -486,7 +506,7 @@ class SecretObject extends stdClass //NOSONAR
             $obj = json_decode(json_encode((object) $data), false);
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursiveObject($obj));
+                $this->loadData(PicoSecretParser::parseRecursiveObject($obj));
             }
             else
             {
@@ -497,7 +517,7 @@ class SecretObject extends stdClass //NOSONAR
         {
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursiveObject($data));
+                $this->loadData(PicoSecretParser::parseRecursiveObject($data));
             }
             else
             {
@@ -530,7 +550,7 @@ class SecretObject extends stdClass //NOSONAR
             $obj = json_decode(json_encode((object) $data), false);
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursiveObject($obj));
+                $this->loadData(PicoSecretParser::parseRecursiveObject($obj));
             }
             else
             {
@@ -541,7 +561,7 @@ class SecretObject extends stdClass //NOSONAR
         {
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursiveObject($data));
+                $this->loadData(PicoSecretParser::parseRecursiveObject($data));
             }
             else
             {
@@ -573,7 +593,7 @@ class SecretObject extends stdClass //NOSONAR
             $obj = json_decode(json_encode((object) $data), false);
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursiveObject($obj));
+                $this->loadData(PicoSecretParser::parseRecursiveObject($obj));
             }
             else
             {
@@ -584,7 +604,7 @@ class SecretObject extends stdClass //NOSONAR
         {
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursiveObject($data));
+                $this->loadData(PicoSecretParser::parseRecursiveObject($data));
             }
             else
             {
@@ -616,7 +636,7 @@ class SecretObject extends stdClass //NOSONAR
             $obj = json_decode(json_encode((object) $data), false);
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursiveObject($obj));
+                $this->loadData(PicoSecretParser::parseRecursiveObject($obj));
             }
             else
             {
@@ -627,7 +647,7 @@ class SecretObject extends stdClass //NOSONAR
         {
             if($recursive)
             {
-                $this->loadData(PicoObjectParser::parseRecursiveObject($data));
+                $this->loadData(PicoSecretParser::parseRecursiveObject($data));
             }
             else
             {
@@ -888,7 +908,7 @@ class SecretObject extends stdClass //NOSONAR
     {
         $obj = clone $this;
         $obj = $this->encryptValueRecorsive($obj);
-        $array = json_decode(json_encode($obj->value($this->isSnake())), true);
+        $array = json_decode(json_encode($obj->value($this->_snake())), true);
         return $this->encryptValueRecursive($array);
     }
 
@@ -941,6 +961,6 @@ class SecretObject extends stdClass //NOSONAR
     public function __toString()
     {
         $obj = clone $this;
-        return json_encode($obj->value($this->isSnake()), JSON_PRETTY_PRINT);
+        return json_encode($obj->value($this->_snake()), JSON_PRETTY_PRINT);
     }
 }
