@@ -846,6 +846,8 @@ class ConfigSecret2 extends SecretObject
     protected $session;
 }
 
+// only database and session will be encrypted
+
 $secret1 = new ConfigSecret1(null, function(){
     return bin2hex("This is your secure key for Scrt");
 });
