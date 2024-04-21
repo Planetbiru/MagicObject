@@ -139,11 +139,16 @@ class DataTable extends SetterGetter
      *
      * @param string $code
      * @param stdClass|array $reference
+     * @param boolean $use
      * @return self
      */
-    public function addLanguage($code, $reference)
+    public function addLanguage($code, $reference, $use = false)
     {
         $this->lableLanguage[$code] = new PicoLanguage($reference);
+        if($use)
+        {
+            $this->selectLanguage($code);
+        }
         return $this;
     }
 
@@ -159,6 +164,11 @@ class DataTable extends SetterGetter
         if(isset($this->lableLanguage[$code]))
         {
             unset($this->lableLanguage[$code]);
+        }
+        $keys = array_keys($this->lableLanguage);
+        if(!empty($keys))
+        {
+            $this->selectLanguage($keys[0]);
         }
         return $this;
     }
