@@ -6,6 +6,7 @@ use MagicObject\Util\PicoEnvironmentVariable;
 use MagicObject\Secret\PicoSecret;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\ClassUtil\PicoObjectParser;
+use MagicObject\Util\PicoGenericObject;
 use MagicObject\Util\PicoStringUtil;
 use ReflectionClass;
 use stdClass;
@@ -230,11 +231,51 @@ class SecretObject extends stdClass //NOSONAR
     /**
      * Encrypt data
      *
+     * @param MagicObject|PicoGenericObject|array|stdClass|string $data
+     * @param string $hexKey
+     * @return mixed
+     */
+    private function encryptValue($data, $hexKey) 
+    {
+        if($data instanceof MagicObject || $data instanceof PicoGenericObject)
+        {
+            $values = $data->value();
+            foreach($values as $key=>$value)
+            {
+                $data->set($key, $this->encryptValue($value, $hexKey));
+            }
+            return $data;
+        }
+        else if($data instanceof stdClass)
+        {
+            foreach($data as $key=>$value)
+            {
+                $data->$key = $this->encryptValue($value, $hexKey);
+            }
+            return $data;
+        }
+        else if(is_array($data))
+        {
+            foreach($data as $key=>$value)
+            {
+                $data[$key] = $this->encryptValue($value, $hexKey);
+            }
+            return $data;
+        }
+        else
+        {
+            return $this->encryptString($data, $hexKey);
+        }
+    }
+
+    /**
+     * Encrypt string
+     *
      * @param string $plaintext
      * @param string $hexKey
      * @return string
      */
-    private function encryptValue($plaintext, $hexKey) 
+    private function encryptString($plaintext, $hexKey)
     {
         $key = $hexKey;
         $method = "AES-256-CBC";
@@ -247,11 +288,51 @@ class SecretObject extends stdClass //NOSONAR
     /**
      * Decrypt data
      *
-     * @param string $ciphertext
+     * @param MagicObject|PicoGenericObject|array|stdClass|string $data
+     * @param string $hexKey
+     * @return mixed
+     */
+    private function decryptValue($data, $hexKey) 
+    {
+        if($data instanceof MagicObject || $data instanceof PicoGenericObject)
+        {
+            $values = $data->value();
+            foreach($values as $key=>$value)
+            {
+                $data->set($key, $this->decryptValue($value, $hexKey));
+            }
+            return $data;
+        }
+        else if($data instanceof stdClass)
+        {
+            foreach($data as $key=>$value)
+            {
+                $data->$key = $this->decryptValue($value, $hexKey);
+            }
+            return $data;
+        }
+        else if(is_array($data))
+        {
+            foreach($data as $key=>$value)
+            {
+                $data[$key] = $this->decryptValue($value, $hexKey);
+            }
+            return $data;
+        }
+        else
+        {
+            return $this->decryptString($data, $hexKey);
+        }
+    }
+
+    /**
+     * Decrypt string
+     *
+     * @param string $data
      * @param string $hexKey
      * @return string
      */
-    private function decryptValue($ciphertext, $hexKey) 
+    private function decryptString($ciphertext, $hexKey) 
     {
         $ivHashCiphertext = base64_decode($ciphertext);
         $key = $hexKey;
@@ -319,7 +400,7 @@ class SecretObject extends stdClass //NOSONAR
     {
         if($data != null)
         {
-            if($data instanceof self)
+            if($data instanceof self || $data instanceof MagicObject || $data instanceof PicoGenericObject)
             {
                 $values = $data->value();
                 foreach ($values as $key => $value) {
@@ -840,7 +921,7 @@ class SecretObject extends stdClass //NOSONAR
      *
      * @return string A YAML string representing the original PHP value
      */
-    public function dumpYaml($inline = 2, $indent = 4, $flags = 0)
+    public function dumpYaml($inline = 10, $indent = 4, $flags = 0)
     {
         $snake = $this->_snake();
         $input = $this->valueArray($snake);
@@ -855,6 +936,6 @@ class SecretObject extends stdClass //NOSONAR
     public function __toString()
     {
         $obj = clone $this;
-        return json_encode($obj->value($this->isSnake()));
+        return json_encode($obj->value($this->isSnake()), JSON_PRETTY_PRINT);
     }
 }
