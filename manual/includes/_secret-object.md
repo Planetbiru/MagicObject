@@ -337,7 +337,9 @@ $secretYaml = $generator->dumpYaml(null, 4, 0); // will print secret yaml
 file_put_content("secret.yaml", $secretYaml); // will dump to file secret.yaml
 ```
 
-MagicObject also support Multi level Yaml.
+### Multilevel Object Secure
+
+MagicObject also support Multilevel Yaml.
 
 **Example**
 
