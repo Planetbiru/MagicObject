@@ -90,7 +90,7 @@ class PicoDatabase //NOSONAR
 		$connected = true;
 		try 
 		{
-			$connectionString = $this->databaseCredentials->getDriver() . ':host=' . $this->databaseCredentials->getHost() . '; port=' . $this->databaseCredentials->getPort() . '; dbname=' . $this->databaseCredentials->getDatabaseName();
+			$connectionString = $this->databaseCredentials->getDriver() . ':host=' . $this->databaseCredentials->getHost() . '; port=' . ((int) $this->databaseCredentials->getPort()) . '; dbname=' . $this->databaseCredentials->getDatabaseName();
 			$this->databaseType = $this->databaseCredentials->getDriver();
 			$this->databaseConnection = new PDO(
 				$connectionString,
