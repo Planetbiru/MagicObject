@@ -952,6 +952,116 @@ $secret2->loadYamlString($yaml2, false, true, true);
 
 echo $secret2->dumpYaml(null, 4);
 ```
+
+### Secure Config from DynamicObject
+
+```php
+<?php
+
+use MagicObject\Database\PicoDatabase;
+use MagicObject\Database\PicoDatabaseCredentials;
+use MusicProductionManager\App\ShutdownManager;
+use MusicProductionManager\Config\ConfigApp;
+use MagicObject\SecretObject;
+namespace MagicObject\Database;
+
+require_once __DIR__ . "/vendor/autoload.php";
+
+/**
+ * PicoDatabaseCredentials class
+ * The SecretObject will encrypt all attributes to prevent unauthorized user read the database configuration
+ */
+class PicoDatabaseCredentials extends SecretObject
+{
+	/**
+	 * Database driver
+	 *
+	 * @var string
+	 */
+	protected $driver = 'mysql';
+
+	/**
+	 * Database server host
+	 *
+	 * @DecryptOut
+	 * @var string
+	 */
+	protected $host = 'localhost';
+
+	/**
+	 * Database server port
+	 * @var integer
+	 */
+	protected $port = 3306;
+
+	/**
+	 * Database username
+	 *
+	 * @DecryptOut
+	 * @var string
+	 */
+	protected $username = "";
+
+	/**
+	 * Database user password
+	 *
+	 * @DecryptOut
+	 * @var string
+	 */
+	protected $password = "";
+
+	/**
+	 * Database name
+	 *
+	 * @DecryptOut
+	 * @var string
+	 */
+	protected $databaseName = "";
+	
+	/**
+	 * Database schema
+	 *
+	 * @DecryptOut
+	 * @var string
+	 */
+	protected $databseSchema = "public";
+
+	/**
+	 * Application time zone
+	 *
+	 * @var string
+	 */
+	protected $timeZone = "Asia/Jakarta";
+}
+
+$cfg = new ConfigApp(null, true);
+$cfg->loadYamlFile(dirname(__DIR__)."/.cfg/app.yml", true, true);
+
+$databaseCredentials = new PicoDatabaseCredentials($cfg->getDatabase());
+
+$database = new PicoDatabase($databaseCredentials, 
+    function($sql, $type) //NOSONAR
+    {
+        // callback when execute query that modify data
+    }, 
+    function($sql) //NOSONAR
+    {
+        // callback when execute all query
+    }
+);
+
+try
+{
+    $database->connect();
+    $shutdownManager = new ShutdownManager($database);
+    $shutdownManager->registerShutdown();
+}
+catch(Exception $e)
+{
+    // do nothing
+}
+
+```
 ## Input POST/GET/COOKIE/REQUEST/SERVER
 
 ### Input POST
