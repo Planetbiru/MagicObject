@@ -335,6 +335,10 @@ class SecretObject extends stdClass //NOSONAR
      */
     private function decryptString($ciphertext, $hexKey) 
     {
+        if(!isset($ciphertext) || empty($ciphertext))
+        {
+            return null;
+        }
         $ivHashCiphertext = base64_decode($ciphertext);
         $key = $hexKey;
         $method = "AES-256-CBC";
