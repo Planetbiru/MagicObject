@@ -4,6 +4,7 @@
 
 Secret Objects are very important in applications that use very sensitive and secret configurations. This configuration must be encrypted so that it cannot be seen either when someone tries to open the configuration file, environment variables, or even when the developer accidentally debugs an object related to the database so that the properties of the database object are exposed including the host name, database name, username and even password.
 
+
 ```php
 <?php
 
@@ -79,6 +80,20 @@ class PicoDatabaseCredentials extends SecretObject
 	protected $timeZone = "Asia/Jakarta";
 }
 ```
+
+### Class Parameters
+
+**@JSON**
+
+`@JSON` is parameter to inform how the object will be serialized.
+
+Attributes:
+`property-naming-strategy`
+
+Available value:
+
+- `SNAKE_CASE` all column will be snace case when `__toString()` or `dumpYaml()` method called.
+- `CAMEL_CASE` all column will be camel case when `__toString()` or `dumpYaml()` method called.
 
 ### Property Parameters
 
