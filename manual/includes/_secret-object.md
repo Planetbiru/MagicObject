@@ -434,10 +434,7 @@ session:
   save_path: /tmp/session
 vocal_guide_instrument: piano
 ";
-$secret1->loadYamlString(
-$yaml1,
-false, true, true
-);
+$secret1->loadYamlString($yaml1, false, true, true);
 
 echo $secret1->dumpYaml(null, 4);
 
@@ -480,7 +477,9 @@ vocal_guide_instrument: piano
 
 $secret2 = new ConfigSecret2(null, function(){
     return bin2hex("This is your secure key for Scrt");
-});$secret2->loadYamlString($yaml2, false, true, true);
+});
+
+$secret2->loadYamlString($yaml2, false, true, true);
 
 echo $secret2->dumpYaml(null, 4);
 ```
