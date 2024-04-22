@@ -3,6 +3,9 @@
 User can extend `MagicObject` to many classes.
 
 ```php
+<?php
+
+use MagicObject\MagicObject;
 
 /**
  * Example to extends MagicObject
