@@ -1,6 +1,7 @@
 ---
 includes:
   - installation
+  - extend-magic-object
   - implementation
   - simple-object
   - multilevel-object

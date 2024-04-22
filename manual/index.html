@@ -10,6 +10,40 @@
 <p>or if composer is not installed</p>
 <pre><code>php composer.phar remove planetbiru/magic-object</code></pre>
 <p>To install composer on your PC or download latest composer.phar, click <a href="https://getcomposer.org/download/">https://getcomposer.org/download/</a> </p>
+<h2>Extend Magic Object</h2>
+<p>User can extend <code>MagicObject</code> to many classes.</p>
+<pre><code class="language-php">
+/**
+ * Example to extends MagicObject
+ * 
+ * @JSON(property-naming-strategy=SNAKE_CASE, prettify=true)
+ */
+class MyObject extends MagicObject
+{
+
+}</code></pre>
+<h3>Class Parameters</h3>
+<p><strong>@JSON</strong></p>
+<p><code>@JSON</code> is parameter to inform how the object will be serialized.</p>
+<p>Attributes:</p>
+<ol>
+<li><code>property-naming-strategy</code></li>
+</ol>
+<p>Allowed value:</p>
+<ul>
+<li><code>SNAKE_CASE</code> all column will be snace case when <code>__toString()</code> or <code>dumpYaml()</code> method called.</li>
+<li><code>CAMEL_CASE</code> all column will be camel case when <code>__toString()</code> or <code>dumpYaml()</code> method called.</li>
+</ul>
+<p>Default value: <code>CAMEL_CASE</code></p>
+<ol>
+<li><code>prettify</code></li>
+</ol>
+<p>Allowed value:</p>
+<ul>
+<li><code>true</code> JSON string will be prettified</li>
+<li><code>false</code> JSON string will not be prettified</li>
+</ul>
+<p>Default value: <code>false</code></p>
 <h1>MagicObject Implementation</h1>
 <h2>Simple Object</h2>
 <h3>Set and Get Properties Value</h3>
@@ -442,7 +476,7 @@ class PicoDatabaseCredentials extends SecretObject
 <p><code>@JSON</code> is parameter to inform how the object will be serialized.</p>
 <p>Attributes:
 <code>property-naming-strategy</code></p>
-<p>Available value:</p>
+<p>Allowed value:</p>
 <ul>
 <li><code>SNAKE_CASE</code> all column will be snace case when <code>__toString()</code> or <code>dumpYaml()</code> method called.</li>
 <li><code>CAMEL_CASE</code> all column will be camel case when <code>__toString()</code> or <code>dumpYaml()</code> method called.</li>
@@ -1109,7 +1143,7 @@ use MagicObject\MagicObject;
 
 /**
  * @Entity
- * @JSON(property-naming-strategy=SNAKE_CASE)
+ * @JSON(property-naming-strategy=SNAKE_CASE, prettify=true)
  * @Table(name="album")
  */
 class Album extends MagicObject
@@ -1290,13 +1324,25 @@ class Album extends MagicObject
 <p><code>@Entity</code> is parameter to validate that the object is an entity.</p>
 <p><strong>@JSON</strong></p>
 <p><code>@JSON</code> is parameter to inform how the object will be serialized.</p>
-<p>Attributes:
-<code>property-naming-strategy</code></p>
-<p>Available value:</p>
+<p>Attributes:</p>
+<ol>
+<li><code>property-naming-strategy</code></li>
+</ol>
+<p>Allowed value:</p>
 <ul>
 <li><code>SNAKE_CASE</code> all column will be snace case when <code>__toString()</code> or <code>dumpYaml()</code> method called.</li>
 <li><code>CAMEL_CASE</code> all column will be camel case when <code>__toString()</code> or <code>dumpYaml()</code> method called.</li>
 </ul>
+<p>Default value: <code>CAMEL_CASE</code></p>
+<ol>
+<li><code>prettify</code></li>
+</ol>
+<p>Allowed value:</p>
+<ul>
+<li><code>true</code> JSON string will be prettified</li>
+<li><code>false</code> JSON string will not be prettified</li>
+</ul>
+<p>Default value: <code>false</code></p>
 <p><strong>@Table</strong></p>
 <p><code>@Table</code> is parameter contains table information.</p>
 <p>Attributes:
@@ -1321,7 +1367,7 @@ class Album extends MagicObject
 <li><code>generator</code></li>
 </ul>
 <p><code>strategy</code> is strategy to generate auto value.</p>
-<p>Available value:</p>
+<p>Allowed value:</p>
 <p><strong>1. GenerationType.UUID</strong></p>
 <p>Generate 20 bytes unique ID</p>
 <ul>
