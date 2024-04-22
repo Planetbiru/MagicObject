@@ -1,3 +1,15 @@
+<!doctype html> 
+<html> 
+<head> 
+<title>MagicObject User Manual</title> 
+<link rel="stylesheet" type="text/css" href="css/css.css" /> 
+<script type="text/javascript" src="js/js.js"></script> 
+</head>
+
+<body onload="doStuff()"> 
+
+<div class="articles">
+
 ---
 includes:
   - installation
@@ -19,3 +31,12 @@ includes:
   - upload-file
   - data-table
 ---
+</div>
+
+<div id="nav"> 
+  <ul>  
+  </ul>
+</div>
+
+</body>
+</html>
