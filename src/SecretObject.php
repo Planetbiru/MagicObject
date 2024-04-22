@@ -245,27 +245,60 @@ class SecretObject extends stdClass //NOSONAR
     {
         return isset($this->$var) ? $this->$var : null;
     }
+
+    /**
+     * Check data if instaceof MagicObject or instanceof PicoGenericObject
+     *
+     * @param mixed $data
+     * @return boolean
+     */
+    private function typeObject($data)
+    {
+        if($data instanceof MagicObject || $data instanceof PicoGenericObject)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check data if instanceof self or instanceof stdClass
+     *
+     * @param mixed $data
+     * @return boolean
+     */
+    private function typeStdClass($data)
+    {
+        if($data instanceof self || $data instanceof stdClass)
+        {
+            return true;
+        }
+        return false;
+    }
     
     /**
      * Encrypt data
      *
-     * @param MagicObject|PicoGenericObject|array|stdClass|string|number $data
+     * @param MagicObject|PicoGenericObject|self|array|stdClass|string|number $data
      * @param string $hexKey
      * @return mixed
      */
-    private function encryptValue($data, $hexKey) 
+    public function encryptValue($data, $hexKey) 
     {
-        if($data instanceof MagicObject || $data instanceof PicoGenericObject)
+        if($hexKey == null)
+        {
+            $hexKey = $this->secureKey();
+        }
+        if($this->typeObject($data))
         {
             $values = $data->value();
-            print_r($data);
             foreach($values as $key=>$value)
             {
                 $data->set($key, $this->encryptValue($value, $hexKey));
             }
             return $data;
         }
-        else if($data instanceof self || $data instanceof stdClass)
+        else if($this->typeStdClass($data))
         {
             foreach($data as $key=>$value)
             {
@@ -312,13 +345,17 @@ class SecretObject extends stdClass //NOSONAR
     /**
      * Decrypt data
      *
-     * @param MagicObject|PicoGenericObject|array|stdClass|string $data
+     * @param MagicObject|PicoGenericObject|self|array|stdClass|string $data
      * @param string $hexKey
      * @return mixed
      */
-    private function decryptValue($data, $hexKey) 
+    public function decryptValue($data, $hexKey) 
     {
-        if($data instanceof MagicObject || $data instanceof PicoGenericObject)
+        if($hexKey == null)
+        {
+            $hexKey = $this->secureKey();
+        }
+        if($this->typeObject($data))
         {
             $values = $data->value();
             foreach($values as $key=>$value)
@@ -327,7 +364,7 @@ class SecretObject extends stdClass //NOSONAR
             }
             return $data;
         }
-        else if($data instanceof stdClass)
+        else if($this->typeStdClass($data))
         {
             foreach($data as $key=>$value)
             {
