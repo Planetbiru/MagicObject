@@ -10,40 +10,6 @@
 <p>or if composer is not installed</p>
 <pre><code>php composer.phar remove planetbiru/magic-object</code></pre>
 <p>To install composer on your PC or download latest composer.phar, click <a href="https://getcomposer.org/download/">https://getcomposer.org/download/</a> </p>
-<h2>Extend Magic Object</h2>
-<p>User can extend <code>MagicObject</code> to many classes.</p>
-<pre><code class="language-php">
-/**
- * Example to extends MagicObject
- * 
- * @JSON(property-naming-strategy=SNAKE_CASE, prettify=true)
- */
-class MyObject extends MagicObject
-{
-
-}</code></pre>
-<h3>Class Parameters</h3>
-<p><strong>@JSON</strong></p>
-<p><code>@JSON</code> is parameter to inform how the object will be serialized.</p>
-<p>Attributes:</p>
-<ol>
-<li><code>property-naming-strategy</code></li>
-</ol>
-<p>Allowed value:</p>
-<ul>
-<li><code>SNAKE_CASE</code> all column will be snace case when <code>__toString()</code> or <code>dumpYaml()</code> method called.</li>
-<li><code>CAMEL_CASE</code> all column will be camel case when <code>__toString()</code> or <code>dumpYaml()</code> method called.</li>
-</ul>
-<p>Default value: <code>CAMEL_CASE</code></p>
-<ol>
-<li><code>prettify</code></li>
-</ol>
-<p>Allowed value:</p>
-<ul>
-<li><code>true</code> JSON string will be prettified</li>
-<li><code>false</code> JSON string will not be prettified</li>
-</ul>
-<p>Default value: <code>false</code></p>
 <h1>MagicObject Implementation</h1>
 <h2>Simple Object</h2>
 <h3>Set and Get Properties Value</h3>
@@ -133,6 +99,40 @@ echo $someObject;
 
 // or you can debug with
 error_log($someObject);</code></pre>
+<h2>Extend Magic Object</h2>
+<p>User can extend <code>MagicObject</code> to many classes.</p>
+<pre><code class="language-php">
+/**
+ * Example to extends MagicObject
+ * 
+ * @JSON(property-naming-strategy=SNAKE_CASE, prettify=true)
+ */
+class MyObject extends MagicObject
+{
+
+}</code></pre>
+<h3>Class Parameters</h3>
+<p><strong>@JSON</strong></p>
+<p><code>@JSON</code> is parameter to inform how the object will be serialized.</p>
+<p>Attributes:</p>
+<ol>
+<li><code>property-naming-strategy</code></li>
+</ol>
+<p>Allowed value:</p>
+<ul>
+<li><code>SNAKE_CASE</code> all column will be snace case when <code>__toString()</code> or <code>dumpYaml()</code> method called.</li>
+<li><code>CAMEL_CASE</code> all column will be camel case when <code>__toString()</code> or <code>dumpYaml()</code> method called.</li>
+</ul>
+<p>Default value: <code>CAMEL_CASE</code></p>
+<ol>
+<li><code>prettify</code></li>
+</ol>
+<p>Allowed value:</p>
+<ul>
+<li><code>true</code> JSON string will be prettified</li>
+<li><code>false</code> JSON string will not be prettified</li>
+</ul>
+<p>Default value: <code>false</code></p>
 <h2>Multilevel Object</h2>
 <pre><code class="language-php">&lt;?php
 use MagicObject\MagicObject;
