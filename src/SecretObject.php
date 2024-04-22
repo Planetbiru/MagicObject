@@ -277,13 +277,13 @@ class SecretObject extends stdClass //NOSONAR
     }
     
     /**
-     * Encrypt data
+     * Encrypt data recursive
      *
      * @param MagicObject|PicoGenericObject|self|array|stdClass|string|number $data
      * @param string $hexKey
      * @return mixed
      */
-    public function encryptValue($data, $hexKey) 
+    public function encryptValue($data, $hexKey = null) 
     {
         if($hexKey == null)
         {
@@ -328,7 +328,7 @@ class SecretObject extends stdClass //NOSONAR
      * @param string $hexKey
      * @return string
      */
-    public function encryptString($plaintext, $hexKey)
+    public function encryptString($plaintext, $hexKey = null)
     {
         if($hexKey == null)
         {
@@ -343,13 +343,13 @@ class SecretObject extends stdClass //NOSONAR
     }
     
     /**
-     * Decrypt data
+     * Decrypt data recursive
      *
      * @param MagicObject|PicoGenericObject|self|array|stdClass|string $data
      * @param string $hexKey
      * @return mixed
      */
-    public function decryptValue($data, $hexKey) 
+    public function decryptValue($data, $hexKey = null) 
     {
         if($hexKey == null)
         {
@@ -394,7 +394,7 @@ class SecretObject extends stdClass //NOSONAR
      * @param string $hexKey
      * @return string
      */
-    public function decryptString($ciphertext, $hexKey) 
+    public function decryptString($ciphertext, $hexKey = null) 
     {
         if($hexKey == null)
         {
