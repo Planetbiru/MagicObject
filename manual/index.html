@@ -1,5 +1,5 @@
 <!doctype html> 
-<html> 
+<html lang="en"> 
 <head> 
 <title>MagicObject User Manual</title> 
 <link rel="stylesheet" type="text/css" href="css/css.css" /> 
