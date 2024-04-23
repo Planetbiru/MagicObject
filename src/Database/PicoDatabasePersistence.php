@@ -1068,12 +1068,13 @@ class PicoDatabasePersistence // NOSONAR
         $source = str_replace("Or", "#Or#", $source);
 
         $source = str_replace("#Or#Or", "Or#Or", $source);
-        $source = str_replace("#And#And", "Or#Or", $source);
-
+        $source = str_replace("#And#And", "And#And", $source);
 
         $sourcex = str_replace("#And#", "@", $source);
         $sourcex = str_replace("#Or#", "@", $sourcex);
+        
         $sourcex = trim($sourcex, "#");
+        
         $arrSource = explode("@", $sourcex);
         foreach($arrSource as $idx=>$val)
         {
