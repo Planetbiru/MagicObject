@@ -4034,8 +4034,6 @@ try
     $predicate2-&gt;greaterThan('Producer.birthDay', '2001-01-01');
     $spesification-&gt;addAnd($predicate2);
 
-    // Up to this point we are still using albumId and active   
-
     $sortable = new PicoSortable();
 
     $sortable-&gt;addSortable(new PicoSort("Producer.birthDay", PicoSortable::ORDER_TYPE_ASC));
