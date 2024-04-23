@@ -1221,9 +1221,9 @@ class PicoDatabasePersistence // NOSONAR
             if($parameters->getTable() != null)
             {
                 $attribute = $annotationParser->parseKeyValueAsObject($parameters->getTable());
-                if($attribute->getTable() != null)
+                if($attribute->getName() != null)
                 {
-                    $tableName = $attribute->getTable();
+                    $tableName = $attribute->getName();
                     $this->entityTable[$entityName] = $tableName;
                 }
             }
@@ -1231,9 +1231,36 @@ class PicoDatabasePersistence // NOSONAR
         catch(Exception $e)
         {
             // do nothing
+            $tableName = null;
         }
         
         return $tableName;
+    }
+    
+    private function getColumnMapOf($entityName)
+    {
+        $columns = array();
+        try
+        {
+            $className = $this->getRealClassName($entityName);
+            $annotationParser = new PicoAnnotationParser($className);
+            $props = $annotationParser->getProperties();
+            foreach($props as $prop)
+            {
+                $reflexProp = new PicoAnnotationParser($className, $prop->name, PicoAnnotationParser::PROPERTY);
+                $parameters = $reflexProp->getParametersAsObject();
+                $properties = $reflexProp->parseKeyValueAsObject($parameters->getColumn());
+                $columns[$prop->name] = $properties->getName();
+
+                // get column name of each parameters
+                
+            }
+        }
+        catch(Exception $e)
+        {
+            // do nothing
+        }
+        return $columns;
     }
     
     /**
@@ -1265,8 +1292,8 @@ class PicoDatabasePersistence // NOSONAR
      */
     private function createWhereFromSpecification($sqlQuery, $specification, $info)
     {
-        $maps = $this->getColumnMap($info);
-        $columnNames = array_values($maps);
+        $maps1 = $this->getColumnMap($info);
+        
         $arr = array();
         $arr[] = "(1=1)";
         if($specification != null && !$specification->isEmpty())
@@ -1279,11 +1306,33 @@ class PicoDatabasePersistence // NOSONAR
                     $entityField = new PicoEntityField($spec->getField());
                     $field = $entityField->getField();
                     $entityName = $entityField->getEntity();
-                    $entityTable = $this->getTableOf($entityName);
+                    
+                    if($entityName != null)
+                    {
+                        $entityTable = $this->getTableOf($entityName);
+                        if($entityTable != null)
+                        {
+                            $maps2 = $this->getColumnMapOf($entityName);                           
+                            $maps = $maps2;
+                        }
+                        else
+                        {
+                            $maps = $maps1;
+                        }
+                        $columnNames = array_values($maps);
+                    }
+                    else
+                    {
+                        $entityTable = null;
+                        $maps = $maps1;
+                        $columnNames = array_values($maps);
+                    }
+                    
                     
                     // flat
                     if(isset($maps[$field]))
                     {
+                        
                         // get from map
                         $column = $this->getTableColumn($entityTable, $maps[$field]);
                         
@@ -1405,8 +1454,7 @@ class PicoDatabasePersistence // NOSONAR
                 $tableName = $this->getTableOf($entityField->getEntity());
                 $sortBy = $tableName.".".$sortBy;
             }
-            $sorts[] = $sortBy . " " . $sortType;
-            
+            $sorts[] = $sortBy . " " . $sortType;           
         }
         if(!empty($sorts))
         {
@@ -1429,25 +1477,33 @@ class PicoDatabasePersistence // NOSONAR
         $joinColumns = $tableInfo->getJoinColumns();
         $columnList = array_merge($columns, $joinColumns);
         $columnNames = array();
-        foreach($columnList as $column)
+        foreach($columnList as $k=>$column)
         {
-            $columnNames[] = $column['name'];
+            $columnNames[$k] = $column['name'];
         }
         $sorts = array();
         foreach($order->getSortable() as $sortable)
         {
             $propertyName = $sortable->getSortBy();
-            $sortType = $sortable->getSortType();
-            if(isset($columnList[$propertyName]))
+            
+            $sortBy = $propertyName;
+            $entityField = new PicoEntityField($sortBy);
+            if($entityField->getEntity() != null)
             {
-                $sortBy = $columnList[$propertyName]['name'];
+                $tableName = $this->getTableOf($entityField->getEntity());
+                $sortBy = $tableName.".".$sortBy;
+            }
+            print_r($columnList);
+            
+            $sortType = $sortable->getSortType();
+            
+            
+            if(isset($columnList[$sortBy]))
+            {
+                $sortBy = $propertyName;
                 
-                $entityField = new PicoEntityField($sortBy);
-                if($entityField->getEntity() != null)
-                {
-                    $tableName = $this->getTableOf($entityField->getEntity());
-                    $sortBy = $tableName.".".$sortBy;
-                }
+                
+                $sortBy = $columnList[$sortBy]['name'];
                 
                 $sorts[] = $sortBy . " " . $sortType;
             }
@@ -1467,6 +1523,7 @@ class PicoDatabasePersistence // NOSONAR
         {
             $ret = implode(", ", $sorts);
         } 
+        echo $ret;
         return $ret;
     }
     
@@ -1611,7 +1668,7 @@ class PicoDatabasePersistence // NOSONAR
         {
             if($sortable instanceof PicoSortable)
             {
-                $sortOrder = $sortable->createOrderBy($info);
+                $sortOrder = $this->createOrderByQuery($sortable, $info);
                 $sqlQuery = $this->setOrdeBy($sqlQuery, $sortOrder);
             }
             else if(is_string($sortable))
@@ -1852,7 +1909,12 @@ class PicoDatabasePersistence // NOSONAR
         $sqlQuery = $queryBuilder
             ->newQuery()
             ->select($info->getTableName().".*")
-            ->from($info->getTableName());       
+            ->from($info->getTableName());
+        
+        if($specification->isRequireJoin())
+        {
+            $sqlQuery = $this->addJoinQuery($sqlQuery, $info);
+        }       
         if($specification != null)
         {
             $sqlQuery = $this->setSpecification($sqlQuery, $specification, $info);

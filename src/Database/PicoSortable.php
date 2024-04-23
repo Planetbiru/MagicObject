@@ -189,4 +189,14 @@ class PicoSortable
         } 
         return $ret;
     }
+
+    /**
+     * Get sortable
+     *
+     * @return  PicoSort[]
+     */ 
+    public function getSortable()
+    {
+        return $this->sortable;
+    }
 }

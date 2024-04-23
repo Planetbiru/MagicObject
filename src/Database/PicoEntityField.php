@@ -48,7 +48,7 @@ class PicoEntityField
         if(strpos($field, "."))
         {
             $arr = explode(".", $field, 2);
-            $field = $arr[1];
+            $this->field = $arr[1];
             $this->entity = $arr[0];
         }
         else
