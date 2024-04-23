@@ -1224,6 +1224,7 @@ class PicoDatabasePersistence // NOSONAR
                 if($attribute->getTable() != null)
                 {
                     $tableName = $attribute->getTable();
+                    $this->entityTable[$entityName] = $tableName;
                 }
             }
         }
