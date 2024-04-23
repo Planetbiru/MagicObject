@@ -1805,7 +1805,6 @@ class PicoDatabasePersistence // NOSONAR
         return $result;
     }
     
-    
     /**
      * Get findAll query
      *
