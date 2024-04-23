@@ -4031,8 +4031,12 @@ try
     $spesification-&gt;addAnd($predicate1);
 
     $predicate2 = new PicoPredicate();
-    $predicate2-&gt;greaterThan('Producer.birthDay', '2001-01-01');
+    $predicate2-&gt;lessThan('Producer.birthDay', '2001-01-01');
     $spesification-&gt;addAnd($predicate2);
+
+    $predicate3 = new PicoPredicate();
+    $predicate3-&gt;equals('EntityAlbum.active', true);
+    $spesification-&gt;addAnd($predicate3);
 
     $sortable = new PicoSortable();
 
@@ -4045,16 +4049,15 @@ try
     {
         echo $alb."\r\n\r\n";
     }
-    echo $album-&gt;findAllQuery($spesification, null, $sortable, true);
 
-    /*
-    select album.*
-    from album
-    left join producer
-    on producer.producer_id = album.producer_id
-    where album.title like '%Album%' and producer.birth_day &gt; '2001-01-01'
-    order by producer.birth_day asc, producer.producer_id desc
-    */
+    $pagable = new PicoPagable(new PicoPage(1, 20));
+    echo $album-&gt;findAllQuery($spesification, $pagable, $sortable, true);
+    echo "\r\n-----\r\n";
+    echo $spesification;
+    echo "\r\n-----\r\n";
+    echo $sortable;
+    echo "\r\n-----\r\n";
+    echo $pagable;
 }
 catch(Exception $e)
 {

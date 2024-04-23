@@ -1,6 +1,8 @@
 <?php
 
 use MagicObject\Database\PicoDatabase;
+use MagicObject\Database\PicoPagable;
+use MagicObject\Database\PicoPage;
 use MagicObject\Database\PicoPredicate;
 use MagicObject\Database\PicoSort;
 use MagicObject\Database\PicoSortable;
@@ -638,9 +640,13 @@ try
 	$spesification->addAnd($predicate1);
 
 	$predicate2 = new PicoPredicate();
-	$predicate2->greaterThan('Producer.birthDay', '2001-01-01');
+	$predicate2->lessThan('Producer.birthDay', '2001-01-01');
 	$spesification->addAnd($predicate2);
 		
+	$predicate3 = new PicoPredicate();
+	$predicate3->equals('EntityAlbum.active', true);
+	$spesification->addAnd($predicate3);
+	
 	$sortable = new PicoSortable();
 	
 	$sortable->addSortable(new PicoSort("Producer.birthDay", PicoSortable::ORDER_TYPE_ASC));
@@ -651,13 +657,17 @@ try
 	$rowData = $pageData->getResult();
 	foreach($rowData as $alb)
 	{
-		//echo $alb."\r\n\r\n";
+		echo $alb."\r\n\r\n";
 	}
-	echo $album->findAllQuery($spesification, null, $sortable, true);
+	
+	$pagable = new PicoPagable(new PicoPage(1, 20));
+	echo $album->findAllQuery($spesification, $pagable, $sortable, true);
 	echo "\r\n-----\r\n";
 	echo $spesification;
 	echo "\r\n-----\r\n";
 	echo $sortable;
+	echo "\r\n-----\r\n";
+	echo $pagable;
 }
 catch(Exception $e)
 {
