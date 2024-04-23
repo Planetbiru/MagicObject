@@ -2,6 +2,8 @@
 
 namespace MagicObject\Database;
 
+use MagicObject\Util\PicoStringUtil;
+
 class PicoSpecification
 {
     const LOGIC_AND = "and";
@@ -189,5 +191,82 @@ class PicoSpecification
     {
         $this->parentFilterLogic = $parentFilterLogic;
         return $this;
+    }
+    
+    private function getWhere($specifications)
+    {
+        foreach($specifications as $spec)
+        {
+            if($spec instanceof PicoPredicate)
+            {
+                $entityField = new PicoEntityField($spec->getField());
+                $field = $entityField->getField();
+                $entityName = $entityField->getEntity();
+                $column = ($entityName == null) ? $field : $entityName.".".$field;
+                $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $spec->getValue();               
+            }
+            else if($spec instanceof PicoSpecification)
+            {
+                // nested
+                $arr[] = $spec->getParentFilterLogic() . " (" . $this->createWhereFromSpecification($spec) . ")";
+            }
+        }
+        return $arr;
+    }
+    
+    /**
+     * Create WHERE from specification
+     *
+     * @param PicoSpecification $specification
+     * @return string
+     */
+    private function createWhereFromSpecification($specification)
+    {
+        
+        $arr = array();
+        $arr[] = "(1=1)";
+        if($specification != null && !$specification->isEmpty())
+        {
+            $specifications = $specification->getSpecifications();
+            foreach($specifications as $spec)
+            {           
+                $entityField = new PicoEntityField($spec->getField());
+                $field = $entityField->getField();
+                $entityName = $entityField->getEntity();
+                $column = ($entityName == null) ? $field : $entityName.".".$field;
+                $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $spec->getValue();      
+            }
+        }
+        $ret = implode(" ", $arr);
+        return $this->trimWhere($ret);
+    }
+    
+    /**
+     * Trim WHERE
+     *
+     * @param string $where
+     * @return string
+     */
+    private function trimWhere($where)
+    {
+        if(stripos($where, "(1=1) or ") === 0)
+        {
+            $where = substr($where, 9);
+        }
+        if(stripos($where, "(1=1) and ") === 0)
+        {
+            $where = substr($where, 10);
+        }
+        return $where;
+    }
+    
+    public function __toString()
+    {
+        $specification = implode(" ", $this->getWhere($this->specifications));
+        if(stripos($specification, "and ") === 0)
+        {
+            $specification = substr($specification, 4);
+        }
+        return $specification;
     }
 }

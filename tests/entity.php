@@ -651,9 +651,13 @@ try
 	$rowData = $pageData->getResult();
 	foreach($rowData as $alb)
 	{
-		echo $alb."\r\n\r\n";
+		//echo $alb."\r\n\r\n";
 	}
 	echo $album->findAllQuery($spesification, null, $sortable, true);
+	echo "\r\n-----\r\n";
+	echo $spesification;
+	echo "\r\n-----\r\n";
+	echo $sortable;
 }
 catch(Exception $e)
 {
