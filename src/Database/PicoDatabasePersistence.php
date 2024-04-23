@@ -130,6 +130,13 @@ class PicoDatabasePersistence // NOSONAR
      * @var PicoTableInfo
      */
     private $tableInfoProp = null;
+    
+    /**
+     * Entity table cache
+     *
+     * @var array
+     */
+    private $entityTable = array();
 
     /**
      * Database connection
@@ -1188,6 +1195,64 @@ class PicoDatabasePersistence // NOSONAR
         }
         return implode(" ", $wheres);
     }
+    
+    /**
+     * Get table name
+     *
+     * @param string|null $entityName
+     * @return string|null
+     */
+    private function getTableOf($entityName)
+    {
+        if($entityName == null || empty($entityName))
+        {
+            return null;
+        }
+        if(isset($this->entityTable[$entityName]))
+        {
+            return $this->entityTable[$entityName];
+        }
+        $tableName = $entityName;
+        try
+        {
+            $className = $this->getRealClassName($entityName);
+            $annotationParser = new PicoAnnotationParser($className);
+            $parameters = $annotationParser->getParametersAsObject();
+            if($parameters->getTable() != null)
+            {
+                $attribute = $annotationParser->parseKeyValueAsObject($parameters->getTable());
+                if($attribute->getTable() != null)
+                {
+                    $tableName = $attribute->getTable();
+                }
+            }
+        }
+        catch(Exception $e)
+        {
+            // do nothing
+        }
+        
+        return $tableName;
+    }
+    
+    /**
+     * Get table name
+     *
+     * @param string|null $entityTable
+     * @param string $field
+     * @return string
+     */
+    private function getTableColumn($entityTable, $field)
+    {
+        if($entityTable != null)
+        {
+            return $entityTable.".".$field;
+        }
+        else
+        {
+            return $field;
+        }
+    } 
 
     /**
      * Create WHERE from specification
@@ -1210,17 +1275,23 @@ class PicoDatabasePersistence // NOSONAR
             {           
                 if($spec instanceof PicoPredicate)
                 {
+                    $entityField = new PicoEntityField($spec->getField());
+                    $field = $entityField->getField();
+                    $entityName = $entityField->getEntity();
+                    $entityTable = $this->getTableOf($entityName);
+                    
                     // flat
-                    if(isset($maps[$spec->getField()]))
+                    if(isset($maps[$field]))
                     {
                         // get from map
-                        $column = $maps[$spec->getField()];
+                        $column = $this->getTableColumn($entityTable, $maps[$field]);
+                        
                         $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
                     }
-                    else if(in_array($spec->getField(), $columnNames))
+                    else if(in_array($field, $columnNames))
                     {
                         // get colum name
-                        $column = $spec->getField();
+                        $column = $this->getTableColumn($entityTable, $field);
                         $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
                     }
                 }
@@ -1491,6 +1562,24 @@ class PicoDatabasePersistence // NOSONAR
      */
     private function addJoinQuery($sqlQuery, $info)
     {
+        $joinColumns = $info->getJoinColumns();
+        $masterTable = $info->getTableName();
+        foreach($joinColumns as $joinColumn)
+        {
+            $entity = $joinColumn[self::KEY_PROPERTY_TYPE];
+            $columnName = $joinColumn[self::KEY_NAME];
+            if(isset($joinColumn[self::KEY_REFERENCE_COLUMN_NAME]))
+            {
+                $referenceColumName = $joinColumn[self::KEY_REFERENCE_COLUMN_NAME];
+            }
+            else
+            {
+                $referenceColumName = $joinColumn[self::KEY_NAME];
+            }
+            $joinTable = $this->getTableOf($entity);
+            
+            $sqlQuery->leftJoin($joinTable)->on($joinTable.".".$referenceColumName." = ".$masterTable.".".$columnName);
+        }
         return $sqlQuery;
     }
 
