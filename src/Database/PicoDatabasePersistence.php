@@ -1480,6 +1480,18 @@ class PicoDatabasePersistence // NOSONAR
         }
         return $sqlQuery;
     }
+    
+    /**
+     * Add JOIN query
+     *
+     * @param PicoDatabaseQueryBuilder $sqlQuery
+     * @param PicoTableInfo $info
+     * @return PicoDatabaseQueryBuilder
+     */
+    private function addJoinQuery($sqlQuery, $info)
+    {
+        return $sqlQuery;
+    }
 
     /**
      * Get all record from database wihout filter
@@ -1502,18 +1514,26 @@ class PicoDatabasePersistence // NOSONAR
             ->select($info->getTableName().".*")
             ->from($info->getTableName());
         
+        if($specification->isRequireJoin())
+        {
+            $sqlQuery = $this->addJoinQuery($sqlQuery, $info);
+        }
+            
         if($specification != null)
         {
             $sqlQuery = $this->setSpecification($sqlQuery, $specification, $info);
         }
+        
         if($pagable != null)
         {
             $sqlQuery = $this->setPagable($sqlQuery, $pagable);      
         }
+        
         if($pagable != null || $sortable != null)
         {
             $sqlQuery = $this->setSortable($sqlQuery, $pagable, $sortable, $info);        
         }
+        
         try
         {
             $stmt = $this->database->executeQuery($sqlQuery);

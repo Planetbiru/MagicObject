@@ -114,6 +114,10 @@ class PicoSpecification
                 $pred->equals($key, $value);
                 $pred->setFilterLogic($logic);
                 $this->specifications[count($this->specifications)] = $pred;
+                if($pred->isRequireJoin())
+                {
+                    $this->requireJoin = true;
+                }
             }
         }
         return $this;
