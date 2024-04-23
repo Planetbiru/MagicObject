@@ -62,35 +62,35 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @var array
      */
-    private $_classParams = array();
+    private $_classParams = array(); // NOSONAR
 
     /**
      * Null properties
      *
      * @var array
      */
-    private $_nullProperties = array();
+    private $_nullProperties = array(); // NOSONAR
 
     /**
      * Property label
      *
      * @var array
      */
-    private $_label = array();
+    private $_label = array(); // NOSONAR
     
     /**
      * Table info
      *
      * @var PicoTableInfo
      */
-    private $_tableInfoProp = null;
+    private $_tableInfoProp = null; // NOSONAR
     
     /**
      * Database persistence
      *
      * @var PicoDatabasePersistence
      */
-    private $_persistProp = null;
+    private $_persistProp = null; // NOSONAR
 
     /**
      * Get null properties
@@ -1143,7 +1143,7 @@ class MagicObject extends stdClass // NOSONAR
         }
         catch(Exception $e)
         {
-            return new PicoDatabaseQueryBuilder($this->_database);;
+            return new PicoDatabaseQueryBuilder($this->_database);
         }
     }
 

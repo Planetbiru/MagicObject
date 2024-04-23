@@ -1301,59 +1301,72 @@ class PicoDatabasePersistence // NOSONAR
             $specifications = $specification->getSpecifications();
             foreach($specifications as $spec)
             {           
-                if($spec instanceof PicoPredicate)
-                {
-                    $entityField = new PicoEntityField($spec->getField());
-                    $field = $entityField->getField();
-                    $entityName = $entityField->getEntity();
-                    
-                    if($entityName != null)
-                    {
-                        $entityTable = $this->getTableOf($entityName);
-                        if($entityTable != null)
-                        {
-                            $joinColumnmaps = $this->getColumnMapOf($entityName);                           
-                            $maps = $joinColumnmaps;
-                        }
-                        else
-                        {
-                            $maps = $masterColumnMaps;
-                        }
-                        $columnNames = array_values($maps);
-                    }
-                    else
-                    {
-                        $entityTable = null;
-                        $maps = $masterColumnMaps;
-                        $columnNames = array_values($maps);
-                    }
-                    
-                    
-                    // flat
-                    if(isset($maps[$field]))
-                    {
-                        
-                        // get from map
-                        $column = $this->getTableColumn($entityTable, $maps[$field]);
-                        
-                        $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
-                    }
-                    else if(in_array($field, $columnNames))
-                    {
-                        // get colum name
-                        $column = $this->getTableColumn($entityTable, $field);
-                        $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
-                    }
-                }
-                else if($spec instanceof PicoSpecification)
-                {
-                    // nested
-                    $arr[] = $spec->getParentFilterLogic() . " (" . $this->createWhereFromSpecification($sqlQuery, $spec, $info) . ")";
-                }
+                $arr = $this->addWhere($arr, $masterColumnMaps, $sqlQuery, $spec);
             }
         }
         $ret = implode(" ", $arr);
         return $this->trimWhere($ret);
+    }
+    
+    /**
+     * Add where statemenet
+     *
+     * @param array $arr
+     * @param array $masterColumnMaps
+     * @param PicoDatabaseQueryBuilder $sqlQuery
+     * @param PicoSpecification $spec
+     * @return array
+     */
+    private function addWhere($arr, $masterColumnMaps, $sqlQuery, $spec)
+    {
+        if($spec instanceof PicoPredicate)
+        {
+            $entityField = new PicoEntityField($spec->getField());
+            $field = $entityField->getField();
+            $entityName = $entityField->getEntity();
+            
+            if($entityName != null)
+            {
+                $entityTable = $this->getTableOf($entityName);
+                if($entityTable != null)
+                {
+                    $joinColumnmaps = $this->getColumnMapOf($entityName);                           
+                    $maps = $joinColumnmaps;
+                }
+                else
+                {
+                    $maps = $masterColumnMaps;
+                }
+            }
+            else
+            {
+                $entityTable = null;
+                $maps = $masterColumnMaps;
+            }
+            $columnNames = array_values($maps);          
+            
+            // flat
+            if(isset($maps[$field]))
+            {
+                
+                // get from map
+                $column = $this->getTableColumn($entityTable, $maps[$field]);
+                
+                $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
+            }
+            else if(in_array($field, $columnNames))
+            {
+                // get colum name
+                $column = $this->getTableColumn($entityTable, $field);
+                $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
+            }
+        }
+        else if($spec instanceof PicoSpecification)
+        {
+            // nested
+            $arr[] = $spec->getParentFilterLogic() . " (" . $this->createWhereFromSpecification($sqlQuery, $spec, $info) . ")";
+        }
+        return $arr;
     }
     
     /**
