@@ -631,8 +631,7 @@ $database->connect();
 $album = new EntityAlbum(null, $database);
 try
 {
-	$spesification = new PicoSpecification();
-	
+	$spesification = new PicoSpecification();	
 	
 	$predicate1 = new PicoPredicate();
 	$predicate1->like('EntityAlbum.title', '%Album%');
@@ -642,8 +641,7 @@ try
 	$predicate2->greaterThan('Producer.birthDay', '2001-01-01');
 	$spesification->addAnd($predicate2);
 	
-	// Up to this point we are still using albumId and active
-	
+	// Up to this point we are still using albumId and active	
 	
 	$sortable = new PicoSortable();
 	
