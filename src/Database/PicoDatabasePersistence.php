@@ -1303,11 +1303,18 @@ class PicoDatabasePersistence // NOSONAR
      * @param string $field
      * @return string
      */
-    private function getTableColumn($entityTable, $field)
+    private function getTableColumn($entityTable, $field, $master = false)
     {
         if($entityTable != null)
         {
-            return $entityTable.".".$field;
+            if($master)
+            {
+                return $entityTable.".".$field;
+            }
+            else
+            {
+                return $entityTable."1.".$field;
+            }
         }
         else
         {
@@ -1355,6 +1362,7 @@ class PicoDatabasePersistence // NOSONAR
     {
         if($spec instanceof PicoPredicate)
         {
+            $masterTable = $info->getTableName();
             $entityField = new PicoEntityField($spec->getField());
             $field = $entityField->getField();
             $entityName = $entityField->getEntity();
@@ -1384,14 +1392,14 @@ class PicoDatabasePersistence // NOSONAR
             {
                 
                 // get from map
-                $column = $this->getTableColumn($entityTable, $maps[$field]);
+                $column = $this->getTableColumn($entityTable, $maps[$field], $entityTable == $masterTable);
                 
                 $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
             }
             else if(in_array($field, $columnNames))
             {
                 // get colum name
-                $column = $this->getTableColumn($entityTable, $field);
+                $column = $this->getTableColumn($entityTable, $field, $entityTable == $masterTable);
                 $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
             }
         }
