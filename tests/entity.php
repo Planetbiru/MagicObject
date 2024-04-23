@@ -633,6 +633,7 @@ try
 {
 	$spesification = new PicoSpecification();
 	
+	
 	$predicate1 = new PicoPredicate();
 	$predicate1->like('EntityAlbum.title', '%Album%');
 	$spesification->addAnd($predicate1);
@@ -645,9 +646,11 @@ try
 	
 	
 	$sortable = new PicoSortable();
+	
 	$sortable->addSortable(new PicoSort("Producer.birthDay", PicoSortable::ORDER_TYPE_ASC));
 	$sortable->addSortable(new PicoSort("Producer.producerId", PicoSortable::ORDER_TYPE_DESC));
-
+	
+	
 	$pageData = $album->findAll($spesification, null, $sortable, true);
 	$rowData = $pageData->getResult();
 	foreach($rowData as $alb)

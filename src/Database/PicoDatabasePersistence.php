@@ -1746,6 +1746,57 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
+     * Check if need join query
+     *
+     * @param PicoSpecification $specification
+     * @param PicoPagable|null $pagable
+     * @param PicoSortable|string|null $sortable
+     * @param PicoTableInfo $info
+     * @return boolean
+     */
+    private function isRequireJoin($specification, $pagable, $sortable, $info) //NOSONAR
+    {
+        if($specification->isRequireJoin())
+        {
+            return true;
+        }
+        if($sortable != null)
+        {
+            if($sortable instanceof PicoSortable)
+            {
+                $sr = $sortable->getSortable();
+                foreach($sr as $s)
+                {
+                    if(strpos($s->getSortBy(), ".") !== false)
+                    {
+                        return true;
+                    }
+                }
+            }
+            else if(is_string($sortable) && strpos($sortable, ".") !== false)
+            {
+                return true;
+            }
+        } 
+        else if($pagable != null && $pagable instanceof PicoPagable)
+        {
+            $sortOrder = $pagable->createOrderBy($info);
+            if(strpos($sortOrder, ".") !== false)
+            {
+                return true;
+            }
+        }
+        else if(is_string($pagable))
+        {
+            $sortOrder = $this->createOrderBy($info, $pagable);
+            if(strpos($sortOrder, ".") !== false)
+            {
+                return true;
+            }
+        }
+    }
+    
+    /**
      * Get findAll query
      *
      * @param PicoSpecification $specification
@@ -1767,7 +1818,7 @@ class PicoDatabasePersistence // NOSONAR
             ->select($info->getTableName().".*")
             ->from($info->getTableName());
         
-        if($specification->isRequireJoin())
+        if($this->isRequireJoin($specification, $pagable, $sortable, $info))
         {
             $sqlQuery = $this->addJoinQuery($sqlQuery, $info);
         }
