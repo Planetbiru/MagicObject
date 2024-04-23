@@ -1467,64 +1467,57 @@ class PicoDatabasePersistence // NOSONAR
      * Create sort with mapping
      *
      * @param PicoSortable $order
-     * @param PicoTableInfo $tableInfo
+     * @param PicoTableInfo $info
      * @return string
      */
-    private function createWithMapping($order, $tableInfo)
+    private function createWithMapping($order, $info)
     {
-        $ret = null;
-        $columns = $tableInfo->getColumns();
-        $joinColumns = $tableInfo->getJoinColumns();
-        $columnList = array_merge($columns, $joinColumns);
-        $columnNames = array();
-        foreach($columnList as $k=>$column)
-        {
-            $columnNames[$k] = $column['name'];
-        }
-        $sorts = array();
-        foreach($order->getSortable() as $sortable)
-        {
-            $propertyName = $sortable->getSortBy();
+        $masterColumnMaps = $this->getColumnMap($info);
+        
+        $arr = array();
+    
+        foreach($order->getSortable() as $sortOrder)
+        {           
+            $entityField = new PicoEntityField($sortOrder->getSortBy());
+            $field = $entityField->getField();
+            $entityName = $entityField->getEntity();
             
-            $sortBy = $propertyName;
-            $entityField = new PicoEntityField($sortBy);
-            if($entityField->getEntity() != null)
+            if($entityName != null)
             {
-                $tableName = $this->getTableOf($entityField->getEntity());
-                $sortBy = $tableName.".".$sortBy;
-            }
-            print_r($columnList);
-            
-            $sortType = $sortable->getSortType();
-            
-            
-            if(isset($columnList[$sortBy]))
-            {
-                $sortBy = $propertyName;
-                
-                
-                $sortBy = $columnList[$sortBy]['name'];
-                
-                $sorts[] = $sortBy . " " . $sortType;
-            }
-            else if(in_array($propertyName, $columnNames))
-            {
-                $sortBy = $propertyName;
-                $entityField = new PicoEntityField($sortBy);
-                if($entityField->getEntity() != null)
+                $entityTable = $this->getTableOf($entityName);
+                if($entityTable != null)
                 {
-                    $tableName = $this->getTableOf($entityField->getEntity());
-                    $sortBy = $tableName.".".$sortBy;
+                    $joinColumnmaps = $this->getColumnMapOf($entityName);                           
+                    $maps = $joinColumnmaps;
                 }
-                $sorts[] = $propertyName . " " . $sortType;
+                else
+                {
+                    $maps = $masterColumnMaps;
+                }
+                $columnNames = array_values($maps);
+            }
+            else
+            {
+                $entityTable = null;
+                $maps = $masterColumnMaps;
+                $columnNames = array_values($maps);
+            }
+            
+            if(isset($maps[$field]))
+            {
+                // get from map
+                $column = $this->getTableColumn($entityTable, $maps[$field]);
+                
+                $arr[] = $column . " " . $sortOrder->getSortType();
+            }
+            else if(in_array($field, $columnNames))
+            {
+                // get colum name
+                $column = $this->getTableColumn($entityTable, $field);
+                $arr[] = $column . " " . $sortOrder->getSortType();
             }
         }
-        if(!empty($sorts))
-        {
-            $ret = implode(", ", $sorts);
-        } 
-        echo $ret;
-        return $ret;
+        return implode(", ", $arr);
     }
     
     /**
@@ -1751,22 +1744,23 @@ class PicoDatabasePersistence // NOSONAR
         }
         return $sqlQuery;
     }
-
+    
     /**
-     * Get all record from database wihout filter
+     * Get findAll query
      *
      * @param PicoSpecification $specification
      * @param PicoPagable|null $pagable
      * @param PicoSortable|string|null $sortable
-     * @return array|null
-     * @throws EntityException|EmptyResultException
+     * @param PicoTableInfo
+     * @return PicoDatabaseQueryBuilder
      */
-    public function findAll($specification, $pagable = null, $sortable = null)
+    public function findAllQuery($specification, $pagable = null, $sortable = null, $info = null)
     {
-        $info = $this->getTableInfo();
+        if($info == null)
+        {
+            $info = $this->getTableInfo();
+        }
         $queryBuilder = new PicoDatabaseQueryBuilder($this->database);
-        $data = null;
-        $result = array();
         
         $sqlQuery = $queryBuilder
             ->newQuery()
@@ -1792,7 +1786,25 @@ class PicoDatabasePersistence // NOSONAR
         {
             $sqlQuery = $this->setSortable($sqlQuery, $pagable, $sortable, $info);        
         }
-        
+        return $queryBuilder;
+    }
+
+    /**
+     * Get all record from database wihout filter
+     *
+     * @param PicoSpecification $specification
+     * @param PicoPagable|null $pagable
+     * @param PicoSortable|string|null $sortable
+     * @return array|null
+     * @throws EntityException|EmptyResultException
+     */
+    public function findAll($specification, $pagable = null, $sortable = null)
+    {
+        $data = null;
+        $result = array();
+        $info = $this->getTableInfo();
+        $sqlQuery = $this->findAllQuery($specification, $pagable, $sortable, $info);
+    
         try
         {
             $stmt = $this->database->executeQuery($sqlQuery);

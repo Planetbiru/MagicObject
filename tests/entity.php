@@ -629,6 +629,7 @@ $database = new PicoDatabase($databaseCredential);
 $database->connect();
 
 $album = new EntityAlbum(null, $database);
+$album2 = new EntityAlbum(null, $database);
 try
 {
 	$spesification = new PicoSpecification();
@@ -645,7 +646,8 @@ try
 	
 	
 	$sortable = new PicoSortable();
-	$sortable->addSortable(new PicoSort("Producer.brithDay", PicoSortable::ORDER_TYPE_ASC));
+	$sortable->addSortable(new PicoSort("Producer.birthDay", PicoSortable::ORDER_TYPE_ASC));
+	$sortable->addSortable(new PicoSort("Producer.producerId", PicoSortable::ORDER_TYPE_DESC));
 
 	$pageData = $album->findAll($spesification, null, $sortable, true);
 	$rowData = $pageData->getResult();
@@ -653,6 +655,9 @@ try
 	{
 		//echo $album."\r\n\r\n";
 	}
+	$album->withDatabase($database);
+	$x = $album->findAllQuery($spesification, null, $sortable, true);
+	print_r($x->toString());
 }
 catch(Exception $e)
 {
