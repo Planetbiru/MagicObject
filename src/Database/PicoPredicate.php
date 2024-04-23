@@ -31,13 +31,6 @@ class PicoPredicate
     private $filterLogic = null;
     
     /**
-     * Check if require real join table
-     *
-     * @var boolean
-     */
-    private $requireJoin = false;
-    
-    /**
      * Return true if require real join table
      *
      * @return boolean
