@@ -1337,7 +1337,7 @@ class PicoDatabasePersistence // NOSONAR
     {
         if($order instanceof PicoSortable)
         {
-            return $order->createOrderBy($info);
+            return $this->createOrderByQuery($order, $info);
         }
         else if(is_string($order))
         {
@@ -1357,6 +1357,96 @@ class PicoDatabasePersistence // NOSONAR
         {
             return null;
         }
+    }
+    
+    /**
+     * Create sort by
+     *
+     * @param PicoSortable $order
+     * @param PicoTableInfo $tableInfo
+     * @return string
+     */
+    public function createOrderByQuery($order, $tableInfo = null)
+    {
+        if($order->getSortable() == null || !is_array($order->getSortable()) || empty($order->getSortable()))
+        {
+            return null;
+        }
+        $ret = null;
+        if($tableInfo == null)
+        {
+            $ret = $this->createWithoutMapping($order);
+        }
+        else
+        {
+            $ret = $this->createWithMapping($order, $tableInfo);
+        }
+        return $ret;
+    }
+    
+    /**
+     * Create sort without mapping
+     *
+     * @param PicoSortable $order
+     * @return string
+     */
+    private function createWithoutMapping($order)
+    {
+        $ret = null;
+        $sorts = array();
+        foreach($order->getSortable() as $sortable)
+        {
+            $columnName = $sortable->getSortBy();
+            $sortType = $sortable->getSortType();             
+            $sortBy = $columnName;
+            $sorts[] = $sortBy . " " . $sortType;
+            
+        }
+        if(!empty($sorts))
+        {
+            $ret = implode(", ", $sorts);
+        }
+        return $ret;
+    }
+    
+    /**
+     * Create sort with mapping
+     *
+     * @param PicoSortable $order
+     * @param PicoTableInfo $tableInfo
+     * @return string
+     */
+    private function createWithMapping($order, $tableInfo)
+    {
+        $ret = null;
+        $columns = $tableInfo->getColumns();
+        $joinColumns = $tableInfo->getJoinColumns();
+        $columnList = array_merge($columns, $joinColumns);
+        $columnNames = array();
+        foreach($columnList as $column)
+        {
+            $columnNames[] = $column['name'];
+        }
+        $sorts = array();
+        foreach($order->getSortable() as $sortable)
+        {
+            $propertyName = $sortable->getSortBy();
+            $sortType = $sortable->getSortType();
+            if(isset($columnList[$propertyName]))
+            {
+                $sortBy = $columnList[$propertyName]['name'];
+                $sorts[] = $sortBy . " " . $sortType;
+            }
+            else if(in_array($propertyName, $columnNames))
+            {
+                $sorts[] = $propertyName . " " . $sortType;
+            }
+        }
+        if(!empty($sorts))
+        {
+            $ret = implode(", ", $sorts);
+        } 
+        return $ret;
     }
     
     /**
