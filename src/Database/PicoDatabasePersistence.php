@@ -1774,11 +1774,21 @@ class PicoDatabasePersistence // NOSONAR
         $joinColumns = $info->getJoinColumns();
         
         $masterTable = $info->getTableName();
+        $tableAlias = array();
+        
         foreach($joinColumns as $joinColumn)
         {
             $entity = $joinColumn[self::KEY_PROPERTY_TYPE];
             $columnName = $joinColumn[self::KEY_NAME];
             $joinTable = $this->getTableOf($entity);
+            if(!isset($tableAlias[$joinTable]))
+            {
+                $tableAlias[$joinTable] = 0;
+            }
+            $tableAlias[$joinTable]++;
+            
+            $joinTableAlias = $joinTable.$tableAlias[$joinTable];
+            
             $joinColumn = $this->getPrimaryKeyOf($entity);
 
             $joinPrimaryKeys = array_values($this->getPrimaryKeyOf($entity));
@@ -1796,7 +1806,7 @@ class PicoDatabasePersistence // NOSONAR
                 $referenceColumName = $joinColumn[self::KEY_NAME];
             }
             
-            $sqlQuery->leftJoin($joinTable)->on($joinTable.".".$referenceColumName." = ".$masterTable.".".$columnName);
+            $sqlQuery->leftJoin($joinTable." ".$joinTableAlias)->on($joinTableAlias.".".$referenceColumName." = ".$masterTable.".".$columnName);
         }
         return $sqlQuery;
     }
