@@ -1127,8 +1127,6 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function findAllQuery($specification = null, $pagable = null, $sortable = null, $passive = false)
     {
-        echo "DATABASE = ";
-        print_r($this->_database);
         try
         {
             if($this->_database != null && $this->_database->isConnected())

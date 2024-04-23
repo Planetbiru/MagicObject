@@ -629,7 +629,6 @@ $database = new PicoDatabase($databaseCredential);
 $database->connect();
 
 $album = new EntityAlbum(null, $database);
-$album2 = new EntityAlbum(null, $database);
 try
 {
 	$spesification = new PicoSpecification();
@@ -651,13 +650,11 @@ try
 
 	$pageData = $album->findAll($spesification, null, $sortable, true);
 	$rowData = $pageData->getResult();
-	foreach($rowData as $album)
+	foreach($rowData as $alb)
 	{
-		//echo $album."\r\n\r\n";
+		echo $alb."\r\n\r\n";
 	}
-	$album->withDatabase($database);
-	$x = $album->findAllQuery($spesification, null, $sortable, true);
-	print_r($x->toString());
+	echo $album->findAllQuery($spesification, null, $sortable, true);
 }
 catch(Exception $e)
 {
