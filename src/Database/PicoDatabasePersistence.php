@@ -1739,6 +1739,8 @@ class PicoDatabasePersistence // NOSONAR
     private function addJoinQuery($sqlQuery, $info)
     {
         $joinColumns = $info->getJoinColumns();
+        $joinPrimaryKeys = array_values($info->getPrimaryKeys());
+        
         $masterTable = $info->getTableName();
         foreach($joinColumns as $joinColumn)
         {
@@ -1747,6 +1749,10 @@ class PicoDatabasePersistence // NOSONAR
             if(isset($joinColumn[self::KEY_REFERENCE_COLUMN_NAME]))
             {
                 $referenceColumName = $joinColumn[self::KEY_REFERENCE_COLUMN_NAME];
+            }
+            else if(!empty($joinPrimaryKeys))
+            {
+                $referenceColumName = $joinPrimaryKeys[0][self::KEY_NAME];
             }
             else
             {
