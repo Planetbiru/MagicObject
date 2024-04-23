@@ -639,7 +639,7 @@ try
 	$spesification->addAnd($predicate1);
 
 	$predicate2 = new PicoPredicate();
-	$predicate2->equals('Producer.birthDay', '1983-12-10');
+	$predicate2->greaterThan('Producer.birthDay', '2001-01-01');
 	$spesification->addAnd($predicate2);
 	
 	// Up to this point we are still using albumId and active
