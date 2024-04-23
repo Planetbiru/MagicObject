@@ -1292,7 +1292,7 @@ class PicoDatabasePersistence // NOSONAR
      */
     private function createWhereFromSpecification($sqlQuery, $specification, $info)
     {
-        $maps1 = $this->getColumnMap($info);
+        $masterColumnMaps = $this->getColumnMap($info);
         
         $arr = array();
         $arr[] = "(1=1)";
@@ -1312,19 +1312,19 @@ class PicoDatabasePersistence // NOSONAR
                         $entityTable = $this->getTableOf($entityName);
                         if($entityTable != null)
                         {
-                            $maps2 = $this->getColumnMapOf($entityName);                           
-                            $maps = $maps2;
+                            $joinColumnmaps = $this->getColumnMapOf($entityName);                           
+                            $maps = $joinColumnmaps;
                         }
                         else
                         {
-                            $maps = $maps1;
+                            $maps = $masterColumnMaps;
                         }
                         $columnNames = array_values($maps);
                     }
                     else
                     {
                         $entityTable = null;
-                        $maps = $maps1;
+                        $maps = $masterColumnMaps;
                         $columnNames = array_values($maps);
                     }
                     
