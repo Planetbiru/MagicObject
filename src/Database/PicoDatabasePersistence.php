@@ -1301,7 +1301,7 @@ class PicoDatabasePersistence // NOSONAR
             $specifications = $specification->getSpecifications();
             foreach($specifications as $spec)
             {           
-                $arr = $this->addWhere($arr, $masterColumnMaps, $sqlQuery, $spec);
+                $arr = $this->addWhere($arr, $masterColumnMaps, $sqlQuery, $spec, $info);
             }
         }
         $ret = implode(" ", $arr);
@@ -1315,9 +1315,10 @@ class PicoDatabasePersistence // NOSONAR
      * @param array $masterColumnMaps
      * @param PicoDatabaseQueryBuilder $sqlQuery
      * @param PicoSpecification $spec
+     * @param PicoTableInfo $info
      * @return array
      */
-    private function addWhere($arr, $masterColumnMaps, $sqlQuery, $spec)
+    private function addWhere($arr, $masterColumnMaps, $sqlQuery, $spec, $info)
     {
         if($spec instanceof PicoPredicate)
         {
