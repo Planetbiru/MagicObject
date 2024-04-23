@@ -81,4 +81,13 @@ class PicoLimit
         return $this;
     }
     
+    /**
+     * Debug
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return json_encode(array('limit'=>$this->limit, 'offset'=>$this->offset));
+    }
 }
