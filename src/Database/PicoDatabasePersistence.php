@@ -1399,6 +1399,12 @@ class PicoDatabasePersistence // NOSONAR
             $columnName = $sortable->getSortBy();
             $sortType = $sortable->getSortType();             
             $sortBy = $columnName;
+            $entityField = new PicoEntityField($sortBy);
+            if($entityField->getEntity() != null)
+            {
+                $tableName = $this->getTableOf($entityField->getEntity());
+                $sortBy = $tableName.".".$sortBy;
+            }
             $sorts[] = $sortBy . " " . $sortType;
             
         }
@@ -1435,10 +1441,25 @@ class PicoDatabasePersistence // NOSONAR
             if(isset($columnList[$propertyName]))
             {
                 $sortBy = $columnList[$propertyName]['name'];
+                
+                $entityField = new PicoEntityField($sortBy);
+                if($entityField->getEntity() != null)
+                {
+                    $tableName = $this->getTableOf($entityField->getEntity());
+                    $sortBy = $tableName.".".$sortBy;
+                }
+                
                 $sorts[] = $sortBy . " " . $sortType;
             }
             else if(in_array($propertyName, $columnNames))
             {
+                $sortBy = $propertyName;
+                $entityField = new PicoEntityField($sortBy);
+                if($entityField->getEntity() != null)
+                {
+                    $tableName = $this->getTableOf($entityField->getEntity());
+                    $sortBy = $tableName.".".$sortBy;
+                }
                 $sorts[] = $propertyName . " " . $sortType;
             }
         }
