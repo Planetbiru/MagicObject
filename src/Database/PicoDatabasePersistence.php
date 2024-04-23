@@ -2174,7 +2174,6 @@ class PicoDatabasePersistence // NOSONAR
         return $stmt;   
     }
 
-
     /**
      * Get real class name
      *
