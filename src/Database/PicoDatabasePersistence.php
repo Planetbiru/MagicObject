@@ -33,6 +33,7 @@ class PicoDatabasePersistence // NOSONAR
     const SQL_DATE_TIME_FORMAT = "SqlDateTimeFormat";
     
     const KEY_NAME = "name";
+    const KEY_REFERENCE_COLUMN_NAME = "referenceColumnName";
     const KEY_NULL = "null";
     const KEY_NOT_NULL = "notnull";
     const KEY_NULLABLE = "nullable";
@@ -1855,6 +1856,24 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
+     * Get reference column name
+     *
+     * @param array $join
+     * @return string
+     */
+    private function getReferenceColumnName($join)
+    {
+        if(isset($join[self::KEY_REFERENCE_COLUMN_NAME]))
+        {
+             return $join[self::KEY_REFERENCE_COLUMN_NAME];
+        }
+        else
+        {
+            return $join[self::KEY_NAME];
+        }
+    }
+    
+    /**
      * Join data by annotation @JoinColumn
      * 
      * @param mixed $data Object
@@ -1868,13 +1887,13 @@ class PicoDatabasePersistence // NOSONAR
         {
             foreach($info->getJoinColumns() as $propName=>$join)
             {
-                $joinName = $join[self::KEY_NAME];
+                $referenceColumName = $this->getReferenceColumnName($join);
                 $classNameJoin = $join[self::KEY_PROPERTY_TYPE];
                 try
                 {
                     $className = $this->getRealClassName($classNameJoin);
                     $obj = new $className(null, $this->database);
-                    $obj->find(array($row[$joinName])); 
+                    $obj->find(array($row[$referenceColumName])); 
                     if(is_array($data))
                     {                       
                         $data[$propName] = $obj;
