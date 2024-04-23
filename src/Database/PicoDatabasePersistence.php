@@ -1212,11 +1212,15 @@ class PicoDatabasePersistence // NOSONAR
                     // flat
                     if(isset($maps[$spec->getFiled()]))
                     {
-                        $arr[] = $spec->getFilterLogic() . " " . $maps[$spec->getFiled()] . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
+                        // get from map
+                        $column = $maps[$spec->getFiled()];
+                        $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
                     }
                     else if(in_array($spec->getFiled(), $columnNames))
                     {
-                        $arr[] = $spec->getFilterLogic() . " " . $spec->getFiled() . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
+                        // get colum name
+                        $column = $spec->getFiled();
+                        $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
                     }
                 }
                 else if($spec instanceof PicoSpecification)
