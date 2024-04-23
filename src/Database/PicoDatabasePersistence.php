@@ -1528,6 +1528,7 @@ class PicoDatabasePersistence // NOSONAR
     private function createWithMapping($order, $info)
     {
         $masterColumnMaps = $this->getColumnMap($info);
+        $masterTable = $info->getTableName();
         
         $arr = array();
     
@@ -1561,14 +1562,14 @@ class PicoDatabasePersistence // NOSONAR
             if(isset($maps[$field]))
             {
                 // get from map
-                $column = $this->getTableColumn($entityTable, $maps[$field]);
+                $column = $this->getTableColumn($entityTable, $maps[$field], $masterTable == $entityTable);
                 
                 $arr[] = $column . " " . $sortOrder->getSortType();
             }
             else if(in_array($field, $columnNames))
             {
                 // get colum name
-                $column = $this->getTableColumn($entityTable, $field);
+                $column = $this->getTableColumn($entityTable, $field, $masterTable == $entityTable);
                 $arr[] = $column . " " . $sortOrder->getSortType();
             }
         }
