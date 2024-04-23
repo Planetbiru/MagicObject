@@ -4371,6 +4371,16 @@ try
 	
 	$pagable = new PicoPagable(new PicoPage(1, 20));
 	echo $album->findAllQuery($spesification, $pagable, $sortable, true);
+	/**
+	select album.*
+	from album
+	left join producer
+	on producer.producer_id = album.producer_id
+	where album.title like '%Album%' and producer.birth_day < '2001-01-01' and album.active = true
+	order by producer.birth_day asc, producer.producer_id desc
+	limit 0, 20
+	*/
+	
 	echo "\r\n-----\r\n";
 	echo $spesification;
 	echo "\r\n-----\r\n";
