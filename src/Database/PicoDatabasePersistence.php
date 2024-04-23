@@ -1210,16 +1210,16 @@ class PicoDatabasePersistence // NOSONAR
                 if($spec instanceof PicoPredicate)
                 {
                     // flat
-                    if(isset($maps[$spec->getFiled()]))
+                    if(isset($maps[$spec->getField()]))
                     {
                         // get from map
-                        $column = $maps[$spec->getFiled()];
+                        $column = $maps[$spec->getField()];
                         $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
                     }
-                    else if(in_array($spec->getFiled(), $columnNames))
+                    else if(in_array($spec->getField(), $columnNames))
                     {
                         // get colum name
-                        $column = $spec->getFiled();
+                        $column = $spec->getField();
                         $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
                     }
                 }
@@ -1496,6 +1496,7 @@ class PicoDatabasePersistence // NOSONAR
         $queryBuilder = new PicoDatabaseQueryBuilder($this->database);
         $data = null;
         $result = array();
+        
         $sqlQuery = $queryBuilder
             ->newQuery()
             ->select($info->getTableName().".*")

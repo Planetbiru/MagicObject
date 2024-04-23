@@ -29,6 +29,23 @@ class PicoPredicate
      * @var string
      */
     private $filterLogic = null;
+    
+    /**
+     * Check if require real join table
+     *
+     * @var boolean
+     */
+    private $requireJoin = false;
+    
+    /**
+     * Return true if require real join table
+     *
+     * @return boolean
+     */
+    public function isRequireJoin()
+    {
+        return strpos($this->field, ".");
+    }
 
     /**
      * Equals

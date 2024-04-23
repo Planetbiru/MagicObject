@@ -20,6 +20,23 @@ class PicoSpecification
      * @var array
      */
     private $specifications = array();
+    
+    /**
+     * Check if require real join table
+     *
+     * @var boolean
+     */
+    private $requireJoin = false;
+    
+    /**
+     * Return true if require real join table
+     *
+     * @return boolean
+     */
+    public function isRequireJoin()
+    {
+        return $this->requireJoin;
+    }
 
     /**
      * Add AND specification
@@ -84,6 +101,10 @@ class PicoSpecification
         {
             $predicate->setFilterLogic($logic);
             $this->specifications[count($this->specifications)] = $predicate;
+            if($predicate->isRequireJoin())
+            {
+                $this->requireJoin = true;
+            }
         }
         else if(is_array($predicate))
         {
