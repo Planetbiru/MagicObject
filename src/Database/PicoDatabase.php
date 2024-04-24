@@ -6,6 +6,7 @@ use PDO;
 use PDOException;
 use PDOStatement;
 use MagicObject\Constants\PicoConstants;
+use MagicObject\Exceptions\InvalidDatabaseConfiguration;
 use MagicObject\Exceptions\NullPointerException;
 use MagicObject\SecretObject;
 use stdClass;
@@ -94,7 +95,13 @@ class PicoDatabase //NOSONAR
 		$connected = true;
 		try 
 		{
-			$connectionString = $this->databaseCredentials->getDriver() . ':host=' . $this->databaseCredentials->getHost() . '; port=' . ((int) $this->databaseCredentials->getPort()) . '; dbname=' . $this->databaseCredentials->getDatabaseName();
+			$connectionString = $this->constructConnectionString();
+			
+			if(!$this->databaseCredentials->issetUsername())
+			{
+				throw new InvalidDatabaseConfiguration("Database username may not be empty");
+			}
+			
 			$this->databaseType = $this->databaseCredentials->getDriver();
 			$this->databaseConnection = new PDO(
 				$connectionString,
@@ -115,6 +122,33 @@ class PicoDatabase //NOSONAR
 			// Do nothing
 		}
 		return $connected;
+	}
+	
+	/**
+	 * Create connection string
+	 *
+	 * @return string
+	 * @throws InvalidDatabaseConfiguration
+	 */
+	private function constructConnectionString()
+	{
+		$emptyDriver = !$this->databaseCredentials->issetDriver();
+		$emptyHost = !$this->databaseCredentials->issetHost();
+		$emptyPort = !$this->databaseCredentials->issetPort();
+		$emptyName = !$this->databaseCredentials->issetDatabaseName();
+		
+		if(
+			$this->databaseCredentials->issetDriver()
+		)
+		{
+			$emptyValue = "";
+			$emptyValue .= $emptyDriver ? "{driver}" : "";
+			$emptyValue .= $emptyHost ? "{host}" : "";
+			$emptyValue .= $emptyPort ? "{port}" : "";
+			$emptyValue .= $emptyName ? "{name}" : "";
+			throw new InvalidDatabaseConfiguration("Invalid database configuration. $emptyValue");
+		}
+		return $this->databaseCredentials->getDriver() . ':host=' . $this->databaseCredentials->getHost() . '; port=' . ((int) $this->databaseCredentials->getPort()) . '; dbname=' . $this->databaseCredentials->getDatabaseName();
 	}
 
 	/**
