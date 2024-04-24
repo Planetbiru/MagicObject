@@ -1155,7 +1155,7 @@ $sessions-&gt;startSession();</code></pre>
   name: MUSICPRODUCTIONMANAGER
   max_life_time: 86400
   save_handler: redis
-  save_path: ${REDIS_AUTH}</code></pre>
+  save_path: tcp://127.0.0.1:6379?auth=${REDIS_AUTH}</code></pre>
 <p><strong>WARNING!</strong></p>
 <p>You can not encrypt the <code>${REDIS_AUTH}</code> value. If you want to secure the config, encrypt entire <code>save_path</code> instead.</p>
 <p>For example:</p>
