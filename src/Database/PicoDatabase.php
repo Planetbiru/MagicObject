@@ -96,10 +96,9 @@ class PicoDatabase //NOSONAR
 		try 
 		{
 			$connectionString = $this->constructConnectionString();
-			
 			if(!$this->databaseCredentials->issetUsername())
 			{
-				throw new InvalidDatabaseConfiguration("Database username may not be empty");
+				throw new InvalidDatabaseConfiguration("Database username may not be empty. Please check your database configuration!");
 			}
 			
 			$this->databaseType = $this->databaseCredentials->getDriver();
@@ -138,7 +137,13 @@ class PicoDatabase //NOSONAR
 		$emptyName = !$this->databaseCredentials->issetDatabaseName();
 		
 		if(
-			$this->databaseCredentials->issetDriver()
+			$emptyDriver
+			||
+			$emptyHost
+			||
+			$emptyPort
+			||
+			$emptyName
 		)
 		{
 			$emptyValue = "";
@@ -146,7 +151,7 @@ class PicoDatabase //NOSONAR
 			$emptyValue .= $emptyHost ? "{host}" : "";
 			$emptyValue .= $emptyPort ? "{port}" : "";
 			$emptyValue .= $emptyName ? "{name}" : "";
-			throw new InvalidDatabaseConfiguration("Invalid database configuration. $emptyValue");
+			throw new InvalidDatabaseConfiguration("Invalid database configuration. $emptyValue. Please check your database configuration!");
 		}
 		return $this->databaseCredentials->getDriver() . ':host=' . $this->databaseCredentials->getHost() . '; port=' . ((int) $this->databaseCredentials->getPort()) . '; dbname=' . $this->databaseCredentials->getDatabaseName();
 	}

@@ -139,6 +139,13 @@ class PicoDatabasePersistence // NOSONAR
      * @var array
      */
     private $entityTable = array();
+    
+    /**
+     * Join map
+     *
+     * @var PicoJoinMap[]
+     */
+    private $joinColumMaps = array();
 
     /**
      * Database connection
@@ -800,7 +807,7 @@ class PicoDatabasePersistence // NOSONAR
      * @return array
      * @throws EntityException
      */
-    public function getJoinColumns($info = null)
+    public function getJoinSources($info = null)
     {
         if($info == null)
         {
@@ -1300,11 +1307,12 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Get table name
      *
+     * @param PicoPredicate $spec
      * @param string|null $entityTable
      * @param string $field
      * @return string
      */
-    private function getTableColumn($entityTable, $field, $master = false)
+    private function getTableColumn($spec, $entityTable, $field, $master = false)
     {
         if($entityTable != null)
         {
@@ -1321,6 +1329,34 @@ class PicoDatabasePersistence // NOSONAR
         {
             return $field;
         }
+    } 
+    
+    /**
+     * Get join source
+     *
+     * @param string|null $parentName
+     * @param string $masterTable
+     * @param string|null $entityTable
+     * @param string $field
+     * @return string
+     */
+    private function getJoinSource($parentName, $masterTable, $entityTable, $field, $master = false)
+    {
+        $result = $masterTable.".".$field;
+        if($entityTable != null && $parentName != null)
+        {
+            if($master)
+            {
+                $result = $entityTable.".".$field;
+            }
+            else if(isset($this->joinColumMaps[$parentName]))
+            {
+                $joinMap = $this->joinColumMaps[$parentName];
+                $aliasTable = $joinMap->getJoinTableAlias();
+                $result = $aliasTable.".".$field;
+            }
+        }
+        return $result;
     } 
 
     /**
@@ -1367,6 +1403,7 @@ class PicoDatabasePersistence // NOSONAR
             $entityField = new PicoEntityField($spec->getField());
             $field = $entityField->getField();
             $entityName = $entityField->getEntity();
+            $parentName = $entityField->getParentField();
             
             if($entityName != null)
             {
@@ -1393,14 +1430,14 @@ class PicoDatabasePersistence // NOSONAR
             {
                 
                 // get from map
-                $column = $this->getTableColumn($entityTable, $maps[$field], $entityTable == $masterTable);
+                $column = $this->getJoinSource($parentName, $masterTable, $entityTable, $maps[$field], $entityTable == $masterTable);
                 
                 $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
             }
             else if(in_array($field, $columnNames))
             {
                 // get colum name
-                $column = $this->getTableColumn($entityTable, $field, $entityTable == $masterTable);
+                $column = $this->getJoinSource($parentName, $masterTable, $entityTable, $field, $entityTable == $masterTable);
                 $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
             }
         }
@@ -1538,7 +1575,7 @@ class PicoDatabasePersistence // NOSONAR
             $entityField = new PicoEntityField($sortOrder->getSortBy());
             $field = $entityField->getField();
             $entityName = $entityField->getEntity();
-            
+            $parentName = $entityField->getParentField();
             if($entityName != null)
             {
                 $entityTable = $this->getTableOf($entityName);
@@ -1563,14 +1600,14 @@ class PicoDatabasePersistence // NOSONAR
             if(isset($maps[$field]))
             {
                 // get from map
-                $column = $this->getTableColumn($entityTable, $maps[$field], $masterTable == $entityTable);
+                $column = $this->getJoinSource($parentName, $masterTable, $entityTable, $maps[$field], $masterTable == $entityTable);
                 
                 $arr[] = $column . " " . $sortOrder->getSortType();
             }
             else if(in_array($field, $columnNames))
             {
                 // get colum name
-                $column = $this->getTableColumn($entityTable, $field, $masterTable == $entityTable);
+                $column = $this->getJoinSource($parentName, $masterTable, $entityTable, $field, $masterTable == $entityTable);
                 $arr[] = $column . " " . $sortOrder->getSortType();
             }
         }
@@ -1786,7 +1823,7 @@ class PicoDatabasePersistence // NOSONAR
         $masterTable = $info->getTableName();
         $tableAlias = array();
         
-        foreach($joinColumns as $joinColumn)
+        foreach($joinColumns as $propertyName=>$joinColumn)
         {
             $entity = $joinColumn[self::KEY_PROPERTY_TYPE];
             $columnName = $joinColumn[self::KEY_NAME];
@@ -1798,6 +1835,8 @@ class PicoDatabasePersistence // NOSONAR
             $tableAlias[$joinTable]++;
             
             $joinTableAlias = $joinTable.self::JOIN_TABLE_SUBFIX.$tableAlias[$joinTable];
+            
+            $this->joinColumMaps[$propertyName] = new PicoJoinMap($propertyName, $columnName, $entity, $joinTable, $joinTableAlias);
             
             $joinColumn = $this->getPrimaryKeyOf($entity);
 
