@@ -3740,6 +3740,67 @@ class Genre extends MagicObject
 }
 ```
 
+To join `song` and `album`, we create property
+
+```php
+	/**
+	 * Album
+	 * @JoinColumn(name="album_id")
+	 * @Label(content="Album")
+	 * @var Album
+	 */
+	protected $album;
+```
+
+Because `album_id` is primary key of table `album`, we not need to write reference column name.
+
+To join `song` and `artist`, we create property
+
+```php
+	**
+	 * Artist Vocal
+	 * 
+	 * @JoinColumn(name="artist_vocalist")
+	 * @Label(content="Artist Vocal")
+	 * @var Artist
+	 */
+	protected $vocalist;
+```
+
+Primary key of table `artist` is `artist_id`, not `artist_vocalist`. We should write `referenceColumnName` in annotation `@JoinColumn`.
+
+```php
+	**
+	 * Artist Vocal
+	 * 
+	 * @JoinColumn(name="artist_vocalist" referenceColumnName="artist_id")
+	 * @Label(content="Artist Vocal")
+	 * @var Artist
+	 */
+	protected $vocalist;
+```
+
+If entity miss the `referenceColumnName`, MagicObject will search the primary key of table `artist` and will use first primary key. Process will run slower. We are recommended to always write `referenceColumnName` to make it run faster.
+
+```php
+	/**
+	 * Album
+	 * @JoinColumn(name="album_id"  referenceColumnName="artist_id")
+	 * @Label(content="Album")
+	 * @var Album
+	 */
+	protected $album;
+
+	/**
+	 * Artist Vocal
+	 * 
+	 * @JoinColumn(name="artist_vocalist" referenceColumnName="artist_id")
+	 * @Label(content="Artist Vocal")
+	 * @var Artist
+	 */
+	protected $vocalist;
+```
+
 ### Filter and Order by Join Columns
 
 On real application, user may be filter and order data by column on join table. If the user in the column contains a dot (.) character, then MagicObject will create a select query with a join instead of a regular select query so that filters and orders can work as they should. This way, the process may run slower than with a regular select query.
@@ -4173,7 +4234,7 @@ try
 	$predicate3 = new PicoPredicate();
 	// type releaseDate instead of release_date
 	// because MagicObject use entyty property name, not real table column name 
-	$predicate3->greaterThan('releaseDate', '2020-01-01);
+	$predicate3->greaterThan('releaseDate', '2020-01-01');
 	$spesification->addAnd($predicate3);
 
 
@@ -4204,7 +4265,7 @@ try
 	from album
 	left join producer producer__jn__1
 	on producer__jn__1.producer_id = album.producer_id
-	where album.title like '%Album%' and producer__jn__1.birth_day < '2001-01-01' and album.active = true
+	where album.title like '%Album%' and producer__jn__1.birth_day < '2001-01-01' and album.release_date > '2020-01-01' and album.active = true
 	order by producer__jn__1.birth_day asc, producer__jn__1.producer_id desc
 	limit 0, 20
 	*/
