@@ -657,7 +657,7 @@ try
 	$rowData = $pageData->getResult();
 	foreach($rowData as $alb)
 	{
-		echo $alb."\r\n\r\n";
+		//echo $alb."\r\n\r\n";
 	}
 	
 	$pagable = new PicoPagable(new PicoPage(1, 20));
