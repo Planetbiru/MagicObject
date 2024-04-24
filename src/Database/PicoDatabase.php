@@ -185,7 +185,7 @@ class PicoDatabase //NOSONAR
 	public function setAudoCommit($autocommit)
 	{
 		$this->autocommit = $autocommit;
-		return $this->databaseConnection->setAttribute(PDO::ATTR_AUTOCOMMIT, $autocommit ? 1 : 0);
+		return $this->databaseConnection->setAttribute(PDO::ATTR_AUTOCOMMIT, $this->autocommit ? 1 : 0);
 	}
 	
 	/**
