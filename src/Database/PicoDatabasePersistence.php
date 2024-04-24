@@ -58,6 +58,7 @@ class PicoDatabasePersistence // NOSONAR
     const DATE_TIME_FORMAT = "datetimeformat";
     
     const NAMESPACE_SEPARATOR = "\\";
+    const JOIN_TABLE_SUBFIX = "__jn__";
     
     /**
      * Database connection
@@ -1313,7 +1314,7 @@ class PicoDatabasePersistence // NOSONAR
             }
             else
             {
-                return $entityTable."_jn1.".$field;
+                return $entityTable.self::JOIN_TABLE_SUBFIX."1.".$field;
             }
         }
         else
@@ -1796,7 +1797,7 @@ class PicoDatabasePersistence // NOSONAR
             }
             $tableAlias[$joinTable]++;
             
-            $joinTableAlias = $joinTable."_jn".$tableAlias[$joinTable];
+            $joinTableAlias = $joinTable.self::JOIN_TABLE_SUBFIX.$tableAlias[$joinTable];
             
             $joinColumn = $this->getPrimaryKeyOf($entity);
 
