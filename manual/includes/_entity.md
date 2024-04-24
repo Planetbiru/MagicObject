@@ -2789,16 +2789,27 @@ try
 	$spesification = new PicoSpecification();	
 	
 	$predicate1 = new PicoPredicate();
+	// for entity album, just use the colum name
 	$predicate1->like('title', '%Album%');
 	$spesification->addAnd($predicate1);
 
 	$predicate2 = new PicoPredicate();
 	$predicate2->lessThan('producer.birthDay', '2001-01-01');
 	$spesification->addAnd($predicate2);
-		
+
 	$predicate3 = new PicoPredicate();
-	$predicate3->equals('active', true);
+	// type releaseDate instead of release_date
+	// because MagicObject use entyty property name, not real table column name 
+	$predicate3->greaterThan('releaseDate', '2020-01-01');
 	$spesification->addAnd($predicate3);
+
+
+	$predicate4 = new PicoPredicate();
+	$predicate4->equals('active', true);
+	$spesification->addAnd($predicate4);
+
+
+	
 	
 	$sortable = new PicoSortable();
 	
@@ -2820,7 +2831,7 @@ try
 	from album
 	left join producer producer__jn__1
 	on producer__jn__1.producer_id = album.producer_id
-	where album.title like '%Album%' and producer__jn__1.birth_day < '2001-01-01' and album.active = true
+	where album.title like '%Album%' and producer__jn__1.birth_day < '2001-01-01' and album.release_date > '2020-01-01' and album.active = true
 	order by producer__jn__1.birth_day asc, producer__jn__1.producer_id desc
 	limit 0, 20
 	*/
