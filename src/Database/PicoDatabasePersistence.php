@@ -1313,7 +1313,7 @@ class PicoDatabasePersistence // NOSONAR
             }
             else
             {
-                return $entityTable."1.".$field;
+                return $entityTable."_jn1.".$field;
             }
         }
         else
@@ -1796,7 +1796,7 @@ class PicoDatabasePersistence // NOSONAR
             }
             $tableAlias[$joinTable]++;
             
-            $joinTableAlias = $joinTable.$tableAlias[$joinTable];
+            $joinTableAlias = $joinTable."_jn".$tableAlias[$joinTable];
             
             $joinColumn = $this->getPrimaryKeyOf($entity);
 

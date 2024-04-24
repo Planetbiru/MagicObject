@@ -33,51 +33,51 @@ class SecretObject extends stdClass //NOSONAR
      *
      * @var string[]
      */
-    private $_encryptInProperties = array();
+    private $_encryptInProperties = array(); //NOSONAR
     
     /**
      * Class parameters
      *
      * @var array
      */
-    protected $_classParams = array();
+    protected $_classParams = array(); //NOSONAR
     
     /**
      * NULL properties
      *
      * @var array
      */
-    protected $_nullProperties = array();
+    protected $_nullProperties = array(); //NOSONAR
     
     /**
      * List of propertis to be decrypted when call GET
      *
      * @var string[]
      */
-    private $_decryptOutProperties = array();
+    private $_decryptOutProperties = array(); //NOSONAR
 
     /**
      * List of propertis to be encrypted when call GET
      *
      * @var string[]
      */
-    private $_encryptOutProperties = array();
+    private $_encryptOutProperties = array(); //NOSONAR
     
     /**
      * List of propertis to be decrypted when call SET
      *
      * @var string[]
      */
-    private $_decryptInProperties = array();
+    private $_decryptInProperties = array(); //NOSONAR
 
     /**
      * Read only
      *
      * @var boolean
      */
-    private $_readonly = false;
+    private $_readonly = false; //NOSONAR
     
-    private $_secureFunction = null;
+    private $_secureFunction = null; //NOSONAR
     
     /**
      * Constructor
@@ -296,7 +296,6 @@ class SecretObject extends stdClass //NOSONAR
             {
                 $data->set($key, $this->encryptValue($value, $hexKey));
             }
-            return $data;
         }
         else if($this->typeStdClass($data))
         {
@@ -304,7 +303,6 @@ class SecretObject extends stdClass //NOSONAR
             {
                 $data->$key = $this->encryptValue($value, $hexKey);
             }
-            return $data;
         }
         else if(is_array($data))
         {
@@ -312,13 +310,13 @@ class SecretObject extends stdClass //NOSONAR
             {
                 $data[$key] = $this->encryptValue($value, $hexKey);
             }
-            return $data;
         }
         else
         {
             $data = $data."";
             return $this->encryptString($data, $hexKey);
         }
+        return $data;
     }
 
     /**
@@ -362,7 +360,6 @@ class SecretObject extends stdClass //NOSONAR
             {
                 $data->set($key, $this->decryptValue($value, $hexKey));
             }
-            return $data;
         }
         else if($this->typeStdClass($data))
         {
@@ -370,7 +367,6 @@ class SecretObject extends stdClass //NOSONAR
             {
                 $data->$key = $this->decryptValue($value, $hexKey);
             }
-            return $data;
         }
         else if(is_array($data))
         {
@@ -378,13 +374,13 @@ class SecretObject extends stdClass //NOSONAR
             {
                 $data[$key] = $this->decryptValue($value, $hexKey);
             }
-            return $data;
         }
         else
         {
             $data = $data."";
             return $this->decryptString($data, $hexKey);
         }
+        return $data;
     }
 
     /**
