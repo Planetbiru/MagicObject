@@ -6,7 +6,7 @@ use MagicObject\MagicObject;
 
 /**
  * @Entity
- * @JSON(property-naming-strategy=SNAKE_CASE, prettify=true)
+ * @JSON(property-naming-strategy=SNAKE_CASE, prettify=false)
  * @Table(name="song")
  */
 class EntitySong extends MagicObject
