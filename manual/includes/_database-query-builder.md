@@ -79,6 +79,8 @@ values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
 */
 ```
 
+This way, `('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')` will be executed by the database as is. You have to escape them manually before use it.
+
 **into($query)**
 
 `into($query)` is method for `INTO`
@@ -123,6 +125,8 @@ values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
 */
 ```
 
+This way, `('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')` will be executed by the database as is. You have to escape them manually before use it.
+
 Example 2:
 
 ```php
@@ -138,6 +142,8 @@ insert into song
 values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
 */
 ```
+
+This way, `'123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12'` will be escaped before being executed by the database. You don't need to escape it first.
 
 Example 3:
 
@@ -155,6 +161,9 @@ values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
 */
 ```
 
+This way, `'123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12'` will be executed by the database as is. You have to escape them manually before use it.
+
+
 Example 4:
 
 ```php
@@ -170,6 +179,9 @@ insert into song
 values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
 */
 ```
+
+This way, `'123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12'` will be executed by the database as is. You have to escape them manually before use it.
+
 
 Example 5:
 
@@ -192,6 +204,9 @@ insert into song
 values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
 */
 ```
+
+This way, `'123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12'` will be escaped before being executed by the database. You don't need to escape it first.
+
 
 **select($query)**
 
@@ -220,23 +235,26 @@ $queryBuilder = new PicoDatabaseQueryBuilder($database);
 $queryBuilder->newQuery()
     ->select("*")
     ->from("song")
-    ->where("time_create > '2023-01-00' ");
+    ->where("time_create > '2023-01-01' ");
 /*
 select *
 from song
-where time_create > '2023-01-00'
+where time_create > '2023-01-01'
 */
 
 $queryBuilder->newQuery()
     ->detele()
     ->from("song")
-    ->where("time_create > '2023-01-00' ");
+    ->where("time_create > '2023-01-01' ");
 /*
 delete
 from song
-where time_create > '2023-01-00'
+where time_create > '2023-01-01'
 */
 ```
+
+This way, `'2023-01-01'` will be executed by the database as is. You have to escape them manually before use it.
+
 
 Example 2:
 
@@ -245,13 +263,16 @@ $queryBuilder = new PicoDatabaseQueryBuilder($database);
 $queryBuilder->newQuery()
     ->select("song_id, name as song_code, title, time_create")
     ->from("song")
-    ->where("time_create > '2023-01-00' ");
+    ->where("time_create > '2023-01-01' ");
 /*
 select song_id, name as song_code, title, time_create
 from song
-where time_create > '2023-01-00'
+where time_create > '2023-01-01'
 */
 ```
+
+This way, `'2023-01-01'` will be executed by the database as is. You have to escape them manually before use it.
+
 
 Example 3:
 
@@ -260,23 +281,26 @@ $queryBuilder = new PicoDatabaseQueryBuilder($database);
 $queryBuilder->newQuery()
     ->select("song_id, name as song_code, title, time_create")
     ->from("song")
-    ->where("time_create > ? ", '2023-01-00');
+    ->where("time_create > ? ", '2023-01-01');
 /*
 select song_id, name as song_code, title, time_create
 from song
-where time_create > '2023-01-00'
+where time_create > '2023-01-01'
 */
 
 $queryBuilder->newQuery()
     ->delete()
     ->from("song")
-    ->where("time_create > ? ", '2023-01-00');
+    ->where("time_create > ? ", '2023-01-01');
 /*
 delete
 from song
-where time_create > '2023-01-00'
+where time_create > '2023-01-01'
 */
 ```
+
+This way, `'2023-01-01'` will be escaped before being executed by the database. You don't need to escape it first.
+
 
 Example 4:
 
@@ -332,3 +356,5 @@ on album.album_id = song.album_id
 where song.active = true
 */
 ```
+
+This way, `$active` will be escaped before being executed by the database. You don't need to escape it first.

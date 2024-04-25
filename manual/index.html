@@ -5949,6 +5949,7 @@ insert into song
 (song_id, name, title, time_create)
 values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
 */</code></pre>
+<p>This way, <code>('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')</code> will be executed by the database as is. You have to escape them manually before use it.</p>
 <p><strong>into($query)</strong></p>
 <p><code>into($query)</code> is method for <code>INTO</code></p>
 <p>Example 1:</p>
@@ -5979,6 +5980,7 @@ insert into song
 (song_id, name, title, time_create)
 values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
 */</code></pre>
+<p>This way, <code>('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')</code> will be executed by the database as is. You have to escape them manually before use it.</p>
 <p>Example 2:</p>
 <pre><code class="language-php">$queryBuilder = new PicoDatabaseQueryBuilder($database);
 $queryBuilder-&gt;newQuery()
@@ -5991,6 +5993,7 @@ insert into song
 (song_id, name, title, time_create)
 values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
 */</code></pre>
+<p>This way, <code>'123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12'</code> will be escaped before being executed by the database. You don't need to escape it first.</p>
 <p>Example 3:</p>
 <pre><code class="language-php">$queryBuilder = new PicoDatabaseQueryBuilder($database);
 $queryBuilder-&gt;newQuery()
@@ -6003,6 +6006,7 @@ insert into song
 (song_id, name, title, time_create)
 values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
 */</code></pre>
+<p>This way, <code>'123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12'</code> will be executed by the database as is. You have to escape them manually before use it.</p>
 <p>Example 4:</p>
 <pre><code class="language-php">$queryBuilder = new PicoDatabaseQueryBuilder($database);
 $queryBuilder-&gt;newQuery()
@@ -6015,6 +6019,7 @@ insert into song
 (song_id, name, title, time_create)
 values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
 */</code></pre>
+<p>This way, <code>'123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12'</code> will be executed by the database as is. You have to escape them manually before use it.</p>
 <p>Example 5:</p>
 <pre><code class="language-php">$queryBuilder = new PicoDatabaseQueryBuilder($database);
 $data = array(
@@ -6033,6 +6038,7 @@ insert into song
 (song_id, name, title, time_create)
 values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
 */</code></pre>
+<p>This way, <code>'123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12'</code> will be escaped before being executed by the database. You don't need to escape it first.</p>
 <p><strong>select($query)</strong></p>
 <p><code>select($query)</code> is metod for query <code>SELECT</code></p>
 <p><strong>alias($query)</strong></p>
@@ -6048,54 +6054,57 @@ values('123456', 'Lagu 0001', 'Membendung Rindu', '2024-03-03 10:11:12')
 $queryBuilder-&gt;newQuery()
     -&gt;select("*")
     -&gt;from("song")
-    -&gt;where("time_create &gt; '2023-01-00' ");
+    -&gt;where("time_create &gt; '2023-01-01' ");
 /*
 select *
 from song
-where time_create &gt; '2023-01-00'
+where time_create &gt; '2023-01-01'
 */
 
 $queryBuilder-&gt;newQuery()
     -&gt;detele()
     -&gt;from("song")
-    -&gt;where("time_create &gt; '2023-01-00' ");
+    -&gt;where("time_create &gt; '2023-01-01' ");
 /*
 delete
 from song
-where time_create &gt; '2023-01-00'
+where time_create &gt; '2023-01-01'
 */</code></pre>
+<p>This way, <code>'2023-01-01'</code> will be executed by the database as is. You have to escape them manually before use it.</p>
 <p>Example 2:</p>
 <pre><code class="language-php">$queryBuilder = new PicoDatabaseQueryBuilder($database);
 $queryBuilder-&gt;newQuery()
     -&gt;select("song_id, name as song_code, title, time_create")
     -&gt;from("song")
-    -&gt;where("time_create &gt; '2023-01-00' ");
+    -&gt;where("time_create &gt; '2023-01-01' ");
 /*
 select song_id, name as song_code, title, time_create
 from song
-where time_create &gt; '2023-01-00'
+where time_create &gt; '2023-01-01'
 */</code></pre>
+<p>This way, <code>'2023-01-01'</code> will be executed by the database as is. You have to escape them manually before use it.</p>
 <p>Example 3:</p>
 <pre><code class="language-php">$queryBuilder = new PicoDatabaseQueryBuilder($database);
 $queryBuilder-&gt;newQuery()
     -&gt;select("song_id, name as song_code, title, time_create")
     -&gt;from("song")
-    -&gt;where("time_create &gt; ? ", '2023-01-00');
+    -&gt;where("time_create &gt; ? ", '2023-01-01');
 /*
 select song_id, name as song_code, title, time_create
 from song
-where time_create &gt; '2023-01-00'
+where time_create &gt; '2023-01-01'
 */
 
 $queryBuilder-&gt;newQuery()
     -&gt;delete()
     -&gt;from("song")
-    -&gt;where("time_create &gt; ? ", '2023-01-00');
+    -&gt;where("time_create &gt; ? ", '2023-01-01');
 /*
 delete
 from song
-where time_create &gt; '2023-01-00'
+where time_create &gt; '2023-01-01'
 */</code></pre>
+<p>This way, <code>'2023-01-01'</code> will be escaped before being executed by the database. You don't need to escape it first.</p>
 <p>Example 4:</p>
 <pre><code class="language-php">$queryBuilder = new PicoDatabaseQueryBuilder($database);
 $queryBuilder-&gt;newQuery()
@@ -6138,6 +6147,7 @@ left join album
 on album.album_id = song.album_id
 where song.active = true
 */</code></pre>
+<p>This way, <code>$active</code> will be escaped before being executed by the database. You don't need to escape it first.</p>
 </article>
 
 <article class="article" id="part17">
