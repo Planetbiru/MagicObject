@@ -2868,9 +2868,10 @@ try
 	$predicate4 = new PicoPredicate();
 	$predicate4->equals('active', true);
 	$spesification->addAnd($predicate4);
-
-
 	
+	$predicate4 = new PicoPredicate();
+	$predicate4->equals('asDraft', false);
+	$spesification->addAnd($predicate4);
 	
 	$sortable = new PicoSortable();
 	
@@ -2882,21 +2883,20 @@ try
 	$rowData = $pageData->getResult();
 	foreach($rowData as $alb)
 	{
-		echo $alb."\r\n\r\n";
+		//echo $alb."\r\n\r\n";
 	}
 	
 	$pagable = new PicoPagable(new PicoPage(1, 20));
 	echo $album->findAllQuery($spesification, $pagable, $sortable, true);
 	/**
-	select album.*
-	from album
-	left join producer producer__jn__1
-	on producer__jn__1.producer_id = album.producer_id
-	where album.title like '%Album%' and producer__jn__1.birth_day < '2001-01-01' and album.release_date > '2020-01-01' and album.active = true
-	order by producer__jn__1.birth_day asc, producer__jn__1.producer_id desc
-	limit 0, 20
-	*/
-	
+	 * 	select album.*
+		from album
+		left join producer producer__jn__1
+		on producer__jn__1.producer_id = album.producer_id
+		where album.title like '%Album%' and producer__jn__1.birth_day < '2001-01-01' and album.active = true
+		order by producer__jn__1.birth_day asc, producer__jn__1.producer_id desc
+		limit 0, 20
+	 */
 	echo "\r\n-----\r\n";
 	echo $spesification;
 	echo "\r\n-----\r\n";
