@@ -2893,7 +2893,10 @@ try
 		from album
 		left join producer producer__jn__1
 		on producer__jn__1.producer_id = album.producer_id
-		where album.title like '%Album%' and producer__jn__1.birth_day < '2001-01-01' and album.active = true
+		where album.title like '%Album%'
+		and producer__jn__1.birth_day < '2001-01-01'
+		and album.release_date > '2020-01-01' and album.active = true
+		and album.as_draft = false
 		order by producer__jn__1.birth_day asc, producer__jn__1.producer_id desc
 		limit 0, 20
 	 */

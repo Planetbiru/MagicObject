@@ -3900,6 +3900,10 @@ try
     $predicate4-&gt;equals('active', true);
     $spesification-&gt;addAnd($predicate4);
 
+    $predicate4 = new PicoPredicate();
+    $predicate4-&gt;equals('asDraft', false);
+    $spesification-&gt;addAnd($predicate4);
+
     $sortable = new PicoSortable();
 
     $sortable-&gt;addSortable(new PicoSort("producer.birthDay", PicoSortable::ORDER_TYPE_ASC));
@@ -3909,21 +3913,23 @@ try
     $rowData = $pageData-&gt;getResult();
     foreach($rowData as $alb)
     {
-        echo $alb."\r\n\r\n";
+        //echo $alb."\r\n\r\n";
     }
 
     $pagable = new PicoPagable(new PicoPage(1, 20));
     echo $album-&gt;findAllQuery($spesification, $pagable, $sortable, true);
     /**
-    select album.*
-    from album
-    left join producer producer__jn__1
-    on producer__jn__1.producer_id = album.producer_id
-    where album.title like '%Album%' and producer__jn__1.birth_day &lt; '2001-01-01' and album.release_date &gt; '2020-01-01' and album.active = true
-    order by producer__jn__1.birth_day asc, producer__jn__1.producer_id desc
-    limit 0, 20
-    */
-
+     *  select album.*
+        from album
+        left join producer producer__jn__1
+        on producer__jn__1.producer_id = album.producer_id
+        where album.title like '%Album%'
+        and producer__jn__1.birth_day &lt; '2001-01-01'
+        and album.release_date &gt; '2020-01-01' and album.active = true
+        and album.as_draft = false
+        order by producer__jn__1.birth_day asc, producer__jn__1.producer_id desc
+        limit 0, 20
+     */
     echo "\r\n-----\r\n";
     echo $spesification;
     echo "\r\n-----\r\n";
