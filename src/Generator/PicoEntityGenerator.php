@@ -319,6 +319,9 @@ namespace '.$this->baseNamespace.';
 use MagicObject\MagicObject;'.implode("\r\n", $uses).'
 
 /**
+ * '.$className.' is entity of table '.$picoTableName.'. You can join this entity to other entity using annotation JoinColumn. 
+ * Visit https://github.com/Planetbiru/MagicObject/blob/main/tutorial.md#entity
+ * 
  * @Entity
  * @JSON(property-naming-strategy=SNAKE_CASE, prettify='.$prettify.')
  * @Table(name="'.$picoTableName.'")

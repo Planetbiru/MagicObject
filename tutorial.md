@@ -6263,6 +6263,12 @@ echo $userType->labelAdminCreate();
 
 ## Database Query Builder
 
+Database Query Builder is a feature for creating object-based database queries. The output of the Database Query Builder is a query that can be directly executed by the database used.
+
+Database Query Builder is actually designed for all relational databases but is currently only available in two languages, namely MySQL and PostgreSQL. MagicObject internally uses the Database Query Builder to create queries based on given methods and parameters.
+
+Database Query Builder is required to create native queries that cannot be created automatically by MagicObject. Apart from that, Database Query Builder is also used for performance reasons where native queries will run faster because they only retrieve the desired columns and do not perform unnecessary joins.
+
 ```php
 <?php
 

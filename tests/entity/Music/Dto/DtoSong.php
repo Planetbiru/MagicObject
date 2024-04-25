@@ -5,8 +5,10 @@ namespace Music\Dto;
 use MagicObject\SetterGetter;
 use Music\Entity\EntitySong;
 
-
 /**
+ * DtoSong is Data Transfer Object to be transfer EntitySong via API or to be serializes into file or database.
+ * Visit https://github.com/Planetbiru/MagicObject/blob/main/tutorial.md
+ * 
  * @JSON(property-naming-strategy=SNAKE_CASE, prettify=false)
  */
 class DtoSong extends SetterGetter
@@ -403,7 +405,7 @@ class DtoSong extends SetterGetter
      */
     public static function valueOf($input)
     {
-        $output = new EntitySong();
+        $output = new DtoSong();
         $output->setSongId($input->getSongId());
         $output->setRandomSongId($input->getRandomSongId());
         $output->setName($input->getName());

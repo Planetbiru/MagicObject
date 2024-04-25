@@ -190,7 +190,7 @@ class PicoDtoGenerator
         $str .="     */\r\n";
         $str .="    public static function valueOf(\$input)\r\n";
         $str .="    {\r\n";
-        $str .="        \$output = new $className"."();\r\n";
+        $str .="        \$output = new $dtoName"."();\r\n";
 
         foreach($rows as $row)
         {
@@ -278,10 +278,10 @@ class PicoDtoGenerator
         }
 
         $prettify = $this->prettify ? 'true' : 'false';
-        $uses = array();
+        $entityName = $this->entityName;
         $uses[] = "";
         
-        $used = "use ".$this->baseNamespaceEntity."\\".$this->entityName.";\r\n";
+        $used = "use ".$this->baseNamespaceEntity."\\".$this->entityName.";";
         
         $classStr = '<?php
 
@@ -291,6 +291,9 @@ use MagicObject\\SetterGetter;
 '.$used.'
 
 /**
+ * '.$classNameDto.' is Data Transfer Object to be transfer '.$entityName.' via API or to be serializes into file or database.
+ * Visit https://github.com/Planetbiru/MagicObject/blob/main/tutorial.md
+ * 
  * @JSON(property-naming-strategy=SNAKE_CASE, prettify='.$prettify.')
  */
 class '.$classNameDto.' extends SetterGetter
