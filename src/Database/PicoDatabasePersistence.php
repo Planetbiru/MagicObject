@@ -49,8 +49,8 @@ class PicoDatabasePersistence // NOSONAR
     const VALUE_TRUE = "true";
     const VALUE_FALSE = "false";
 
-    const ORDER_ASC = "ASC";
-    const ORDER_DESC = "DESC";
+    const ORDER_ASC = "asc";
+    const ORDER_DESC = "desc";
 
     const MESSAGE_NO_RECORD_FOUND = "No record found";
     const MESSAGE_INVALID_FILTER = "Invalid filter";
