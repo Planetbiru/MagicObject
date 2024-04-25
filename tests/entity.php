@@ -655,6 +655,10 @@ try
 	$predicate4->equals('active', true);
 	$spesification->addAnd($predicate4);
 	
+	$predicate4 = new PicoPredicate();
+	$predicate4->equals('asDraft', false);
+	$spesification->addAnd($predicate4);
+	
 	$sortable = new PicoSortable();
 	
 	$sortable->addSortable(new PicoSort("producer.birthDay", PicoSortable::ORDER_TYPE_ASC));
@@ -665,7 +669,7 @@ try
 	$rowData = $pageData->getResult();
 	foreach($rowData as $alb)
 	{
-		echo $alb."\r\n\r\n";
+		//echo $alb."\r\n\r\n";
 	}
 	
 	$pagable = new PicoPagable(new PicoPage(1, 20));
