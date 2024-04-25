@@ -661,8 +661,8 @@ try
 	
 	$sortable = new PicoSortable();
 	
-	//$sortable->addSortable(new PicoSort("producer.birthDay", PicoSortable::ORDER_TYPE_ASC));
-	//$sortable->addSortable(new PicoSort("producer.producerId", PicoSortable::ORDER_TYPE_DESC));
+	$sortable->addSortable(new PicoSort("producer.birthDay", PicoSort::ORDER_TYPE_ASC));
+	$sortable->addSortable(new PicoSort("producer.producerId", PicoSort::ORDER_TYPE_DESC));
 	
 	$pagable = new PicoPagable(new PicoPage(2, 2));
 	

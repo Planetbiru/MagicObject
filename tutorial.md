@@ -2107,7 +2107,7 @@ try
 	$album->findOneByAlbumId($inputGet->getAlbumId());
 
 	$sortable = new PicoSortable();
-	$sort2 = new PicoSort('trackNumber', PicoSortable::ORDER_TYPE_ASC);
+	$sort2 = new PicoSort('trackNumber', PicoSort::ORDER_TYPE_ASC);
 	$sortable->addSortable($sort2);
 
 	$spesification = new PicoSpecification();
@@ -2209,7 +2209,7 @@ try
 	$album->findOneByAlbumId($inputGet->getAlbumId());
 
 	$sortable = new PicoSortable();
-	$sort2 = new PicoSort('albumId', PicoSortable::ORDER_TYPE_ASC);
+	$sort2 = new PicoSort('albumId', PicoSort::ORDER_TYPE_ASC);
 	$sortable->addSortable($sort2);
 
 	$spesification = createAlbumSpecification(new InputGet());
@@ -2844,9 +2844,9 @@ $spesification = SpecificationUtil::createSongSpecification($inputGet);
 if($pagination->getOrderBy() == '')
 {
 	$sortable = new PicoSortable();
-	$sort1 = new PicoSort('albumId', PicoSortable::ORDER_TYPE_DESC);
+	$sort1 = new PicoSort('albumId', PicoSort::ORDER_TYPE_DESC);
 	$sortable->addSortable($sort1);
-	$sort2 = new PicoSort('trackNumber', PicoSortable::ORDER_TYPE_ASC);
+	$sort2 = new PicoSort('trackNumber', PicoSort::ORDER_TYPE_ASC);
 	$sortable->addSortable($sort2);
 }
 else
@@ -4711,8 +4711,8 @@ try
 	
 	$sortable = new PicoSortable();
 	
-	$sortable->addSortable(new PicoSort("producer.birthDay", PicoSortable::ORDER_TYPE_ASC));
-	$sortable->addSortable(new PicoSort("producer.producerId", PicoSortable::ORDER_TYPE_DESC));
+	$sortable->addSortable(new PicoSort("producer.birthDay", PicoSort::ORDER_TYPE_ASC));
+	$sortable->addSortable(new PicoSort("producer.producerId", PicoSort::ORDER_TYPE_DESC));
 	
 	
 	$pageData = $album->findAll($spesification, null, $sortable, true);
@@ -5314,7 +5314,7 @@ $allowChangeArranger = UserUtil::isAllowSelectArranger($currentLoggedInUser);
 	<span>Album</span>
 	<select class="form-control" name="album_id" id="album_id">
 		<option value="">- All -</option>
-		<?php echo new PicoSelectOption(new Album(null, $database), array('value'=>'albumId', 'label'=>'name'), $inputGet->getAlbumId(), null, new PicoSortable('sortOrder', PicoSortable::ORDER_TYPE_DESC)); ?>
+		<?php echo new PicoSelectOption(new Album(null, $database), array('value'=>'albumId', 'label'=>'name'), $inputGet->getAlbumId(), null, new PicoSortable('sortOrder', PicoSort::ORDER_TYPE_DESC)); ?>
 	</select>
 </div>
 <div class="filter-group">
@@ -5414,9 +5414,9 @@ $spesification = SpecificationUtil::createSongSpecification($inputGet);
 if($pagination->getOrderBy() == '')
 {
 $sortable = new PicoSortable();
-$sort1 = new PicoSort('albumId', PicoSortable::ORDER_TYPE_DESC);
+$sort1 = new PicoSort('albumId', PicoSort::ORDER_TYPE_DESC);
 $sortable->addSortable($sort1);
-$sort2 = new PicoSort('trackNumber', PicoSortable::ORDER_TYPE_ASC);
+$sort2 = new PicoSort('trackNumber', PicoSort::ORDER_TYPE_ASC);
 $sortable->addSortable($sort2);
 }
 else

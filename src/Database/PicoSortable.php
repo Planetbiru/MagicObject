@@ -145,8 +145,7 @@ class PicoSortable
             $columnName = $sortable->getSortBy();
             $sortType = $sortable->getSortType();             
             $sortBy = $columnName;
-            $sorts[] = $sortBy . " " . $sortType;
-            
+            $sorts[] = $sortBy . " " . $sortType;           
         }
         if(!empty($sorts))
         {
