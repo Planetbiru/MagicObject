@@ -2916,4 +2916,4 @@ catch(Exception $e)
 	$spesification->addAnd($predicate2);
 ```
 
-`producer` is property of entity that join with other entity, not table name. `birthDay` is is property of entity `producer`, not column name of table `producer`.
+`producer` is property of entity that join with other entity, not table name. `birthDay` and `producerId` are is property of entity `producer`, not column name of table `producer`.
