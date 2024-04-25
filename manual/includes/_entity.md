@@ -1443,7 +1443,6 @@ class SpecificationUtil
 Implementation
 
 ```php
-
 $orderMap = array(
     'name'=>'name', 
     'title'=>'title', 
