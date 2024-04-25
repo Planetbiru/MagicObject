@@ -2909,3 +2909,11 @@ catch(Exception $e)
 	echo $e->getMessage();
 }
 ```
+
+```php
+	$predicate2 = new PicoPredicate();
+	$predicate2->lessThan('producer.birthDay', '2001-01-01');
+	$spesification->addAnd($predicate2);
+```
+
+`producer` is property of entity that join with other entity, not table name. `birthDay` is is property of entity `producer`, not colum name of table `producer`.
