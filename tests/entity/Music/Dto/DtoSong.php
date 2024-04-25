@@ -1,23 +1,19 @@
 <?php
 
-namespace Music\Enitity;
+namespace Music\Dto;
 
-use MagicObject\MagicObject;
+use MagicObject\SetterGetter;
+use Music\Entity\EntitySong;
+
 
 /**
- * @Entity
- * @JSON(property-naming-strategy=SNAKE_CASE, prettify=true)
- * @Table(name="song")
+ * @JSON(property-naming-strategy=SNAKE_CASE, prettify=false)
  */
-class Song extends MagicObject
+class DtoSong extends SetterGetter
 {
 	/**
 	 * Song ID
 	 * 
-	 * @Id
-	 * @GeneratedValue(strategy=GenerationType.UUID)
-	 * @NotNull
-	 * @Column(name="song_id", type="varchar(50)", length=50, nullable=false)
 	 * @Label(content="Song ID")
 	 * @var string
 	 */
@@ -26,7 +22,6 @@ class Song extends MagicObject
 	/**
 	 * Random Song ID
 	 * 
-	 * @Column(name="random_song_id", type="varchar(50)", length=50, nullable=true)
 	 * @Label(content="Random Song ID")
 	 * @var string
 	 */
@@ -35,7 +30,6 @@ class Song extends MagicObject
 	/**
 	 * Name
 	 * 
-	 * @Column(name="name", type="varchar(100)", length=100, nullable=true)
 	 * @Label(content="Name")
 	 * @var string
 	 */
@@ -44,7 +38,6 @@ class Song extends MagicObject
 	/**
 	 * Title
 	 * 
-	 * @Column(name="title", type="text", nullable=true)
 	 * @Label(content="Title")
 	 * @var string
 	 */
@@ -53,7 +46,6 @@ class Song extends MagicObject
 	/**
 	 * Album ID
 	 * 
-	 * @Column(name="album_id", type="varchar(50)", length=50, nullable=true)
 	 * @Label(content="Album ID")
 	 * @var string
 	 */
@@ -62,7 +54,6 @@ class Song extends MagicObject
 	/**
 	 * Track Number
 	 * 
-	 * @Column(name="track_number", type="int(11)", length=11, nullable=true)
 	 * @Label(content="Track Number")
 	 * @var integer
 	 */
@@ -71,7 +62,6 @@ class Song extends MagicObject
 	/**
 	 * Producer ID
 	 * 
-	 * @Column(name="producer_id", type="varchar(40)", length=40, nullable=true)
 	 * @Label(content="Producer ID")
 	 * @var string
 	 */
@@ -80,7 +70,6 @@ class Song extends MagicObject
 	/**
 	 * Artist Vocalist
 	 * 
-	 * @Column(name="artist_vocalist", type="varchar(50)", length=50, nullable=true)
 	 * @Label(content="Artist Vocalist")
 	 * @var string
 	 */
@@ -89,7 +78,6 @@ class Song extends MagicObject
 	/**
 	 * Artist Composer
 	 * 
-	 * @Column(name="artist_composer", type="varchar(50)", length=50, nullable=true)
 	 * @Label(content="Artist Composer")
 	 * @var string
 	 */
@@ -98,7 +86,6 @@ class Song extends MagicObject
 	/**
 	 * Artist Arranger
 	 * 
-	 * @Column(name="artist_arranger", type="varchar(50)", length=50, nullable=true)
 	 * @Label(content="Artist Arranger")
 	 * @var string
 	 */
@@ -107,7 +94,6 @@ class Song extends MagicObject
 	/**
 	 * File Path
 	 * 
-	 * @Column(name="file_path", type="text", nullable=true)
 	 * @Label(content="File Path")
 	 * @var string
 	 */
@@ -116,7 +102,6 @@ class Song extends MagicObject
 	/**
 	 * File Name
 	 * 
-	 * @Column(name="file_name", type="varchar(100)", length=100, nullable=true)
 	 * @Label(content="File Name")
 	 * @var string
 	 */
@@ -125,7 +110,6 @@ class Song extends MagicObject
 	/**
 	 * File Type
 	 * 
-	 * @Column(name="file_type", type="varchar(100)", length=100, nullable=true)
 	 * @Label(content="File Type")
 	 * @var string
 	 */
@@ -134,7 +118,6 @@ class Song extends MagicObject
 	/**
 	 * File Extension
 	 * 
-	 * @Column(name="file_extension", type="varchar(20)", length=20, nullable=true)
 	 * @Label(content="File Extension")
 	 * @var string
 	 */
@@ -143,7 +126,6 @@ class Song extends MagicObject
 	/**
 	 * File Size
 	 * 
-	 * @Column(name="file_size", type="bigint(20)", length=20, nullable=true)
 	 * @Label(content="File Size")
 	 * @var integer
 	 */
@@ -152,7 +134,6 @@ class Song extends MagicObject
 	/**
 	 * File Md5
 	 * 
-	 * @Column(name="file_md5", type="varchar(32)", length=32, nullable=true)
 	 * @Label(content="File Md5")
 	 * @var string
 	 */
@@ -161,7 +142,6 @@ class Song extends MagicObject
 	/**
 	 * File Upload Time
 	 * 
-	 * @Column(name="file_upload_time", type="timestamp", length=19, nullable=true)
 	 * @Label(content="File Upload Time")
 	 * @var string
 	 */
@@ -170,7 +150,6 @@ class Song extends MagicObject
 	/**
 	 * First Upload Time
 	 * 
-	 * @Column(name="first_upload_time", type="timestamp", length=19, nullable=true)
 	 * @Label(content="First Upload Time")
 	 * @var string
 	 */
@@ -179,7 +158,6 @@ class Song extends MagicObject
 	/**
 	 * Last Upload Time
 	 * 
-	 * @Column(name="last_upload_time", type="timestamp", length=19, nullable=true)
 	 * @Label(content="Last Upload Time")
 	 * @var string
 	 */
@@ -188,7 +166,6 @@ class Song extends MagicObject
 	/**
 	 * File Path Midi
 	 * 
-	 * @Column(name="file_path_midi", type="text", nullable=true)
 	 * @Label(content="File Path Midi")
 	 * @var string
 	 */
@@ -197,7 +174,6 @@ class Song extends MagicObject
 	/**
 	 * Last Upload Time Midi
 	 * 
-	 * @Column(name="last_upload_time_midi", type="timestamp", length=19, nullable=true)
 	 * @Label(content="Last Upload Time Midi")
 	 * @var string
 	 */
@@ -206,7 +182,6 @@ class Song extends MagicObject
 	/**
 	 * File Path Xml
 	 * 
-	 * @Column(name="file_path_xml", type="text", nullable=true)
 	 * @Label(content="File Path Xml")
 	 * @var string
 	 */
@@ -215,7 +190,6 @@ class Song extends MagicObject
 	/**
 	 * Last Upload Time Xml
 	 * 
-	 * @Column(name="last_upload_time_xml", type="timestamp", length=19, nullable=true)
 	 * @Label(content="Last Upload Time Xml")
 	 * @var string
 	 */
@@ -224,7 +198,6 @@ class Song extends MagicObject
 	/**
 	 * File Path Pdf
 	 * 
-	 * @Column(name="file_path_pdf", type="text", nullable=true)
 	 * @Label(content="File Path Pdf")
 	 * @var string
 	 */
@@ -233,7 +206,6 @@ class Song extends MagicObject
 	/**
 	 * Last Upload Time Pdf
 	 * 
-	 * @Column(name="last_upload_time_pdf", type="timestamp", length=19, nullable=true)
 	 * @Label(content="Last Upload Time Pdf")
 	 * @var string
 	 */
@@ -242,7 +214,6 @@ class Song extends MagicObject
 	/**
 	 * Duration
 	 * 
-	 * @Column(name="duration", type="float", nullable=true)
 	 * @Label(content="Duration")
 	 * @var double
 	 */
@@ -251,7 +222,6 @@ class Song extends MagicObject
 	/**
 	 * Genre ID
 	 * 
-	 * @Column(name="genre_id", type="varchar(50)", length=50, nullable=true)
 	 * @Label(content="Genre ID")
 	 * @var string
 	 */
@@ -260,7 +230,6 @@ class Song extends MagicObject
 	/**
 	 * Bpm
 	 * 
-	 * @Column(name="bpm", type="float", nullable=true)
 	 * @Label(content="Bpm")
 	 * @var double
 	 */
@@ -269,7 +238,6 @@ class Song extends MagicObject
 	/**
 	 * Time Signature
 	 * 
-	 * @Column(name="time_signature", type="varchar(40)", length=40, nullable=true)
 	 * @Label(content="Time Signature")
 	 * @var string
 	 */
@@ -278,7 +246,6 @@ class Song extends MagicObject
 	/**
 	 * Subtitle
 	 * 
-	 * @Column(name="subtitle", type="longtext", nullable=true)
 	 * @Label(content="Subtitle")
 	 * @var string
 	 */
@@ -287,7 +254,6 @@ class Song extends MagicObject
 	/**
 	 * Subtitle Complete
 	 * 
-	 * @Column(name="subtitle_complete", type="tinyint(1)", length=1, nullable=true)
 	 * @Label(content="Subtitle Complete")
 	 * @var boolean
 	 */
@@ -296,7 +262,6 @@ class Song extends MagicObject
 	/**
 	 * Lyric Midi
 	 * 
-	 * @Column(name="lyric_midi", type="longtext", nullable=true)
 	 * @Label(content="Lyric Midi")
 	 * @var string
 	 */
@@ -305,7 +270,6 @@ class Song extends MagicObject
 	/**
 	 * Lyric Midi Raw
 	 * 
-	 * @Column(name="lyric_midi_raw", type="longtext", nullable=true)
 	 * @Label(content="Lyric Midi Raw")
 	 * @var string
 	 */
@@ -314,7 +278,6 @@ class Song extends MagicObject
 	/**
 	 * Vocal Guide
 	 * 
-	 * @Column(name="vocal_guide", type="longtext", nullable=true)
 	 * @Label(content="Vocal Guide")
 	 * @var string
 	 */
@@ -323,7 +286,6 @@ class Song extends MagicObject
 	/**
 	 * Vocal
 	 * 
-	 * @Column(name="vocal", type="tinyint(1)", length=1, nullable=true)
 	 * @Label(content="Vocal")
 	 * @var boolean
 	 */
@@ -332,7 +294,6 @@ class Song extends MagicObject
 	/**
 	 * Instrument
 	 * 
-	 * @Column(name="instrument", type="longtext", nullable=true)
 	 * @Label(content="Instrument")
 	 * @var string
 	 */
@@ -341,7 +302,6 @@ class Song extends MagicObject
 	/**
 	 * Midi Vocal Channel
 	 * 
-	 * @Column(name="midi_vocal_channel", type="int(11)", length=11, nullable=true)
 	 * @Label(content="Midi Vocal Channel")
 	 * @var integer
 	 */
@@ -350,7 +310,6 @@ class Song extends MagicObject
 	/**
 	 * Rating
 	 * 
-	 * @Column(name="rating", type="float", nullable=true)
 	 * @Label(content="Rating")
 	 * @var double
 	 */
@@ -359,7 +318,6 @@ class Song extends MagicObject
 	/**
 	 * Comment
 	 * 
-	 * @Column(name="comment", type="longtext", nullable=true)
 	 * @Label(content="Comment")
 	 * @var string
 	 */
@@ -368,7 +326,6 @@ class Song extends MagicObject
 	/**
 	 * Image Path
 	 * 
-	 * @Column(name="image_path", type="text", nullable=true)
 	 * @Label(content="Image Path")
 	 * @var string
 	 */
@@ -377,7 +334,6 @@ class Song extends MagicObject
 	/**
 	 * Last Upload Time Image
 	 * 
-	 * @Column(name="last_upload_time_image", type="timestamp", length=19, nullable=true)
 	 * @Label(content="Last Upload Time Image")
 	 * @var string
 	 */
@@ -386,7 +342,6 @@ class Song extends MagicObject
 	/**
 	 * Time Create
 	 * 
-	 * @Column(name="time_create", type="timestamp", length=19, nullable=true, updatable=false)
 	 * @Label(content="Time Create")
 	 * @var string
 	 */
@@ -395,7 +350,6 @@ class Song extends MagicObject
 	/**
 	 * Time Edit
 	 * 
-	 * @Column(name="time_edit", type="timestamp", length=19, nullable=true)
 	 * @Label(content="Time Edit")
 	 * @var string
 	 */
@@ -404,7 +358,6 @@ class Song extends MagicObject
 	/**
 	 * IP Create
 	 * 
-	 * @Column(name="ip_create", type="varchar(50)", length=50, nullable=true, updatable=false)
 	 * @Label(content="IP Create")
 	 * @var string
 	 */
@@ -413,7 +366,6 @@ class Song extends MagicObject
 	/**
 	 * IP Edit
 	 * 
-	 * @Column(name="ip_edit", type="varchar(50)", length=50, nullable=true)
 	 * @Label(content="IP Edit")
 	 * @var string
 	 */
@@ -422,7 +374,6 @@ class Song extends MagicObject
 	/**
 	 * Admin Create
 	 * 
-	 * @Column(name="admin_create", type="varchar(50)", length=50, nullable=true, updatable=false)
 	 * @Label(content="Admin Create")
 	 * @var string
 	 */
@@ -431,7 +382,6 @@ class Song extends MagicObject
 	/**
 	 * Admin Edit
 	 * 
-	 * @Column(name="admin_edit", type="varchar(50)", length=50, nullable=true)
 	 * @Label(content="Admin Edit")
 	 * @var string
 	 */
@@ -440,11 +390,69 @@ class Song extends MagicObject
 	/**
 	 * Active
 	 * 
-	 * @Column(name="active", type="tinyint(1)", length=1, default_value="1", nullable=true)
-	 * @DefaultColumn(value="1")
 	 * @Label(content="Active")
 	 * @var boolean
 	 */
 	protected $active;
+
+    /**
+     * Construct DtoSong from EntitySong and not copy other properties
+     * 
+     * @param EntitySong $input
+     * @return self
+     */
+    public static function valueOf($input)
+    {
+        $output = new EntitySong();
+        $output->setSongId($input->getSongId());
+        $output->setRandomSongId($input->getRandomSongId());
+        $output->setName($input->getName());
+        $output->setTitle($input->getTitle());
+        $output->setAlbumId($input->getAlbumId());
+        $output->setTrackNumber($input->getTrackNumber());
+        $output->setProducerId($input->getProducerId());
+        $output->setArtistVocalist($input->getArtistVocalist());
+        $output->setArtistComposer($input->getArtistComposer());
+        $output->setArtistArranger($input->getArtistArranger());
+        $output->setFilePath($input->getFilePath());
+        $output->setFileName($input->getFileName());
+        $output->setFileType($input->getFileType());
+        $output->setFileExtension($input->getFileExtension());
+        $output->setFileSize($input->getFileSize());
+        $output->setFileMd5($input->getFileMd5());
+        $output->setFileUploadTime($input->getFileUploadTime());
+        $output->setFirstUploadTime($input->getFirstUploadTime());
+        $output->setLastUploadTime($input->getLastUploadTime());
+        $output->setFilePathMidi($input->getFilePathMidi());
+        $output->setLastUploadTimeMidi($input->getLastUploadTimeMidi());
+        $output->setFilePathXml($input->getFilePathXml());
+        $output->setLastUploadTimeXml($input->getLastUploadTimeXml());
+        $output->setFilePathPdf($input->getFilePathPdf());
+        $output->setLastUploadTimePdf($input->getLastUploadTimePdf());
+        $output->setDuration($input->getDuration());
+        $output->setGenreId($input->getGenreId());
+        $output->setBpm($input->getBpm());
+        $output->setTimeSignature($input->getTimeSignature());
+        $output->setSubtitle($input->getSubtitle());
+        $output->setSubtitleComplete($input->getSubtitleComplete());
+        $output->setLyricMidi($input->getLyricMidi());
+        $output->setLyricMidiRaw($input->getLyricMidiRaw());
+        $output->setVocalGuide($input->getVocalGuide());
+        $output->setVocal($input->getVocal());
+        $output->setInstrument($input->getInstrument());
+        $output->setMidiVocalChannel($input->getMidiVocalChannel());
+        $output->setRating($input->getRating());
+        $output->setComment($input->getComment());
+        $output->setImagePath($input->getImagePath());
+        $output->setLastUploadTimeImage($input->getLastUploadTimeImage());
+        $output->setTimeCreate($input->getTimeCreate());
+        $output->setTimeEdit($input->getTimeEdit());
+        $output->setIpCreate($input->getIpCreate());
+        $output->setIpEdit($input->getIpEdit());
+        $output->setAdminCreate($input->getAdminCreate());
+        $output->setAdminEdit($input->getAdminEdit());
+        $output->setActive($input->getActive());
+        return $output;
+    }
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Music\Enitity;
+namespace Music\Entity;
 
 use MagicObject\MagicObject;
 
@@ -9,7 +9,7 @@ use MagicObject\MagicObject;
  * @JSON(property-naming-strategy=SNAKE_CASE, prettify=true)
  * @Table(name="song")
  */
-class EnititySong extends MagicObject
+class EntitySong extends MagicObject
 {
 	/**
 	 * Song ID

@@ -59,17 +59,18 @@ class PicoEntityGenerator
      *
      * @param PicoDatabase $database
      * @param string $baseDir
-     * @param string $baseNamespace
      * @param string $tableName
+     * @param string $baseNamespace
+     * @param string $entityName
+     * @param boolean $prettify
      */
-    public function __construct($database, $baseDir, $baseNamespace, $tableName, $entityName = null, $prettify = false)
+    public function __construct($database, $baseDir, $tableName, $baseNamespace, $entityName = null)
     {
         $this->database = $database;
         $this->baseDir = $baseDir;
         $this->baseNamespace = $baseNamespace;
         $this->tableName = $tableName;
         $this->entityName = $entityName;
-        $this->prettify = $prettify;
     }
     
     /**

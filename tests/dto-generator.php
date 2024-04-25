@@ -1,6 +1,7 @@
 <?php
 
 use MagicObject\Database\PicoDatabase;
+use MagicObject\Generator\PicoDtoGenerator;
 use MagicObject\Generator\PicoEntityGenerator;
 use MagicObject\MagicObject;
 use MagicObject\SecretObject;
@@ -15,5 +16,5 @@ $database = new PicoDatabase($databaseCredential);
 $database->connect();
 
 
-$gen = new PicoEntityGenerator($database, __DIR__."/entity", "song", "Music\\Entity", 'EntitySong', true);
+$gen = new PicoDtoGenerator($database, __DIR__."/entity", "song", "Music\\Dto", 'DtoSong', "Music\\Entity", 'EntitySong', true);
 $gen->generate();
