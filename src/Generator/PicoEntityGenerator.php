@@ -41,6 +41,20 @@ class PicoEntityGenerator
     private $tableName = "";
     
     /**
+     * Entity name
+     *
+     * @var string
+     */
+    private $entityName = null;
+    
+    /**
+     * Prettify
+     *
+     * @var boolean
+     */
+    private $prettify = false;
+    
+    /**
      * Constructor
      *
      * @param PicoDatabase $database
@@ -48,12 +62,14 @@ class PicoEntityGenerator
      * @param string $baseNamespace
      * @param string $tableName
      */
-    public function __construct($database, $baseDir, $baseNamespace, $tableName)
+    public function __construct($database, $baseDir, $baseNamespace, $tableName, $entityName = null, $prettify = false)
     {
         $this->database = $database;
         $this->baseDir = $baseDir;
         $this->baseNamespace = $baseNamespace;
         $this->tableName = $tableName;
+        $this->entityName = $entityName;
+        $this->prettify = $prettify;
     }
     
     /**
@@ -253,14 +269,23 @@ class PicoEntityGenerator
     {
         $typeMap = $this->getTypeMap();
         $picoTableName = $this->tableName;
-
-        $className = ucfirst(PicoStringUtil::camelize($picoTableName));
+        if($this->entityName != null)
+        {
+            $className = $this->entityName;
+        }
+        else
+        {
+            $className = ucfirst(PicoStringUtil::camelize($picoTableName));
+        }
         $fileName = $this->baseNamespace."/".$className;
         $path = $this->baseDir."/".$fileName.".php";
         $path = str_replace("\\", "/", $path);
         
         $dir = dirname($path);
-        mkdir($dir, 0755, true);
+        if(!file_exists($dir))
+        {
+            mkdir($dir, 0755, true);
+        }
 
         $rows = PicoColumnGenerator::getColumnList($this->database, $picoTableName);
 
@@ -280,6 +305,8 @@ class PicoEntityGenerator
                 $attrs[] = $prop;
             }
         }
+        
+        $prettify = $this->prettify ? 'true' : 'false';
 
         $uses = array();
         $uses[] = "";
@@ -292,7 +319,7 @@ use MagicObject\MagicObject;'.implode("\r\n", $uses).'
 
 /**
  * @Entity
- * @JSON(property-naming-strategy=SNAKE_CASE)
+ * @JSON(property-naming-strategy=SNAKE_CASE, prettify='.$prettify.')
  * @Table(name="'.$picoTableName.'")
  */
 class '.$className.' extends MagicObject
