@@ -1405,7 +1405,10 @@ class MagicObject extends stdClass // NOSONAR
 
     /**
      * Magic method called when user call any undefined method. __call method will check the prefix of called method and call appropriated method according to its name and its parameters.
+     * hasValue &raquo; check if property has value. This method not require database connection.
+     * isset &raquo; gcheck if property has value. String will be convert to number first. This method not require database connection.
      * is &raquo; get property value as boolean. Number will true if it's value is 1. String will be convert to number first. This method not require database connection.
+     * equals &raquo; check if property value is equals to given value. This method not require database connection.
      * get &raquo; get property value. This method not require database connection.
      * set &raquo; set property value. This method not require database connection.
      * unset &raquo; unset property value. This method not require database connection.

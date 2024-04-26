@@ -16,9 +16,11 @@ use MagicObject\Exceptions\NoColumnMatchException;
 use MagicObject\Exceptions\NoDatabaseConnectionException;
 use MagicObject\Exceptions\NoUpdatableColumnException;
 use MagicObject\Exceptions\NoPrimaryKeyDefinedException;
+use MagicObject\MagicObject;
 use MagicObject\Util\ClassUtil\ExtendedReflectionClass;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\ClassUtil\PicoEmptyParameter;
+use ReflectionProperty;
 
 class PicoDatabasePersistence // NOSONAR
 {
@@ -151,7 +153,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Database connection
      *
-     * @param PicoDatabase $database
+     * @param PicoDatabase|null $database
      * @param MagicObject|mixed $object
      */
     public function __construct($database, $object)
@@ -1281,6 +1283,12 @@ class PicoDatabasePersistence // NOSONAR
         return $columns;
     }
     
+    /**
+     * Get column maps of the entity
+     *
+     * @param string $entityName
+     * @return array
+     */
     private function getColumnMapOf($entityName)
     {
         $columns = array();
@@ -1315,7 +1323,7 @@ class PicoDatabasePersistence // NOSONAR
      * @param string $field
      * @return string
      */
-    private function getTableColumn($spec, $entityTable, $field, $master = false)
+    public function getTableColumn($spec, $entityTable, $field, $master = false)
     {
         if($entityTable != null)
         {
