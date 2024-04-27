@@ -43,6 +43,8 @@ class MagicObject extends stdClass // NOSONAR
     const KEY_DEFAULT_VALUE = "default_value";
     const KEY_NAME = "name";
     const KEY_VALUE = "value";
+    const JSON = 'JSON';
+    const YAML = 'Yaml';
     
     /**
      * Flag readonly
@@ -903,7 +905,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($snakeCase === null)
         {
-            $snake = $this->_snake();
+            $snake = $this->_snakeJson();
         }
         else
         {
@@ -965,11 +967,24 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @return boolean
      */
-    protected function _snake()
+    protected function _snakeJson()
     {
-        return isset($this->_classParams['JSON'])
-            && isset($this->_classParams['JSON']['property-naming-strategy'])
-            && strcasecmp($this->_classParams['JSON']['property-naming-strategy'], 'SNAKE_CASE') == 0
+        return isset($this->_classParams[self::JSON])
+            && isset($this->_classParams[self::JSON]['property-naming-strategy'])
+            && strcasecmp($this->_classParams[self::JSON]['property-naming-strategy'], 'SNAKE_CASE') == 0
+            ;
+    }
+
+    /**
+     * Check if Yaml naming strategy is snake case or not
+     *
+     * @return boolean
+     */
+    protected function _snakeYaml()
+    {
+        return isset($this->_classParams[self::YAML])
+            && isset($this->_classParams[self::YAML]['property-naming-strategy'])
+            && strcasecmp($this->_classParams[self::YAML]['property-naming-strategy'], 'SNAKE_CASE') == 0
             ;
     }
     
@@ -980,9 +995,9 @@ class MagicObject extends stdClass // NOSONAR
      */
     protected function isUpperCamel()
     {
-        return isset($this->_classParams['JSON'])
-            && isset($this->_classParams['JSON']['property-naming-strategy'])
-            && strcasecmp($this->_classParams['JSON']['property-naming-strategy'], 'UPPER_CAMEL_CASE') == 0
+        return isset($this->_classParams[self::JSON])
+            && isset($this->_classParams[self::JSON]['property-naming-strategy'])
+            && strcasecmp($this->_classParams[self::JSON]['property-naming-strategy'], 'UPPER_CAMEL_CASE') == 0
             ;
     }
     
@@ -993,7 +1008,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     protected function _camel()
     {
-        return !$this->_snake();
+        return !$this->_snakeJson();
     }
 
     /**
@@ -1003,9 +1018,9 @@ class MagicObject extends stdClass // NOSONAR
      */
     protected function _pretty()
     {
-        return isset($this->_classParams['JSON'])
-            && isset($this->_classParams['JSON']['prettify'])
-            && strcasecmp($this->_classParams['JSON']['prettify'], 'true') == 0
+        return isset($this->_classParams[self::JSON])
+            && isset($this->_classParams[self::JSON]['prettify'])
+            && strcasecmp($this->_classParams[self::JSON]['prettify'], 'true') == 0
             ;
     }
     
@@ -1645,7 +1660,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function __toString()
     {
-        $snake = $this->_snake();
+        $snake = $this->_snakeJson();
         $pretty = $this->_pretty();
         $flag = $pretty ? JSON_PRETTY_PRINT : 0;
         $obj = clone $this;
@@ -1719,7 +1734,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function dumpYaml($inline = null, $indent = 4, $flags = 0)
     {
-        $snake = $this->_snake();
+        $snake = $this->_snakeYaml();
         $input = $this->valueArray($snake);
         return PicoYamlUtil::dump($input, $inline, $indent, $flags);
     }

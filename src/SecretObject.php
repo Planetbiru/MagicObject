@@ -18,6 +18,7 @@ use Symfony\Component\Yaml\Yaml;
 class SecretObject extends stdClass //NOSONAR
 {
     const JSON = 'JSON';
+    const YAML = 'Yaml';
     const KEY_NAME = "name";
     const KEY_VALUE = "value";
     
@@ -857,11 +858,24 @@ class SecretObject extends stdClass //NOSONAR
      *
      * @return boolean
      */
-    protected function _snake()
+    protected function _snakeJson()
     {
         return isset($this->_classParams[self::JSON])
             && isset($this->_classParams[self::JSON]['property-naming-strategy'])
             && strcasecmp($this->_classParams[self::JSON]['property-naming-strategy'], 'SNAKE_CASE') == 0
+            ;
+    }
+
+    /**
+     * Check if Yaml naming strategy is snake case or not
+     *
+     * @return boolean
+     */
+    protected function _snakeYaml()
+    {
+        return isset($this->_classParams[self::YAML])
+            && isset($this->_classParams[self::YAML]['property-naming-strategy'])
+            && strcasecmp($this->_classParams[self::YAML]['property-naming-strategy'], 'SNAKE_CASE') == 0
             ;
     }
     
@@ -885,7 +899,7 @@ class SecretObject extends stdClass //NOSONAR
      */
     protected function _camel()
     {
-        return !$this->_snake();
+        return !$this->_snakeJson();
     }
     
     /**
@@ -953,7 +967,7 @@ class SecretObject extends stdClass //NOSONAR
     {
         $obj = clone $this;
         $obj = $this->encryptValueRecorsive($obj);
-        $array = json_decode(json_encode($obj->value($this->_snake())), true);
+        $array = json_decode(json_encode($obj->value($this->_snakeJson())), true);
         return $this->encryptValueRecursive($array);
     }
 
@@ -993,7 +1007,7 @@ class SecretObject extends stdClass //NOSONAR
      */
     public function dumpYaml($inline = null, $indent = 4, $flags = 0)
     {
-        $snake = $this->_snake();
+        $snake = $this->_snakeYaml();
         $input = $this->valueArray($snake);
         return PicoYamlUtil::dump($input, $inline, $indent, $flags);
     }
@@ -1006,6 +1020,6 @@ class SecretObject extends stdClass //NOSONAR
     public function __toString()
     {
         $obj = clone $this;
-        return json_encode($obj->value($this->_snake()), JSON_PRETTY_PRINT);
+        return json_encode($obj->value($this->_snakeJson()), JSON_PRETTY_PRINT);
     }
 }
