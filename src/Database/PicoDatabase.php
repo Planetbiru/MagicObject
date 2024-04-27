@@ -135,6 +135,15 @@ class PicoDatabase //NOSONAR
 		$emptyHost = !$this->databaseCredentials->issetHost();
 		$emptyPort = !$this->databaseCredentials->issetPort();
 		$emptyName = !$this->databaseCredentials->issetDatabaseName();
+
+		if($this->databaseCredentials->issetDatabaseSchema())
+		{
+			$schema = "&currentSchema=".urlencode($this->databaseCredentials->getDatabaseSchema());
+		}
+		else
+		{
+			$schema = "";
+		}
 		
 		if(
 			$emptyDriver
@@ -150,10 +159,10 @@ class PicoDatabase //NOSONAR
 			$emptyValue .= $emptyDriver ? "{driver}" : "";
 			$emptyValue .= $emptyHost ? "{host}" : "";
 			$emptyValue .= $emptyPort ? "{port}" : "";
-			$emptyValue .= $emptyName ? "{name}" : "";
+			$emptyValue .= $emptyName ? "{database_name}" : "";
 			throw new InvalidDatabaseConfiguration("Invalid database configuration. $emptyValue. Please check your database configuration!");
 		}
-		return $this->databaseCredentials->getDriver() . ':host=' . $this->databaseCredentials->getHost() . '; port=' . ((int) $this->databaseCredentials->getPort()) . '; dbname=' . $this->databaseCredentials->getDatabaseName();
+		return $this->databaseCredentials->getDriver() . ':host=' . $this->databaseCredentials->getHost() . '; port=' . ((int) $this->databaseCredentials->getPort()) . '; dbname=' . $this->databaseCredentials->getDatabaseName().$schema;
 	}
 
 	/**
