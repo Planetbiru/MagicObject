@@ -39,6 +39,7 @@ class MagicObject extends stdClass // NOSONAR
 {
     const MESSAGE_NO_DATABASE_CONNECTION = "No database connection provided";
     const MESSAGE_NO_RECORD_FOUND = "No record found";
+    const PROPERTY_NAMING_STRATEGY = "property-naming-strategy";
     const KEY_PROPERTY_TYPE = "propertyType";
     const KEY_DEFAULT_VALUE = "default_value";
     const KEY_NAME = "name";
@@ -970,8 +971,8 @@ class MagicObject extends stdClass // NOSONAR
     protected function _snakeJson()
     {
         return isset($this->_classParams[self::JSON])
-            && isset($this->_classParams[self::JSON]['property-naming-strategy'])
-            && strcasecmp($this->_classParams[self::JSON]['property-naming-strategy'], 'SNAKE_CASE') == 0
+            && isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY])
+            && strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY], 'SNAKE_CASE') == 0
             ;
     }
 
@@ -983,8 +984,8 @@ class MagicObject extends stdClass // NOSONAR
     protected function _snakeYaml()
     {
         return isset($this->_classParams[self::YAML])
-            && isset($this->_classParams[self::YAML]['property-naming-strategy'])
-            && strcasecmp($this->_classParams[self::YAML]['property-naming-strategy'], 'SNAKE_CASE') == 0
+            && isset($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY])
+            && strcasecmp($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY], 'SNAKE_CASE') == 0
             ;
     }
     
@@ -996,8 +997,8 @@ class MagicObject extends stdClass // NOSONAR
     protected function isUpperCamel()
     {
         return isset($this->_classParams[self::JSON])
-            && isset($this->_classParams[self::JSON]['property-naming-strategy'])
-            && strcasecmp($this->_classParams[self::JSON]['property-naming-strategy'], 'UPPER_CAMEL_CASE') == 0
+            && isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY])
+            && strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY], 'UPPER_CAMEL_CASE') == 0
             ;
     }
     
@@ -1611,8 +1612,7 @@ class MagicObject extends stdClass // NOSONAR
             {
                 return $this->$var == $params[0] ? ' checked="checked"' : '';
             }
-        }     
-        
+        }            
         else if (strncasecmp($method, "startsWith", 10) === 0) {
             $var = lcfirst(substr($method, 10));
             $value = $params[0];
@@ -1626,8 +1626,7 @@ class MagicObject extends stdClass // NOSONAR
             $caseSensitive = isset($params[1]) && $params[1];  
             $haystack = $this->$var;
             return PicoStringUtil::endsWith($haystack, $value, $caseSensitive);
-        } 
-
+        }
         else if (strncasecmp($method, "label", 5) === 0) {
             $var = lcfirst(substr($method, 5));
             if(empty($var))
@@ -1716,9 +1715,6 @@ class MagicObject extends stdClass // NOSONAR
         }
         return $value->value($snake);
     }
-    
-
-    
 
     /**
      * Dumps a PHP value to a YAML string.

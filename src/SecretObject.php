@@ -21,7 +21,7 @@ class SecretObject extends stdClass //NOSONAR
     const YAML = 'Yaml';
     const KEY_NAME = "name";
     const KEY_VALUE = "value";
-    
+    const PROPERTY_NAMING_STRATEGY = "property-naming-strategy";
     const KEY_PROPERTY_TYPE = "propertyType";
     const KEY_DEFAULT_VALUE = "default_value"; 
     const ANNOTATION_ENCRYPT_IN = "EncryptIn";
@@ -861,8 +861,8 @@ class SecretObject extends stdClass //NOSONAR
     protected function _snakeJson()
     {
         return isset($this->_classParams[self::JSON])
-            && isset($this->_classParams[self::JSON]['property-naming-strategy'])
-            && strcasecmp($this->_classParams[self::JSON]['property-naming-strategy'], 'SNAKE_CASE') == 0
+            && isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY])
+            && strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY], 'SNAKE_CASE') == 0
             ;
     }
 
@@ -874,8 +874,8 @@ class SecretObject extends stdClass //NOSONAR
     protected function _snakeYaml()
     {
         return isset($this->_classParams[self::YAML])
-            && isset($this->_classParams[self::YAML]['property-naming-strategy'])
-            && strcasecmp($this->_classParams[self::YAML]['property-naming-strategy'], 'SNAKE_CASE') == 0
+            && isset($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY])
+            && strcasecmp($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY], 'SNAKE_CASE') == 0
             ;
     }
     
@@ -887,8 +887,8 @@ class SecretObject extends stdClass //NOSONAR
     protected function isUpperCamel()
     {
         return isset($this->_classParams[self::JSON])
-            && isset($this->_classParams[self::JSON]['property-naming-strategy'])
-            && strcasecmp($this->_classParams[self::JSON]['property-naming-strategy'], 'UPPER_CAMEL_CASE') == 0
+            && isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY])
+            && strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY], 'UPPER_CAMEL_CASE') == 0
             ;
     }
     
