@@ -1448,7 +1448,7 @@ class PicoDatabasePersistence // NOSONAR
      * @param array $masterColumnMaps
      * @param PicoDatabaseQueryBuilder $sqlQuery
      * @param PicoSpecification $spec
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return array
      */
     private function addWhere($arr, $masterColumnMaps, $sqlQuery, $spec, $info)
@@ -1562,7 +1562,7 @@ class PicoDatabasePersistence // NOSONAR
      * Create sort by
      *
      * @param PicoSortable $order
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return string
      */
     public function createOrderByQuery($order, $info = null)
@@ -1618,7 +1618,7 @@ class PicoDatabasePersistence // NOSONAR
      * Create sort with mapping
      *
      * @param PicoSortable $order
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return string
      */
     private function createWithMapping($order, $info)
@@ -1872,7 +1872,7 @@ class PicoDatabasePersistence // NOSONAR
      * Add JOIN query
      *
      * @param PicoDatabaseQueryBuilder $sqlQuery
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return PicoDatabaseQueryBuilder
      */
     private function addJoinQuery($sqlQuery, $info)
@@ -1925,7 +1925,7 @@ class PicoDatabasePersistence // NOSONAR
      * @param PicoSpecification $specification
      * @param PicoPagable|null $pagable
      * @param PicoSortable|string|null $sortable
-     * @param PicoTableInfo $info
+     * @param PicoTableInfo $info Table information
      * @return boolean
      */
     private function isRequireJoin($specification, $pagable, $sortable, $info)
@@ -1964,17 +1964,37 @@ class PicoDatabasePersistence // NOSONAR
         }
         return $result;
     }
-    
+
     /**
      * Get findAll query
      *
      * @param PicoSpecification $specification
      * @param PicoPagable|null $pagable
      * @param PicoSortable|string|null $sortable
-     * @param PicoTableInfo
+     * @param PicoTableInfo $info Table information
      * @return PicoDatabaseQueryBuilder
      */
     public function findAllQuery($specification, $pagable = null, $sortable = null, $info = null)
+    {
+        if($info == null)
+        {
+            $info = $this->getTableInfo();
+        }
+        $selected = $info->getTableName().".*";
+        return $this->findSpecificQuery($selected, $specification, $pagable, $sortable, $info);
+    }
+    
+    /**
+     * Get findSpecific query
+     *
+     * @param string $selected
+     * @param PicoSpecification $specification
+     * @param PicoPagable|null $pagable
+     * @param PicoSortable|string|null $sortable
+     * @param PicoTableInfo $info Table information
+     * @return PicoDatabaseQueryBuilder
+     */
+    public function findSpecificQuery($selected, $specification, $pagable = null, $sortable = null, $info = null)
     {
         if($info == null)
         {
@@ -1984,7 +2004,7 @@ class PicoDatabasePersistence // NOSONAR
         
         $sqlQuery = $queryBuilder
             ->newQuery()
-            ->select($info->getTableName().".*")
+            ->select($selected)
             ->from($info->getTableName());
         
         if($this->isRequireJoin($specification, $pagable, $sortable, $info))
@@ -2020,10 +2040,27 @@ class PicoDatabasePersistence // NOSONAR
      */
     public function findAll($specification, $pagable = null, $sortable = null)
     {
+        $info = $this->getTableInfo();     
+        $selected = $info->getTableName().".*";
+        return $this->findSpecific($selected, $specification, $pagable, $sortable);
+    }
+
+    /**
+     * Get all record from database wihout filter
+     *
+     * @param string $selected
+     * @param PicoSpecification $specification
+     * @param PicoPagable|null $pagable
+     * @param PicoSortable|string|null $sortable
+     * @return array|null
+     * @throws EntityException|EmptyResultException
+     */
+    public function findSpecific($selected, $specification, $pagable = null, $sortable = null)
+    {
         $data = null;
         $result = array();
         $info = $this->getTableInfo();
-        $sqlQuery = $this->findAllQuery($specification, $pagable, $sortable, $info);
+        $sqlQuery = $this->findSpecificQuery($selected, $specification, $pagable, $sortable, $info);
     
         try
         {

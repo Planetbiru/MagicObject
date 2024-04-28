@@ -1137,6 +1137,58 @@ class MagicObject extends stdClass // NOSONAR
             return new PicoPageData(array(), $startTime);
         }
     }
+
+    /**
+     * Find specific
+     *
+     * @param string $selected
+     * @param PicoSpecification $specification
+     * @param PicoPagable|string $pagable
+     * @param PicoSortable|string $sortable
+     * @param boolean $passive
+     * @return PicoPageData
+     * @throws NoRecordFoundException if no record found
+     * @throws NoDatabaseConnectionException if no database connection
+     */
+    public function findSpecific($selected, $specification = null, $pagable = null, $sortable = null, $passive = false)
+    {
+        $startTime = microtime(true);
+        try
+        {
+            $pageData = null;
+            if($this->_database != null && $this->_database->isConnected())
+            {
+                $persist = new PicoDatabasePersistence($this->_database, $this);
+                $result = $persist->findSpecific($selected, $specification, $pagable, $sortable);
+                
+                if($this->_notNullAndNotEmpty($result))
+                {
+                    if($pagable != null && $pagable instanceof PicoPagable)
+                    {
+                        $match = $persist->countAll($specification);
+                        $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pagable);
+                    }
+                    else
+                    {
+                        $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime);
+                    }
+                }
+                else
+                {
+                    $pageData = new PicoPageData(array(), $startTime);
+                }
+            }
+            else
+            {
+                $pageData = new PicoPageData(array(), $startTime);
+            }
+            return $pageData;
+        }
+        catch(Exception $e)
+        {
+            return new PicoPageData(array(), $startTime);
+        }
+    }
     
     /**
      * Find all query
