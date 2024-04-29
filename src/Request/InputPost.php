@@ -11,4 +11,14 @@ class  InputPost extends PicoRequestBase {
         parent::__construct();
         $this->loadData($_POST);
     }
+
+    /**
+     * Get global variable $_POST
+     *
+     * @return array
+     */
+    public static function requestPost()
+    {
+        return $_POST;
+    }
 }
