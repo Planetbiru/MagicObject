@@ -39,10 +39,13 @@ class MagicObject extends stdClass // NOSONAR
 {
     const MESSAGE_NO_DATABASE_CONNECTION = "No database connection provided";
     const MESSAGE_NO_RECORD_FOUND = "No record found";
+    const PROPERTY_NAMING_STRATEGY = "property-naming-strategy";
     const KEY_PROPERTY_TYPE = "propertyType";
     const KEY_DEFAULT_VALUE = "default_value";
     const KEY_NAME = "name";
     const KEY_VALUE = "value";
+    const JSON = 'JSON';
+    const YAML = 'Yaml';
     
     /**
      * Flag readonly
@@ -903,7 +906,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($snakeCase === null)
         {
-            $snake = $this->_snake();
+            $snake = $this->_snakeJson();
         }
         else
         {
@@ -965,11 +968,24 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @return boolean
      */
-    protected function _snake()
+    protected function _snakeJson()
     {
-        return isset($this->_classParams['JSON'])
-            && isset($this->_classParams['JSON']['property-naming-strategy'])
-            && strcasecmp($this->_classParams['JSON']['property-naming-strategy'], 'SNAKE_CASE') == 0
+        return isset($this->_classParams[self::JSON])
+            && isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY])
+            && strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY], 'SNAKE_CASE') == 0
+            ;
+    }
+
+    /**
+     * Check if Yaml naming strategy is snake case or not
+     *
+     * @return boolean
+     */
+    protected function _snakeYaml()
+    {
+        return isset($this->_classParams[self::YAML])
+            && isset($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY])
+            && strcasecmp($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY], 'SNAKE_CASE') == 0
             ;
     }
     
@@ -980,9 +996,9 @@ class MagicObject extends stdClass // NOSONAR
      */
     protected function isUpperCamel()
     {
-        return isset($this->_classParams['JSON'])
-            && isset($this->_classParams['JSON']['property-naming-strategy'])
-            && strcasecmp($this->_classParams['JSON']['property-naming-strategy'], 'UPPER_CAMEL_CASE') == 0
+        return isset($this->_classParams[self::JSON])
+            && isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY])
+            && strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY], 'UPPER_CAMEL_CASE') == 0
             ;
     }
     
@@ -993,7 +1009,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     protected function _camel()
     {
-        return !$this->_snake();
+        return !$this->_snakeJson();
     }
 
     /**
@@ -1003,9 +1019,9 @@ class MagicObject extends stdClass // NOSONAR
      */
     protected function _pretty()
     {
-        return isset($this->_classParams['JSON'])
-            && isset($this->_classParams['JSON']['prettify'])
-            && strcasecmp($this->_classParams['JSON']['prettify'], 'true') == 0
+        return isset($this->_classParams[self::JSON])
+            && isset($this->_classParams[self::JSON]['prettify'])
+            && strcasecmp($this->_classParams[self::JSON]['prettify'], 'true') == 0
             ;
     }
     
@@ -1092,6 +1108,58 @@ class MagicObject extends stdClass // NOSONAR
             {
                 $persist = new PicoDatabasePersistence($this->_database, $this);
                 $result = $persist->findAll($specification, $pagable, $sortable);
+                
+                if($this->_notNullAndNotEmpty($result))
+                {
+                    if($pagable != null && $pagable instanceof PicoPagable)
+                    {
+                        $match = $persist->countAll($specification);
+                        $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pagable);
+                    }
+                    else
+                    {
+                        $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime);
+                    }
+                }
+                else
+                {
+                    $pageData = new PicoPageData(array(), $startTime);
+                }
+            }
+            else
+            {
+                $pageData = new PicoPageData(array(), $startTime);
+            }
+            return $pageData;
+        }
+        catch(Exception $e)
+        {
+            return new PicoPageData(array(), $startTime);
+        }
+    }
+
+    /**
+     * Find specific
+     *
+     * @param string $selected
+     * @param PicoSpecification $specification
+     * @param PicoPagable|string $pagable
+     * @param PicoSortable|string $sortable
+     * @param boolean $passive
+     * @return PicoPageData
+     * @throws NoRecordFoundException if no record found
+     * @throws NoDatabaseConnectionException if no database connection
+     */
+    public function findSpecific($selected, $specification = null, $pagable = null, $sortable = null, $passive = false)
+    {
+        $startTime = microtime(true);
+        try
+        {
+            $pageData = null;
+            if($this->_database != null && $this->_database->isConnected())
+            {
+                $persist = new PicoDatabasePersistence($this->_database, $this);
+                $result = $persist->findSpecific($selected, $specification, $pagable, $sortable);
                 
                 if($this->_notNullAndNotEmpty($result))
                 {
@@ -1461,7 +1529,7 @@ class MagicObject extends stdClass // NOSONAR
             $var = lcfirst(substr($method, 3));
             return isset($this->$var) ? $this->$var : null;
         }
-        else if (strncasecmp($method, "set", 3) === 0 && !$this->_readonly) {
+        else if (strncasecmp($method, "set", 3) === 0 && isset($params) && isset($params[0]) && !$this->_readonly){
             $var = lcfirst(substr($method, 3));
             $this->$var = $params[0];
             $this->modifyNullProperties($var, $params[0]);
@@ -1596,8 +1664,7 @@ class MagicObject extends stdClass // NOSONAR
             {
                 return $this->$var == $params[0] ? ' checked="checked"' : '';
             }
-        }     
-        
+        }            
         else if (strncasecmp($method, "startsWith", 10) === 0) {
             $var = lcfirst(substr($method, 10));
             $value = $params[0];
@@ -1611,8 +1678,7 @@ class MagicObject extends stdClass // NOSONAR
             $caseSensitive = isset($params[1]) && $params[1];  
             $haystack = $this->$var;
             return PicoStringUtil::endsWith($haystack, $value, $caseSensitive);
-        } 
-
+        }
         else if (strncasecmp($method, "label", 5) === 0) {
             $var = lcfirst(substr($method, 5));
             if(empty($var))
@@ -1645,7 +1711,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function __toString()
     {
-        $snake = $this->_snake();
+        $snake = $this->_snakeJson();
         $pretty = $this->_pretty();
         $flag = $pretty ? JSON_PRETTY_PRINT : 0;
         $obj = clone $this;
@@ -1701,9 +1767,6 @@ class MagicObject extends stdClass // NOSONAR
         }
         return $value->value($snake);
     }
-    
-
-    
 
     /**
      * Dumps a PHP value to a YAML string.
@@ -1719,7 +1782,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function dumpYaml($inline = null, $indent = 4, $flags = 0)
     {
-        $snake = $this->_snake();
+        $snake = $this->_snakeYaml();
         $input = $this->valueArray($snake);
         return PicoYamlUtil::dump($input, $inline, $indent, $flags);
     }
