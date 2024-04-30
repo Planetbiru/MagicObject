@@ -11,4 +11,14 @@ class  InputGet extends PicoRequestBase {
         parent::__construct();
         $this->loadData($_GET);
     }
+
+    /**
+     * Get global variable $_GET
+     *
+     * @return array
+     */
+    public static function requestGet()
+    {
+        return $_GET;
+    }
 }

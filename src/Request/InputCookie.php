@@ -11,4 +11,14 @@ class  InputCookie extends PicoRequestBase {
         parent::__construct();
         $this->loadData($_COOKIE);
     }
+
+    /**
+     * Get global variable $_COOKIE
+     *
+     * @return array
+     */
+    public static function requestCookie()
+    {
+        return $_COOKIE;
+    }
 }
