@@ -1,9 +1,9 @@
 <?php
 
-use MagicObject\Util\AttrUtil;
+use MagicObject\Util\PicoTestValueUtil;
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 
-echo (new AttrUtil())->doReturnAttributeSelected()->whenEquals(1, 1);
+echo (new PicoTestValueUtil())->doReturnAttributeChecked()->whenEquals(1, 1);
 
