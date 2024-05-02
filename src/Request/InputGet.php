@@ -2,13 +2,23 @@
 
 namespace MagicObject\Request;
 
+use MagicObject\Util\ClassUtil\PicoObjectParser;
+
 class  InputGet extends PicoRequestBase {
+    /**
+     * Recursive
+     *
+     * @var boolean
+     */
+    private $_recursive = false;
+    
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct($recursive = false)
     {
         parent::__construct();
+        $this->_recursive = $recursive; 
         $this->loadData($_GET);
     }
 
@@ -21,4 +31,28 @@ class  InputGet extends PicoRequestBase {
     {
         return $_GET;
     }
+
+    /**
+     * Override loadData
+     *
+     * @param array $data
+     * @return self
+     */
+    public function loadData($data)
+    {
+        if($this->_recursive)
+        {
+            $genericObject = PicoObjectParser::parseJsonRecursive($data);
+            $keys = array_keys($genericObject->valueArray());
+            foreach($keys as $key)
+            {
+                $this->{$key} = $genericObject->get($key);
+            }
+        }
+        else
+        {
+            parent::loadData($data);
+        }
+        return $this;
+    } 
 }
