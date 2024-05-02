@@ -16,14 +16,14 @@ class PicoDatabaseDump
      *
      * @var PicoTableInfo
      */
-    private $tableInfo;    
+    protected $tableInfo;    
     
     /**
      * Table name
      *
      * @var string
      */
-    private $picoTableName = "";
+    protected $picoTableName = "";
     
     
     /**
@@ -31,7 +31,7 @@ class PicoDatabaseDump
      *
      * @var array
      */
-    private $columns = array();
+    protected $columns = array();
 
     /**
      * Dump table structure
