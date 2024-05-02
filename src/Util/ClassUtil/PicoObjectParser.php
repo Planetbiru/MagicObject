@@ -197,13 +197,20 @@ class PicoObjectParser
     /**
      * Parse from JSON recursively
      */
-    public static function parseJsonRecursive($jsonString)
+    public static function parseJsonRecursive($data)
     {
-        if($jsonString != null)
+        if($data != null)
         {
-            $data = json_decode($jsonString);
-            if (is_array($data) || is_object($data)) {
+            if(is_scalar($data) && is_string($data))
+            {
+                return self::parseObject(json_decode($data));
+            }
+            else if (is_array($data) || is_object($data)) {
                 return self::parseObject($data);
+            }
+            else
+            {
+                return $data;
             }
         }
         return null;
