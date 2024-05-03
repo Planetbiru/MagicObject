@@ -1702,6 +1702,10 @@ class MagicObject extends stdClass // NOSONAR
             }
             return "";
         } 
+        else if(strncasecmp($method, "option", 6) === 0) {
+            $var = lcfirst(substr($method, 6));
+            return isset($this->$var) && ($this->$var == 1 || $this->$var === true) ? $params[0] : $params[1];
+        }
     }
 
     /**
