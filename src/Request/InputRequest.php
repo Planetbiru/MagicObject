@@ -33,10 +33,17 @@ class  InputRequest extends PicoRequestBase {
         if($this->_recursive)
         {
             $genericObject = PicoObjectParser::parseJsonRecursive($data);
-            $keys = array_keys($genericObject->valueArray());
-            foreach($keys as $key)
+            if($genericObject != null)
             {
-                $this->{$key} = $genericObject->get($key);
+                $values = $genericObject->valueArray();
+                if($values != null && is_array($values))
+                {
+                    $keys = array_keys($values);
+                    foreach($keys as $key)
+                    {
+                        $this->{$key} = $genericObject->get($key);
+                    }
+                }
             }
         }
         else
