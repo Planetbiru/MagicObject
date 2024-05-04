@@ -112,8 +112,7 @@ class PicoSpecification
         {
             foreach($predicate as $key=>$value)
             {
-                $pred = new PicoPredicate();    
-                $pred->equals($key, $value);
+                $pred = new PicoPredicate($key, $value);    
                 $pred->setFilterLogic($logic);
                 $this->specifications[count($this->specifications)] = $pred;
                 if($pred->isRequireJoin())
