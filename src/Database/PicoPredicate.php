@@ -37,7 +37,7 @@ class PicoPredicate
      * @param mixed $value
      * @return void
      */
-    public function __contruct($field = null, $value = null)
+    public function __construct($field = null, $value = null)
     {
         if($field != null)
         {
