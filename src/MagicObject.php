@@ -1035,6 +1035,17 @@ class MagicObject extends stdClass // NOSONAR
     {
         return $value != null && !empty($value);
     }
+
+    /**
+     * Chek if magic object is empty
+     *
+     * @return boolean
+     */
+    public function empty()
+    {
+        $keys = array_keys($this->valueArray());
+        return empty($keys);
+    }
     
     /**
      * Property list
