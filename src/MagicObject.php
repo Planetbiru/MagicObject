@@ -891,7 +891,7 @@ class MagicObject extends stdClass // NOSONAR
             $value2 = new stdClass;
             foreach ($value as $key => $val) {
                 $key2 = PicoStringUtil::snakeize($key);
-                $value2->$key2 = $val;
+                $value2->$key2 = PicoStringUtil::snakeizeObject($val);
             }
             return $value2;
         }
