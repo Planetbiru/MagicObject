@@ -11,14 +11,24 @@ class  InputPost extends PicoRequestBase {
      * @var boolean
      */
     private $_recursive = false;
-    
+
+    /**
+     * Parse null and boolean
+     *
+     * @var boolean
+     */
+    private $_parseNullAndBool = false;
+
     /**
      * Constructor
+     * @param boolean $recursive
+     * @param boolean $parseNullAndBool
      */
-    public function __construct($recursive = false)
+    public function __construct($recursive = false, $parseNullAndBool = false)
     {
         parent::__construct();
         $this->_recursive = $recursive; 
+        $this->_parseNullAndBool = $parseNullAndBool;
         $this->loadData($_POST);
     }
 
@@ -42,7 +52,7 @@ class  InputPost extends PicoRequestBase {
     {
         if($this->_recursive)
         {
-            $genericObject = PicoObjectParser::parseJsonRecursive($data);
+            $genericObject = PicoObjectParser::parseJsonRecursive($data, $this->_parseNullAndBool);
             if($genericObject != null)
             {
                 $values = $genericObject->valueArray();

@@ -197,7 +197,7 @@ class PicoObjectParser
     /**
      * Parse from JSON recursively
      */
-    public static function parseJsonRecursive($data)
+    public static function parseJsonRecursive($data, $parseNullAndBool = false)
     {
         if($data != null)
         {
@@ -208,11 +208,41 @@ class PicoObjectParser
             else if (is_array($data) || is_object($data)) {
                 return self::parseObject($data);
             }
+            else if(is_string($data))
+            {
+                return self::parseString($data);
+            }
             else
             {
                 return $data;
             }
         }
         return null;
+    }
+
+    /**
+     * Parse string
+     *
+     * @param string $data
+     * @return mixed
+     */
+    public static function parseString($data)
+    {
+        if($data == 'null')
+        {
+            return null;
+        }
+        else if($data == 'false')
+        {
+            return false;
+        }
+        else if($data == 'true')
+        {
+            return true;
+        }
+        else
+        {
+            return $data;
+        }
     }
 }
