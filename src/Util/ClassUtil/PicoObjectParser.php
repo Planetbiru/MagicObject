@@ -208,7 +208,7 @@ class PicoObjectParser
             else if (is_array($data) || is_object($data)) {
                 return self::parseObject($data);
             }
-            else if(is_string($data))
+            else if(is_string($data) && $parseNullAndBool)
             {
                 return self::parseString($data);
             }
