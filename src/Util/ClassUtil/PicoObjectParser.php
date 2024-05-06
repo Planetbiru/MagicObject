@@ -15,10 +15,9 @@ class PicoObjectParser
     /**
      * Parse MagicObject
      * @param MagicObject $data
-     * @param boolean $parseNullAndBool
      * @return MagicObject
      */
-    private static function parseMagicObject($data, $parseNullAndBool = false)
+    private static function parseMagicObject($data)
     {
         $magicObject = new MagicObject();
         $values = $data->value();
@@ -30,7 +29,7 @@ class PicoObjectParser
             }
             else
             {
-                $magicObject->set($key2, self::parseRecursiveObject($value, $parseNullAndBool), true);
+                $magicObject->set($key2, self::parseRecursiveObject($value), true);
             }
         }
         return $magicObject;
@@ -39,10 +38,9 @@ class PicoObjectParser
     /**
      * Parse Object
      * @param stdClass|array $data
-     * @param boolean $parseNullAndBool
      * @return MagicObject
      */
-    private static function parseObject($data, $parseNullAndBool = false)
+    private static function parseObject($data)
     {
         $magicObject = new MagicObject();
         foreach ($data as $key => $value) {
@@ -53,7 +51,7 @@ class PicoObjectParser
             }
             else
             {
-                $magicObject->set($key2, self::parseRecursiveObject($value, $parseNullAndBool), true);
+                $magicObject->set($key2, self::parseRecursiveObject($value), true);
             }
         }
         return $magicObject;
@@ -72,23 +70,22 @@ class PicoObjectParser
     /**
      * Parse recursive
      * @param mixed $data
-     * @param boolean $parseNullAndBool
      * @return mixed
      */
-    public static function parseRecursiveObject($data, $parseNullAndBool = false)
+    public static function parseRecursiveObject($data)
     {
         $result = null;
         if($data != null)
         {
             if($data instanceof MagicObject)
             {
-                $result = self::parseMagicObject($data, $parseNullAndBool);
+                $result = self::parseMagicObject($data);
             }
             else if (is_array($data) || is_object($data) || $data instanceof stdClass) {
                 $obj = new MagicObject();
                 foreach($data as $key=>$val)
                 {
-                    $obj = self::updateObject($obj, $key, $val, $parseNullAndBool);
+                    $obj = self::updateObject($obj, $key, $val);
                 }
                 $result = $obj;
             }
@@ -106,24 +103,23 @@ class PicoObjectParser
      * @param MagicObject $obj
      * @param string $key
      * @param mixed $val
-     * @param boolean $parseNullAndBool
      * @return MagicObject
      */
-    private static function updateObject($obj, $key, $val, $parseNullAndBool = false)
+    private static function updateObject($obj, $key, $val)
     {
         if (self::isObject($val))
         {
-            $obj->set($key, self::parseRecursiveObject($val, $parseNullAndBool));
+            $obj->set($key, self::parseRecursiveObject($val));
         }
         else if (is_array($val))
         {
             if(self::hasStringKeys($val))
             {
-                $obj->set($key, self::parseRecursiveObject($val, $parseNullAndBool));
+                $obj->set($key, self::parseRecursiveObject($val));
             }
             else
             {
-                $obj->set($key, self::parseRecursiveArray($val, $parseNullAndBool));
+                $obj->set($key, self::parseRecursiveArray($val));
             }
         }
         else
@@ -151,9 +147,8 @@ class PicoObjectParser
     /**
      * Parse recursive
      * @param array $data
-     * @param boolean $parseNullAndBool
      */
-    public static function parseRecursiveArray($data, $parseNullAndBool = false)
+    public static function parseRecursiveArray($data)
     {
         $result = array();
         if($data != null)
@@ -162,17 +157,17 @@ class PicoObjectParser
             {
                 if (self::isObject($val))
                 {
-                    $result[] = self::parseRecursiveObject($val, $parseNullAndBool);
+                    $result[] = self::parseRecursiveObject($val);
                 }
                 else if (is_array($val))
                 {
                     if(self::hasStringKeys($val))
                     {
-                        $result[] = self::parseRecursiveObject($val, $parseNullAndBool);
+                        $result[] = self::parseRecursiveObject($val);
                     }
                     else
                     {
-                        $result[] = self::parseRecursiveArray($val, $parseNullAndBool);
+                        $result[] = self::parseRecursiveArray($val);
                     }
                 }
                 else
@@ -187,15 +182,14 @@ class PicoObjectParser
     /**
      * Parse from Yaml recursively
      * @param string $yamlString
-     * @param boolean $parseNullAndBool
      */
-    public static function parseYamlRecursive($yamlString, $parseNullAndBool = false)
+    public static function parseYamlRecursive($yamlString)
     {
         if($yamlString != null)
         {
             $data = Yaml::parse($yamlString);
             if (is_array($data) || is_object($data)) {
-                return self::parseObject($data, $parseNullAndBool);
+                return self::parseObject($data);
             }
         }
         return null;
@@ -204,25 +198,24 @@ class PicoObjectParser
     /**
      * Parse from JSON recursively
      * @param mixed $data
-     * @param boolean $parseNullAndBool
      */
-    public static function parseJsonRecursive($data, $parseNullAndBool = false)
+    public static function parseJsonRecursive($data) //NOSONAR
     {
-        if($data != null)
+        if($data == null)
         {
-            if(is_scalar($data) && is_string($data))
-            {
-                return self::parseObject(json_decode($data), $parseNullAndBool);
-            }
-            else if (is_array($data) || is_object($data)) {
-                return self::parseObject($data, $parseNullAndBool);
-            }
-            else
-            {
-                return $data;
-            }
+            return null;
         }
-        return null;
+        if(is_scalar($data) && is_string($data))
+        {
+            return self::parseObject(json_decode($data));
+        }
+        else if (is_array($data) || is_object($data)) {
+            return self::parseObject($data);
+        }
+        else
+        {
+            return $data;
+        }
     }
 
     /**
@@ -231,7 +224,7 @@ class PicoObjectParser
      * @param string $data
      * @return mixed
      */
-    public static function parseString($data)
+    public static function parseString($data) //NOSONAR
     {
         if($data == 'null')
         {

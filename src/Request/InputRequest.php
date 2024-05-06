@@ -10,14 +10,7 @@ class  InputRequest extends PicoRequestBase {
      *
      * @var boolean
      */
-    private $_recursive = false;
-
-    /**
-     * Parse null and boolean
-     *
-     * @var boolean
-     */
-    private $_parseNullAndBool = false;
+    private $_recursive = false; //NOSONAR
 
     /**
      * Constructor
@@ -28,8 +21,14 @@ class  InputRequest extends PicoRequestBase {
     {
         parent::__construct();
         $this->_recursive = $recursive; 
-        $this->_parseNullAndBool = $parseNullAndBool;
-        $this->loadData($_REQUEST);
+        if($parseNullAndBool)
+        {
+            $this->loadData($this->forceBoolAndNull($_REQUEST));
+        }
+        else
+        {
+            $this->loadData($_REQUEST);
+        }
     }
 
     /**
@@ -42,7 +41,7 @@ class  InputRequest extends PicoRequestBase {
     {
         if($this->_recursive)
         {
-            $genericObject = PicoObjectParser::parseJsonRecursive($data, $this->_parseNullAndBool);
+            $genericObject = PicoObjectParser::parseJsonRecursive($data);
             if($genericObject != null)
             {
                 $values = $genericObject->valueArray();
