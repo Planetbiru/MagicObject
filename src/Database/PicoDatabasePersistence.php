@@ -727,7 +727,7 @@ class PicoDatabasePersistence // NOSONAR
         {
             throw new NoUpdatableColumnException("No updatable column");
         }
-        return $this->joinStringArray($sets, self::MAX_LINE_LENGTH, ", ");
+        return $this->joinStringArray($sets, self::MAX_LINE_LENGTH, ", ", ", \r\n");
     }
 
     /**
