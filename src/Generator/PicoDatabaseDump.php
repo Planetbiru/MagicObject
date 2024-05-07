@@ -95,6 +95,13 @@ class PicoDatabaseDump
         return $query;
     }
     
+    /**
+     * Update query alter table nullable
+     *
+     * @param string $query
+     * @param array $entityColumn
+     * @return string
+     */
     public function updateQueryAlterTableNullable($query, $entityColumn)
     {
         if($entityColumn['nullable'])
@@ -104,6 +111,13 @@ class PicoDatabaseDump
         return $query;
     }
     
+    /**
+     * Update query alter table default value
+     *
+     * @param string $query
+     * @param array $entityColumn
+     * @return string
+     */
     public function updateQueryAlterTableDefaultValue($query, $entityColumn)
     {
         if(isset($entityColumn['default_value']))
