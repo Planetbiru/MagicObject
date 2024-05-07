@@ -95,6 +95,24 @@ class PicoDatabaseDump
         return $query;
     }
     
+    public function updateQueryAlterTableNullable($query, $entityColumn)
+    {
+        if($entityColumn['nullable'])
+        {
+            $query .= " NULL";
+        }
+        return $query;
+    }
+    
+    public function updateQueryAlterTableDefaultValue($query, $entityColumn)
+    {
+        if(isset($entityColumn['default_value']))
+        {
+            $query .= " DEFAULT ".PicoDatabaseUtil::escapeValue($entityColumn['default_value'], true);
+        }
+        return $query;
+    }
+    
     /**
      * Create query ALTER TABLE ADD COLUMN
      *
@@ -104,6 +122,7 @@ class PicoDatabaseDump
     public function createAlterTableAdd($entity)
     {
         $tableInfo = $this->getTableInfo($entity);
+        $tableName = $tableInfo->getTableName();
         $queryAlter = array();
         if($tableInfo != null)
         {
@@ -125,15 +144,9 @@ class PicoDatabaseDump
             {
                 if(!in_array($entityColumn['name'], $dbColumnNames))
                 {
-                    $query = "ALTER TABLE ADD COLUMN ".$entityColumn['name']." ".$entityColumn['type'];
-                    if($entityColumn['nullable'])
-                    {
-                        $query .= " NULL";
-                    }
-                    if(isset($entityColumn['default_value']))
-                    {
-                        $query .= " DEFAULT ".PicoDatabaseUtil::escapeValue($entityColumn['default_value'], true);
-                    }
+                    $query = "ALTER TABLE $tableName ADD COLUMN ".$entityColumn['name']." ".$entityColumn['type'];
+                    $query = $this->updateQueryAlterTableNullable($query, $entityColumn);
+                    $query = $this->updateQueryAlterTableDefaultValue($query, $entityColumn);  
                     $query = $this->updateQueryAlterTableAddColumn($query, $lastColumn, $database->getDatabaseType());
                     $queryAlter[]  = $query;
                     $lastColumn = $entityColumn['name'];
