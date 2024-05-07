@@ -123,16 +123,26 @@ class PicoDatabaseUtil
     
     /**
 	 * Escape value
-	 * @var mixed
+	 * @param mixed $value
+     * @param boolean $stringNull
 	 * @return string
 	 */
-	public static function escapeValue($value)
+	public static function escapeValue($value, $stringNull = false)
 	{
 		if($value === null)
 		{
 			// null
-			$ret = 'null';
+			$ret = 'NULL';
 		}
+        else if($value == 'null' && $stringNull)
+		{
+			// null
+			$ret = 'NULL';
+		}
+        else if(is_string($value) && is_numeric($value) && $stringNull)
+        {
+            $ret = $value."";
+        }
 		else if(is_string($value))
 		{
 			// escape the value

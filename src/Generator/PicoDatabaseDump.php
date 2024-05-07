@@ -7,6 +7,7 @@ use MagicObject\Database\PicoDatabaseType;
 use MagicObject\Database\PicoPageData;
 use MagicObject\Database\PicoTableInfo;
 use MagicObject\MagicObject;
+use MagicObject\Util\Database\PicoDatabaseUtil;
 use MagicObject\Util\Database\PicoDatabaseUtilMySql;
 
 class PicoDatabaseDump
@@ -89,7 +90,7 @@ class PicoDatabaseDump
     {
         if($lastColumn != null && ($databaseType == PicoDatabaseType::DATABASE_TYPE_MYSQL || $databaseType == PicoDatabaseType::DATABASE_TYPE_MARIADB))
         {
-            $query = " AFTER ".$lastColumn;
+            $query .= " AFTER ".$lastColumn;
         }
         return $query;
     }
@@ -125,8 +126,20 @@ class PicoDatabaseDump
                 if(!in_array($entityColumn['name'], $dbColumnNames))
                 {
                     $query = "ALTER TABLE ADD COLUMN ".$entityColumn['name']." ".$entityColumn['type'];
+                    if($entityColumn['nullable'])
+                    {
+                        $query .= " NULL";
+                    }
+                    if(isset($entityColumn['default_value']))
+                    {
+                        $query .= " DEFAULT ".PicoDatabaseUtil::escapeValue($entityColumn['default_value'], true);
+                    }
                     $query = $this->updateQueryAlterTableAddColumn($query, $lastColumn, $database->getDatabaseType());
                     $queryAlter[]  = $query;
+                    $lastColumn = $entityColumn['name'];
+                }
+                else
+                {
                     $lastColumn = $entityColumn['name'];
                 }
             }
