@@ -1646,7 +1646,8 @@ class MagicObject extends stdClass // NOSONAR
         else if (strncasecmp($method, "existsBy", 8) === 0) {
             $var = lcfirst(substr($method, 8));
             return $this->existsBy($var, $params);
-        } else if (strncasecmp($method, "deleteBy", 8) === 0) {
+        } 
+        else if (strncasecmp($method, "deleteBy", 8) === 0) {
             $var = lcfirst(substr($method, 8));
             return $this->deleteBy($var, $params);
         }
@@ -1717,6 +1718,22 @@ class MagicObject extends stdClass // NOSONAR
             $var = lcfirst(substr($method, 6));
             return isset($this->$var) && ($this->$var == 1 || $this->$var === true) ? $params[0] : $params[1];
         }
+        else if(strncasecmp($method, "notNull", 7) === 0) {
+            $var = lcfirst(substr($method, 7));
+            return isset($this->$var);
+        }
+        else if(strncasecmp($method, "notEmpty", 8) === 0) {
+            $var = lcfirst(substr($method, 8));
+            return isset($this->$var) && !empty($this->$var);
+        }
+        else if(strncasecmp($method, "notZero", 7) === 0) {
+            $var = lcfirst(substr($method, 7));
+            return isset($this->$var) && $this->$var != 0;
+        }
+        else if (strncasecmp($method, "notEquals", 9) === 0) {
+            $var = lcfirst(substr($method, 9));
+            return isset($this->$var) && $this->$var != $params[0];
+        } 
     }
 
     /**

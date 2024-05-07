@@ -2,7 +2,7 @@
 
 namespace MagicObject\Database;
 
-class PicoPredicate
+class PicoPredicate //NOSONAR
 {
     /**
      * @var string
