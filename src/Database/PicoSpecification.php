@@ -192,6 +192,12 @@ class PicoSpecification
         return $this;
     }
     
+    /**
+     * Create where
+     *
+     * @param PicoSpecification[] $specifications
+     * @return string[]
+     */
     private function getWhere($specifications)
     {
         foreach($specifications as $spec)
