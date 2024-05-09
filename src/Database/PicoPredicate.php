@@ -282,7 +282,7 @@ class PicoPredicate //NOSONAR
      */
     public function __call($method, $params)
     {
-        if (strncasecmp($method, "set", 3) === 0 && isset($params) && isset($params[0])){
+        if (strncasecmp($method, "set", 3) === 0 && isset($params)) {
             $field = lcfirst(substr($method, 3));
             $value = $params[0];
             $this->equals($field, $value);
