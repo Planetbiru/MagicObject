@@ -13,8 +13,7 @@ class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
     {
         if (strncasecmp($method, "set", 3) === 0 && isset($params) && isset($params[0])){
             $var = lcfirst(substr($method, 3));
-            $this->object->set($var, $params[0]);
-            
+            $this->object->set($var, $params[0]);     
             return $this;
         }
     }
@@ -57,28 +56,5 @@ class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
             $collection[] = $entity;
         }
         return $collection;
-    }
-
-    /**
-     * Update data
-     *
-     * @param boolean $includeNull
-     * @return PDOStatement
-     * @throws EntityException
-     */
-    public function update($includeNull = false)
-    {
-        return parent::update($includeNull = false);
-    }
-
-    /**
-     * Delete record from database
-     *
-     * @return PDOStatement
-     * @throws EntityException
-     */
-    public function delete()
-    {
-        return parent::delete();
     }
 }
