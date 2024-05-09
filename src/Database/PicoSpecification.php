@@ -244,6 +244,16 @@ class PicoSpecification
         }
         return PicoDatabaseUtil::trimWhere(implode(" ", $arr));
     }
+
+    /**
+     * Get instance of PicoSpecification
+     *
+     * @return PicoSpecification
+     */
+    public static function getInstance()
+    {
+        return new PicoSpecification();
+    }
     
     /**
      * This method is for debug purpose only.
