@@ -432,7 +432,8 @@ class Producer extends MagicObject
 
 $album = new EntityAlbum(null, $database);
 
-//$album->where((new PicoSpecification())->addAnd(new PicoPredicate('active', true)))->setAsDraft(true)->setProducerId('0648d52126a420c6a8dd')->setApa('apa')->update();
+$album->where((new PicoSpecification())->addAnd(PicoPredicate::getInstance()->setActive(true))->addAnd(PicoPredicate::getInstance()->setName('Collection 3')))->setTitle('Coba lagi ya')->update();
+exit();
 $result = $album->where((new PicoSpecification())->addAnd(new PicoPredicate('active', true))->addAnd(new PicoPredicate('producer.producerId', '0648d52126a420c6a8dd')))->setAsDraft(true)->selectAll();
 foreach($result as $data)
 {

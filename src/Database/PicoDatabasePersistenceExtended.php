@@ -2,8 +2,10 @@
 
 namespace MagicObject\Database;
 
+use MagicObject\Exceptions\EntityException;
 use MagicObject\Exceptions\NoRecordFoundException;
 use MagicObject\MagicObject;
+use PDOStatement;
 
 class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
 {
@@ -55,5 +57,28 @@ class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
             $collection[] = $entity;
         }
         return $collection;
+    }
+
+    /**
+     * Update data
+     *
+     * @param boolean $includeNull
+     * @return PDOStatement
+     * @throws EntityException
+     */
+    public function update($includeNull = false)
+    {
+        return parent::update($includeNull = false);
+    }
+
+    /**
+     * Delete record from database
+     *
+     * @return PDOStatement
+     * @throws EntityException
+     */
+    public function delete()
+    {
+        return parent::delete();
     }
 }

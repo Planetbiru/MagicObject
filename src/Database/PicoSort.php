@@ -73,7 +73,7 @@ class PicoSort
 
         return $this;
     }
-    
+
     /**
      * This method is for debug purpose only.
      *
