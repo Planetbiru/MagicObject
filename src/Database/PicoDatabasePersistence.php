@@ -190,6 +190,13 @@ class PicoDatabasePersistence // NOSONAR
     protected $sortable;
 
     /**
+     * Join cache
+     *
+     * @var array
+     */
+    private $joinCache = array();
+
+    /**
      * Database connection
      *
      * @param PicoDatabase|null $database
@@ -2440,13 +2447,6 @@ class PicoDatabasePersistence // NOSONAR
             return $join[self::KEY_NAME];
         }
     }
-
-    /**
-     * Join cache
-     *
-     * @var array
-     */
-    private $joinCache = array();
 
     /**
      * Undocumented function
