@@ -2440,6 +2440,62 @@ class PicoDatabasePersistence // NOSONAR
             return $join[self::KEY_NAME];
         }
     }
+
+    /**
+     * Join cache
+     *
+     * @var array
+     */
+    private $joinCache = array();
+
+    /**
+     * Undocumented function
+     *
+     * @param array $row
+     * @param string $referenceColumName
+     * @return string|null
+     */
+    private function getJoinKey($row, $referenceColumName)
+    {
+        return isset($row[$referenceColumName]) ? $row[$referenceColumName] : null;
+    }
+
+    /**
+     * Prepare join cache
+     *
+     * @param string $classNameJoin
+     * @return void
+     */
+    private function prepareJoinCache($classNameJoin)
+    {
+        if(!isset($this->joinCache[$classNameJoin]))
+        {
+            $this->joinCache[$classNameJoin] = array();
+        }
+    }
+
+    /**
+     * Get join data
+     *
+     * @param string $classNameJoin
+     * @param string $joinKey
+     * @return MagicObject
+     */
+    private function getJoinData($classNameJoin, $joinKey)
+    {
+        if(isset($joinKey) && !isset($this->joinCache[$classNameJoin][$joinKey]))
+        {              
+            $className = $this->getRealClassName($classNameJoin);
+            $obj = new $className(null, $this->database);
+            $obj->find(array($joinKey)); 
+            $this->joinCache[$classNameJoin][$joinKey] = $obj;
+        }
+        else
+        {
+            $obj = $this->joinCache[$classNameJoin][$joinKey];
+        }
+        return $obj;
+    }
     
     /**
      * Join data by annotation @JoinColumn
@@ -2457,11 +2513,11 @@ class PicoDatabasePersistence // NOSONAR
             {
                 $referenceColumName = $this->getReferenceColumnName($join);
                 $classNameJoin = $join[self::KEY_PROPERTY_TYPE];
+                $joinKey = $this->getJoinKey($row, $referenceColumName);
                 try
                 {
-                    $className = $this->getRealClassName($classNameJoin);
-                    $obj = new $className(null, $this->database);
-                    $obj->find(array($row[$referenceColumName])); 
+                    $this->prepareJoinCache($classNameJoin);
+                    $obj = $this->getJoinData($classNameJoin, $joinKey);
                     if(is_array($data))
                     {                       
                         $data[$propName] = $obj;

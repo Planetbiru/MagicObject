@@ -447,11 +447,13 @@ $album->where((new PicoSpecification())->addAnd(PicoPredicate::getInstance()->se
 $result = $album->where((new PicoSpecification())->addAnd(new PicoPredicate('active', true))->addAnd(new PicoPredicate('producer.producerId', '0648d52126a420c6a8dd')))->setAsDraft(true)->selectAll();
 foreach($result as $data)
 {
-    echo $data;
+    //echo $data;
 }
 
-echo $album->where((new PicoSpecification())->addAnd(new PicoPredicate('active', true))->addAnd(new PicoPredicate('producer.producerId', '0648d52126a420c6a8dd')))->setAsDraft(true)->select();
+$album->where((new PicoSpecification())->addAnd(new PicoPredicate('active', true))->addAnd(new PicoPredicate('producer.producerId', '0648d52126a420c6a8dd')))->setAsDraft(true)->select();
 //$a = $album->findAll((new PicoSpecification())->addAnd(new PicoPredicate('active', true))->addAnd(new PicoPredicate('producer.imageUpdate', 'qq')));
+
+exit();
 
 $rowId = "1111111111";
 
