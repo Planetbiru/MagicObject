@@ -4404,7 +4404,7 @@ catch(Exception $e)
     $predicate2-&gt;lessThan('producer.birthDay', '2001-01-01');
     $spesification-&gt;addAnd($predicate2);</code></pre>
 <p><code>producer</code> is property of entity that join with other entity, not table name. <code>birthDay</code> and <code>producerId</code> are is property of entity <code>producer</code>, not column name of table <code>producer</code>.</p>
-<h3>Filter Update and Delete</h3>
+<h3>Filter Update</h3>
 <p>Consider the following case:</p>
 <p>We have a query as follows:</p>
 <pre><code class="language-sql">UPDATE album

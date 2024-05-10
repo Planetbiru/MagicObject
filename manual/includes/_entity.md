@@ -3384,7 +3384,7 @@ catch(Exception $e)
 
 `producer` is property of entity that join with other entity, not table name. `birthDay` and `producerId` are is property of entity `producer`, not column name of table `producer`.
 
-### Filter Update and Delete
+### Filter Update
 
 
 Consider the following case:
