@@ -4408,7 +4408,7 @@ catch(Exception $e)
 <p>Consider the following case:</p>
 <p>We have a query as follows:</p>
 <pre><code class="language-sql">UPDATE album
-SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09'
+SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09', ip_ask_edit = '::1'
 WHERE album_id = '1234' AND waiting_for = 0;</code></pre>
 <p>The query above will be executed for each record checked by the user.</p>
 <p>With PicoDatabaseQueryBuilder, we can create it easily as follows:</p>
@@ -4424,8 +4424,9 @@ WHERE album_id = '1234' AND waiting_for = 0;</code></pre>
                 $query = new PicoDatabaseQueryBuilder($database);
                 $query-&gt;newQuery()
                     -&gt;update("album")
-                    -&gt;set("waiting_for = ?, admin_ask_edit = ?, time_ask_edit = ?", 3, 'admin', '2024-05-10 07:08:09')
-                    -&gt;where("album_id = ? AND waiting_for = ? ", '1234', 0);
+                    -&gt;set("waiting_for = ?, admin_ask_edit = ?, time_ask_edit = ?, ip_ask_edit = ? ", 
+                        WaitingFor::ACTIVATE, $currentAction-&gt;getUserId(), $currentAction-&gt;getTime(), $currentAction-&gt;getIp())
+                    -&gt;where("album_id = ? and waiting_for = ? ", $rowId, WaitingFor::NOTHING);
                 $database-&gt;execute($query);
             }
             catch(Exception $e)
@@ -4462,14 +4463,14 @@ WHERE album_id = '1234' AND waiting_for = 0;</code></pre>
 <p>The method above looks very elegant. But have you encountered any problems with the method above?</p>
 <p>Yes. By using a query builder, the application only runs one query, for example</p>
 <pre><code class="language-sql">UPDATE album
-SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09'
+SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09', ip_ask_edit = '::1'
 WHERE album_id = '1234' AND waiting_for = 0;</code></pre>
 <p>However, by using MagicObject, we actually make two inefficient queries.</p>
 <pre><code class="language-sql">SELECT album.*
 WHERE album_id = '1234' AND waiting_for = 0;</code></pre>
 <p>and</p>
 <pre><code class="language-sql">UPDATE album
-SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09'
+SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09', ip_ask_edit = '::1'
 WHERE album_id = '1234' ;</code></pre>
 <p>Of course, if the <code>Album</code> entity has joins with other tables, for example <code>Producer</code>, <code>Client</code> etc., the number of queries that will be executed by the database will be greater and in fact these queries are not needed at all in the application logic.</p>
 <p>In large-scale applications, of course this method will cause problems. Imagine if an application interacted with the database 30 to 40 percent more than it should. Of course the user must provide a database server with greater specifications than necessary. This of course will cause unnecessary costs.</p>
@@ -4516,7 +4517,7 @@ $album
 -&gt;update();</p>
 <pre><code>
 
-Note that the object returned by the `where` method is `PicoDatabasePersistenceExtended` not `MagicObject`. Of course, we will no longer be able to use the methods in MagicObject. Of course we understand that this method is used for certain purposes.</code></pre>
+Note that the object returned by the `where` method is instance of `PicoDatabasePersistenceExtended` not instance of `MagicObject`. Of course, we will no longer be able to use the methods in MagicObject. </code></pre>
 </article>
 
 <article class="article" id="part13">

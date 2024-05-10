@@ -4766,7 +4766,7 @@ We have a query as follows:
 
 ```sql
 UPDATE album
-SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09'
+SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09', ip_ask_edit = '::1'
 WHERE album_id = '1234' AND waiting_for = 0;
 ```
 
@@ -4787,8 +4787,9 @@ if($inputGet->getUserAction() == UserAction::ACTIVATE)
 				$query = new PicoDatabaseQueryBuilder($database);
 				$query->newQuery()
 					->update("album")
-					->set("waiting_for = ?, admin_ask_edit = ?, time_ask_edit = ?", 3, 'admin', '2024-05-10 07:08:09')
-					->where("album_id = ? AND waiting_for = ? ", '1234', 0);
+					->set("waiting_for = ?, admin_ask_edit = ?, time_ask_edit = ?, ip_ask_edit = ? ", 
+						WaitingFor::ACTIVATE, $currentAction->getUserId(), $currentAction->getTime(), $currentAction->getIp())
+					->where("album_id = ? and waiting_for = ? ", $rowId, WaitingFor::NOTHING);
 				$database->execute($query);
 			}
 			catch(Exception $e)
@@ -4835,7 +4836,7 @@ Yes. By using a query builder, the application only runs one query, for example
 
 ```sql
 UPDATE album
-SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09'
+SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09', ip_ask_edit = '::1'
 WHERE album_id = '1234' AND waiting_for = 0;
 ```
 
@@ -4850,7 +4851,7 @@ and
 
 ```sql
 UPDATE album
-SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09'
+SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09', ip_ask_edit = '::1'
 WHERE album_id = '1234' ;
 ```
 
@@ -4910,7 +4911,7 @@ $album
 ->update();
 ```
 
-Note that the object returned by the `where` method is `PicoDatabasePersistenceExtended` not `MagicObject`. Of course, we will no longer be able to use the methods in MagicObject. Of course we understand that this method is used for certain purposes.
+Note that the object returned by the `where` method is instance of `PicoDatabasePersistenceExtended` not instance of `MagicObject`. Of course, we will no longer be able to use the methods in MagicObject. 
 ## Filtering, Ordering and Pagination
 
 MagicObject will filter data according to the given criteria. On the other hand, MagicObject will only retrieve data on the specified page by specifying `limit` and `offset` data in the `select` query.
