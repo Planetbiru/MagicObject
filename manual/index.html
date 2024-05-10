@@ -976,7 +976,7 @@ class PicoDatabaseCredentials extends SecretObject
 }
 
 $cfg = new ConfigApp(null, true);
-$cfg-&gt;loadYamlFile(dirname(__DIR__)."/.cfg/app.yml", true, true);
+$cfg-&gt;loadYamlFile(dirname(__DIR__)."/.cfg/app.yml", true, true, true);
 
 $databaseCredentials = new PicoDatabaseCredentials($cfg-&gt;getDatabase());
 
@@ -1506,7 +1506,7 @@ use MusicProductionManager\Data\Entity\Album;
 require_once dirname(__DIR__)."/vendor/autoload.php";
 
 $cfg = new ConfigApp(null, true);
-$cfg-&gt;loadYamlFile(dirname(__DIR__)."/.cfg/app.yml", true, true);
+$cfg-&gt;loadYamlFile(dirname(__DIR__)."/.cfg/app.yml", true, true, true);
 
 $databaseCredentials = new PicoDatabaseCredentials($cfg-&gt;getDatabase());
 $database = new PicoDatabase($databaseCredentials);
@@ -4404,6 +4404,118 @@ catch(Exception $e)
     $predicate2-&gt;lessThan('producer.birthDay', '2001-01-01');
     $spesification-&gt;addAnd($predicate2);</code></pre>
 <p><code>producer</code> is property of entity that join with other entity, not table name. <code>birthDay</code> and <code>producerId</code> are is property of entity <code>producer</code>, not column name of table <code>producer</code>.</p>
+<h3>Filter Update and Delete</h3>
+<p>Consider the following case:</p>
+<p>We have a query as follows:</p>
+<pre><code class="language-sql">UPDATE album
+SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09'
+WHERE album_id = '1234' AND waiting_for = 0;</code></pre>
+<p>The query above will be executed for each record checked by the user.</p>
+<p>By creating a query, you can create it easily</p>
+<pre><code class="language-php">if($inputGet-&gt;getUserAction() == UserAction::ACTIVATE)
+{
+    if($inputPost-&gt;countableCheckedRowId())
+    {
+        foreach($inputPost-&gt;getCheckedRowId() as $rowId)
+        {
+            $album = new Album(null, $database);
+            try
+            {
+                $query = new PicoDatabaseQueryBuilder($database);
+                $query-&gt;newQuery()
+                    -&gt;update("album")
+                    -&gt;set("waiting_for = ?, admin_ask_edit = ?, time_ask_edit = ?", 3, 'admin', '2024-05-10 07:08:09')
+                    -&gt;where("album_id = ? AND waiting_for = ? ", '1234', 0);
+                $database-&gt;execute($query);
+            }
+            catch(Exception $e)
+            {
+                // Do something here when record is not found
+            }
+        }
+    }
+}                   </code></pre>
+<p>But what about using MagicObject?</p>
+<p>Maybe you'll make it like this</p>
+<pre><code class="language-php">if($inputGet-&gt;getUserAction() == UserAction::ACTIVATE)
+{
+    if($inputPost-&gt;countableCheckedRowId())
+    {
+        foreach($inputPost-&gt;getCheckedRowId() as $rowId)
+        {
+            $album = new Album(null, $database);
+            try
+            {
+                $album-&gt;findOneByAlbumIdAndWaitingFor($rowId, WaitingFor::NOTHING);
+                $album-&gt;setAdminAskEdit($currentAction-&gt;getUserId());
+                $album-&gt;setTimeAskEdit($currentAction-&gt;getTime());
+                $album-&gt;setIpAskEdit($currentAction-&gt;getIp());
+                $album-&gt;setWaitingFor(WaitingFor::ACTIVATE)-&gt;update();
+            }
+            catch(Exception $e)
+            {
+                // Do something here when record is not found
+            }
+        }
+    }
+}</code></pre>
+<p>The method above looks very elegant. But have you encountered any problems with the method above?</p>
+<p>Yes. By using a query builder, the application only runs one query, for example</p>
+<pre><code class="language-sql">UPDATE album
+SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09'
+WHERE album_id = '1234' AND waiting_for = 0;</code></pre>
+<p>However, by using MagicObject, we actually make two inefficient queries.</p>
+<pre><code class="language-sql">SELECT album.*
+WHERE album_id = '1234' AND waiting_for = 0;</code></pre>
+<p>and</p>
+<pre><code class="language-sql">UPDATE album
+SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09'
+WHERE album_id = '1234' ;</code></pre>
+<p>In large-scale applications, of course this method will cause problems. Imagine if an application interacted with the database 30 to 40 percent more than it should. Of course the user must provide a database server with greater specifications than necessary. This of course will cause unnecessary costs.</p>
+<p>MagicObject provides a more efficient way for this case by using the <code>where</code> method and specification.</p>
+<p>See the following example:</p>
+<pre><code class="language-php">if($inputGet-&gt;getUserAction() == UserAction::ACTIVATE)
+{
+    if($inputPost-&gt;countableCheckedRowId())
+    {
+        foreach($inputPost-&gt;getCheckedRowId() as $rowId)
+        {
+            $album = new Album(null, $database);
+            try
+            {
+                $album-&gt;where(PicoSpecification::getInstance()
+                    -&gt;addAnd(PicoPredicate::getInstance()-&gt;setAlbumId($rowId))
+                    -&gt;addAnd(PicoPredicate::getInstance()-&gt;setWaitingFor(WaitingFor::NOTHING))
+                )
+                -&gt;setAdminAskEdit($currentAction-&gt;getUserId())
+                -&gt;setTimeAskEdit($currentAction-&gt;getTime())
+                -&gt;setIpAskEdit($currentAction-&gt;getIp())
+                -&gt;setWaitingFor(WaitingFor::ACTIVATE)
+                -&gt;update();
+            }
+            catch(Exception $e)
+            {
+                // Do something here when record is not found
+            }
+        }
+    }
+}</code></pre>
+<pre><code class="language-php">$album
+-&gt;where(PicoSpecification::getInstance()
+-&gt;addAnd(PicoPredicate::getInstance()-&gt;setAlbumId($rowId))
+-&gt;addAnd(PicoPredicate::getInstance()-&gt;setWaitingFor(WaitingFor::NOTHING))
+)</code></pre>
+<p>will create criteria for the actions to be carried out next. In this case, these actions are</p>
+<p>`php
+$album
+-&gt;setAdminAskEdit($currentAction-&gt;getUserId())
+-&gt;setTimeAskEdit($currentAction-&gt;getTime())
+-&gt;setIpAskEdit($currentAction-&gt;getIp())
+-&gt;setWaitingFor(WaitingFor::ACTIVATE)
+-&gt;update();</p>
+<pre><code>
+
+Note that the object returned by the `where` method is `PicoDatabasePersistenceExtended` not `MagicObject`. Of course, we will no longer be able to use the methods in MagicObject. Of course we understand that this method is used for certain purposes.</code></pre>
 </article>
 
 <article class="article" id="part13">
@@ -5903,7 +6015,7 @@ use MusicProductionManager\Data\Entity\Album;
 require_once dirname(__DIR__)."/vendor/autoload.php";
 
 $cfg = new ConfigApp(null, true);
-$cfg-&gt;loadYamlFile(dirname(__DIR__)."/.cfg/app.yml", true, true);
+$cfg-&gt;loadYamlFile(dirname(__DIR__)."/.cfg/app.yml", true, true, true);
 
 $databaseCredentials = new PicoDatabaseCredentials($cfg-&gt;getDatabase());
 $database = new PicoDatabase($databaseCredentials);

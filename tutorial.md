@@ -4756,6 +4756,160 @@ catch(Exception $e)
 ```
 
 `producer` is property of entity that join with other entity, not table name. `birthDay` and `producerId` are is property of entity `producer`, not column name of table `producer`.
+
+### Filter Update and Delete
+
+
+Consider the following case:
+
+We have a query as follows:
+
+```sql
+UPDATE album
+SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09'
+WHERE album_id = '1234' AND waiting_for = 0;
+```
+
+The query above will be executed for each record checked by the user.
+
+By creating a query, you can create it easily
+
+```php
+if($inputGet->getUserAction() == UserAction::ACTIVATE)
+{
+	if($inputPost->countableCheckedRowId())
+	{
+		foreach($inputPost->getCheckedRowId() as $rowId)
+		{
+			$album = new Album(null, $database);
+			try
+			{
+				$query = new PicoDatabaseQueryBuilder($database);
+				$query->newQuery()
+					->update("album")
+					->set("waiting_for = ?, admin_ask_edit = ?, time_ask_edit = ?", 3, 'admin', '2024-05-10 07:08:09')
+					->where("album_id = ? AND waiting_for = ? ", '1234', 0);
+				$database->execute($query);
+			}
+			catch(Exception $e)
+			{
+				// Do something here when record is not found
+			}
+		}
+	}
+}					
+```
+
+But what about using MagicObject?
+
+Maybe you'll make it like this
+
+```php
+if($inputGet->getUserAction() == UserAction::ACTIVATE)
+{
+	if($inputPost->countableCheckedRowId())
+	{
+		foreach($inputPost->getCheckedRowId() as $rowId)
+		{
+			$album = new Album(null, $database);
+			try
+			{
+				$album->findOneByAlbumIdAndWaitingFor($rowId, WaitingFor::NOTHING);
+				$album->setAdminAskEdit($currentAction->getUserId());
+				$album->setTimeAskEdit($currentAction->getTime());
+				$album->setIpAskEdit($currentAction->getIp());
+				$album->setWaitingFor(WaitingFor::ACTIVATE)->update();
+			}
+			catch(Exception $e)
+			{
+				// Do something here when record is not found
+			}
+		}
+	}
+}
+```
+
+The method above looks very elegant. But have you encountered any problems with the method above?
+
+Yes. By using a query builder, the application only runs one query, for example
+
+```sql
+UPDATE album
+SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09'
+WHERE album_id = '1234' AND waiting_for = 0;
+```
+
+However, by using MagicObject, we actually make two inefficient queries.
+
+```sql
+SELECT album.*
+WHERE album_id = '1234' AND waiting_for = 0;
+```
+
+and
+
+```sql
+UPDATE album
+SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09'
+WHERE album_id = '1234' ;
+```
+
+In large-scale applications, of course this method will cause problems. Imagine if an application interacted with the database 30 to 40 percent more than it should. Of course the user must provide a database server with greater specifications than necessary. This of course will cause unnecessary costs.
+
+
+MagicObject provides a more efficient way for this case by using the `where` method and specification.
+
+See the following example:
+
+```php
+if($inputGet->getUserAction() == UserAction::ACTIVATE)
+{
+	if($inputPost->countableCheckedRowId())
+	{
+		foreach($inputPost->getCheckedRowId() as $rowId)
+		{
+			$album = new Album(null, $database);
+			try
+			{
+				$album->where(PicoSpecification::getInstance()
+					->addAnd(PicoPredicate::getInstance()->setAlbumId($rowId))
+					->addAnd(PicoPredicate::getInstance()->setWaitingFor(WaitingFor::NOTHING))
+				)
+				->setAdminAskEdit($currentAction->getUserId())
+				->setTimeAskEdit($currentAction->getTime())
+				->setIpAskEdit($currentAction->getIp())
+				->setWaitingFor(WaitingFor::ACTIVATE)
+				->update();
+			}
+			catch(Exception $e)
+			{
+				// Do something here when record is not found
+			}
+		}
+	}
+}
+```
+
+```php
+$album
+->where(PicoSpecification::getInstance()
+->addAnd(PicoPredicate::getInstance()->setAlbumId($rowId))
+->addAnd(PicoPredicate::getInstance()->setWaitingFor(WaitingFor::NOTHING))
+)
+```
+
+will create criteria for the actions to be carried out next. In this case, these actions are
+
+`php
+$album
+->setAdminAskEdit($currentAction->getUserId())
+->setTimeAskEdit($currentAction->getTime())
+->setIpAskEdit($currentAction->getIp())
+->setWaitingFor(WaitingFor::ACTIVATE)
+->update();
+```
+
+Note that the object returned by the `where` method is `PicoDatabasePersistenceExtended` not `MagicObject`. Of course, we will no longer be able to use the methods in MagicObject. Of course we understand that this method is used for certain purposes.
 ## Filtering, Ordering and Pagination
 
 MagicObject will filter data according to the given criteria. On the other hand, MagicObject will only retrieve data on the specified page by specifying `limit` and `offset` data in the `select` query.
