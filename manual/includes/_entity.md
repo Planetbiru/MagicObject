@@ -3399,7 +3399,7 @@ WHERE album_id = '1234' AND waiting_for = 0;
 
 The query above will be executed for each record checked by the user.
 
-By creating a query, you can create it easily
+With PicoDatabaseQueryBuilder, we can create it easily as follows:
 
 ```php
 if($inputGet->getUserAction() == UserAction::ACTIVATE)

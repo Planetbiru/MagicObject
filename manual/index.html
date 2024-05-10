@@ -4411,7 +4411,7 @@ catch(Exception $e)
 SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09'
 WHERE album_id = '1234' AND waiting_for = 0;</code></pre>
 <p>The query above will be executed for each record checked by the user.</p>
-<p>By creating a query, you can create it easily</p>
+<p>With PicoDatabaseQueryBuilder, we can create it easily as follows:</p>
 <pre><code class="language-php">if($inputGet-&gt;getUserAction() == UserAction::ACTIVATE)
 {
     if($inputPost-&gt;countableCheckedRowId())
