@@ -4471,6 +4471,7 @@ WHERE album_id = '1234' AND waiting_for = 0;</code></pre>
 <pre><code class="language-sql">UPDATE album
 SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08:09'
 WHERE album_id = '1234' ;</code></pre>
+<p>Of course, if the <code>Album</code> entity has joins with other tables, for example <code>Producer</code>, <code>Client</code> etc., the number of queries that will be executed by the database will be greater and in fact these queries are not needed at all in the application logic.</p>
 <p>In large-scale applications, of course this method will cause problems. Imagine if an application interacted with the database 30 to 40 percent more than it should. Of course the user must provide a database server with greater specifications than necessary. This of course will cause unnecessary costs.</p>
 <p>MagicObject provides a more efficient way for this case by using the <code>where</code> method and specification.</p>
 <p>See the following example:</p>

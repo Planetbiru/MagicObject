@@ -4854,8 +4854,9 @@ SET waiting_for = 3, admin_ask_edit = 'admin', time_ask_edit = '2024-05-10 07:08
 WHERE album_id = '1234' ;
 ```
 
-In large-scale applications, of course this method will cause problems. Imagine if an application interacted with the database 30 to 40 percent more than it should. Of course the user must provide a database server with greater specifications than necessary. This of course will cause unnecessary costs.
+Of course, if the `Album` entity has joins with other tables, for example `Producer`, `Client` etc., the number of queries that will be executed by the database will be greater and in fact these queries are not needed at all in the application logic.
 
+In large-scale applications, of course this method will cause problems. Imagine if an application interacted with the database 30 to 40 percent more than it should. Of course the user must provide a database server with greater specifications than necessary. This of course will cause unnecessary costs.
 
 MagicObject provides a more efficient way for this case by using the `where` method and specification.
 
