@@ -4902,7 +4902,7 @@ $album
 
 will create criteria for the actions to be carried out next. In this case, these actions are
 
-`php
+```php
 $album
 ->setAdminAskEdit($currentAction->getUserId())
 ->setTimeAskEdit($currentAction->getTime())

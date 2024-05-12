@@ -4508,16 +4508,13 @@ WHERE album_id = '1234' ;</code></pre>
 -&gt;addAnd(PicoPredicate::getInstance()-&gt;setWaitingFor(WaitingFor::NOTHING))
 )</code></pre>
 <p>will create criteria for the actions to be carried out next. In this case, these actions are</p>
-<p>`php
-$album
+<pre><code class="language-php">$album
 -&gt;setAdminAskEdit($currentAction-&gt;getUserId())
 -&gt;setTimeAskEdit($currentAction-&gt;getTime())
 -&gt;setIpAskEdit($currentAction-&gt;getIp())
 -&gt;setWaitingFor(WaitingFor::ACTIVATE)
--&gt;update();</p>
-<pre><code>
-
-Note that the object returned by the `where` method is instance of `PicoDatabasePersistenceExtended` not instance of `MagicObject`. Of course, we will no longer be able to use the methods in MagicObject. </code></pre>
+-&gt;update();</code></pre>
+<p>Note that the object returned by the <code>where</code> method is instance of <code>PicoDatabasePersistenceExtended</code> not instance of <code>MagicObject</code>. Of course, we will no longer be able to use the methods in MagicObject. </p>
 </article>
 
 <article class="article" id="part13">
