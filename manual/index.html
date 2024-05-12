@@ -4515,6 +4515,32 @@ WHERE album_id = '1234' ;</code></pre>
 -&gt;setWaitingFor(WaitingFor::ACTIVATE)
 -&gt;update();</code></pre>
 <p>Note that the object returned by the <code>where</code> method is instance of <code>PicoDatabasePersistenceExtended</code> not instance of <code>MagicObject</code>. Of course, we will no longer be able to use the methods in MagicObject. </p>
+<h3>Filter Delete</h3>
+<p>Just like in the case of updates, deletes with more complicated specifications are also possible using the delete filter. Instead of selecting with specifications and then deleting them, deleting with specifications will be more efficient because the application only performs one query to the database.</p>
+<pre><code class="language-sql">DELETE FROM album
+WHERE album_id = '1234' AND waiting_for = 0;</code></pre>
+<pre><code class="language-php">$album
+-&gt;where(PicoSpecification::getInstance()
+-&gt;addAnd(PicoPredicate::getInstance()-&gt;setAlbumId('1234'))
+-&gt;addAnd(PicoPredicate::getInstance()-&gt;setWaitingFor(0))
+)
+-&gt;delete();</code></pre>
+<p>We'll look at an example of delete with a more complex filter that can't be done with the deleteBy method.</p>
+<pre><code class="language-sql">DELETE FROM album
+WHERE album_id = '1234' AND (waiting_for = 0 or waiting_for IS NULL)
+</code></pre>
+<pre><code class="language-php">$specfification = new PicoSpecification();
+$specfification-&gt;addAnd(new PicoPredicate('albumId', '1234'));
+$spec2 = new PicoSpecification();
+$predicate1 = new PicoPredicate('waitingFor', 0);
+$predicate1 = new PicoPredicate('waitingFor', null);
+$spec2-&gt;addOr($predicate1);
+$spec2-&gt;addOr($predicate2);
+$specfification-&gt;addAnd($spec2);
+
+$album = new Album(null, $database);
+$album-&gt;where($specfification)-&gt;delete();
+</code></pre>
 </article>
 
 <article class="article" id="part13">

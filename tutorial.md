@@ -4912,6 +4912,47 @@ $album
 ```
 
 Note that the object returned by the `where` method is instance of `PicoDatabasePersistenceExtended` not instance of `MagicObject`. Of course, we will no longer be able to use the methods in MagicObject. 
+
+### Filter Delete
+
+Just like in the case of updates, deletes with more complicated specifications are also possible using the delete filter. Instead of selecting with specifications and then deleting them, deleting with specifications will be more efficient because the application only performs one query to the database.
+
+```sql
+DELETE FROM album
+WHERE album_id = '1234' AND waiting_for = 0;
+```
+
+```php
+$album
+->where(PicoSpecification::getInstance()
+->addAnd(PicoPredicate::getInstance()->setAlbumId('1234'))
+->addAnd(PicoPredicate::getInstance()->setWaitingFor(0))
+)
+->delete();
+```
+
+We'll look at an example of delete with a more complex filter that can't be done with the deleteBy method.
+
+```sql
+DELETE FROM album
+WHERE album_id = '1234' AND (waiting_for = 0 or waiting_for IS NULL)
+
+```
+
+```php
+$specfification = new PicoSpecification();
+$specfification->addAnd(new PicoPredicate('albumId', '1234'));
+$spec2 = new PicoSpecification();
+$predicate1 = new PicoPredicate('waitingFor', 0);
+$predicate1 = new PicoPredicate('waitingFor', null);
+$spec2->addOr($predicate1);
+$spec2->addOr($predicate2);
+$specfification->addAnd($spec2);
+
+$album = new Album(null, $database);
+$album->where($specfification)->delete();
+
+```
 ## Filtering, Ordering and Pagination
 
 MagicObject will filter data according to the given criteria. On the other hand, MagicObject will only retrieve data on the specified page by specifying `limit` and `offset` data in the `select` query.
