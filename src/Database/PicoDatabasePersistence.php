@@ -178,9 +178,9 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Pageable
      *
-     * @var PicoPagable
+     * @var PicoPageable
      */
-    protected $pagable;
+    protected $pageable;
 
     /**
      * Sortable
@@ -1798,14 +1798,14 @@ class PicoDatabasePersistence // NOSONAR
      * Add pagable to query builder
      *
      * @param PicoDatabaseQueryBuilder $sqlQuery
-     * @param PicoPagable $pagable
+     * @param PicoPageable $pageable
      * @return PicoDatabaseQueryBuilder
      */
-    private function setPagable($sqlQuery, $pagable)
+    private function setPagable($sqlQuery, $pageable)
     {
-        if($pagable instanceof PicoPagable)
+        if($pageable instanceof PicoPageable)
         {
-            $offsetLimit = $pagable->getOffsetLimit();
+            $offsetLimit = $pageable->getOffsetLimit();
             if($offsetLimit != null)
             {
                 $limit = $offsetLimit->getLimit();
@@ -1821,12 +1821,12 @@ class PicoDatabasePersistence // NOSONAR
      * Add sortable to query builder
      *
      * @param PicoDatabaseQueryBuilder $sqlQuery
-     * @param PicoPagable|null $pagable
-     * @param PicoSortable|string|null $pagable
+     * @param PicoPageable|null $pageable
+     * @param PicoSortable|string|null $pageable
      * @param PicoTableInfo $info Table information
      * @return PicoDatabaseQueryBuilder
      */
-    private function setSortable($sqlQuery, $pagable, $sortable, $info)
+    private function setSortable($sqlQuery, $pageable, $sortable, $info)
     {
         if($sortable != null)
         {
@@ -1841,9 +1841,9 @@ class PicoDatabasePersistence // NOSONAR
                 $sqlQuery = $this->setOrdeBy($sqlQuery, $sortOrder);
             }
         } 
-        else if($pagable != null && $pagable instanceof PicoPagable)
+        else if($pageable != null && $pageable instanceof PicoPageable)
         {
-            $sortOrder = $pagable->createOrderBy($info);
+            $sortOrder = $pageable->createOrderBy($info);
             if($this->notNullAndNotEmpty($sortOrder))
             {
                 $sqlQuery->orderBy($sortOrder);
@@ -1853,7 +1853,7 @@ class PicoDatabasePersistence // NOSONAR
                 $sortOrder = $this->createOrderBy($info, $sortable);
                 $sqlQuery = $this->setOrdeBy($sqlQuery, $sortOrder);
             }
-            $offsetLimit = $pagable->getOffsetLimit();
+            $offsetLimit = $pageable->getOffsetLimit();
             if($offsetLimit != null)
             {
                 $limit = $offsetLimit->getLimit();
@@ -1862,9 +1862,9 @@ class PicoDatabasePersistence // NOSONAR
                 $sqlQuery->offset($offset);
             }
         }
-        else if(is_string($pagable))
+        else if(is_string($pageable))
         {
-            $sortOrder = $this->createOrderBy($info, $pagable);
+            $sortOrder = $this->createOrderBy($info, $pageable);
             $sqlQuery = $this->setOrdeBy($sqlQuery, $sortOrder);
         }
         return $sqlQuery;
@@ -1941,12 +1941,12 @@ class PicoDatabasePersistence // NOSONAR
      * Check if need join query
      *
      * @param PicoSpecification $specification
-     * @param PicoPagable|null $pagable
+     * @param PicoPageable|null $pageable
      * @param PicoSortable|string|null $sortable
      * @param PicoTableInfo $info Table information
      * @return boolean
      */
-    protected function isRequireJoin($specification, $pagable, $sortable, $info)
+    protected function isRequireJoin($specification, $pageable, $sortable, $info)
     {
         if($specification->isRequireJoin())
         {
@@ -1972,13 +1972,13 @@ class PicoDatabasePersistence // NOSONAR
                 $result = strpos($sortable, ".") !== false;
             }
         } 
-        else if($pagable != null && $pagable instanceof PicoPagable)
+        else if($pageable != null && $pageable instanceof PicoPageable)
         {
-            $result = strpos($pagable->createOrderBy($info), ".") !== false;
+            $result = strpos($pageable->createOrderBy($info), ".") !== false;
         }
-        else if(is_string($pagable))
+        else if(is_string($pageable))
         {
-            $result = strpos($this->createOrderBy($info, $pagable), ".") !== false;
+            $result = strpos($this->createOrderBy($info, $pageable), ".") !== false;
         }
         return $result;
     }
@@ -1987,19 +1987,19 @@ class PicoDatabasePersistence // NOSONAR
      * Get findAll query
      *
      * @param PicoSpecification $specification
-     * @param PicoPagable|null $pagable
+     * @param PicoPageable|null $pageable
      * @param PicoSortable|string|null $sortable
      * @param PicoTableInfo $info Table information
      * @return PicoDatabaseQueryBuilder
      */
-    public function findAllQuery($specification, $pagable = null, $sortable = null, $info = null)
+    public function findAllQuery($specification, $pageable = null, $sortable = null, $info = null)
     {
         if($info == null)
         {
             $info = $this->getTableInfo();
         }
         $selected = $info->getTableName().".*";
-        return $this->findSpecificQuery($selected, $specification, $pagable, $sortable, $info);
+        return $this->findSpecificQuery($selected, $specification, $pageable, $sortable, $info);
     }
     
     /**
@@ -2007,12 +2007,12 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param string $selected
      * @param PicoSpecification $specification
-     * @param PicoPagable|null $pagable
+     * @param PicoPageable|null $pageable
      * @param PicoSortable|string|null $sortable
      * @param PicoTableInfo $info Table information
      * @return PicoDatabaseQueryBuilder
      */
-    public function findSpecificQuery($selected, $specification, $pagable = null, $sortable = null, $info = null)
+    public function findSpecificQuery($selected, $specification, $pageable = null, $sortable = null, $info = null)
     {
         if($info == null)
         {
@@ -2025,7 +2025,7 @@ class PicoDatabasePersistence // NOSONAR
             ->select($selected)
             ->from($info->getTableName());
         
-        if($this->isRequireJoin($specification, $pagable, $sortable, $info))
+        if($this->isRequireJoin($specification, $pageable, $sortable, $info))
         {
             $sqlQuery = $this->addJoinQuery($sqlQuery, $info);
         }
@@ -2035,14 +2035,14 @@ class PicoDatabasePersistence // NOSONAR
             $sqlQuery = $this->setSpecification($sqlQuery, $specification, $info);
         }
         
-        if($pagable != null)
+        if($pageable != null)
         {
-            $sqlQuery = $this->setPagable($sqlQuery, $pagable);      
+            $sqlQuery = $this->setPagable($sqlQuery, $pageable);      
         }
         
-        if($pagable != null || $sortable != null)
+        if($pageable != null || $sortable != null)
         {
-            $sqlQuery = $this->setSortable($sqlQuery, $pagable, $sortable, $info);        
+            $sqlQuery = $this->setSortable($sqlQuery, $pageable, $sortable, $info);        
         }
         return $queryBuilder;
     }
@@ -2051,16 +2051,16 @@ class PicoDatabasePersistence // NOSONAR
      * Get all record from database wihout filter
      *
      * @param PicoSpecification $specification
-     * @param PicoPagable|null $pagable
+     * @param PicoPageable|null $pageable
      * @param PicoSortable|string|null $sortable
      * @return array|null
      * @throws EntityException|EmptyResultException
      */
-    public function findAll($specification, $pagable = null, $sortable = null)
+    public function findAll($specification, $pageable = null, $sortable = null)
     {
         $info = $this->getTableInfo();     
         $selected = $info->getTableName().".*";
-        return $this->findSpecific($selected, $specification, $pagable, $sortable);
+        return $this->findSpecific($selected, $specification, $pageable, $sortable);
     }
 
     /**
@@ -2068,17 +2068,17 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param string $selected
      * @param PicoSpecification $specification
-     * @param PicoPagable|null $pagable
+     * @param PicoPageable|null $pageable
      * @param PicoSortable|string|null $sortable
      * @return array|null
      * @throws EntityException|EmptyResultException
      */
-    public function findSpecific($selected, $specification, $pagable = null, $sortable = null)
+    public function findSpecific($selected, $specification, $pageable = null, $sortable = null)
     {
         $data = null;
         $result = array();
         $info = $this->getTableInfo();
-        $sqlQuery = $this->findSpecificQuery($selected, $specification, $pagable, $sortable, $info);
+        $sqlQuery = $this->findSpecificQuery($selected, $specification, $pageable, $sortable, $info);
     
         try
         {
@@ -2111,12 +2111,12 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param string $propertyName
      * @param mixed $propertyValue
-     * @param PicoPagable $pagable
+     * @param PicoPageable $pageable
      * @param PicoSortable|string $sortable
      * @return array|null
      * @throws PDOException|NoDatabaseConnectionException|EntityException
      */
-    public function findBy($propertyName, $propertyValue, $pagable = null, $sortable = null)
+    public function findBy($propertyName, $propertyValue, $pageable = null, $sortable = null)
     {
         $info = $this->getTableInfo();
         $where = $this->createWhereFromArgs($info, $propertyName, $propertyValue);
@@ -2132,13 +2132,13 @@ class PicoDatabasePersistence // NOSONAR
             ->select($info->getTableName().".*")
             ->from($info->getTableName())
             ->where($where);
-        if($pagable != null)
+        if($pageable != null)
         {
-            $sqlQuery = $this->setPagable($sqlQuery, $pagable);        
+            $sqlQuery = $this->setPagable($sqlQuery, $pageable);        
         }
-        if($pagable != null || $sortable != null)
+        if($pageable != null || $sortable != null)
         {
-            $sqlQuery = $this->setSortable($sqlQuery, $pagable, $sortable, $info);        
+            $sqlQuery = $this->setSortable($sqlQuery, $pageable, $sortable, $info);        
         }
         try
         {
@@ -2774,7 +2774,7 @@ class PicoDatabasePersistence // NOSONAR
         $queryBuilder = new PicoDatabaseQueryBuilder($this->database);
         $info = $this->getTableInfo();
         $where = $this->getWhere($info, $queryBuilder);
-        return $this->_select($info, $queryBuilder, $where, $this->specification, $this->pagable, $this->sortable);
+        return $this->_select($info, $queryBuilder, $where, $this->specification, $this->pageable, $this->sortable);
     }
 
     /**
@@ -2788,7 +2788,7 @@ class PicoDatabasePersistence // NOSONAR
         $queryBuilder = new PicoDatabaseQueryBuilder($this->database);
         $info = $this->getTableInfo();
         $where = $this->getWhere($info, $queryBuilder);
-        return $this->_selectAll($info, $queryBuilder, $where, $this->specification, $this->pagable, $this->sortable);
+        return $this->_selectAll($info, $queryBuilder, $where, $this->specification, $this->pageable, $this->sortable);
     }
 
     /**
@@ -2814,7 +2814,7 @@ class PicoDatabasePersistence // NOSONAR
      * @return mixed
      * @throws EntityException|InvalidFilterException|EmptyResultException
      */
-    private function _select($info = null, $queryBuilder = null, $where = null, $specification = null, $pagable = null, $sortable = null)
+    private function _select($info = null, $queryBuilder = null, $where = null, $specification = null, $pageable = null, $sortable = null)
     {
         if($queryBuilder == null)
         {
@@ -2838,7 +2838,7 @@ class PicoDatabasePersistence // NOSONAR
             ->select($info->getTableName().".*")
             ->from($info->getTableName());
 
-        if($this->isRequireJoin($specification, $pagable, $sortable, $info))
+        if($this->isRequireJoin($specification, $pageable, $sortable, $info))
         {
             $sqlQuery = $this->addJoinQuery($sqlQuery, $info);
         }
@@ -2874,7 +2874,7 @@ class PicoDatabasePersistence // NOSONAR
      * @return mixed
      * @throws EntityException|InvalidFilterException|EmptyResultException
      */
-    private function _selectAll($info = null, $queryBuilder = null, $where = null, $specification = null, $pagable = null, $sortable = null)
+    private function _selectAll($info = null, $queryBuilder = null, $where = null, $specification = null, $pageable = null, $sortable = null)
     {
         $result = array();
         if($queryBuilder == null)
@@ -2899,7 +2899,7 @@ class PicoDatabasePersistence // NOSONAR
             ->select($info->getTableName().".*")
             ->from($info->getTableName());
 
-        if($this->isRequireJoin($specification, $pagable, $sortable, $info))
+        if($this->isRequireJoin($specification, $pageable, $sortable, $info))
         {
             $sqlQuery = $this->addJoinQuery($sqlQuery, $info);
         }

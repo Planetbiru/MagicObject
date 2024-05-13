@@ -2577,10 +2577,10 @@ else
     $sortable = new PicoSortable($pagination-&gt;getOrderBy($orderMap, $defaultOrderBy), $pagination-&gt;getOrderType($defaultOrderType));
 }
 
-$pagable = new PicoPagable(new PicoPage($pagination-&gt;getCurrentPage(), $pagination-&gt;getPageSize()), $sortable);
+$pageable = new PicoPageable(new PicoPage($pagination-&gt;getCurrentPage(), $pagination-&gt;getPageSize()), $sortable);
 
 $songEntity = new Song(null, $database);
-$pageData = $songEntity-&gt;findAll($spesification, $pagable, $sortable, true);
+$pageData = $songEntity-&gt;findAll($spesification, $pageable, $sortable, true);
 
 $rowData = $pageData-&gt;getResult();
 
@@ -4375,8 +4375,8 @@ try
         //echo $alb."\r\n\r\n";
     }
 
-    $pagable = new PicoPagable(new PicoPage(1, 20));
-    echo $album-&gt;findAllQuery($spesification, $pagable, $sortable, true);
+    $pageable = new PicoPageable(new PicoPage(1, 20));
+    echo $album-&gt;findAllQuery($spesification, $pageable, $sortable, true);
     /**
      *  select album.*
         from album
@@ -4394,7 +4394,7 @@ try
     echo "\r\n-----\r\n";
     echo $sortable;
     echo "\r\n-----\r\n";
-    echo $pagable;
+    echo $pageable;
 }
 catch(Exception $e)
 {
@@ -5050,7 +5050,7 @@ class EntitySong extends MagicObject
 }</code></pre>
 <p>Filtering and pagination</p>
 <pre><code class="language-php">&lt;?php
-use MagicObject\Database\PicoPagable;
+use MagicObject\Database\PicoPageable;
 use MagicObject\Database\PicoPage;
 use MagicObject\Database\PicoSort;
 use MagicObject\Database\PicoSortable;
@@ -5202,10 +5202,10 @@ else
 $sortable = new PicoSortable($pagination-&gt;getOrderBy($orderMap, $defaultOrderBy), $pagination-&gt;getOrderType($defaultOrderType));
 }
 
-$pagable = new PicoPagable(new PicoPage($pagination-&gt;getCurrentPage(), $pagination-&gt;getPageSize()), $sortable);
+$pageable = new PicoPageable(new PicoPage($pagination-&gt;getCurrentPage(), $pagination-&gt;getPageSize()), $sortable);
 
 $songEntity = new EntitySong(null, $database);
-$rowData = $songEntity-&gt;findAll($spesification, $pagable, $sortable, true);
+$rowData = $songEntity-&gt;findAll($spesification, $pageable, $sortable, true);
 
 $result = $rowData-&gt;getResult();
 

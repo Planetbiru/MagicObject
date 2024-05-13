@@ -1481,10 +1481,10 @@ else
 	$sortable = new PicoSortable($pagination->getOrderBy($orderMap, $defaultOrderBy), $pagination->getOrderType($defaultOrderType));
 }
 
-$pagable = new PicoPagable(new PicoPage($pagination->getCurrentPage(), $pagination->getPageSize()), $sortable);
+$pageable = new PicoPageable(new PicoPage($pagination->getCurrentPage(), $pagination->getPageSize()), $sortable);
 
 $songEntity = new Song(null, $database);
-$pageData = $songEntity->findAll($spesification, $pagable, $sortable, true);
+$pageData = $songEntity->findAll($spesification, $pageable, $sortable, true);
 
 $rowData = $pageData->getResult();
 
@@ -3349,8 +3349,8 @@ try
 		//echo $alb."\r\n\r\n";
 	}
 	
-	$pagable = new PicoPagable(new PicoPage(1, 20));
-	echo $album->findAllQuery($spesification, $pagable, $sortable, true);
+	$pageable = new PicoPageable(new PicoPage(1, 20));
+	echo $album->findAllQuery($spesification, $pageable, $sortable, true);
 	/**
 	 * 	select album.*
 		from album
@@ -3368,7 +3368,7 @@ try
 	echo "\r\n-----\r\n";
 	echo $sortable;
 	echo "\r\n-----\r\n";
-	echo $pagable;
+	echo $pageable;
 }
 catch(Exception $e)
 {
