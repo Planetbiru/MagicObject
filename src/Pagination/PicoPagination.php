@@ -1,6 +1,7 @@
 <?php
 namespace MagicObject\Pagination;
 
+use MagicObject\Database\PicoSort;
 use MagicObject\Exceptions\NullPointerException;
 use MagicObject\Util\PicoStringUtil;
 
@@ -145,11 +146,11 @@ class PicoPagination
         $orderType = $this->orderType;
         if(strcasecmp($orderType, 'desc') == 0)
         {
-            $orderType = 'desc';
+            $orderType = PicoSort::ORDER_TYPE_DESC;
         }
         else if(strcasecmp($orderType, 'asc') == 0)
         {
-            $orderType = 'asc';
+            $orderType = PicoSort::ORDER_TYPE_ASC;
         }
         else
         {

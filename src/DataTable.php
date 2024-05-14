@@ -29,7 +29,7 @@ class DataTable extends SetterGetter
     const ANNOTATION_LANGUAGE = "Language";
     const KEY_PROPERTY_TYPE = "property_type";
     const KEY_PROPERTY_NAME = "property_name";
-    
+
     const KEY_NAME = "name";
     const KEY_CLASS = "class";
     const KEY_VALUE = "value";
