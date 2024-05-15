@@ -199,7 +199,7 @@ class PicoPagination
      * @param integer $page
      * @return string
      */
-    public function getPageUrl($page)
+    public static function getPageUrl($page)
     {
         $urls = array();
         $params = array();
