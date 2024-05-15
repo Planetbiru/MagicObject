@@ -603,8 +603,29 @@ Attributes:
 
 Allowed value:
 
-- `SNAKE_CASE` all column will be snace case when `__toString()` or `dumpYaml()` method called.
-- `CAMEL_CASE` all column will be camel case when `__toString()` or `dumpYaml()` method called.
+- `SNAKE_CASE` all column will be snace case when `__toString()` method called.
+- `CAMEL_CASE` all column will be camel case when `__toString()` method called.
+
+2. `prettify`
+
+Allowed value:
+
+- `true` JSON string will be prettified
+- `false` JSON string will not be prettified
+
+Default value: `false`
+
+**@Yaml**
+
+`@JSON` is parameter to inform how the object will be serialized.
+
+Attributes:
+`property-naming-strategy`
+
+Allowed value:
+
+- `SNAKE_CASE` all column will be snace case when `dumpYaml()` method called.
+- `CAMEL_CASE` all column will be camel case when `dumpYaml()` method called.
 
 ### Property Parameters
 
@@ -715,7 +736,7 @@ $secretYaml = $generator->dumpYaml(null, 4, 0); // will print secret yaml
 file_put_content("secret.yaml", $secretYaml); // will dump to file secret.yaml
 ```
 
-Do not use standard encryption keys when creating or using SecretObjects. Always use your own lock. The encryption key must be generated using a callback function. Do not enter it as an object property or constant.
+Do not use standard encryption keys when creating or using SecretObjects. Always use your own key. The encryption key must be generated using a callback function. Do not enter it as an object property or constant.
 
 ```php
 
@@ -1596,7 +1617,7 @@ Allowed value:
 
 Default value: `CAMEL_CASE`
 
-1. `prettify`
+2. `prettify`
 
 Allowed value:
 

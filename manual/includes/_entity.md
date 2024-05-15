@@ -208,7 +208,7 @@ Allowed value:
 
 Default value: `CAMEL_CASE`
 
-1. `prettify`
+2. `prettify`
 
 Allowed value:
 
