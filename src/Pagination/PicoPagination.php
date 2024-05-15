@@ -192,4 +192,33 @@ class PicoPagination
     {
         return $this->offset;
     }
+    
+    /**
+     * Get page URL
+     *
+     * @param integer $page
+     * @return string
+     */
+    public function getPageUrl($page)
+    {
+        $urls = array();
+        $params = array();
+        $urls[] = $_SERVER['PHP_SELF'];
+        
+        $urlParameters = isset($_GET) ? $_GET : null;
+        
+        if($urlParameters != null && is_array($urlParameters))
+        {
+            $urlParameters['page'] = $page;
+            foreach($urlParameters as $paramName=>$paramValue)
+            {
+                $params[] = urlencode($paramName)."=".urlencode($paramValue);
+            }
+        }
+        if(!empty($params))
+        {
+            $urls[] = implode("&", $params);
+        }
+        return implode("?", $urls);
+    }
 }
