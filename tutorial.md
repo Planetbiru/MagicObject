@@ -158,8 +158,8 @@ Attributes:
 
 Allowed value:
 
-- `SNAKE_CASE` all column will be snace case when `__toString()` method called.
-- `CAMEL_CASE` all column will be camel case when `__toString()` method called.
+- `SNAKE_CASE` all properties will be snake case when `__toString()` method called.
+- `CAMEL_CASE` all properties will be camel case when `__toString()` method called.
 
 Default value: `CAMEL_CASE`
 
@@ -181,8 +181,8 @@ Attributes:
 
 Allowed value:
 
-- `SNAKE_CASE` all column will be snace case when `dumpYaml()` method called.
-- `CAMEL_CASE` all column will be camel case when `dumpYaml()` method called.
+- `SNAKE_CASE` all properties will be snake case when `dumpYaml()` method called.
+- `CAMEL_CASE` all properties will be camel case when `dumpYaml()` method called.
 
 Default value: `CAMEL_CASE`
 
@@ -603,8 +603,8 @@ Attributes:
 
 Allowed value:
 
-- `SNAKE_CASE` all column will be snace case when `__toString()` method called.
-- `CAMEL_CASE` all column will be camel case when `__toString()` method called.
+- `SNAKE_CASE` all properties will be snake case when `__toString()` method called.
+- `CAMEL_CASE` all properties will be camel case when `__toString()` method called.
 
 2. `prettify`
 
@@ -624,8 +624,8 @@ Attributes:
 
 Allowed value:
 
-- `SNAKE_CASE` all column will be snace case when `dumpYaml()` method called.
-- `CAMEL_CASE` all column will be camel case when `dumpYaml()` method called.
+- `SNAKE_CASE` all properties will be snake case when `dumpYaml()` method called.
+- `CAMEL_CASE` all properties will be camel case when `dumpYaml()` method called.
 
 ### Property Parameters
 
@@ -1612,8 +1612,8 @@ Attributes:
 
 Allowed value:
 
-- `SNAKE_CASE` all column will be snace case when `__toString()` method called.
-- `CAMEL_CASE` all column will be camel case when `__toString()` method called.
+- `SNAKE_CASE` all properties will be snake case when `__toString()` method called.
+- `CAMEL_CASE` all properties will be camel case when `__toString()` method called.
 
 Default value: `CAMEL_CASE`
 
