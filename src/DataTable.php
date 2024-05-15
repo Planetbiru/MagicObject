@@ -138,7 +138,7 @@ class DataTable extends SetterGetter
      * Add language
      *
      * @param string $code
-     * @param stdClass|array $reference
+     * @param object|stdClass|array $reference
      * @param boolean $use
      * @return self
      */
