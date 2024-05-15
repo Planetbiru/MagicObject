@@ -158,12 +158,12 @@ Attributes:
 
 Allowed value:
 
-- `SNAKE_CASE` all column will be snace case when `__toString()` or `dumpYaml()` method called.
-- `CAMEL_CASE` all column will be camel case when `__toString()` or `dumpYaml()` method called.
+- `SNAKE_CASE` all column will be snace case when `__toString()` method called.
+- `CAMEL_CASE` all column will be camel case when `__toString()` method called.
 
 Default value: `CAMEL_CASE`
 
-1. `prettify`
+2. `prettify`
 
 Allowed value:
 
@@ -171,6 +171,21 @@ Allowed value:
 - `false` JSON string will not be prettified
 
 Default value: `false`
+
+**@Yaml**
+
+`@Yaml` is parameter to inform how the object will be serialized.
+
+Attributes:
+1. `property-naming-strategy`
+
+Allowed value:
+
+- `SNAKE_CASE` all column will be snace case when `dumpYaml()` method called.
+- `CAMEL_CASE` all column will be camel case when `dumpYaml()` method called.
+
+Default value: `CAMEL_CASE`
+
 ## Multilevel Object
 
 ```php
@@ -1576,8 +1591,8 @@ Attributes:
 
 Allowed value:
 
-- `SNAKE_CASE` all column will be snace case when `__toString()` or `dumpYaml()` method called.
-- `CAMEL_CASE` all column will be camel case when `__toString()` or `dumpYaml()` method called.
+- `SNAKE_CASE` all column will be snace case when `__toString()` method called.
+- `CAMEL_CASE` all column will be camel case when `__toString()` method called.
 
 Default value: `CAMEL_CASE`
 
@@ -1677,8 +1692,11 @@ Attributes:
 
 Attributes:
 - `name`
+- `referenceColumnName`
 
-`name` is column name of the join table.
+`name` is column name of the master table.
+
+`referenceColumnName` is column name of the join table. If `referenceColumnName` is not exists, MagicObject will use value on `name` as reference column name.
 
 **@Label** is parameter to store label of the column.
 
