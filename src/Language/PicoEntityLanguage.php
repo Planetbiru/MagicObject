@@ -81,7 +81,6 @@ class PicoEntityLanguage
     public function loadEntityLabel($entity)
     {
         $this->_entityClassName = get_class($entity);
-
         $reflexClass = new PicoAnnotationParser($this->_entityClassName);
         $lang = $reflexClass->getFirstParameter(self::ANNOTATION_LANGUAGE);
         if($lang != null)
@@ -103,21 +102,19 @@ class PicoEntityLanguage
         $defualtLanguage = array();
         foreach($propertyList as $prop)
         {
-            $reflexProp = new PicoAnnotationParser($this->_entityClassName, $prop, PicoAnnotationParser::PROPERTY);
-                
+            $reflexProp = new PicoAnnotationParser($this->_entityClassName, $prop, PicoAnnotationParser::PROPERTY);            
             if($reflexProp != null)
             {
-                $parameters = $reflexProp->getParametersAsObject();
-      
+                $parameters = $reflexProp->getParametersAsObject();    
                 if($parameters->issetLabel())
                 {
-                    $label = $this->label($reflexProp, $parameters, $prop);
-                    $defualtLanguage[$prop] = $label;
+                    $property = PicoStringUtil::camelize($prop);
+                    $label = $this->label($reflexProp, $parameters, PicoStringUtil::camelToTitle($property));
+                    $defualtLanguage[$property] = $label;
                 }
             }
         }
-        $this->addLanguage($this->_entityLanguage, $defualtLanguage, true);
-        
+        $this->addLanguage($this->_entityLanguage, $defualtLanguage, true);   
         return $this;
     }
     
