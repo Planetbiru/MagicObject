@@ -160,10 +160,12 @@ Allowed value:
 
 - `SNAKE_CASE` all properties will be snake case when `__toString()` method called.
 - `CAMEL_CASE` all properties will be camel case when `__toString()` method called.
+- `UPPER_CAMEL_CASE` all properties will be camel case with capitalize first character when `__toString()` method called.
+
 
 Default value: `CAMEL_CASE`
 
-2. `prettify`
+1. `prettify`
 
 Allowed value:
 
@@ -183,6 +185,7 @@ Allowed value:
 
 - `SNAKE_CASE` all properties will be snake case when `dumpYaml()` method called.
 - `CAMEL_CASE` all properties will be camel case when `dumpYaml()` method called.
+- `UPPER_CAMEL_CASE` all properties will be camel case with capitalize first character when `__toString()` method called.
 
 Default value: `CAMEL_CASE`
 
@@ -605,6 +608,7 @@ Allowed value:
 
 - `SNAKE_CASE` all properties will be snake case when `__toString()` method called.
 - `CAMEL_CASE` all properties will be camel case when `__toString()` method called.
+- `UPPER_CAMEL_CASE` all properties will be camel case with capitalize first character when `__toString()` method called.
 
 2. `prettify`
 
@@ -626,6 +630,7 @@ Allowed value:
 
 - `SNAKE_CASE` all properties will be snake case when `dumpYaml()` method called.
 - `CAMEL_CASE` all properties will be camel case when `dumpYaml()` method called.
+- `UPPER_CAMEL_CASE` all properties will be camel case with capitalize first character when `__toString()` method called.
 
 ### Property Parameters
 
@@ -1614,6 +1619,7 @@ Allowed value:
 
 - `SNAKE_CASE` all properties will be snake case when `__toString()` method called.
 - `CAMEL_CASE` all properties will be camel case when `__toString()` method called.
+- `UPPER_CAMEL_CASE` all properties will be camel case with capitalize first character when `__toString()` method called.
 
 Default value: `CAMEL_CASE`
 
