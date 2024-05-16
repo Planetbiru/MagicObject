@@ -140,6 +140,7 @@ prop1:
     prop3: ${user_image.width}
 ';
 
+/*
 $secret2 = new ConfigSecret2(null, function(){
     return bin2hex("This is your secure key for Scrt");
 });
@@ -147,3 +148,63 @@ $secret2 = new ConfigSecret2(null, function(){
 $secret2->loadYamlString($yaml2, false, true, true);
 
 echo $secret2->dumpYaml(null, 4);
+
+*/
+$yaml4 ='
+application:
+    id: your-application
+    name: Your Application Name
+    application_base_namespace: YourApplication
+    application_base_directory: /var/www/html/your-application
+    entity_base_namespace: YourApplication\Data\Entity
+    entity_base_directory: /var/www/html/your-application/inc.lib/classes
+    entity_base_namespace: YourApplication\\Data\Entity
+    base_include_directory: inc.app
+    base_asset_directory: lib.assets
+    composer:
+        base_directory: inc.lib
+        psr0: true
+        psr4: false
+        psr0_base_directory:
+            -
+                namespace: YourApplication
+                directory: classes
+        psr4_base_directory: null
+    magic_object:
+        version: 1.6
+entity_info:
+    active: active
+    draft: draft
+    waiting_for: waiting_for
+    admin_create: admin_create
+    admin_edit: admin_edit
+    admin_ask_edit: admin_ask_edit
+    time_create: time_create
+    time_edit: time_edit
+    time_ask_edit: time_ask_edit
+    ip_create: ip_create
+    ip_edit: ip_edit
+    ip_ask_edit: ip_ask_edit
+    sort_order: sort_order
+    approval_id: approval_id
+    approval_note: approval_note
+    approval_status: approval_status
+sessions:
+    name: APPBUILDER
+    lifetime: 14400
+    save_handler: files
+    save_path: ""
+current_action:
+    user_function: currentAction->getUserId()
+    time_function: currentAction->getTime()
+    ip_function: currentAction->getIp()
+global_variable_database: database
+';
+
+$secret2 = new ConfigSecret2(null, function(){
+  return bin2hex("This is your secure key for Scrt");
+});
+
+$secret2->loadYamlString($yaml4, false, true, true);
+echo $secret2;
+echo($secret2->getApplication()->getComposer()->get('psr0_base_directory')[0]);
