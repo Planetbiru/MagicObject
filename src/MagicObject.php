@@ -132,6 +132,10 @@ class MagicObject extends stdClass // NOSONAR
         }
         if($data != null)
         {
+            if(is_array($data))
+            {
+                $data = PicoArrayUtil::camelize($data);
+            }
             $this->loadData($data);
         }
         if($database != null)
