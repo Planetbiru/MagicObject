@@ -22,6 +22,7 @@ use MagicObject\Exceptions\NoRecordFoundException;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\ClassUtil\PicoObjectParser;
 use MagicObject\Util\Database\PicoDatabaseUtil;
+use MagicObject\Util\PicoArrayUtil;
 use MagicObject\Util\PicoEnvironmentVariable;
 use MagicObject\Util\PicoStringUtil;
 use MagicObject\Util\PicoYamlUtil;
@@ -182,6 +183,7 @@ class MagicObject extends stdClass // NOSONAR
         {
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
+        $data = PicoArrayUtil::camelize($data);
         $this->loadData($data);
         return $this;
     }
@@ -202,6 +204,7 @@ class MagicObject extends stdClass // NOSONAR
         {
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
+        $data = PicoArrayUtil::camelize($data);
         $this->loadData($data);
         return $this;
     }
@@ -223,6 +226,7 @@ class MagicObject extends stdClass // NOSONAR
         {
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
+        $data = PicoArrayUtil::camelize($data);
         if($asObject)
         {
             // convert to object
@@ -267,6 +271,7 @@ class MagicObject extends stdClass // NOSONAR
         {
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
+        $data = PicoArrayUtil::camelize($data);
         if($asObject)
         {
             // convert to object
@@ -305,10 +310,12 @@ class MagicObject extends stdClass // NOSONAR
     public function loadJsonString($rawData, $systemEnv = false, $asObject = false, $recursive = false)
     {
         $data = json_decode($rawData);
+        $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
         if($systemEnv)
         {
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
+        $data = PicoArrayUtil::camelize($data);
         if($asObject)
         {
             // convert to object
@@ -347,10 +354,12 @@ class MagicObject extends stdClass // NOSONAR
     public function loadJsonFile($path, $systemEnv = false, $asObject = false, $recursive = false)
     {
         $data = json_decode(file_get_contents($path));
+        $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
         if($systemEnv)
         {
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
+        $data = PicoArrayUtil::camelize($data);
         if($asObject)
         {
             // convert to object

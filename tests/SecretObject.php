@@ -206,5 +206,5 @@ $secret2 = new ConfigSecret2(null, function(){
 });
 
 $secret2->loadYamlString($yaml4, false, true, true);
-echo $secret2;
-echo($secret2->getApplication()->getComposer()->get('psr0_base_directory')[0]);
+echo $secret2->getApplication()->getComposer()->getPsr0BaseDirectory()[0];
+//var_dump($secret2->getApplication()->getComposer());

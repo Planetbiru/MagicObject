@@ -8,6 +8,7 @@ use MagicObject\Util\PicoEnvironmentVariable;
 use MagicObject\Secret\PicoSecret;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\ClassUtil\PicoSecretParser;
+use MagicObject\Util\PicoArrayUtil;
 use MagicObject\Util\PicoGenericObject;
 use MagicObject\Util\PicoStringUtil;
 use MagicObject\Util\PicoYamlUtil;
@@ -505,6 +506,7 @@ class SecretObject extends stdClass //NOSONAR
         {
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
+        $data = PicoArrayUtil::camelize($data);
         $this->loadData($data);
         return $this;
     }
@@ -525,6 +527,7 @@ class SecretObject extends stdClass //NOSONAR
         {
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
+        $data = PicoArrayUtil::camelize($data);
         $this->loadData($data);
         return $this;
     }
@@ -546,6 +549,8 @@ class SecretObject extends stdClass //NOSONAR
         {
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
+        $data = PicoArrayUtil::camelize($data);
+        print_r($data);
         if($asObject)
         {
             // convert to object
@@ -590,6 +595,7 @@ class SecretObject extends stdClass //NOSONAR
         {
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
+        $data = PicoArrayUtil::camelize($data);
         if($asObject)
         {
             // convert to object
@@ -633,6 +639,7 @@ class SecretObject extends stdClass //NOSONAR
         {
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
+        $data = PicoArrayUtil::camelize($data);
         if($asObject)
         {
             // convert to object
@@ -676,6 +683,7 @@ class SecretObject extends stdClass //NOSONAR
         {
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
+        $data = PicoArrayUtil::camelize($data);
         if($asObject)
         {
             // convert to object
