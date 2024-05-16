@@ -7,25 +7,43 @@ class PicoArrayUtil
     /**
      * Camelize array keys
      *
-     * @param array $array
+     * @param array|object|stdClass $array
      * @return array
      */
-    public static function camelize($array)
+    public static function camelize($input)
     {
-        self::_camelize($array);
-        return $array;
+        if(is_array($input))
+        {
+            self::_camelize($input);
+            return $input;
+        }
+        else
+        {
+            $array = json_decode(json_encode($input), true);
+            self::_camelize($array);
+            return $array;
+        }
     }
     
     /**
      * Snakeize array keys
      *
-     * @param array $array
+     * @param array|object|stdClass $array
      * @return array
      */
-    public static function snakeize($array)
+    public static function snakeize($input)
     {
-        self::_snakeize($array);
-        return $array;
+        if(is_array($input))
+        {
+            self::_snakeize($input);
+            return $input;
+        }
+        else
+        {
+            $array = json_decode(json_encode($input), true);
+            self::_snakeize($array);
+            return $array;
+        }
     }
     /**
      * Camelize array keys

@@ -550,30 +550,16 @@ class SecretObject extends stdClass //NOSONAR
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
         $data = PicoArrayUtil::camelize($data);
-        if($asObject)
+
+        if($recursive)
         {
-            // convert to object
-            $obj = json_decode(json_encode((object) $data), false);
-            if($recursive)
-            {
-                $this->loadData(PicoSecretParser::parseRecursiveObject($obj));
-            }
-            else
-            {
-                $this->loadData($obj);
-            }
+            $this->loadData(PicoSecretParser::parseRecursiveObject($data));
         }
         else
         {
-            if($recursive)
-            {
-                $this->loadData(PicoSecretParser::parseRecursiveObject($data));
-            }
-            else
-            {
-                $this->loadData($data);
-            }
+            $this->loadData($data);
         }
+        
         return $this;
     }
     
@@ -595,30 +581,16 @@ class SecretObject extends stdClass //NOSONAR
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
         $data = PicoArrayUtil::camelize($data);
-        if($asObject)
+
+        if($recursive)
         {
-            // convert to object
-            $obj = json_decode(json_encode((object) $data), false);
-            if($recursive)
-            {
-                $this->loadData(PicoSecretParser::parseRecursiveObject($obj));
-            }
-            else
-            {
-                $this->loadData($obj);
-            }
+            $this->loadData(PicoSecretParser::parseRecursiveObject($data));
         }
         else
         {
-            if($recursive)
-            {
-                $this->loadData(PicoSecretParser::parseRecursiveObject($data));
-            }
-            else
-            {
-                $this->loadData($data);
-            }
+            $this->loadData($data);
         }
+    
         return $this;
     }
 
@@ -639,30 +611,16 @@ class SecretObject extends stdClass //NOSONAR
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
         $data = PicoArrayUtil::camelize($data);
-        if($asObject)
+
+        if($recursive)
         {
-            // convert to object
-            $obj = json_decode(json_encode((object) $data), false);
-            if($recursive)
-            {
-                $this->loadData(PicoSecretParser::parseRecursiveObject($obj));
-            }
-            else
-            {
-                $this->loadData($obj);
-            }
+            $this->loadData(PicoSecretParser::parseRecursiveObject($data));
         }
         else
         {
-            if($recursive)
-            {
-                $this->loadData(PicoSecretParser::parseRecursiveObject($data));
-            }
-            else
-            {
-                $this->loadData($data);
-            }
+            $this->loadData($data);
         }
+    
         return $this;
     }
     
@@ -683,30 +641,16 @@ class SecretObject extends stdClass //NOSONAR
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
         $data = PicoArrayUtil::camelize($data);
-        if($asObject)
+
+        if($recursive)
         {
-            // convert to object
-            $obj = json_decode(json_encode((object) $data), false);
-            if($recursive)
-            {
-                $this->loadData(PicoSecretParser::parseRecursiveObject($obj));
-            }
-            else
-            {
-                $this->loadData($obj);
-            }
+            $this->loadData(PicoSecretParser::parseRecursiveObject($data));
         }
         else
         {
-            if($recursive)
-            {
-                $this->loadData(PicoSecretParser::parseRecursiveObject($data));
-            }
-            else
-            {
-                $this->loadData($data);
-            }
+            $this->loadData($data);
         }
+        
         return $this;
     }
 
