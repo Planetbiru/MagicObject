@@ -14,6 +14,27 @@ class PicoEnvironmentVariable
      */
     public static function replaceValueAll($values, $collection, $recursive = false)
     {
+        if(is_array($values))
+        {
+            return self::replaceValueAllArray($values, $collection, $recursive);
+        }
+        else if(is_object($values))
+        {
+            return self::replaceValueAllObject($values, $collection, $recursive);
+        }
+        return $values;
+    }
+    
+    /**
+     * Replace all values from other properties as array
+     *
+     * @param array $values
+     * @param array $collection
+     * @param boolean $recursive
+     * @return array
+     */
+    public static function replaceValueAllArray($values, $collection, $recursive = false)
+    {
         foreach($values as $key=>$value)
         {
             if($recursive)
@@ -32,6 +53,38 @@ class PicoEnvironmentVariable
                 $value = self::replaceWithOtherProperties($value, $collection);
             }
             $values[$key] = $value;
+        }
+        return $values;
+    }
+    
+    /**
+     * Replace all values from other properties as object
+     *
+     * @param stdClass|object $values
+     * @param array $collection
+     * @param boolean $recursive
+     * @return array
+     */
+    public static function replaceValueAllObject($values, $collection, $recursive = false)
+    {
+        foreach($values as $key=>$value)
+        {
+            if($recursive)
+            {
+                if(is_object($value) || is_array($value))
+                {
+                    $value = self::replaceValueAll($value, $collection, $recursive);
+                }
+                else
+                {
+                    $value = self::replaceWithOtherProperties($value, $collection);
+                }
+            }
+            else
+            {
+                $value = self::replaceWithOtherProperties($value, $collection);
+            }
+            $values->{$key} = $value;
         }
         return $values;
     }
