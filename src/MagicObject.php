@@ -1311,6 +1311,32 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
+     * Find one record if exists by primary key value. 
+     * 
+     * @param array $params
+     * @return self
+     */
+    public function findIfExists($params)
+    {
+        try
+        {
+            return $this->find($params);
+        }
+        catch(NoRecordFoundException $e)
+        {
+            return $this;
+        }
+        catch(NoDatabaseConnectionException $e)
+        {
+            throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
+        }
+        catch(Exception $e)
+        {
+            throw $e;
+        }
+    }
+
+    /**
      * Find by params
      *
      * @param string $method
@@ -1426,6 +1452,34 @@ class MagicObject extends stdClass // NOSONAR
         else
         {
             throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
+        }
+    }
+
+    /**
+     * Find one if existsby params
+     *
+     * @param string $method
+     * @param mixed $params
+     * @param PicoSortable|string $sortable
+     * @return object
+     */
+    private function findOneIfExistsBy($method, $params, $sortable = null)
+    {
+        try
+        {
+            return $this->findOneBy($method, $params, $sortable);
+        }
+        catch(NoRecordFoundException $e)
+        {
+            return $this;
+        }
+        catch(NoDatabaseConnectionException $e)
+        {
+            throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
+        }
+        catch(Exception $e)
+        {
+            throw $e;
         }
     }
     
@@ -1606,6 +1660,13 @@ class MagicObject extends stdClass // NOSONAR
             $parameters = PicoDatabaseUtil::valuesFromParams($params);
             return $this->findOneBy($var, $parameters, $sortable);
         }
+        else if (strncasecmp($method, "findOneIfExistsBy", 17) === 0) {
+            $var = lcfirst(substr($method, 17));
+            $sortable = PicoDatabaseUtil::sortableFromParams($params);
+            // filter param
+            $parameters = PicoDatabaseUtil::valuesFromParams($params);
+            return $this->findOneIfExistsBy($var, $parameters, $sortable);
+        }
         else if (strncasecmp($method, "deleteOneBy", 11) === 0) {
             $var = lcfirst(substr($method, 11));
             // filter param
@@ -1616,9 +1677,17 @@ class MagicObject extends stdClass // NOSONAR
             $var = lcfirst(substr($method, 11));
             return $this->findOneBy($var, $params, PicoDatabasePersistence::ORDER_ASC);
         }
+        else if (strncasecmp($method, "findFirstIfExistsBy", 19) === 0) {
+            $var = lcfirst(substr($method, 19));
+            return $this->findOneIfExistsBy($var, $params, PicoDatabasePersistence::ORDER_ASC);
+        }
         else if (strncasecmp($method, "findLastBy", 10) === 0) {
             $var = lcfirst(substr($method, 10));
             return $this->findOneBy($var, $params, PicoDatabasePersistence::ORDER_DESC);
+        }
+        else if (strncasecmp($method, "findLastIfExistsBy", 18) === 0) {
+            $var = lcfirst(substr($method, 18));
+            return $this->findOneIfExistsBy($var, $params, PicoDatabasePersistence::ORDER_DESC);
         }
         else if (strncasecmp($method, "findBy", 6) === 0) {
             $var = lcfirst(substr($method, 6));
