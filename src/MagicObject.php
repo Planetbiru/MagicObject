@@ -177,10 +177,10 @@ class MagicObject extends stdClass // NOSONAR
     {
         // Parse without sections
         $data = parse_ini_string($rawData);
+        $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
         if($systemEnv)
         {
-            $env = new PicoEnvironmentVariable();
-            $data = $env->replaceSysEnvAll($data, true);
+            $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
         $this->loadData($data);
         return $this;
@@ -197,10 +197,10 @@ class MagicObject extends stdClass // NOSONAR
     {
         // Parse without sections
         $data = parse_ini_file($path);
+        $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
         if($systemEnv)
         {
-            $env = new PicoEnvironmentVariable();
-            $data = $env->replaceSysEnvAll($data, true);
+            $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
         $this->loadData($data);
         return $this;
@@ -218,10 +218,10 @@ class MagicObject extends stdClass // NOSONAR
     public function loadYamlString($rawData, $systemEnv = false, $asObject = false, $recursive = false)
     {
         $data = Yaml::parse($rawData);
+        $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
         if($systemEnv)
         {
-            $env = new PicoEnvironmentVariable();
-            $data = $env->replaceSysEnvAll($data, true);
+            $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
         if($asObject)
         {
@@ -262,10 +262,10 @@ class MagicObject extends stdClass // NOSONAR
     public function loadYamlFile($path, $systemEnv = false, $asObject = false, $recursive = false)
     {
         $data = Yaml::parseFile($path);
+        $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
         if($systemEnv)
         {
-            $env = new PicoEnvironmentVariable();
-            $data = $env->replaceSysEnvAll($data, true);
+            $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
         if($asObject)
         {
@@ -307,8 +307,7 @@ class MagicObject extends stdClass // NOSONAR
         $data = json_decode($rawData);
         if($systemEnv)
         {
-            $env = new PicoEnvironmentVariable();
-            $data = $env->replaceSysEnvAll($data, true);
+            $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
         if($asObject)
         {
@@ -350,8 +349,7 @@ class MagicObject extends stdClass // NOSONAR
         $data = json_decode(file_get_contents($path));
         if($systemEnv)
         {
-            $env = new PicoEnvironmentVariable();
-            $data = $env->replaceSysEnvAll($data, true);
+            $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
         if($asObject)
         {

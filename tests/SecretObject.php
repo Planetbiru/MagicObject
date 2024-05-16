@@ -52,7 +52,7 @@ $secret1 = new ConfigSecret1(null, function(){
     return bin2hex("This is your secure key for Scrt");
 });
 
-$yaml1 = "
+$yaml1 = '
 result_per_page: 20
 song_base_url: http//domain.tld/songs
 song_base_path: /var/www/songs
@@ -87,15 +87,20 @@ session:
   save_handler: files
   save_path: /tmp/session
 vocal_guide_instrument: piano
-";
+prop1:
+  prop2:
+    prop3: $(database.time_zone}
+';
+/*
 $secret1->loadYamlString(
 $yaml1,
 false, true, true
 );
 
 echo $secret1->dumpYaml(null, 4);
+*/
 
-$yaml2 = "
+$yaml2 = '
 database:
     time_zone_system: UEMGavyLkN7rFAmoXBsdDKwuGC+zFttpPTAaqeMH0XUEZaAMKbyvykNtfqT+F8FcAbQCUHV66qjYfjArzgrHlA==
     default_charset: dawURojqYqXdvt2YdZ+kWsq47bcA7FKWnEfGHPMxJr3KUyKxAC0VrH8Khfqcm5iIzQFHE/1wQbdgxJNiffkayw==
@@ -119,7 +124,7 @@ song_base_path: /var/www/songs
 song_draft_base_url: http//domain.tld/songs-draft
 song_draft_base_path: /var/www/songs-draft
 proxy_provider: cloudflare
-app_name: 'Music Production Manager'
+app_name: "Music Production Manager"
 user_image:
     width: 512
     height: 512
@@ -130,10 +135,15 @@ song_image:
     width: 512
     height: 512
 vocal_guide_instrument: piano
-";
+prop1:
+  prop2:
+    prop3: ${user_image.width}
+';
 
 $secret2 = new ConfigSecret2(null, function(){
     return bin2hex("This is your secure key for Scrt");
-});$secret2->loadYamlString($yaml2, false, true, true);
+});
+
+$secret2->loadYamlString($yaml2, false, true, true);
 
 echo $secret2->dumpYaml(null, 4);
