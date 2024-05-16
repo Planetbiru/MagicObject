@@ -550,7 +550,6 @@ class SecretObject extends stdClass //NOSONAR
             $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
         }
         $data = PicoArrayUtil::camelize($data);
-        print_r($data);
         if($asObject)
         {
             // convert to object
