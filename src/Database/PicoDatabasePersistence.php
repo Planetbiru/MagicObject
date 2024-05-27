@@ -1482,6 +1482,7 @@ class PicoDatabasePersistence // NOSONAR
             $field = $entityField->getField();
             $entityName = $entityField->getEntity();
             $parentName = $entityField->getParentField();
+            $functionFormat = $entityField->getFunctionFormat();
             
             if($entityName != null)
             {
