@@ -1447,18 +1447,28 @@ class PicoDatabasePersistence // NOSONAR
             }
             if(strlen(implode($normalSplit, $arr2[$idx])) + strlen($value) < $max)
             {
-                $arr2[$idx][] = $value;
+                if(!empty(trim($value)))
+                {
+                    $arr2[$idx][] = $value;
+                }
             }
             else
             {
                 $idx++;
-                $arr2[$idx][] = $value;
+                if(!empty(trim($value)))
+                {
+                    $arr2[$idx][] = $value;
+                }
             }         
         }
         $arr3 = array();
         foreach($arr2 as $value)
         {
-            $arr3[] = implode($normalSplit, $value);
+            $value2 = implode($normalSplit, $value);
+            if(!empty(trim($value2)))
+            {
+                $arr3[] = $value2;
+            }
         }
         return implode($maxSplit, $arr3);
     }
