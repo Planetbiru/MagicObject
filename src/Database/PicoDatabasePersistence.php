@@ -1967,10 +1967,27 @@ class PicoDatabasePersistence // NOSONAR
      */
     protected function isRequireJoin($specification, $pageable, $sortable, $info)
     {
-        if($specification->isRequireJoin())
+        if($this->isRequireJoinFromSpecification($specification))
         {
             return true;
         }
+        if($this->isRequireJoinFromPagableAndSortable($pageable, $sortable, $info))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Require join from sortable
+     *
+     * @param PicoPageable|null $pageable
+     * @param PicoSortable|string|null $sortable
+     * @param PicoTableInfo $info Table information
+     * @return boolean
+     */
+    private function isRequireJoinFromPagableAndSortable($pageable, $sortable, $info)
+    {
         $result = false;
         if($sortable != null)
         {
@@ -2000,6 +2017,17 @@ class PicoDatabasePersistence // NOSONAR
             $result = strpos($this->createOrderBy($info, $pageable), ".") !== false;
         }
         return $result;
+    }
+
+    /**
+     * Require join from specification
+     *
+     * @param PicoSpecification $specification
+     * @return boolean
+     */
+    private function isRequireJoinFromSpecification($specification)
+    {
+        return isset($specification) && $specification instanceof PicoSpecification && $specification->isRequireJoin();
     }
 
     /**
