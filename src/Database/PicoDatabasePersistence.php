@@ -1510,13 +1510,15 @@ class PicoDatabasePersistence // NOSONAR
             {
                 // get from map
                 $column = $this->getJoinSource($parentName, $masterTable, $entityTable, $maps[$field], $entityTable == $masterTable);
-                $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
+                $columnFinal = $this->formatColumn($column, $functionFormat);
+                $arr[] = $spec->getFilterLogic() . " " . $columnFinal . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
             }
             else if(in_array($field, $columnNames))
             {
                 // get colum name
                 $column = $this->getJoinSource($parentName, $masterTable, $entityTable, $field, $entityTable == $masterTable);
-                $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
+                $columnFinal = $this->formatColumn($column, $functionFormat);
+                $arr[] = $spec->getFilterLogic() . " " . $columnFinal . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
             }
         }
         else if($spec instanceof PicoSpecification)
@@ -1525,6 +1527,22 @@ class PicoDatabasePersistence // NOSONAR
             $arr[] = $spec->getParentFilterLogic() . " (" . $this->createWhereFromSpecification($sqlQuery, $spec, $info) . ")";
         }
         return $arr;
+    }
+
+    /**
+     * Format column
+     *
+     * @param string $column
+     * @param string $format
+     * @return string
+     */
+    private function formatColumn($column, $format)
+    {
+        if($format == null || strpos($format, "%s") === false)
+        {
+            return $column;
+        }
+        return sprintf($format, $column);
     }
     
     /**
