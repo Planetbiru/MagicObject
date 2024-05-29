@@ -1731,16 +1731,32 @@ class PicoDatabasePersistence // NOSONAR
     {
         return isset($primaryKeys) && !empty($primaryKeys) && count($primaryKeys) <= count($propertyValues);
     }
+
+    /**
+     * Convert scalar to array
+     *
+     * @param mixed $propertyValues
+     * @return array
+     */
+    private function toArray($propertyValues)
+    {
+        if(!is_array($propertyValues))
+        {
+            return array($propertyValues);
+        }
+        return $propertyValues;
+    }
     
     /**
      * Find one record by primary key value
      *
-     * @param array $propertyValues
+     * @param mixed $propertyValues
      * @return object
      * @throws EntityException|InvalidFilterException|EmptyResultException
      */
     public function find($propertyValues)
     {
+        $propertyValues = $this->toArray($propertyValues);
         $data = null;
         $info = $this->getTableInfo();
         

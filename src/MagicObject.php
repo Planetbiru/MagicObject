@@ -1289,7 +1289,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Find one record by primary key value. 
      * 
-     * @param array $params
+     * @param mixed $params
      * @return self
      */
     public function find($params)
