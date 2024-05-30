@@ -1836,7 +1836,7 @@ class PicoDatabasePersistence // NOSONAR
      * Add specification to query builder
      *
      * @param PicoDatabaseQueryBuilder $sqlQuery Query builder
-     * @param PicoSpecification|array $specification
+     * @param PicoSpecification|array $specification Specification
      * @param PicoTableInfo $info Table information
      * @return PicoDatabaseQueryBuilder
      */
