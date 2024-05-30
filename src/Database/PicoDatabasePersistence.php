@@ -1437,6 +1437,29 @@ class PicoDatabasePersistence // NOSONAR
         {
             return implode($normalSplit, $arr);
         }
+        $arr2 = $this->splitChunk($arr, $normalSplit, $max);
+        $arr3 = array();
+        foreach($arr2 as $value)
+        {
+            $value2 = implode($normalSplit, $value);
+            if(!empty(trim($value2)))
+            {
+                $arr3[] = $value2;
+            }
+        }
+        return implode($maxSplit, $arr3);
+    }
+    
+    /**
+     * Split chunk query
+     *
+     * @param array $arr
+     * @param string $normalSplit
+     * @param integer $max
+     * @return array
+     */
+    private function splitChunk($arr, $normalSplit, $max)
+    {
         $arr2 = array();
         $idx = 0;
         foreach($arr as $value)
@@ -1461,16 +1484,7 @@ class PicoDatabasePersistence // NOSONAR
                 }
             }         
         }
-        $arr3 = array();
-        foreach($arr2 as $value)
-        {
-            $value2 = implode($normalSplit, $value);
-            if(!empty(trim($value2)))
-            {
-                $arr3[] = $value2;
-            }
-        }
-        return implode($maxSplit, $arr3);
+        return $arr2;
     }
     
     /**
