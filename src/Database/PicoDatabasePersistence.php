@@ -1490,10 +1490,10 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Add where statemenet
      *
-     * @param array $arr
-     * @param array $masterColumnMaps
+     * @param array $arr Array values
+     * @param array $masterColumnMaps Master column  map
      * @param PicoDatabaseQueryBuilder $sqlQuery Query builder
-     * @param PicoSpecification $spec
+     * @param PicoSpecification $spec Specification
      * @param PicoTableInfo $info Table information
      * @return array
      */
@@ -1535,14 +1535,14 @@ class PicoDatabasePersistence // NOSONAR
                 // get from map
                 $column = $this->getJoinSource($parentName, $masterTable, $entityTable, $maps[$field], $entityTable == $masterTable);
                 $columnFinal = $this->formatColumn($column, $functionFormat);
-                $arr[] = $spec->getFilterLogic() . " " . $columnFinal . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
+                $arr[] = $spec->getFilterLogic() . " " . $columnFinal . " " . $spec->getComparation()->getComparison() . " " . $this->contructComparisonValue($spec, $sqlQuery);
             }
             else if(in_array($field, $columnNames))
             {
                 // get colum name
                 $column = $this->getJoinSource($parentName, $masterTable, $entityTable, $field, $entityTable == $masterTable);
                 $columnFinal = $this->formatColumn($column, $functionFormat);
-                $arr[] = $spec->getFilterLogic() . " " . $columnFinal . " " . $spec->getComparation()->getComparison() . " " . $sqlQuery->escapeValue($spec->getValue());
+                $arr[] = $spec->getFilterLogic() . " " . $columnFinal . " " . $spec->getComparation()->getComparison() . " " . $this->contructComparisonValue($spec, $sqlQuery);
             }
         }
         else if($spec instanceof PicoSpecification)
@@ -1551,6 +1551,30 @@ class PicoDatabasePersistence // NOSONAR
             $arr[] = $spec->getParentFilterLogic() . " (" . $this->createWhereFromSpecification($sqlQuery, $spec, $info) . ")";
         }
         return $arr;
+    }
+    
+    /**
+     * Construct comarison value
+     *
+     * @param PicoPredicate $predicate Predicate
+     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder
+     * @return string
+     */
+    private function contructComparisonValue($predicate, $sqlQuery)
+    {
+        if(is_array($predicate->getValue()))
+        {
+            $list = array();
+            foreach($predicate->getValue() as $value)
+            {
+                $list[] = $sqlQuery->escapeValue($value);
+            }
+            return "(".implode(", ", $list).")";
+        }
+        else
+        {
+            return $sqlQuery->escapeValue($predicate->getValue());
+        } 
     }
 
     /**
