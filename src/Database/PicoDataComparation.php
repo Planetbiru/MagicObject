@@ -7,6 +7,8 @@ class PicoDataComparation
     const EQUALS = "=";
     const NOT_EQUALS = "!=";
     const IN = "in";
+    const IS = "is";
+    const IS_NOT = "is not";
     const LIKE = "like";
     const NOT_LIKE = "not like";
     const LESS_THAN = "<";
@@ -151,7 +153,7 @@ class PicoDataComparation
      */
     private function _equals()
     {
-        return ($this->value === null || $this->type == self::TYPE_NULL) ? "is" : self::EQUALS;
+        return ($this->value === null || $this->type == self::TYPE_NULL) ? self::IS : self::EQUALS;
     }
 
     /**
@@ -161,7 +163,7 @@ class PicoDataComparation
      */
     private function _notEquals()
     {
-        return ($this->value === null || $this->type == self::TYPE_NULL) ? "is not" : self::NOT_EQUALS;
+        return ($this->value === null || $this->type == self::TYPE_NULL) ? self::IS_NOT : self::NOT_EQUALS;
     }
 
     /**
