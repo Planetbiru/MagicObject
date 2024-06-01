@@ -3255,20 +3255,16 @@ class PicoDatabasePersistence // NOSONAR
     public function whereWithSpecification($specification)
     {
         $persist = new PicoDatabasePersistenceExtended($this->database, $this->object);
-        
-        
         $persist->specification = $specification;
 
         $sqlQuery = new PicoDatabaseQueryBuilder($this->database);
-        $info = $persist->getTableInfo();
-        
+        $info = $persist->getTableInfo();  
         try
         {
             if($persist->isRequireJoin($specification, null, null, $info))
             {
                 $persist->addJoinQuery($sqlQuery, $info);
             }
-
             $persist->whereStr = $persist->createWhereFromSpecification($sqlQuery, $specification, $info);
             $persist->whereIsDefinedFirst = true;
         }

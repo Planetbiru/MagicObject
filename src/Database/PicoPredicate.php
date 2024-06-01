@@ -314,6 +314,11 @@ class PicoPredicate //NOSONAR
         return new PicoPredicate();
     }
     
+    /**
+     * Magic method to debug object
+     *
+     * @return string
+     */
     public function __toString()
     {
         return json_encode(array(
