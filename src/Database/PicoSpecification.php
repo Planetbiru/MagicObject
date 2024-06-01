@@ -2,6 +2,7 @@
 
 namespace MagicObject\Database;
 
+use MagicObject\Request\PicoRequestBase;
 use MagicObject\Util\Database\PicoDatabaseUtil;
 
 class PicoSpecification
