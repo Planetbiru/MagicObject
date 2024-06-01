@@ -63,7 +63,7 @@ class PicoDatabaseDump
     /**
      * Get entity table info 
      *
-     * @param MagicObject $entity
+     * @param MagicObject $entity ENtity
      * @return PicoTableInfo|null
      */
     public function getTableInfo($entity)
@@ -81,9 +81,9 @@ class PicoDatabaseDump
     /**
      * Update query alter table add column
      *
-     * @param string $query
-     * @param string $lastColumn
-     * @param string $databaseType
+     * @param string $query Query string
+     * @param string $lastColumn Last column
+     * @param string $databaseType Database type
      * @return string
      */
     public function updateQueryAlterTableAddColumn($query, $lastColumn, $databaseType)
@@ -98,8 +98,8 @@ class PicoDatabaseDump
     /**
      * Update query alter table nullable
      *
-     * @param string $query
-     * @param array $entityColumn
+     * @param string $query Query string
+     * @param array $entityColumn Entity name
      * @return string
      */
     public function updateQueryAlterTableNullable($query, $entityColumn)
@@ -114,8 +114,8 @@ class PicoDatabaseDump
     /**
      * Update query alter table default value
      *
-     * @param string $query
-     * @param array $entityColumn
+     * @param string $query Query string
+     * @param array $entityColumn Entity column
      * @return string
      */
     public function updateQueryAlterTableDefaultValue($query, $entityColumn)
@@ -130,7 +130,7 @@ class PicoDatabaseDump
     /**
      * Create query ALTER TABLE ADD COLUMN
      *
-     * @param MagicObject $entity
+     * @param MagicObject $entity Entity
      * @return string[]
      */
     public function createAlterTableAdd($entity)
@@ -219,7 +219,4 @@ class PicoDatabaseDump
             return "";
         }
     }
-    
-    
-    
 }
