@@ -2590,7 +2590,7 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param string $classNameJoin Join class name
      * @param string $joinKey Join key
-     * @return MagicObject
+     * @return MagicObject|null
      */
     private function getJoinData($classNameJoin, $joinKey)
     {
@@ -2601,11 +2601,14 @@ class PicoDatabasePersistence // NOSONAR
             $obj->find(array($joinKey)); 
             $this->joinCache[$classNameJoin][$joinKey] = $obj;
         }
+        else if(isset($this->joinCache[$classNameJoin]) && $this->joinCache[$classNameJoin][$joinKey])
+        {
+            return $this->joinCache[$classNameJoin][$joinKey];
+        }
         else
         {
-            $obj = $this->joinCache[$classNameJoin][$joinKey];
+            return null;
         }
-        return $obj;
     }
     
     /**
@@ -2629,28 +2632,38 @@ class PicoDatabasePersistence // NOSONAR
                 {
                     $this->prepareJoinCache($classNameJoin);
                     $obj = $this->getJoinData($classNameJoin, $joinKey);
-                    if(is_array($data))
-                    {                       
-                        $data[$propName] = $obj;
-                    }
-                    else
+                    if($obj != null)
                     {
-                        $data->{$propName} = $obj;
+                        $data = $this->addProperty($data, $propName, $obj);
                     }
                 }
                 catch(Exception $e)
                 {
                     // set null
-                    if(is_array($data))
-                    {
-                        $data[$propName] = null;
-                    }
-                    else
-                    {
-                        $data->{$propName} = null;
-                    }
+                    $data = $this->addProperty($data, $propName, null);
                 }
             }
+        }
+        return $data;
+    }
+
+    /**
+     * Add property
+     *
+     * @param array|object $data
+     * @param string $propName
+     * @param mixed $value
+     * @return array|object
+     */
+    private function addProperty($data, $propName, $value)
+    {
+        if(is_array($data))
+        {                       
+            $data[$propName] = $value;
+        }
+        else
+        {
+            $data->{$propName} = $value;
         }
         return $data;
     }
