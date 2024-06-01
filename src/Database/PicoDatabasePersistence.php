@@ -2598,8 +2598,9 @@ class PicoDatabasePersistence // NOSONAR
         {              
             $className = $this->getRealClassName($classNameJoin);
             $obj = new $className(null, $this->database);
-            $obj->find(array($joinKey)); 
+            $obj->find($joinKey); 
             $this->joinCache[$classNameJoin][$joinKey] = $obj;
+            return $obj;
         }
         else if(isset($this->joinCache[$classNameJoin]) && isset($this->joinCache[$classNameJoin][$joinKey]))
         {
