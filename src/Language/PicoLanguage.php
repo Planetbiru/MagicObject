@@ -125,7 +125,7 @@ class PicoLanguage
     {
         if (strncasecmp($method, "get", 3) === 0) {
             $var = lcfirst(substr($method, 3));
-            return isset($this->$var) ? $this->$var : null;
+            return $this->get($var);
         }
         else if (strncasecmp($method, "equals", 6) === 0) {
             $var = lcfirst(substr($method, 6));
