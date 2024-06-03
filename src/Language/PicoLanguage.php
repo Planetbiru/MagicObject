@@ -64,18 +64,6 @@ class PicoLanguage
     }
     
     /**
-     * Check if property value is set
-     *
-     * @param string $propertyName
-     * @return boolean
-     */
-    public function isset($propertyName)
-    {
-        $var = PicoStringUtil::camelize($propertyName);
-        return isset($this->$var);
-    }
-    
-    /**
      * Stores datas in the property.
      * Example: $instance->foo = 'bar';
      * 
