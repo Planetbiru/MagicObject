@@ -39,11 +39,16 @@ class PicoRequestBase extends stdClass //NOSONAR
     /**
      * Load data to object
      * @param mixed $data
+     * @param boolean $tolower
      */
-    public function loadData($data)
+    public function loadData($data, $tolower = false)
     {
         if (is_array($data) || is_object($data)) {
             foreach ($data as $key => $value) {
+                if($tolower)
+                {
+                    $key = strtolower($key);
+                }
                 $key2 = PicoStringUtil::camelize(str_replace("-", "_", $key));
                 $this->{$key2} = $value;
             }
