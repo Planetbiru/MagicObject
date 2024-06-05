@@ -37,7 +37,7 @@ class  InputRequest extends PicoRequestBase {
      * @param array $data
      * @return self
      */
-    public function loadData($data)
+    public function loadData($data, $tolower = false)
     {
         if($this->_recursive)
         {
