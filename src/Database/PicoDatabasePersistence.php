@@ -1786,6 +1786,23 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
+     * Get all table columns on entity 
+     *
+     * @param PicoTableInfo $info Table information
+     * @return string
+     */
+    private function getAllColumns($info)
+    {
+        $columns = $info->getColumns();
+        $result = array();
+        foreach($columns as $column)
+        {
+            $result[] = $info->getTableName().".".$column['name'];
+        }
+        return $this->joinStringArray($result, self::MAX_LINE_LENGTH, self::COMMA, self::COMMA_RETURN);
+    }
+    
+    /**
      * Find one record by primary key value
      *
      * @param mixed $propertyValue Property values
