@@ -2126,8 +2126,7 @@ class PicoDatabasePersistence // NOSONAR
         {
             $info = $this->getTableInfo();
         }
-        $selected = $this->getAllColumns($info);
-        return $this->findSpecificQuery($selected, $specification, $pageable, $sortable, $info);
+        return $this->findSpecificQuery($this->getAllColumns($info), $specification, $pageable, $sortable, $info);
     }
     
     /**
@@ -2187,8 +2186,7 @@ class PicoDatabasePersistence // NOSONAR
     public function findAll($specification, $pageable = null, $sortable = null)
     {
         $info = $this->getTableInfo();     
-        $selected = $this->getAllColumns($info);
-        return $this->findSpecific($selected, $specification, $pageable, $sortable);
+        return $this->findSpecific($this->getAllColumns($info), $specification, $pageable, $sortable);
     }
 
     /**
