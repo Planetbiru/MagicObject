@@ -203,7 +203,8 @@ class PicoPagination
     {
         $urls = array();
         $params = array();
-        $urls[] = $_SERVER['PHP_SELF'];
+        $paths = explode("?", $_SERVER['REQUEST_URI']);
+        $urls[] = $paths[0];
         
         $urlParameters = isset($_GET) ? $_GET : array();
         
