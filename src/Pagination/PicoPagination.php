@@ -205,15 +205,19 @@ class PicoPagination
         $params = array();
         $urls[] = $_SERVER['PHP_SELF'];
         
-        $urlParameters = isset($_GET) ? $_GET : null;
+        $urlParameters = isset($_GET) ? $_GET : array();
         
-        if($urlParameters != null && is_array($urlParameters))
+        foreach($urlParameters as $paramName=>$paramValue)
         {
-            $urlParameters['page'] = $page;
-            foreach($urlParameters as $paramName=>$paramValue)
+            if($paramName == 'page')
             {
-                $params[] = urlencode($paramName)."=".urlencode($paramValue);
+                $paramValue = $page;
             }
+            $params[] = urlencode($paramName)."=".urlencode($paramValue);
+        }
+        if(empty($params))
+        {
+            $params[] = 'page='.$page;
         }
         if(!empty($params))
         {
