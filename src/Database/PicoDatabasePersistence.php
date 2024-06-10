@@ -1784,23 +1784,6 @@ class PicoDatabasePersistence // NOSONAR
         }
         return $propertyValues;
     }
-
-    /**
-     * Get all table columns on entity 
-     *
-     * @param PicoTableInfo $info Table information
-     * @return string
-     */
-    private function getAllColumns($info)
-    {
-        $columns = $info->getColumns();
-        $result = array();
-        foreach($columns as $column)
-        {
-            $result[] = $info->getTableName().".".$column['name'];
-        }
-        return $this->joinStringArray($result, self::MAX_LINE_LENGTH, self::COMMA, self::COMMA_RETURN);
-    }
     
     /**
      * Find one record by primary key value
@@ -1842,7 +1825,7 @@ class PicoDatabasePersistence // NOSONAR
             }
             $sqlQuery = $queryBuilder
                 ->newQuery()
-                ->select($this->getAllColumns($info))
+                ->select($info->getTableName().".*")
                 ->from($info->getTableName())
                 ->where($where)
                 ->limit(1)
@@ -2126,7 +2109,7 @@ class PicoDatabasePersistence // NOSONAR
         {
             $info = $this->getTableInfo();
         }
-        $selected = $this->getAllColumns($info);
+        $selected = $info->getTableName().".*";
         return $this->findSpecificQuery($selected, $specification, $pageable, $sortable, $info);
     }
     
@@ -2187,7 +2170,7 @@ class PicoDatabasePersistence // NOSONAR
     public function findAll($specification, $pageable = null, $sortable = null)
     {
         $info = $this->getTableInfo();     
-        $selected = $this->getAllColumns($info);
+        $selected = $info->getTableName().".*";
         return $this->findSpecific($selected, $specification, $pageable, $sortable);
     }
 
@@ -2257,7 +2240,7 @@ class PicoDatabasePersistence // NOSONAR
         $result = array();
         $sqlQuery = $queryBuilder
             ->newQuery()
-            ->select($this->getAllColumns($info))
+            ->select($info->getTableName().".*")
             ->from($info->getTableName())
             ->where($where);
         if($pageable != null)
@@ -2323,15 +2306,15 @@ class PicoDatabasePersistence // NOSONAR
         $queryBuilder = new PicoDatabaseQueryBuilder($this->database);
         $sqlQuery = $queryBuilder
             ->newQuery()
-            ->select($this->getAllColumns($info))
-            ->from($info->getTableName());
-        
-        if($specification->isRequireJoin())
-        {
-            $sqlQuery = $this->addJoinQuery($sqlQuery, $info);
-        }       
+            ->select($info->getTableName().".*")
+            ->from($info->getTableName());  
+               
         if($specification != null)
         {
+            if($this->isRequireJoinFromSpecification($specification))
+            {
+                $sqlQuery = $this->addJoinQuery($sqlQuery, $info);
+            }
             $sqlQuery = $this->setSpecification($sqlQuery, $specification, $info);
         }
         try
@@ -2456,7 +2439,7 @@ class PicoDatabasePersistence // NOSONAR
         $data = null;
         $sqlQuery = $queryBuilder
             ->newQuery()
-            ->select($this->getAllColumns($info))
+            ->select($info->getTableName().".*")
             ->from($info->getTableName())
             ->where($where);
         $sqlQuery = $this->setSortable($sqlQuery, null, $sortable, $info);  
@@ -2977,7 +2960,7 @@ class PicoDatabasePersistence // NOSONAR
         $data = null;
         $sqlQuery = $queryBuilder
             ->newQuery()
-            ->select($this->getAllColumns($info))
+            ->select($info->getTableName().".*")
             ->from($info->getTableName());
 
         if($this->isRequireJoin($specification, $pageable, $sortable, $info))
@@ -3038,7 +3021,7 @@ class PicoDatabasePersistence // NOSONAR
         $data = null;
         $sqlQuery = $queryBuilder
             ->newQuery()
-            ->select($this->getAllColumns($info))
+            ->select($info->getTableName().".*")
             ->from($info->getTableName());
 
         if($this->isRequireJoin($specification, $pageable, $sortable, $info))
@@ -3100,7 +3083,7 @@ class PicoDatabasePersistence // NOSONAR
         }
         return $queryBuilder
             ->newQuery()
-            ->select($this->getAllColumns($info))
+            ->select($info->getTableName().".*")
             ->from($info->getTableName())
             ->where($where);
     }
