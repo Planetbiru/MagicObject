@@ -167,7 +167,6 @@ class PicoDatabasePersistence // NOSONAR
      */
     protected $whereStr = null;
 
-
     /**
      * Specification
      *
