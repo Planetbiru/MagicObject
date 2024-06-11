@@ -201,6 +201,7 @@ class PicoSpecification
      */
     private function getWhere($specifications)
     {
+        $arr = array();
         foreach($specifications as $spec)
         {
             if($spec instanceof PicoPredicate)
