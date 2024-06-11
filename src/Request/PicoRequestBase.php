@@ -83,7 +83,20 @@ class PicoRequestBase extends stdClass //NOSONAR
         if(isset($params) && !empty($params))
         {
             $filter = $params[0];
-            return $this->filterValue($value, $filter);
+            if(!isset($params[1]))
+            {
+                $params[1] = false;
+            }
+            if(!isset($params[2]))
+            {
+                $params[2] = false;
+            }
+            if(!isset($params[3]))
+            {
+                $params[3] = false;
+            }
+
+            return $this->filterValue($value, $filter, $params[1], $params[2], $params[3]);
         }
         else
         {
@@ -198,11 +211,16 @@ class PicoRequestBase extends stdClass //NOSONAR
      * @param integer $filter
      * @param boolean $escapeSQL
      * @param boolean $nullIfEmpty
+     * @param boolean $requireScalar
      * @return mixed|null
      */
-    public function filterValue($val, $filter = PicoFilterConstant::FILTER_DEFAULT, $escapeSQL = false, $nullIfEmpty = false)
+    public function filterValue($val, $filter = PicoFilterConstant::FILTER_DEFAULT, $escapeSQL = false, $nullIfEmpty = false, $requireScalar = false)
     {
         $ret = null;
+        if($requireScalar && !is_scalar($val))
+        {
+            return null;
+        }
         if(is_scalar($val))
         {
             return $this->filterValueSingle($val, $filter, $escapeSQL, $nullIfEmpty);
