@@ -17,12 +17,15 @@ class PicoRequestBase extends stdClass //NOSONAR
      * @var array
      */
     private $classParams = array();
+    protected $forceScalar = false;
 
     /**
      * Constructor
+     * @param boolean $forceScalar
      */
-    public function __construct()
+    public function __construct($forceScalar = false)
     {
+        $this->forceScalar = $forceScalar;
         $jsonAnnot = new PicoAnnotationParser(get_class($this));
         $params = $jsonAnnot->getParameters();
         foreach($params as $paramName=>$paramValue)
@@ -217,8 +220,10 @@ class PicoRequestBase extends stdClass //NOSONAR
     public function filterValue($val, $filter = PicoFilterConstant::FILTER_DEFAULT, $escapeSQL = false, $nullIfEmpty = false, $requireScalar = false)
     {
         $ret = null;
-        if($requireScalar && !is_scalar($val))
+        if(($requireScalar || $this->forceScalar) && !is_scalar($val))
         {
+            // If application require scalar but user give non-scalar, MagicObject will return null
+            // It mean that application will not process invalid input type
             return null;
         }
         if(is_scalar($val))
