@@ -207,32 +207,21 @@ class PicoPagination
         $urls[] = $paths[0];
         
         $urlParameters = isset($_GET) ? $_GET : array();
-        
         foreach($urlParameters as $paramName=>$paramValue)
         {
             if($paramName == 'page')
             {
-                $paramValue = $page;
+                $urlParameters[$paramName] = $page;
             }
-            $params[] = urlencode($paramName)."=".self::arrayUrlencode($paramValue);
         }
-        if(empty($params))
+        if(!isset($urlParameters['page']))
         {
-            $params[] = 'page='.$page;
+            $urlParameters['page'] = $page;
         }
-        if(!empty($params))
+        if(!empty($urlParameters))
         {
-            $urls[] = implode("&", $params);
+            $urls[] = http_build_query($urlParameters);
         }
         return implode("?", $urls);
-    }
-    
-    public static function arrayUrlencode($data) {
-        if (is_array($data)) {
-            foreach($data as $k => $v) $data_temp[urlencode($k)] = self::arrayUrlencode($v);
-            return $data_temp;
-        } else {
-            return urlencode($data);
-        }
     }
 }
