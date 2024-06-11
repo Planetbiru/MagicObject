@@ -214,7 +214,7 @@ class PicoPagination
             {
                 $paramValue = $page;
             }
-            $params[] = urlencode($paramName)."=".urlencode($paramValue);
+            $params[] = urlencode($paramName)."=".self::arrayUrlencode($paramValue);
         }
         if(empty($params))
         {
@@ -225,5 +225,14 @@ class PicoPagination
             $urls[] = implode("&", $params);
         }
         return implode("?", $urls);
+    }
+    
+    public static function arrayUrlencode($data) {
+        if (is_array($data)) {
+            foreach($data as $k => $v) $data_temp[urlencode($k)] = self::arrayUrlencode($v);
+            return $data_temp;
+        } else {
+            return urlencode($data);
+        }
     }
 }
