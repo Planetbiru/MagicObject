@@ -42,13 +42,19 @@ class PicoPagination
      */
     private $orderType = "";
 
-    public function __construct($pageSize = 20)
+    public function __construct($pageSize = 20, $orderby = 'orderby', $ordertype = 'ordertype')
     {
         $this->pageSize = $pageSize;
         $this->currentPage = $this->parseCurrentPage();
         $this->offset = $this->pageSize * ($this->currentPage - 1);
-        $this->orderBy = @$_GET['orderby'];
-        $this->orderType = @$_GET['ordertype'];
+        if(isset($_GET[$orderby]))
+        {
+            $this->orderBy = @$_GET[$orderby];
+        }
+        if(isset($_GET[$ordertype]))
+        {
+            $this->orderType = @$_GET[$ordertype];
+        }
     }
 
     /**
