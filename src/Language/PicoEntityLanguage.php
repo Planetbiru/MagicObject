@@ -51,14 +51,14 @@ class PicoEntityLanguage
      *
      * @var string
      */
-    private string $_entityClassName = "";
+    private $_entityClassName = ""; //NOSONAR
 
     /**
      * Entity language
      *
      * @var string
      */
-    private string $_entityLanguage = "";
+    private $_entityLanguage = ""; //NOSONAR
 
     /**
      * Constructor

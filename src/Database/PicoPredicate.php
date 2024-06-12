@@ -322,13 +322,13 @@ class PicoPredicate //NOSONAR
     public function __toString()
     {
         return json_encode(array(
-            'field'=>$this->field,
-            'value'=>$this->value,
-            'comparation'=>
+            'field' => $this->field,
+            'value' => $this->value,
+            'comparation' =>
                 array(
                     $this->comparation->getComparison()
                 ),
-            'filterLogic'=>$this->filterLogic
+            'filterLogic' => $this->filterLogic
         ));
     }
 }

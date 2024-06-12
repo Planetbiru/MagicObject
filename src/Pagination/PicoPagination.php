@@ -226,10 +226,8 @@ class PicoPagination
                 $urlParameters[$paramName] = $page;
             }
         }
-        if(!isset($urlParameters[$parameterName]) || !is_scalar($urlParameters[$parameterName]))
-        {
-            $urlParameters[$parameterName] = $page;
-        }
+        // replace value
+        $urlParameters[$parameterName] = $page;
         if(!empty($urlParameters))
         {
             $urls[] = http_build_query($urlParameters);

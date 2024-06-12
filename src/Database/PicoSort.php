@@ -121,8 +121,8 @@ class PicoSort
     public function __toString()
     {
         return json_encode(array(
-            'sortBy'=>$this->sortBy, 
-            'sortType'=>$this->sortType
+            'sortBy' => $this->sortBy, 
+            'sortType' => $this->sortType
         ));
     }
 }
