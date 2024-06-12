@@ -1196,7 +1196,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Fix comparison
      *
-     * @param string $column
+     * @param string $column Column
      * @return string
      */
     private function fixComparison($column)
@@ -1223,7 +1223,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Create WHERE by argument given
      *
-     * @param object $info
+     * @param PicoTableInfo $info Table information
      * @param string $propertyName Property name
      * @param array $propertyValues Property values
      * @return string
@@ -1260,7 +1260,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Get table name
      *
-     * @param string|null $entityName
+     * @param string|null $entityName Entity name
      * @return string|null
      */
     private function getTableOf($entityName)
@@ -1301,6 +1301,12 @@ class PicoDatabasePersistence // NOSONAR
         return $tableName;
     }
     
+    /**
+     * Get entity primary key
+     *
+     * @param String $entityName
+     * @return string[]
+     */
     private function getPrimaryKeyOf($entityName)
     {
         $columns = array();
@@ -1365,10 +1371,10 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Get join source
      *
-     * @param string|null $parentName
-     * @param string $masterTable
-     * @param string|null $entityTable
-     * @param string $field
+     * @param string|null $parentName Parent name
+     * @param string $masterTable Master table
+     * @param string|null $entityTable Entity table
+     * @param string $field Field
      * @return string
      */
     private function getJoinSource($parentName, $masterTable, $entityTable, $field, $master = false)
