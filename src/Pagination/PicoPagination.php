@@ -210,14 +210,19 @@ class PicoPagination
      * Get page URL
      *
      * @param integer $page Page number
-     * @param string $parameterName
+     * @param string $parameterName Parameter name for page number
+     * @param string $path Path
      * @return string
      */
-    public static function getPageUrl($page, $parameterName = 'page')
+    public static function getPageUrl($page, $parameterName = 'page', $path = null)
     {
         $urls = array();
         $paths = explode("?", $_SERVER['REQUEST_URI']);
-        $urls[] = $paths[0];
+        if($path === null)
+        {
+            $path = trim($paths[0]);
+        }
+        $urls[] = $path;
         $urlParameters = isset($_GET) ? $_GET : array();
         foreach($urlParameters as $paramName=>$paramValue)
         {
