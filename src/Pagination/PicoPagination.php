@@ -54,14 +54,14 @@ class PicoPagination
     /**
      * Parse offset
      *
-     * @param string $paramName
+     * @param string $parameterName Parameter name
      * @return integer
      */
-    private function parseCurrentPage($paramName = 'page')
+    private function parseCurrentPage($parameterName = 'page')
     {
-        if(isset($_GET[$paramName]))
+        if(isset($_GET[$parameterName]))
         {
-            $pageStr = preg_replace("/\D/", "", $_GET[$paramName]);
+            $pageStr = preg_replace("/\D/", "", $_GET[$parameterName]);
             if($pageStr == "")
             {
                 $page = 0;
@@ -82,9 +82,9 @@ class PicoPagination
     /**
      * Create order
      *
-     * @param array $map
-     * @param array $filter
-     * @param string $defaultOrderBy
+     * @param array $map ORDER BY map
+     * @param array $filter ORDER BY filter
+     * @param string $defaultOrderBy Default ORDER BY
      * @return string
      */
     public function createOrder($map = null, $filter = null, $defaultOrderBy = null)
@@ -106,8 +106,8 @@ class PicoPagination
     /**
      * Get order by
      *
-     * @var array $filter
-     * @var string $defaultOrderBy
+     * @var array $filter ORDER BY filter
+     * @var string $defaultOrderBy Default ORDER BY
      * @return string
      */ 
     public function getOrderBy($filter = null, $defaultOrderBy = null)
@@ -138,17 +138,17 @@ class PicoPagination
     /**
      * Get order type
      *
-     * @var string $defaultOrderType
+     * @var string $defaultOrderType Default order type
      * @return string
      */ 
     public function getOrderType($defaultOrderType = null)
     {
         $orderType = $this->orderType;
-        if(strcasecmp($orderType, 'desc') == 0)
+        if(strcasecmp($orderType, PicoSort::ORDER_TYPE_DESC) == 0)
         {
             $orderType = PicoSort::ORDER_TYPE_DESC;
         }
-        else if(strcasecmp($orderType, 'asc') == 0)
+        else if(strcasecmp($orderType, PicoSort::ORDER_TYPE_ASC) == 0)
         {
             $orderType = PicoSort::ORDER_TYPE_ASC;
         }
@@ -196,10 +196,11 @@ class PicoPagination
     /**
      * Get page URL
      *
-     * @param integer $page
+     * @param integer $page Page number
+     * @param string $parameterName
      * @return string
      */
-    public static function getPageUrl($page)
+    public static function getPageUrl($page, $parameterName = 'page')
     {
         $urls = array();
         $paths = explode("?", $_SERVER['REQUEST_URI']);
@@ -207,14 +208,14 @@ class PicoPagination
         $urlParameters = isset($_GET) ? $_GET : array();
         foreach($urlParameters as $paramName=>$paramValue)
         {
-            if($paramName == 'page')
+            if($paramName == $parameterName)
             {
                 $urlParameters[$paramName] = $page;
             }
         }
-        if(!isset($urlParameters['page']))
+        if(!isset($urlParameters[$parameterName]) || !is_scalar($urlParameters[$parameterName]))
         {
-            $urlParameters['page'] = $page;
+            $urlParameters[$parameterName] = $page;
         }
         if(!empty($urlParameters))
         {
