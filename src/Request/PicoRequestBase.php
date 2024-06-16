@@ -443,18 +443,6 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Get value from formated number
-     *
-     * @param stdClass|MagicObject $cfg
-     * @param mixed $input
-     * @return float
-     */
-    public function getValue($cfg, $input)
-    {
-        return $this->_getValue($cfg, $input);
-    }
-
-    /**
      * Magic method called when user call any undefined method
      *
      * @param string $method
@@ -528,6 +516,14 @@ class PicoRequestBase extends stdClass //NOSONAR
             return $this;
         }
     }  
+
+    /**
+     * Apply filter
+     *
+     * @param string $value
+     * @param string $filterType
+     * @return string|null
+     */
     private function applyFilter($value, $filterType)
     {
         if(isset($value))
