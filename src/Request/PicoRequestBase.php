@@ -17,6 +17,11 @@ class PicoRequestBase extends stdClass //NOSONAR
      * @var array
      */
     private $classParams = array();
+    /**
+     * Force input object as scalar
+     *
+     * @var boolean
+     */
     protected $forceScalar = false;
 
     /**
@@ -98,7 +103,6 @@ class PicoRequestBase extends stdClass //NOSONAR
             {
                 $params[3] = false;
             }
-
             return $this->filterValue($value, $filter, $params[1], $params[2], $params[3]);
         }
         else
@@ -450,8 +454,7 @@ class PicoRequestBase extends stdClass //NOSONAR
      * @return mixed|null
      */
     public function __call($method, $params) //NOSONAR
-    {
-        
+    { 
         if (strncasecmp($method, "countable", 9) === 0) 
         {
             $var = lcfirst(substr($method, 9));
