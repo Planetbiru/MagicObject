@@ -17,6 +17,11 @@ class PicoRequestBase extends stdClass //NOSONAR
      * @var array
      */
     private $classParams = array();
+    /**
+     * Force input object as scalar
+     *
+     * @var boolean
+     */
     protected $forceScalar = false;
 
     /**
@@ -98,7 +103,6 @@ class PicoRequestBase extends stdClass //NOSONAR
             {
                 $params[3] = false;
             }
-
             return $this->filterValue($value, $filter, $params[1], $params[2], $params[3]);
         }
         else
@@ -443,18 +447,6 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Get value from formated number
-     *
-     * @param stdClass|MagicObject $cfg
-     * @param mixed $input
-     * @return float
-     */
-    public function getValue($cfg, $input)
-    {
-        return $this->_getValue($cfg, $input);
-    }
-
-    /**
      * Magic method called when user call any undefined method
      *
      * @param string $method
@@ -462,8 +454,7 @@ class PicoRequestBase extends stdClass //NOSONAR
      * @return mixed|null
      */
     public function __call($method, $params) //NOSONAR
-    {
-        
+    { 
         if (strncasecmp($method, "countable", 9) === 0) 
         {
             $var = lcfirst(substr($method, 9));
@@ -528,6 +519,14 @@ class PicoRequestBase extends stdClass //NOSONAR
             return $this;
         }
     }  
+
+    /**
+     * Apply filter
+     *
+     * @param string $value
+     * @param string $filterType
+     * @return string|null
+     */
     private function applyFilter($value, $filterType)
     {
         if(isset($value))
