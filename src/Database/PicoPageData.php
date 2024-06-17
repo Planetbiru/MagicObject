@@ -48,6 +48,13 @@ class PicoPageData
      * @var integer
      */
     private $pageSize = 0;
+
+    /**
+     * Data offset
+     *
+     * @var integer
+     */
+    private $dataOffset = 0;
     
     /**
      * Start time
@@ -108,6 +115,7 @@ class PicoPageData
             $this->pageNumber = 1;
             $this->totalPage = 1;
             $this->pageSize = $countResult;
+            $this->dataOffset = 0;
         }
         $this->endTime = microtime(true);
         $this->executionTime = $this->endTime - $this->startTime;
@@ -124,6 +132,7 @@ class PicoPageData
         $this->pageNumber = $this->pageable->getPage()->getPageNumber();
         $this->totalPage = ceil($this->totalResult / $this->pageable->getPage()->getPageSize());
         $this->pageSize = $this->pageable->getPage()->getPageSize();
+        $this->dataOffset = ($this->pageNumber - 1) * $this->pageSize;
 
         $curPage = $this->pageNumber;
         $totalPage = $this->totalPage;
@@ -239,5 +248,15 @@ class PicoPageData
     public function getPagable()
     {
         return $this->pageable;
+    }
+
+    /**
+     * Get data offset
+     *
+     * @return  integer
+     */ 
+    public function getDataOffset()
+    {
+        return $this->dataOffset;
     }
 }
