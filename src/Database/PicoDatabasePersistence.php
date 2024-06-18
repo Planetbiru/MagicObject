@@ -2316,26 +2316,44 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Get all record from database wihout filter
      *
-     * @param PicoSpecification $specification Specification
+     * @param PicoSpecification|null $specification Specification
      * @return integer
      * @throws EntityException|EmptyResultException
      */
     public function countAll($specification)
     {
         $info = $this->getTableInfo();
+        $primaryKeys = array_values($info->getPrimaryKeys());
+        if(is_array($primaryKeys) && isset($primaryKeys[0][self::KEY_NAME]))
+        {
+            // it will be faster than asterisk
+            $agg = $primaryKeys[0][self::KEY_NAME];
+        }
+        else
+        {
+            $agg = "*";
+        }
         $queryBuilder = new PicoDatabaseQueryBuilder($this->database);
         $sqlQuery = $queryBuilder
             ->newQuery()
             ->select($this->getAllColumns($info))
             ->from($info->getTableName());  
                
-        if($specification != null)
+        if($specification != null && $specification instanceof PicoSpecification)
         {
             if($this->isRequireJoinFromSpecification($specification))
             {
                 $sqlQuery = $this->addJoinQuery($sqlQuery, $info);
             }
             $sqlQuery = $this->setSpecification($sqlQuery, $specification, $info);
+        }
+        else
+        {
+            $sqlQuery = $queryBuilder
+                ->newQuery()
+                ->select($agg)
+                ->from($info->getTableName())
+                ;
         }
         try
         {

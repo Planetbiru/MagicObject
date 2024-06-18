@@ -110,7 +110,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Constructor
      *
-     * @param self|array|object $data
+     * @param self|array|stdClass|object $data
      * @param PicoDatabase $database
      */
     public function __construct($data = null, $database = null)
@@ -1252,6 +1252,41 @@ class MagicObject extends stdClass // NOSONAR
             return new PicoPageData(array(), $startTime);
         }
     }
+
+    /**
+     * Count all record
+     *
+     * @param PicoSpecification $specification
+     * @return integer|false
+     * @throws NoRecordFoundException if no record found
+     * @throws NoDatabaseConnectionException if no database connection
+     */
+    public function countAll($specification = null)
+    {
+        try
+        {
+            if($this->_database != null && $this->_database->isConnected())
+            {
+                $persist = new PicoDatabasePersistence($this->_database, $this);
+                if($specification != null && $specification instanceof PicoSpecification)
+                {
+                    return $persist->countAll($specification);
+                }
+                else
+                {
+                    return $persist->countAll(null);
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }
+    }
     
     /**
      * Find all query
@@ -1786,17 +1821,11 @@ class MagicObject extends stdClass // NOSONAR
         }
         else if (strncasecmp($method, "createSelected", 14) === 0) {
             $var = lcfirst(substr($method, 14));
-            if(isset($this->$var))
-            {
-                return $this->$var == $params[0] ? ' selected="selected"' : '';
-            }
+            return isset($this->$var) && $this->$var == 1 ? ' selected="selected"' : '';
         }
         else if (strncasecmp($method, "createChecked", 13) === 0) {
             $var = lcfirst(substr($method, 13));
-            if(isset($this->$var))
-            {
-                return $this->$var == $params[0] ? ' checked="checked"' : '';
-            }
+            return isset($this->$var) && $this->$var == 1 ? ' checked="checked"' : '';
         }            
         else if (strncasecmp($method, "startsWith", 10) === 0) {
             $var = lcfirst(substr($method, 10));

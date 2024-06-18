@@ -286,7 +286,7 @@ class PicoSpecification
         {
             foreach($map as $key=>$value)
             {
-                if($request->get($key) !== null)
+                if($request->get($key) != null && trim($request->get($key)) != "")
                 {
                     $specification->addAnd(new PicoPredicate($value, $request->get($key)));
                 }
