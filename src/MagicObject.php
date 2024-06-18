@@ -110,7 +110,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Constructor
      *
-     * @param self|array|object $data
+     * @param self|array|stdClass|object $data
      * @param PicoDatabase $database
      */
     public function __construct($data = null, $database = null)
