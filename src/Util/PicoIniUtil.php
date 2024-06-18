@@ -90,7 +90,9 @@ class PicoIniUtil
             return false;
         }
         $str = file_get_contents($path);
-        if (empty($str)) return false;
+        if (empty($str)) {
+            return false;
+        }
 
         $lines = explode("\n", $str);
         $ret = array();
@@ -100,14 +102,18 @@ class PicoIniUtil
 
             $line = trim($line);
 
-            if (!$line || $line[0] == "#" || $line[0] == ";") continue;
+            if (!$line || $line[0] == "#" || $line[0] == ";") {
+                continue;
+            }
 
             if ($line[0] == "[" && $endIdx = strpos($line, "]")) {
                 $inside_section = substr($line, 1, $endIdx - 1);
                 continue;
             }
 
-            if (!strpos($line, '=')) continue;
+            if (!strpos($line, '=')) {
+                continue;
+            }
 
             $tmp = explode("=", $line, 2);
 
