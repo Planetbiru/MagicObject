@@ -1252,6 +1252,41 @@ class MagicObject extends stdClass // NOSONAR
             return new PicoPageData(array(), $startTime);
         }
     }
+
+    /**
+     * Count all record
+     *
+     * @param PicoSpecification $specification
+     * @return integer|false
+     * @throws NoRecordFoundException if no record found
+     * @throws NoDatabaseConnectionException if no database connection
+     */
+    public function countAll($specification = null)
+    {
+        try
+        {
+            if($this->_database != null && $this->_database->isConnected())
+            {
+                $persist = new PicoDatabasePersistence($this->_database, $this);
+                if($specification != null && $specification instanceof PicoSpecification)
+                {
+                    return $persist->countAll($specification);
+                }
+                else
+                {
+                    return $persist->countAll(null);
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }
+    }
     
     /**
      * Find all query
