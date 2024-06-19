@@ -1821,11 +1821,25 @@ class MagicObject extends stdClass // NOSONAR
         }
         else if (strncasecmp($method, "createSelected", 14) === 0) {
             $var = lcfirst(substr($method, 14));
-            return isset($this->$var) && $this->$var == 1 ? ' selected="selected"' : '';
+            if(isset($params) && isset($params[0]))
+            {
+                return isset($this->$var) && $this->$var == $params[0] ? ' selected="selected"' : '';
+            }
+            else
+            {
+                return isset($this->$var) && $this->$var == 1 ? ' selected="selected"' : '';
+            }
         }
         else if (strncasecmp($method, "createChecked", 13) === 0) {
             $var = lcfirst(substr($method, 13));
-            return isset($this->$var) && $this->$var == 1 ? ' checked="checked"' : '';
+            if(isset($params) && isset($params[0]))
+            {
+                return isset($this->$var) && $this->$var == $params[0] ? ' checked="checked"' : '';
+            }
+            else
+            {
+                return isset($this->$var) && $this->$var == 1 ? ' checked="checked"' : '';
+            }
         }            
         else if (strncasecmp($method, "startsWith", 10) === 0) {
             $var = lcfirst(substr($method, 10));
