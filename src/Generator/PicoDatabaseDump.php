@@ -122,7 +122,14 @@ class PicoDatabaseDump
     {
         if(isset($entityColumn['default_value']))
         {
-            $query .= " DEFAULT ".PicoDatabaseUtil::escapeValue($entityColumn['default_value'], true);
+            if($entityColumn['default_value'] == 'NULL' || $entityColumn['default_value'] == 'null')
+            {
+                $query .= " DEFAULT NULL";
+            }
+            else
+            {
+                $query .= " DEFAULT ".PicoDatabaseUtil::escapeValue($entityColumn['default_value'], true);
+            }
         }
         return $query;
     }
@@ -160,13 +167,10 @@ class PicoDatabaseDump
                         $query = $this->updateQueryAlterTableNullable($query, $entityColumn);
                         $query = $this->updateQueryAlterTableDefaultValue($query, $entityColumn);  
                         $query = $this->updateQueryAlterTableAddColumn($query, $lastColumn, $database->getDatabaseType());
+                        
                         $queryAlter[]  = $query.";";
-                        $lastColumn = $entityColumn['name'];
                     }
-                    else
-                    {
-                        $lastColumn = $entityColumn['name'];
-                    }
+                    $lastColumn = $entityColumn['name'];
                 }
             }
             else

@@ -2,8 +2,6 @@
 
 namespace MagicObject\Database;
 
-use Exception;
-use ReflectionProperty;
 use stdClass;
 
 class PicoTableInfo
