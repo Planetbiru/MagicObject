@@ -1677,6 +1677,13 @@ Generate 20 bytes unique ID
 
 Autoincrement using database feature
 
+**3. TABLE** Not implemented yet
+
+**4. SEQUENCE** Not implemented yet
+
+**5. AUTO** Not implemented yet 
+
+
 MagicObject will not update `time_create`, `admin_create`, and `ip_create` because `updatable=false`. So, even if the application wants to update this value, this column will be ignored when performing an update query to the database.
 
 `generator` is generator of the value.

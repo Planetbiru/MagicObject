@@ -264,7 +264,9 @@ Generate 20 bytes unique ID
 Autoincrement using database feature
 
 **3. TABLE** Not implemented yet
+
 **4. SEQUENCE** Not implemented yet
+
 **5. AUTO** Not implemented yet 
 
 
