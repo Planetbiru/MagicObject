@@ -144,32 +144,36 @@ class PicoDatabaseDump
             
             $database = $entity->currentDatabase();
             $rows = PicoColumnGenerator::getColumnList($database, $tableInfo->getTableName());
-
-            if(is_array($rows))
+            if(is_array($rows) && !empty($rows))
             {
                 foreach($rows as $row)
                 {
                     $columnName = $row['Field'];
                     $dbColumnNames[] = $columnName;
                 }
+                $lastColumn = null;
+                foreach($tableInfo->getColumns() as $entityColumn)
+                {
+                    if(!in_array($entityColumn['name'], $dbColumnNames))
+                    {
+                        $query = "ALTER TABLE $tableName ADD COLUMN ".$entityColumn['name']." ".$entityColumn['type'];
+                        $query = $this->updateQueryAlterTableNullable($query, $entityColumn);
+                        $query = $this->updateQueryAlterTableDefaultValue($query, $entityColumn);  
+                        $query = $this->updateQueryAlterTableAddColumn($query, $lastColumn, $database->getDatabaseType());
+                        $queryAlter[]  = $query.";";
+                        $lastColumn = $entityColumn['name'];
+                    }
+                    else
+                    {
+                        $lastColumn = $entityColumn['name'];
+                    }
+                }
             }
-            $lastColumn = null;
-            foreach($tableInfo->getColumns() as $entityColumn)
+            else
             {
-                if(!in_array($entityColumn['name'], $dbColumnNames))
-                {
-                    $query = "ALTER TABLE $tableName ADD COLUMN ".$entityColumn['name']." ".$entityColumn['type'];
-                    $query = $this->updateQueryAlterTableNullable($query, $entityColumn);
-                    $query = $this->updateQueryAlterTableDefaultValue($query, $entityColumn);  
-                    $query = $this->updateQueryAlterTableAddColumn($query, $lastColumn, $database->getDatabaseType());
-                    $queryAlter[]  = $query;
-                    $lastColumn = $entityColumn['name'];
-                }
-                else
-                {
-                    $lastColumn = $entityColumn['name'];
-                }
+                $queryAlter[] = $this->dumpStructure($entity, $database->getDatabaseType());
             }
+            
         }
         return $queryAlter;
     }
