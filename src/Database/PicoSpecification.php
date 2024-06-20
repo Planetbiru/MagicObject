@@ -293,17 +293,6 @@ class PicoSpecification
                 }
             }
         }
-        if($specification->isEmpty() && self::isArray($defaultSortable))
-        {
-            // no filter from user input
-            foreach($defaultSortable as $filter)
-            {
-                if(isset($filter['sortBy']) && isset($filter['sortType']))
-                {
-                    $specification->addAnd(new PicoPredicate($filter['sortBy'], $filter['sortType']));
-                }
-            }
-        }
         return $specification;
     }
 

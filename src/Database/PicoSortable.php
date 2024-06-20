@@ -205,6 +205,16 @@ class PicoSortable
     }
 
     /**
+     * Check id specification is empty or not
+     *
+     * @return boolean
+     */
+    public function isEmpty()
+    {
+        return empty($this->sortable);
+    }
+
+    /**
      * Get sortable
      *
      * @return  PicoSort[]
@@ -239,9 +249,10 @@ class PicoSortable
      *
      * @param PicoRequestBase $request
      * @param string[] $map
+     * @param array $defaultSortable
      * @return PicoSortable
      */
-    public static function fromUserInput($request, $map)
+    public static function fromUserInput($request, $map, $defaultSortable)
     {
         $sortable = new PicoSortable();
         if($map != null && is_array($map))
@@ -254,6 +265,28 @@ class PicoSortable
                 }
             }
         }
+        if($sortable->isEmpty() && self::isArray($defaultSortable))
+        {
+            // no filter from user input
+            foreach($defaultSortable as $filter)
+            {
+                if(isset($filter['sortBy']) && isset($filter['sortType']))
+                {
+                    $sortable->add(new PicoSort($filter['sortBy'], $filter['sortType']));
+                }
+            }
+        }
         return $sortable;
+    }
+
+    /**
+     * Check if input is array
+     *
+     * @param mixed $array
+     * @return boolean
+     */
+    public static function isArray($array)
+    {
+        return isset($array) && is_array($array);
     }
 }
