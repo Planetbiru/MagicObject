@@ -277,9 +277,10 @@ class PicoSpecification
      *
      * @param PicoRequestBase $request
      * @param string[] $map
+     * @param string[] $defaultSortable
      * @return PicoSpecification
      */
-    public static function fromUserInput($request, $map)
+    public static function fromUserInput($request, $map, $defaultSortable = null) //NOSONAR
     {
         $specification = new PicoSpecification();
         if($map != null && is_array($map))
@@ -289,6 +290,17 @@ class PicoSpecification
                 if($request->get($key) != null && trim($request->get($key)) != "")
                 {
                     $specification->addAnd(new PicoPredicate($value, $request->get($key)));
+                }
+            }
+        }
+        if($specification->isEmpty() && isset($defaultSortable) && is_array($defaultSortable))
+        {
+            // no filter from user input
+            foreach($defaultSortable as $filter)
+            {
+                if(isset($filter['sortBy']) && isset($filter['sortType']))
+                {
+                    $specification->addAnd(new PicoPredicate($filter['sortBy'], $filter['sortType']));
                 }
             }
         }
