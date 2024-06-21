@@ -2,6 +2,18 @@
 
 Entity is class to access database. Entity is derived from MagicObject. Some annotations required to activated all entity features. 
 
+**Constructor**
+
+Parameters:
+
+1. array|stdClass|object $data
+
+Initial data
+
+2. PicoDatabase $database
+
+Database connection
+
 ```php
 <?php
 
