@@ -24,7 +24,7 @@ class PicoIniUtil
             $content = self::getContent($content, $array);
         }
         if (strlen($content) > 3) {
-            $written = file_put_contents($path, $content);
+            file_put_contents($path, $content);
         }
         return true;
     }
@@ -82,9 +82,9 @@ class PicoIniUtil
      * Parse ini file
      *
      * @param string $path
-     * @return array
+     * @return array|false
      */
-    public static function parseIniFile($path)
+    public static function parseIniFile($path) // NOSONAR
     {
         if (!file_exists($path)) {
             return false;
@@ -132,7 +132,7 @@ class PicoIniUtil
                     $value = mb_substr($value, 1, mb_strlen($value) - 2);
                 }
 
-                $t = preg_match("^\[(.*?)\]^", $key, $matches);
+                preg_match("^\[(.*?)\]^", $key, $matches);
                 if (!empty($matches) && isset($matches[0])) {
 
                     $arr_name = preg_replace('#\[(.*?)\]#is', '', $key);

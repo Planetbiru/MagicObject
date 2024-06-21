@@ -2,6 +2,8 @@
 
 namespace MagicObject\Util;
 
+use stdClass;
+
 class PicoArrayUtil
 {
     /**
