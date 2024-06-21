@@ -15,7 +15,7 @@ class PicoDatabaseUtil
      */
     public static function specificationFromParams($params)
     {
-        if(isset($params) && is_array($params))
+        if(self::isArray($params))
         {
             foreach($params as $param)
             {
@@ -35,7 +35,7 @@ class PicoDatabaseUtil
      */
     public static function pagableFromParams($params)
     {
-        if(isset($params) && is_array($params))
+        if(self::isArray($params))
         {
             foreach($params as $param)
             {
@@ -55,7 +55,7 @@ class PicoDatabaseUtil
      */
     public static function sortableFromParams($params)
     {
-        if(isset($params) && is_array($params))
+        if(self::isArray($params))
         {
             foreach($params as $param)
             {
@@ -76,7 +76,7 @@ class PicoDatabaseUtil
     public static function valuesFromParams($params)
     {
         $ret = array();
-        if(isset($params) && is_array($params))
+        if(self::isArray($params))
         {
             foreach($params as $param)
             {
@@ -338,5 +338,16 @@ class PicoDatabaseUtil
             }
         }
         return $result;
+    }
+
+    /**
+     * Check if parameter os array
+     *
+     * @param mixed $params
+     * @return boolean
+     */
+    private static function isArray($params)
+    {
+        return isset($params) && is_array($params);
     }
 }

@@ -676,7 +676,7 @@ class PicoDatabasePersistence // NOSONAR
     {
         $nullCols = array();
         $nullList = $this->object->nullPropertiyList();
-        if(isset($nullList) && is_array($nullList))
+        if($this->isArray($nullList))
         {
             foreach($nullList as $key=>$val)
             {
@@ -920,7 +920,7 @@ class PicoDatabasePersistence // NOSONAR
         if(!$this->generatedValue)
         {
             $keys = $info->getAutoIncrementKeys();
-            if(isset($keys) && is_array($keys))
+            if($this->isArray($keys))
             {
                 foreach($keys as $prop=>$col)
                 {
@@ -1304,7 +1304,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Get entity primary key
      *
-     * @param String $entityName
+     * @param string $entityName
      * @return string[]
      */
     private function getPrimaryKeyOf($entityName)
@@ -2555,7 +2555,7 @@ class PicoDatabasePersistence // NOSONAR
                 $reflect = new ExtendedReflectionClass($this->className);
                 $useStatements = $reflect->getUseStatements(); 
                 $this->namespaceName = $reflect->getNamespaceName();
-                if(isset($useStatements) && is_array($useStatements))
+                if($this->isArray($useStatements))
                 {
                     foreach($useStatements as $val)
                     {
@@ -3312,5 +3312,10 @@ class PicoDatabasePersistence // NOSONAR
         }
 
         return $persist;
+    }
+
+    public function isArray($array)
+    {
+        return isset($array) && is_array($array);
     }
 }

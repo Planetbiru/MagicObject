@@ -255,7 +255,7 @@ class PicoSortable
     public static function fromUserInput($request, $map, $defaultSortable)
     {
         $sortable = new PicoSortable();
-        if($map != null && is_array($map))
+        if(self::isArray($map))
         {
             foreach($map as $key=>$value)
             {

@@ -282,7 +282,7 @@ class PicoSpecification
     public static function fromUserInput($request, $map)
     {
         $specification = new PicoSpecification();
-        if(self::isArray($map))
+        if(isset($map) && is_array($map))
         {
             foreach($map as $key=>$value)
             {
@@ -293,16 +293,5 @@ class PicoSpecification
             }
         }
         return $specification;
-    }
-
-    /**
-     * Check if input is array
-     *
-     * @param mixed $array
-     * @return boolean
-     */
-    public static function isArray($array)
-    {
-        return isset($array) && is_array($array);
     }
 }
