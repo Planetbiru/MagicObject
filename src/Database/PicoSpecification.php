@@ -277,10 +277,9 @@ class PicoSpecification
      *
      * @param PicoRequestBase $request
      * @param string[] $map
-     * @param string[] $defaultSortable
      * @return PicoSpecification
      */
-    public static function fromUserInput($request, $map, $defaultSortable = null)
+    public static function fromUserInput($request, $map)
     {
         $specification = new PicoSpecification();
         if(self::isArray($map))
@@ -289,7 +288,7 @@ class PicoSpecification
             {
                 if($request->get($key) != null && trim($request->get($key)) != "")
                 {
-                    $specification->addAnd(new PicoPredicate($value, $request->get($key)));
+                    $specification->addAnd(PicoPredicate::getInstance()->like($value, PicoPredicate::generateCenterLike($request->get($key))));
                 }
             }
         }
