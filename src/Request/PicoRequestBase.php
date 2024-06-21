@@ -224,13 +224,14 @@ class PicoRequestBase extends stdClass //NOSONAR
     public function filterValue($val, $filter = PicoFilterConstant::FILTER_DEFAULT, $escapeSQL = false, $nullIfEmpty = false, $requireScalar = false)
     {
         $ret = null;
-        if(($requireScalar || $this->forceScalar) && !is_scalar($val))
+        
+        if(($requireScalar || $this->forceScalar) && (isset($val) && !is_scalar($val)))
         {
             // If application require scalar but user give non-scalar, MagicObject will return null
             // It mean that application will not process invalid input type
             return null;
         }
-        if(is_scalar($val))
+        if(!isset($val) || is_scalar($val))
         {
             return $this->filterValueSingle($val, $filter, $escapeSQL, $nullIfEmpty);
         }
