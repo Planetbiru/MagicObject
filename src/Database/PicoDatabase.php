@@ -2,6 +2,7 @@
 
 namespace MagicObject\Database;
 
+use Exception;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -57,7 +58,18 @@ class PicoDatabase //NOSONAR
 	 */
 	private $databaseType = "";
 
+	/**
+	 * Callback function when execute query when modify data and execute function and procedure
+	 *
+	 * @var callable
+	 */
 	private $callbackExecuteQuery = null;
+
+	/**
+	 * Callback function when execute query
+	 *
+	 * @var callable
+	 */
 	private $callbackDebugQuery = null;
 
 	/**
@@ -92,7 +104,7 @@ class PicoDatabase //NOSONAR
 			date_default_timezone_set($this->databaseCredentials->getTimeZone());
 		}
 		$timeZoneOffset = date("P");
-		$connected = true;
+		$connected = false;
 		try 
 		{
 			$connectionString = $this->constructConnectionString();
@@ -123,10 +135,9 @@ class PicoDatabase //NOSONAR
 			$connected = true;
 			$this->connected = $connected;
 		} 
-		catch (PDOException $e) 
+		catch (Exception $e) 
 		{
-			// Do nothing
-			echo $e->getMessage();
+			throw new PDOException($e);
 		}
 		return $connected;
 	}
