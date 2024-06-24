@@ -85,8 +85,8 @@ class SetterGetter
      * Gets datas from the property.
      * Example: echo $instance->foo;
      * 
-     * @param string $name Name of the property to get.
-     * @return mixed Datas stored in property.
+     * @param string $name Property name
+     * @return mixed Data stored in property.
      **/
     public function __get($name)
     {
@@ -99,7 +99,7 @@ class SetterGetter
     /**
      * Check if property has been set or not or has null value
      *
-     * @param string $name
+     * @param string $name Property name
      * @return boolean
      */
     public function __isset($name)
@@ -110,7 +110,7 @@ class SetterGetter
     /**
      * Unset property value
      *
-     * @param string $name
+     * @param string $name Property name
      * @return void
      */
     public function __unset($name)
@@ -187,8 +187,8 @@ class SetterGetter
     /**
      * Magic method called when user call any undefined method
      *
-     * @param string $method
-     * @param string $params
+     * @param string $method Called method
+     * @param string $params Parameters given
      * @return mixed|null
      */
     public function __call($method, $params) //NOSONAR

@@ -207,7 +207,7 @@ class PicoEntityGenerator
     /**
      * Get column length
      *
-     * @param string $str
+     * @param string $str String contains column length
      * @return integer
      */
     protected function getDataLength($str)
