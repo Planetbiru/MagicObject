@@ -295,8 +295,7 @@ class PicoSpecification
                     }
                     else if($filter->isFulltext())
                     {
-                        $ftSpecs = self::fullTextSearch($filter->getColumnName(), $filterValue);
-                        $specification->addAnd($ftSpecs);
+                        $specification->addAnd(self::fullTextSearch($filter->getColumnName(), $filterValue));
                     }
                     else
                     {
