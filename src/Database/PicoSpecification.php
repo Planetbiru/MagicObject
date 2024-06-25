@@ -329,10 +329,12 @@ class PicoSpecification
     }
 
     /**
-     * Filter
+     * Filter input with column name and data type.
+     * Column name is column name used by PicoSpecification.
+     * Data type is one of "number", "boolean", "string", and "fulltext". Please note that MagicObject will treat "string" and "fulltext" in different ways.
      *
-     * @param string $columnName
-     * @param string $dataType
+     * @param string $columnName Column name
+     * @param string $dataType Data type
      * @return PicoSpecificationFilter
      */
     public static function filter($columnName, $dataType)
