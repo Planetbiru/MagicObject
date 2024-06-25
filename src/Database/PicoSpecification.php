@@ -276,10 +276,10 @@ class PicoSpecification
      * Get specification from user input
      *
      * @param PicoRequestBase $request
-     * @param string[] $map
+     * @param string[]|null $map
      * @return PicoSpecification
      */
-    public static function fromUserInput($request, $map)
+    public static function fromUserInput($request, $map = null)
     {
         $specification = new PicoSpecification();
         if(isset($map) && is_array($map))

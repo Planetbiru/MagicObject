@@ -248,11 +248,11 @@ class PicoSortable
      * Get sortable from user input
      *
      * @param PicoRequestBase $request
-     * @param string[] $map
-     * @param array $defaultSortable
+     * @param string[]|null $map
+     * @param array|null $defaultSortable
      * @return PicoSortable
      */
-    public static function fromUserInput($request, $map, $defaultSortable)
+    public static function fromUserInput($request, $map = null, $defaultSortable = null)
     {
         $sortable = new PicoSortable();
         if(self::isArray($map))
