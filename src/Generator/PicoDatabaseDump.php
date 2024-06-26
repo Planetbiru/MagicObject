@@ -41,7 +41,7 @@ class PicoDatabaseDump
      * @param string $databaseType Target database type
      * @param boolean $createIfNotExists Add DROP TABLE IF EXISTS before create table
      * @param boolean $dropIfExists Add IF NOT EXISTS on create table
-     * @param string $engine Storage engine
+     * @param string $engine Storage engine (for MariaDB and MySQL)
      * @param string $charset Default charset
      * @return string
      */
