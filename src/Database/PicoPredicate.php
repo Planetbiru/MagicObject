@@ -315,6 +315,17 @@ class PicoPredicate //NOSONAR
     }
     
     /**
+     * Function lower
+     *
+     * @param string $value
+     * @return string
+     */
+    public static function functionLower($value)
+    {
+        return "lower($value)";
+    }
+    
+    /**
      * Magic method to debug object
      *
      * @return string

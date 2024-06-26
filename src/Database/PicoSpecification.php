@@ -239,12 +239,32 @@ class PicoSpecification
             {           
                 $entityField = new PicoEntityField($spec->getField());
                 $field = $entityField->getField();
+                $functionFormat = $entityField->getFunctionFormat();
+
                 $entityName = $entityField->getEntity();
                 $column = ($entityName == null) ? $field : $entityName.".".$field;
-                $arr[] = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . PicoDatabaseUtil::escapeValue($spec->getValue());      
+                $columnFinal = $this->formatColumn($column, $functionFormat);
+                
+                $arr[] = $spec->getFilterLogic() . " " . $columnFinal . " " . $spec->getComparation()->getComparison() . " " . PicoDatabaseUtil::escapeValue($spec->getValue());      
             }
         }
         return PicoDatabaseUtil::trimWhere(implode(" ", $arr));
+    }
+
+    /**
+     * Format column
+     *
+     * @param string $column Column name
+     * @param string $format Format
+     * @return string
+     */
+    private function formatColumn($column, $format)
+    {
+        if($format == null || strpos($format, "%s") === false)
+        {
+            return $column;
+        }
+        return sprintf($format, $column);
     }
 
     /**
@@ -299,7 +319,7 @@ class PicoSpecification
                     }
                     else
                     {
-                        $specification->addAnd(PicoPredicate::getInstance()->like($filter->getColumnName(), PicoPredicate::generateCenterLike($filterValue)));
+                        $specification->addAnd(PicoPredicate::getInstance()->like(PicoPredicate::functionLower($filter->getColumnName()), PicoPredicate::generateCenterLike(strtolower($filterValue))));
                     }
                 }
             }
@@ -322,19 +342,17 @@ class PicoSpecification
         {
             if(!empty($word))
             {
-                $specification->addAnd(PicoPredicate::getInstance()->like($columnName, PicoPredicate::generateCenterLike($word)));
+                $specification->addAnd(PicoPredicate::getInstance()->like(PicoPredicate::functionLower($columnName), PicoPredicate::generateCenterLike(strtolower($word))));
             }
         }
         return $specification;
     }
 
     /**
-     * Filter input with column name and data type.
-     * Column name is column name used by PicoSpecification.
-     * Data type is one of "number", "boolean", "string", and "fulltext". Please note that MagicObject will treat "string" and "fulltext" in different ways.
+     * Filter
      *
-     * @param string $columnName Column name
-     * @param string $dataType Data type
+     * @param string $columnName
+     * @param string $dataType
      * @return PicoSpecificationFilter
      */
     public static function filter($columnName, $dataType)
