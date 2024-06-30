@@ -66,13 +66,13 @@ class SetterGetter
                 $values = $data->value();
                 foreach ($values as $key => $value) {
                     $key2 = PicoStringUtil::camelize($key);
-                    $this->set($key2, $value, true);
+                    $this->set($key2, $value);
                 }
             }
             else if (is_array($data) || is_object($data)) {
                 foreach ($data as $key => $value) {
                     $key2 = PicoStringUtil::camelize($key);
-                    $this->set($key2, $value, true);
+                    $this->set($key2, $value);
                 }
             }
         }
