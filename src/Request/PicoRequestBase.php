@@ -459,7 +459,7 @@ class PicoRequestBase extends stdClass //NOSONAR
         if (strncasecmp($method, "countable", 9) === 0) 
         {
             $var = lcfirst(substr($method, 9));
-            return is_array($this->$var);
+            return isset($this->$var) && is_array($this->$var);
         } 
         else if (strncasecmp($method, "isset", 5) === 0) 
         {
