@@ -1465,6 +1465,14 @@ class MagicObject extends stdClass // NOSONAR
         }
     }
     
+    /**
+     * Find one with primary key value
+     *
+     * @param mixed $primaryKeyVal
+     * @param boolean $passive
+     * @param array $subqueryInfo
+     * @return self
+     */
     public function findOneWithPrimaryKeyValue($primaryKeyVal, $passive = false, $subqueryInfo = null)
     {
         if($this->_database != null && $this->_database->isConnected())

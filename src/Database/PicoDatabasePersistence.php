@@ -54,6 +54,7 @@ class PicoDatabasePersistence // NOSONAR
     const ORDER_ASC = "asc";
     const ORDER_DESC = "desc";
 
+    const MESSAGE_NO_PRIMARY_KEY_DEFINED = "No primaru key defined";
     const MESSAGE_NO_RECORD_FOUND = "No record found";
     const MESSAGE_INVALID_FILTER = "Invalid filter";
     const SQL_DATETIME_FORMAT = "Y-m-d H:i:s";
@@ -2198,6 +2199,69 @@ class PicoDatabasePersistence // NOSONAR
         else
         {
             return $this->findSpecificWithSubquery($this->getAllColumns($info), $specification, $pageable, $sortable, $subqueryInfo);
+        }
+    }
+    
+    /**
+     * Find one with primary key value
+     *
+     * @param mixed $primaryKeyVal
+     * @param boolean $passive
+     * @param array $subqueryInfo
+     * @return MagicObject
+     */
+    public function findOneWithPrimaryKeyValue($primaryKeyVal, $passive, $subqueryInfo)
+    {
+        $info = $this->getTableInfo();
+        $tableName = $info->getTableName();
+        $selected = $this->getAllColumns($info);
+        $data = null;
+        $info = $this->getTableInfo();
+        $selected = $this->joinString($selected, $this->subquery($info, $subqueryInfo), ", ");
+        $primaryKey = null;
+        try
+        {
+            $primaryKeys = array_values($info->getPrimaryKeys());
+            if(is_array($primaryKeys) && isset($primaryKeys[0][self::KEY_NAME]))
+            {
+                // it will be faster than asterisk
+                $primaryKey = $primaryKeys[0][self::KEY_NAME];
+            }
+            if($primaryKey == null)
+            {
+                throw new NoPrimaryKeyDefinedException(self::MESSAGE_NO_PRIMARY_KEY_DEFINED);
+            }
+            
+            $sqlQuery = new PicoDatabaseQueryBuilder($this->database);
+            $sqlQuery
+                ->select($selected)
+                ->from($tableName)
+                ->where("$primaryKey = ? ", $primaryKeyVal)
+                ->limit(1)
+                ->offset(0);
+            $stmt = $this->database->executeQuery($sqlQuery);
+            if($this->matchRow($stmt))
+            {
+                $data = $stmt->fetch(PDO::FETCH_ASSOC);
+                $data = $this->fixDataType($data, $info); 
+                $data = $this->applySubqueryResult($data, $data, $info, $subqueryInfo);
+            }
+            else
+            {
+                throw new EmptyResultException(self::MESSAGE_NO_RECORD_FOUND);
+            }
+        }
+        catch(Exception $e)
+        {
+            throw new EmptyResultException($e->getMessage());
+        }
+        if($passive)
+        {
+            return new $this->className($data);
+        }
+        else
+        {
+            return new $this->className($data, $this->database);
         }
     }
     
