@@ -74,7 +74,11 @@ class PicoSpecificationFilter
      */
     private function getBoolean($stringValue)
     {
-        return strcasecmp($stringValue, "yes") === 0 || strcasecmp($stringValue, "true") === 0 || $stringValue === "1" || $stringValue === 1;
+        return strcasecmp($stringValue, "yes") === 0 
+        || strcasecmp($stringValue, "true") === 0 
+        || $stringValue === "1" 
+        || $stringValue === 1
+        ;
     }
 
     /**
