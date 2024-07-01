@@ -2213,16 +2213,6 @@ class PicoDatabasePersistence // NOSONAR
      */
     public function findSpecificWithSubquery($selected, $specification, $pageable = null, $sortable = null, $subqueryInfo = null)
     {
-        $subqueryInfoExample = array(
-            'producer' => array(
-                'columnName'=>'producer_id',
-                'tableName'=>'producer',
-                'primaryKey'=>'producer_id',
-                'value'=>'name',
-                'objectName'=>'producer',
-                'propertyName'=>'name'
-            )
-        );
         $data = null;
         $result = array();
         $info = $this->getTableInfo();
@@ -2272,13 +2262,15 @@ class PicoDatabasePersistence // NOSONAR
             foreach($subqueryInfo as $info)
             {
                 $joinTableName = $info['tableName'];
-                $columnName = $info['columnName'];
-                $joinName = $info['tableName']."_".$idx; 
+                $columnName = $info['columnName'];                
                 $primaryKey = $info['primaryKey'];
                 $objectName = $info['objectName'];
+                $propertyName = $info['propertyName'];
+                $joinName = $info['tableName']."_".$idx;
+                $selection = $info['tableName']."_".$idx.".".$propertyName; 
                 $queryBuilder = new PicoDatabaseQueryBuilder($this->database);
                 $queryBuilder
-                    ->select($joinName)
+                    ->select($selection)
                     ->from("$joinTableName $joinName")
                     ->where("$joinName.$primaryKey = $tableName.$columnName")
                     ->limit(1)
@@ -2322,14 +2314,14 @@ class PicoDatabasePersistence // NOSONAR
     public function applySubqueryResult($data, $row, $info, $subqueryInfo)
     {
         if(isset($subqueryInfo) && is_array($subqueryInfo))
-        {
+        {      
             foreach($subqueryInfo as $key=>$info)
             {
-                if(isset($data[$key]))
-                {
+                if(isset($row[$key]))
+                { 
                     $obj = new MagicObject();
                     $obj->set($info['primaryKey'], $row[$info['columnName']]);
-                    $value = $row[$info['propertyName']];
+                    $value = $row[$info['objectName']];
                     $obj->set($info['propertyName'], $value);
                     $data[$info['objectName']] = $obj;
                 }
