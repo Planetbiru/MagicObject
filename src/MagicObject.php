@@ -1464,6 +1464,19 @@ class MagicObject extends stdClass // NOSONAR
             throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
         }
     }
+    
+    public function findOneWithPrimaryKeyValue($primaryKeyVal, $passive = false, $subqueryInfo = null)
+    {
+        if($this->_database != null && $this->_database->isConnected())
+        {
+            $persist = new PicoDatabasePersistence($this->_database, $this);
+            return $persist->findOneWithPrimaryKeyValue($primaryKeyVal, $passive, $subqueryInfo);
+        }
+        else
+        {
+            throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
+        }
+    }
 
     /**
      * Find one by params

@@ -704,10 +704,11 @@ try
 	//print_r($sql);
 	$arr = array(
 		'producer'=>array(
-			'objectName'=>'producer',
+			'entityName'=>'Producer',
 			'tableName'=>'producer',
 			'primaryKey'=>'producer_id',
 			'columnName'=>'producer_id',
+			'objectName'=>'producer',
 			'propertyName'=>'name'
 		)
 	);
