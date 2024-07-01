@@ -2382,6 +2382,10 @@ class PicoDatabasePersistence // NOSONAR
                     $obj->set($info['propertyName'], $value);
                     $data[$info['objectName']] = $obj;
                 }
+                else
+                {
+                    $data[$info['objectName']] = new MagicObject();
+                }
             }
         }
         return $data;
