@@ -1416,6 +1416,18 @@ $sessions->startSession();
 
 Entity is class to access database. Entity is derived from MagicObject. Some annotations required to activated all entity features. 
 
+**Constructor**
+
+Parameters:
+
+1. array|stdClass|object $data
+
+Initial data
+
+2. PicoDatabase $database
+
+Database connection
+
 ```php
 <?php
 
@@ -5005,6 +5017,17 @@ $album = new Album(null, $database);
 $album->where($specfification)->delete();
 
 ```
+
+### Subquery
+
+For large data with a very large number of records, using joins, whether inner joins, outer joins, left joins or right joins, will require a lot of resources, which will reduce application and database performance. MagicObject version 1.10 introduces searches using subqueries instead of joins so that the data search process becomes faster.
+
+Using subqueries is not without its drawbacks. The unavoidable disadvantages of subqueries are as follows:
+
+1. just take one column from the reference table
+2. Cannot use columns in the reference table either for filter (where) or for sorting (order by).
+
+Users must be aware of these two shortcomings before deciding to use a subquery.
 ## Filtering, Ordering and Pagination
 
 MagicObject will filter data according to the given criteria. On the other hand, MagicObject will only retrieve data on the specified page by specifying `limit` and `offset` data in the `select` query.

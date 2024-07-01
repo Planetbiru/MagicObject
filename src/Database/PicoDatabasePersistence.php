@@ -2185,13 +2185,149 @@ class PicoDatabasePersistence // NOSONAR
      * @param PicoSpecification $specification Specification
      * @param PicoPageable|null $pageable Pagable
      * @param PicoSortable|string|null $sortable Sortable
-     * @return array|null
+     * @param array $subqueryInfo
      * @throws EntityException|EmptyResultException
      */
-    public function findAll($specification, $pageable = null, $sortable = null)
+    public function findAll($specification, $pageable = null, $sortable = null, $subqueryInfo = null)
     {
-        $info = $this->getTableInfo();     
-        return $this->findSpecific($this->getAllColumns($info), $specification, $pageable, $sortable);
+        $info = $this->getTableInfo(); 
+        if($subqueryInfo === null)    
+        {
+            return $this->findSpecific($this->getAllColumns($info), $specification, $pageable, $sortable);
+        }
+        else
+        {
+            return $this->findSpecificWithSubquery($this->getAllColumns($info), $specification, $pageable, $sortable, $subqueryInfo);
+        }
+    }
+    
+    /**
+     * Get all record from database wihout filter with subquery
+     *
+     * @param string $selected
+     * @param PicoSpecification $specification Specification
+     * @param PicoPageable|null $pageable Pagable
+     * @param PicoSortable|string|null $sortable Sortable
+     * @param array $subqueryInfo
+     * @throws EntityException|EmptyResultException
+     */
+    public function findSpecificWithSubquery($selected, $specification, $pageable = null, $sortable = null, $subqueryInfo = null)
+    {
+        $data = null;
+        $result = array();
+        $info = $this->getTableInfo();
+        $selected = $this->joinString($selected, $this->subquery($info, $subqueryInfo), ", ");
+        $sqlQuery = $this->findSpecificQuery($selected, $specification, $pageable, $sortable, $info);
+    
+        try
+        {
+            $stmt = $this->database->executeQuery($sqlQuery);
+            if($this->matchRow($stmt))
+            {
+                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $data = array();
+                foreach($rows as $row)                
+                {
+                    $data = $this->fixDataType($row, $info); 
+                    $data = $this->applySubqueryResult($data, $row, $info, $subqueryInfo);
+                    $result[] = $data;
+                }
+            }
+            else
+            {
+                throw new EmptyResultException(self::MESSAGE_NO_RECORD_FOUND);
+            }
+        }
+        catch(Exception $e)
+        {
+            throw new EmptyResultException($e->getMessage());
+        }
+        return $result;
+    }
+    
+    /**
+     * Create subquery
+     *
+     * @param PicoTableInfo $info
+     * @param array $subqueryInfo
+     * @return string
+     */
+    public function subquery($info, $subqueryInfo)
+    {
+        $subquery = array();
+        $tableName = $info->getTableName();
+        if(isset($subqueryInfo) && is_array($subqueryInfo))
+        {
+            $idx = 1;
+            foreach($subqueryInfo as $info)
+            {
+                $joinTableName = $info['tableName'];
+                $columnName = $info['columnName'];                
+                $primaryKey = $info['primaryKey'];
+                $objectName = $info['objectName'];
+                $propertyName = $info['propertyName'];
+                $joinName = $info['tableName']."_".$idx;
+                $selection = $info['tableName']."_".$idx.".".$propertyName; 
+                $queryBuilder = new PicoDatabaseQueryBuilder($this->database);
+                $queryBuilder
+                    ->select($selection)
+                    ->from("$joinTableName $joinName")
+                    ->where("$joinName.$primaryKey = $tableName.$columnName")
+                    ->limit(1)
+                    ->offset(0);
+                $subquery[] = "(".$queryBuilder.") as $objectName";
+                $idx++;
+            }
+        }
+        return implode(", \r\n", $subquery);
+    }
+    
+    /**
+     * Join string with separator
+     *
+     * @param string $string1
+     * @param string $string2
+     * @param string $separator
+     * @return string
+     */
+    public function joinString($string1, $string2, $separator)
+    {
+        if(!empty($string1) && !empty($string2))
+        {
+            return $string1.$separator.$string2;
+        }
+        else
+        {
+            return $string1;
+        }
+    }
+    
+    /**
+     * Apply subquery result
+     *
+     * @param array $data
+     * @param array $row
+     * @param array $info
+     * @param array $subqueryInfo
+     * @return array
+     */
+    public function applySubqueryResult($data, $row, $info, $subqueryInfo)
+    {
+        if(isset($subqueryInfo) && is_array($subqueryInfo))
+        {      
+            foreach($subqueryInfo as $key=>$info)
+            {
+                if(isset($row[$key]))
+                { 
+                    $obj = new MagicObject();
+                    $obj->set($info['primaryKey'], $row[$info['columnName']]);
+                    $value = $row[$info['objectName']];
+                    $obj->set($info['propertyName'], $value);
+                    $data[$info['objectName']] = $obj;
+                }
+            }
+        }
+        return $data;
     }
 
     /**

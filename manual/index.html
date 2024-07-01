@@ -1247,6 +1247,16 @@ $sessions-&gt;startSession();</code></pre>
 <article class="article" id="part12">
 <h2>Entity</h2>
 <p>Entity is class to access database. Entity is derived from MagicObject. Some annotations required to activated all entity features. </p>
+<p><strong>Constructor</strong></p>
+<p>Parameters:</p>
+<ol>
+<li>array|stdClass|object $data</li>
+</ol>
+<p>Initial data</p>
+<ol start="2">
+<li>PicoDatabase $database</li>
+</ol>
+<p>Database connection</p>
 <pre><code class="language-php">&lt;?php
 
 namespace MusicProductionManager\Data\Entity;
@@ -4581,6 +4591,14 @@ $specfification-&gt;addAnd($spec2);
 $album = new Album(null, $database);
 $album-&gt;where($specfification)-&gt;delete();
 </code></pre>
+<h3>Subquery</h3>
+<p>For large data with a very large number of records, using joins, whether inner joins, outer joins, left joins or right joins, will require a lot of resources, which will reduce application and database performance. MagicObject version 1.10 introduces searches using subqueries instead of joins so that the data search process becomes faster.</p>
+<p>Using subqueries is not without its drawbacks. The unavoidable disadvantages of subqueries are as follows:</p>
+<ol>
+<li>just take one column from the reference table</li>
+<li>Cannot use columns in the reference table either for filter (where) or for sorting (order by).</li>
+</ol>
+<p>Users must be aware of these two shortcomings before deciding to use a subquery.</p>
 </article>
 
 <article class="article" id="part13">

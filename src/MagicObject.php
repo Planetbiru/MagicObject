@@ -1157,11 +1157,12 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoPageable|string $pageable
      * @param PicoSortable|string $sortable
      * @param boolean $passive
+     * @param array $subqueryInfo
      * @return PicoPageData
      * @throws NoRecordFoundException if no record found
      * @throws NoDatabaseConnectionException if no database connection
      */
-    public function findAll($specification = null, $pageable = null, $sortable = null, $passive = false)
+    public function findAll($specification = null, $pageable = null, $sortable = null, $passive = false, $subqueryInfo = null)
     {
         $startTime = microtime(true);
         try
@@ -1170,7 +1171,7 @@ class MagicObject extends stdClass // NOSONAR
             if($this->_database != null && $this->_database->isConnected())
             {
                 $persist = new PicoDatabasePersistence($this->_database, $this);
-                $result = $persist->findAll($specification, $pageable, $sortable);
+                $result = $persist->findAll($specification, $pageable, $sortable, $subqueryInfo);
                 
                 if($this->_notNullAndNotEmpty($result))
                 {
