@@ -10,7 +10,7 @@ use MagicObject\Util\PicoStringUtil;
 use ReflectionClass;
 use stdClass;
 
-class SetterGetter
+class SetterGetter extends stdClass
 {
     const JSON = 'JSON';
     
@@ -50,6 +50,33 @@ class SetterGetter
             }
             $this->loadData($data);
         }
+    }
+
+    /**
+     * Load data to object
+     * @param mixed $data
+     * @return self
+     */
+    public function loadData($data)
+    {
+        if($data != null)
+        {
+            if($data instanceof self)
+            {
+                $values = $data->value();
+                foreach ($values as $key => $value) {
+                    $key2 = PicoStringUtil::camelize($key);
+                    $this->set($key2, $value);
+                }
+            }
+            else if (is_array($data) || is_object($data)) {
+                foreach ($data as $key => $value) {
+                    $key2 = PicoStringUtil::camelize($key);
+                    $this->set($key2, $value);
+                }
+            }
+        }
+        return $this;
     }
 
     /**
