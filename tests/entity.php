@@ -719,7 +719,7 @@ try
 		echo $row."\r\n";
 	}
 	*/
-	$album->findOneWithPrimaryKeyValue('06503fc6282269b8bd8b', $arr);
+	$album->findOneWithPrimaryKeyValue('0648d495ade4515811f2', $arr);
 	echo $album;
 }
 catch(Exception $e)
