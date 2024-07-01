@@ -26,7 +26,7 @@ class SetterGetter
      * 
      * @param self|array|stdClass|object $data
      */
-    public function __construct($data)
+    public function __construct($data = null)
     {
         $jsonAnnot = new PicoAnnotationParser(get_class($this));
         $params = $jsonAnnot->getParameters();
