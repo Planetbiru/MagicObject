@@ -3603,3 +3603,14 @@ $album = new Album(null, $database);
 $album->where($specfification)->delete();
 
 ```
+
+### Subquery
+
+For large data with a very large number of records, using joins, whether inner joins, outer joins, left joins or right joins, will require a lot of resources, which will reduce application and database performance. MagicObject version 1.10 introduces searches using subqueries instead of joins so that the data search process becomes faster.
+
+Using subqueries is not without its drawbacks. The unavoidable disadvantages of subqueries are as follows:
+
+1. just take one column from the reference table
+2. Cannot use columns in the reference table either for filter (where) or for sorting (order by).
+
+Users must be aware of these two shortcomings before deciding to use a subquery.
