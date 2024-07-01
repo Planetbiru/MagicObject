@@ -2216,7 +2216,7 @@ class PicoDatabasePersistence // NOSONAR
         $selected = $this->getAllColumns($info);
         $data = null;
         $info = $this->getTableInfo();
-        $selected = $this->joinString($selected, $this->subquery($info, $subqueryInfo), ", ");
+        $selected = $this->joinString($selected, $this->subquery($info, $subqueryInfo), ", \r\n");
         $primaryKey = null;
         try
         {
@@ -2272,7 +2272,7 @@ class PicoDatabasePersistence // NOSONAR
         $data = null;
         $result = array();
         $info = $this->getTableInfo();
-        $selected = $this->joinString($selected, $this->subquery($info, $subqueryInfo), ", ");
+        $selected = $this->joinString($selected, $this->subquery($info, $subqueryInfo), ", \r\n");
         $sqlQuery = $this->findSpecificQuery($selected, $specification, $pageable, $sortable, $info);
     
         try
@@ -2369,7 +2369,6 @@ class PicoDatabasePersistence // NOSONAR
      */
     public function applySubqueryResult($data, $row, $info, $subqueryInfo)
     {
-        
         if(isset($subqueryInfo) && is_array($subqueryInfo))
         {      
             foreach($subqueryInfo as $info)
@@ -2377,11 +2376,10 @@ class PicoDatabasePersistence // NOSONAR
                 $objectName = $info['objectName'];
                 if(isset($row[$objectName]))
                 {
-                    $obj = new MagicObject();
-                    $obj->set($info['primaryKey'], $row[$info['columnName']]);
-                    $value = $row[$info['objectName']];
-                    $obj->set($info['propertyName'], $value);
-                    $data[$objectName] = $obj;
+                    $data[$objectName] = (new MagicObject())
+                        ->set($info['primaryKey'], $row[$info['columnName']])
+                        ->set($info['propertyName'], $row[$info['objectName']])
+                    ;
                 }
                 else
                 {
