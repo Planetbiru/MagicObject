@@ -2280,9 +2280,7 @@ class PicoDatabasePersistence // NOSONAR
             $stmt = $this->database->executeQuery($sqlQuery);
             if($this->matchRow($stmt))
             {
-                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                $data = array();
-                foreach($rows as $row)                
+                while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT))                
                 {
                     $data = $this->fixDataType($row, $info); 
                     $data = $this->applySubqueryResult($data, $row, $info, $subqueryInfo);
@@ -2363,7 +2361,7 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param array $data
      * @param array $row
-     * @param array $info
+     * @param PicoTableInfo $info
      * @param array $subqueryInfo
      * @return array
      */
@@ -2413,9 +2411,7 @@ class PicoDatabasePersistence // NOSONAR
             $stmt = $this->database->executeQuery($sqlQuery);
             if($this->matchRow($stmt))
             {
-                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                $data = array();
-                foreach($rows as $row)                
+                while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT))                
                 {
                     $data = $this->fixDataType($row, $info); 
                     $data = $this->join($data, $row, $info);
@@ -2473,9 +2469,7 @@ class PicoDatabasePersistence // NOSONAR
             $stmt = $this->database->executeQuery($sqlQuery);
             if($this->matchRow($stmt))
             {
-                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                $data = array();
-                foreach($rows as $row)                
+                while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT))               
                 {
                     $data = $this->fixDataType($row, $info); 
                     $data = $this->join($data, $row, $info);
@@ -3269,8 +3263,7 @@ class PicoDatabasePersistence // NOSONAR
             $stmt = $this->database->executeQuery($sqlQuery);
             if($this->matchRow($stmt))
             {
-                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                foreach($rows as $row)
+                while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT))
                 {
                     $data = $this->fixDataType($row, $info);
                     $data = $this->join($data, $row, $info);
