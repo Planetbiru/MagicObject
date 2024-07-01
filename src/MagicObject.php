@@ -1479,7 +1479,16 @@ class MagicObject extends stdClass // NOSONAR
         if($this->_database != null && $this->_database->isConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
-            return $persist->findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryInfo);
+            $result = $persist->findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryInfo);
+            if($this->_notNullAndNotEmpty($result))
+            {
+                $this->loadData($result);
+                return $this;
+            }
+            else
+            {
+                throw new NoRecordFoundException(self::MESSAGE_NO_RECORD_FOUND);
+            }
         }
         else
         {

@@ -2207,7 +2207,7 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param mixed $primaryKeyVal
      * @param array $subqueryInfo
-     * @return MagicObject
+     * @return array
      */
     public function findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryInfo)
     {
@@ -2244,7 +2244,6 @@ class PicoDatabasePersistence // NOSONAR
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
                 $data = $this->fixDataType($row, $info); 
                 $data = $this->applySubqueryResult($data, $row, $info, $subqueryInfo);
-                print_r($data);
             }
             else
             {
@@ -2255,8 +2254,7 @@ class PicoDatabasePersistence // NOSONAR
         {
             throw new EmptyResultException($e->getMessage());
         }
-        $this->object->loadData($data);
-        return $this->object;
+        return $data;
     }
     
     /**
