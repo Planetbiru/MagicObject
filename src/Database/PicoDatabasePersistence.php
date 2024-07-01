@@ -2320,7 +2320,7 @@ class PicoDatabasePersistence // NOSONAR
                 $joinTableName = $info['tableName'];
                 $columnName = $info['columnName'];                
                 $primaryKey = $info['primaryKey'];
-                $objectName = $info['objectName'];
+                $objectNameSub = $info['objectName']."_sub";
                 $propertyName = $info['propertyName'];
                 $joinName = $info['tableName']."_".$idx;
                 $selection = $info['tableName']."_".$idx.".".$propertyName; 
@@ -2331,7 +2331,7 @@ class PicoDatabasePersistence // NOSONAR
                     ->where("$joinName.$primaryKey = $tableName.$columnName")
                     ->limit(1)
                     ->offset(0);
-                $subquery[] = "(".$queryBuilder.") as $objectName";
+                $subquery[] = "(".$queryBuilder.") as $objectNameSub";
                 $idx++;
             }
         }
@@ -2374,11 +2374,12 @@ class PicoDatabasePersistence // NOSONAR
             foreach($subqueryInfo as $info)
             {
                 $objectName = $info['objectName'];
-                if(isset($row[$objectName]))
+                $objectNameSub = $info['objectName']."_sub";
+                if(isset($row[$objectNameSub]))
                 {
                     $data[$objectName] = (new MagicObject())
                         ->set($info['primaryKey'], $row[$info['columnName']])
-                        ->set($info['propertyName'], $row[$info['objectName']])
+                        ->set($info['propertyName'], $row[$objectNameSub])
                     ;
                 }
                 else
