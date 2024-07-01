@@ -49,6 +49,9 @@ class MagicObject extends stdClass // NOSONAR
     const JSON = 'JSON';
     const YAML = 'Yaml';
     
+    const ATTR_CHECKED = ' checked="checked"';
+    const ATTR_SELECTED = ' selected="selected"';
+    
     /**
      * Flag readonly
      *
@@ -1845,32 +1848,32 @@ class MagicObject extends stdClass // NOSONAR
         }
         else if (strncasecmp($method, "booleanToSelectedBy", 19) === 0) {
             $prop = lcfirst(substr($method, 19));
-            return $this->booleanToTextBy($prop, array(' selected="selected"', ''));
+            return $this->booleanToTextBy($prop, array(self::ATTR_SELECTED, ''));
         }
         else if (strncasecmp($method, "booleanToCheckedBy", 18) === 0) {
             $prop = lcfirst(substr($method, 18));
-            return $this->booleanToTextBy($prop, array(' cheked="checked"', ''));
+            return $this->booleanToTextBy($prop, array(self::ATTR_CHECKED, ''));
         }
         else if (strncasecmp($method, "createSelected", 14) === 0) {
             $var = lcfirst(substr($method, 14));
             if(isset($params) && isset($params[0]))
             {
-                return isset($this->$var) && $this->$var == $params[0] ? ' selected="selected"' : '';
+                return isset($this->$var) && $this->$var == $params[0] ? self::ATTR_SELECTED : '';
             }
             else
             {
-                return isset($this->$var) && $this->$var == 1 ? ' selected="selected"' : '';
+                return isset($this->$var) && $this->$var == 1 ? self::ATTR_SELECTED : '';
             }
         }
         else if (strncasecmp($method, "createChecked", 13) === 0) {
             $var = lcfirst(substr($method, 13));
             if(isset($params) && isset($params[0]))
             {
-                return isset($this->$var) && $this->$var == $params[0] ? ' checked="checked"' : '';
+                return isset($this->$var) && $this->$var == $params[0] ? self::ATTR_CHECKED : '';
             }
             else
             {
-                return isset($this->$var) && $this->$var == 1 ? ' checked="checked"' : '';
+                return isset($this->$var) && $this->$var == 1 ? self::ATTR_CHECKED : '';
             }
         }            
         else if (strncasecmp($method, "startsWith", 10) === 0) {
