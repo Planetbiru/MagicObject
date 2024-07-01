@@ -49,6 +49,9 @@ class MagicObject extends stdClass // NOSONAR
     const JSON = 'JSON';
     const YAML = 'Yaml';
     
+    const ATTR_CHECKED = ' checked="checked"';
+    const ATTR_SELECTED = ' selected="selected"';
+    
     /**
      * Flag readonly
      *
@@ -1264,6 +1267,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function countAll($specification = null)
     {
+        $result = false;
         try
         {
             if($this->_database != null && $this->_database->isConnected())
@@ -1271,22 +1275,23 @@ class MagicObject extends stdClass // NOSONAR
                 $persist = new PicoDatabasePersistence($this->_database, $this);
                 if($specification != null && $specification instanceof PicoSpecification)
                 {
-                    return $persist->countAll($specification);
+                    $result = $persist->countAll($specification);
                 }
                 else
                 {
-                    return $persist->countAll(null);
+                    $result = $persist->countAll(null);
                 }
             }
             else
             {
-                return false;
+                $result = false;
             }
         }
         catch(Exception $e)
         {
-            return false;
+            $result = false;
         }
+        return $result;
     }
     
     /**
@@ -1458,6 +1463,35 @@ class MagicObject extends stdClass // NOSONAR
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             return $persist->deleteBy($method, $params);
+        }
+        else
+        {
+            throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
+        }
+    }
+    
+    /**
+     * Find one with primary key value
+     *
+     * @param mixed $primaryKeyVal
+     * @param array $subqueryInfo
+     * @return self
+     */
+    public function findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryInfo = null)
+    {
+        if($this->_database != null && $this->_database->isConnected())
+        {
+            $persist = new PicoDatabasePersistence($this->_database, $this);
+            $result = $persist->findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryInfo);
+            if($this->_notNullAndNotEmpty($result))
+            {
+                $this->loadData($result);
+                return $this;
+            }
+            else
+            {
+                throw new NoRecordFoundException(self::MESSAGE_NO_RECORD_FOUND);
+            }
         }
         else
         {
@@ -1814,32 +1848,32 @@ class MagicObject extends stdClass // NOSONAR
         }
         else if (strncasecmp($method, "booleanToSelectedBy", 19) === 0) {
             $prop = lcfirst(substr($method, 19));
-            return $this->booleanToTextBy($prop, array(' selected="selected"', ''));
+            return $this->booleanToTextBy($prop, array(self::ATTR_SELECTED, ''));
         }
         else if (strncasecmp($method, "booleanToCheckedBy", 18) === 0) {
             $prop = lcfirst(substr($method, 18));
-            return $this->booleanToTextBy($prop, array(' cheked="checked"', ''));
+            return $this->booleanToTextBy($prop, array(self::ATTR_CHECKED, ''));
         }
         else if (strncasecmp($method, "createSelected", 14) === 0) {
             $var = lcfirst(substr($method, 14));
             if(isset($params) && isset($params[0]))
             {
-                return isset($this->$var) && $this->$var == $params[0] ? ' selected="selected"' : '';
+                return isset($this->$var) && $this->$var == $params[0] ? self::ATTR_SELECTED : '';
             }
             else
             {
-                return isset($this->$var) && $this->$var == 1 ? ' selected="selected"' : '';
+                return isset($this->$var) && $this->$var == 1 ? self::ATTR_SELECTED : '';
             }
         }
         else if (strncasecmp($method, "createChecked", 13) === 0) {
             $var = lcfirst(substr($method, 13));
             if(isset($params) && isset($params[0]))
             {
-                return isset($this->$var) && $this->$var == $params[0] ? ' checked="checked"' : '';
+                return isset($this->$var) && $this->$var == $params[0] ? self::ATTR_CHECKED : '';
             }
             else
             {
-                return isset($this->$var) && $this->$var == 1 ? ' checked="checked"' : '';
+                return isset($this->$var) && $this->$var == 1 ? self::ATTR_CHECKED : '';
             }
         }            
         else if (strncasecmp($method, "startsWith", 10) === 0) {

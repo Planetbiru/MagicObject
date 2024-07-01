@@ -704,18 +704,23 @@ try
 	//print_r($sql);
 	$arr = array(
 		'producer'=>array(
-			'objectName'=>'producer',
+			'entityName'=>'Producer',
 			'tableName'=>'producer',
 			'primaryKey'=>'producer_id',
 			'columnName'=>'producer_id',
+			'objectName'=>'producer',
 			'propertyName'=>'name'
 		)
 	);
+	/*
 	$r = $album->findAll(null, null, null, true, $arr);
 	foreach($r->getResult() as $row)
 	{
 		echo $row."\r\n";
 	}
+	*/
+	$album->findOneWithPrimaryKeyValue('0648d495ade4515811f2', $arr);
+	echo $album;
 }
 catch(Exception $e)
 {

@@ -10,7 +10,7 @@ use MagicObject\Util\PicoStringUtil;
 use ReflectionClass;
 use stdClass;
 
-class SetterGetter
+class SetterGetter extends stdClass
 {
     const JSON = 'JSON';
     
@@ -24,7 +24,7 @@ class SetterGetter
     /**
      * Constructor
      * 
-     * @param mixed $data Initial data
+     * @param self|array|stdClass|object $data
      */
     public function __construct($data = null)
     {
