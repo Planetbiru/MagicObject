@@ -2372,19 +2372,20 @@ class PicoDatabasePersistence // NOSONAR
         
         if(isset($subqueryInfo) && is_array($subqueryInfo))
         {      
-            foreach($subqueryInfo as $key=>$info)
+            foreach($subqueryInfo as $info)
             {
-                if(isset($row[$key]))
+                $objectName = $info['objectName'];
+                if(isset($row[$objectName]))
                 {
                     $obj = new MagicObject();
                     $obj->set($info['primaryKey'], $row[$info['columnName']]);
                     $value = $row[$info['objectName']];
                     $obj->set($info['propertyName'], $value);
-                    $data[$info['objectName']] = $obj;
+                    $data[$objectName] = $obj;
                 }
                 else
                 {
-                    $data[$info['objectName']] = new MagicObject();
+                    $data[$objectName] = new MagicObject();
                 }
             }
         }
