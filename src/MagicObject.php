@@ -1264,6 +1264,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function countAll($specification = null)
     {
+        $result = false;
         try
         {
             if($this->_database != null && $this->_database->isConnected())
@@ -1271,22 +1272,23 @@ class MagicObject extends stdClass // NOSONAR
                 $persist = new PicoDatabasePersistence($this->_database, $this);
                 if($specification != null && $specification instanceof PicoSpecification)
                 {
-                    return $persist->countAll($specification);
+                    $result = $persist->countAll($specification);
                 }
                 else
                 {
-                    return $persist->countAll(null);
+                    $result = $persist->countAll(null);
                 }
             }
             else
             {
-                return false;
+                $result = false;
             }
         }
         catch(Exception $e)
         {
-            return false;
+            $result = false;
         }
+        return $result;
     }
     
     /**
