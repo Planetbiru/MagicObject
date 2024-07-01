@@ -5,6 +5,7 @@ namespace MagicObject;
 use MagicObject\Exceptions\InvalidAnnotationException;
 use MagicObject\Exceptions\InvalidQueryInputException;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
+use MagicObject\Util\PicoArrayUtil;
 use MagicObject\Util\PicoStringUtil;
 use ReflectionClass;
 use stdClass;
@@ -22,8 +23,10 @@ class SetterGetter
 
     /**
      * Constructor
+     * 
+     * @param self|array|stdClass|object $data
      */
-    public function __construct()
+    public function __construct($data)
     {
         $jsonAnnot = new PicoAnnotationParser(get_class($this));
         $params = $jsonAnnot->getParameters();
@@ -38,6 +41,14 @@ class SetterGetter
             {
                 throw new InvalidAnnotationException("Invalid annotation @".$paramName);
             }  
+        }
+        if($data != null)
+        {
+            if(is_array($data))
+            {
+                $data = PicoArrayUtil::camelize($data);
+            }
+            $this->loadData($data);
         }
     }
 
