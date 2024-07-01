@@ -2216,7 +2216,7 @@ class PicoDatabasePersistence // NOSONAR
         $selected = $this->getAllColumns($info);
         $data = null;
         $info = $this->getTableInfo();
-        $selected = $this->joinString($selected, $this->subquery($info, $subqueryInfo), ", \r\n");
+        $selected = $this->joinString($selected, $this->subquery($info, $subqueryInfo), self::COMMA_RETURN);
         $primaryKey = null;
         try
         {
@@ -2272,7 +2272,7 @@ class PicoDatabasePersistence // NOSONAR
         $data = null;
         $result = array();
         $info = $this->getTableInfo();
-        $selected = $this->joinString($selected, $this->subquery($info, $subqueryInfo), ", \r\n");
+        $selected = $this->joinString($selected, $this->subquery($info, $subqueryInfo), self::COMMA_RETURN);
         $sqlQuery = $this->findSpecificQuery($selected, $specification, $pageable, $sortable, $info);
     
         try
@@ -2335,7 +2335,7 @@ class PicoDatabasePersistence // NOSONAR
                 $idx++;
             }
         }
-        return implode(", \r\n", $subquery);
+        return implode(self::COMMA_RETURN, $subquery);
     }
     
     /**
