@@ -1471,16 +1471,15 @@ class MagicObject extends stdClass // NOSONAR
      * Find one with primary key value
      *
      * @param mixed $primaryKeyVal
-     * @param boolean $passive
      * @param array $subqueryInfo
      * @return self
      */
-    public function findOneWithPrimaryKeyValue($primaryKeyVal, $passive = false, $subqueryInfo = null)
+    public function findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryInfo = null)
     {
         if($this->_database != null && $this->_database->isConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
-            return $persist->findOneWithPrimaryKeyValue($primaryKeyVal, $passive, $subqueryInfo);
+            return $persist->findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryInfo);
         }
         else
         {

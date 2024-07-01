@@ -712,11 +712,15 @@ try
 			'propertyName'=>'name'
 		)
 	);
+	/*
 	$r = $album->findAll(null, null, null, true, $arr);
 	foreach($r->getResult() as $row)
 	{
 		echo $row."\r\n";
 	}
+	*/
+	$album->findOneWithPrimaryKeyValue('06503fc6282269b8bd8b', $arr);
+	echo $album;
 }
 catch(Exception $e)
 {

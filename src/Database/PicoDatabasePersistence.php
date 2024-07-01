@@ -2206,11 +2206,10 @@ class PicoDatabasePersistence // NOSONAR
      * Find one with primary key value
      *
      * @param mixed $primaryKeyVal
-     * @param boolean $passive
      * @param array $subqueryInfo
      * @return MagicObject
      */
-    public function findOneWithPrimaryKeyValue($primaryKeyVal, $passive, $subqueryInfo)
+    public function findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryInfo)
     {
         $info = $this->getTableInfo();
         $tableName = $info->getTableName();
@@ -2242,9 +2241,10 @@ class PicoDatabasePersistence // NOSONAR
             $stmt = $this->database->executeQuery($sqlQuery);
             if($this->matchRow($stmt))
             {
-                $data = $stmt->fetch(PDO::FETCH_ASSOC);
-                $data = $this->fixDataType($data, $info); 
-                $data = $this->applySubqueryResult($data, $data, $info, $subqueryInfo);
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $data = $this->fixDataType($row, $info); 
+                $data = $this->applySubqueryResult($data, $row, $info, $subqueryInfo);
+                print_r($data);
             }
             else
             {
@@ -2255,14 +2255,8 @@ class PicoDatabasePersistence // NOSONAR
         {
             throw new EmptyResultException($e->getMessage());
         }
-        if($passive)
-        {
-            return new $this->className($data);
-        }
-        else
-        {
-            return new $this->className($data, $this->database);
-        }
+        $this->object->loadData($data);
+        return $this->object;
     }
     
     /**
@@ -2377,12 +2371,13 @@ class PicoDatabasePersistence // NOSONAR
      */
     public function applySubqueryResult($data, $row, $info, $subqueryInfo)
     {
+        
         if(isset($subqueryInfo) && is_array($subqueryInfo))
         {      
             foreach($subqueryInfo as $key=>$info)
             {
                 if(isset($row[$key]))
-                { 
+                {
                     $obj = new MagicObject();
                     $obj->set($info['primaryKey'], $row[$info['columnName']]);
                     $value = $row[$info['objectName']];
