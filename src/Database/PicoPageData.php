@@ -271,11 +271,11 @@ class PicoPageData
     }
 
     /**
-     * Get pDO statement
+     * Get PDO statement
      *
      * @return  PDOStatement
      */ 
-    public function getStmt()
+    public function getPDOStatement()
     {
         if($this->stmt == null)
         {

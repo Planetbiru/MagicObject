@@ -2269,7 +2269,7 @@ class PicoDatabasePersistence // NOSONAR
             {
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
                 $data = $this->fixDataType($row, $info); 
-                $data = $this->applySubqueryResult($data, $row, $info, $subqueryInfo);
+                $data = self::applySubqueryResult($data, $row, $subqueryInfo);
             }
             else
             {
@@ -2309,10 +2309,10 @@ class PicoDatabasePersistence // NOSONAR
             $stmt = $this->database->executeQuery($sqlQuery);
             if($this->matchRow($stmt))
             {
-                while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT))                
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT))                
                 {
                     $data = $this->fixDataType($row, $info); 
-                    $data = $this->applySubqueryResult($data, $row, $info, $subqueryInfo);
+                    $data = self::applySubqueryResult($data, $row, $subqueryInfo);
                     $result[] = $data;
                 }
             }
@@ -2347,7 +2347,7 @@ class PicoDatabasePersistence // NOSONAR
                 $joinTableName = $info['tableName'];
                 $columnName = $info['columnName'];                
                 $primaryKey = $info['primaryKey'];
-                $objectNameSub = $info['objectName']."_sub";
+                $objectNameSub = $info['objectName'];
                 $propertyName = $info['propertyName'];
                 $joinName = $info['tableName']."_".$idx;
                 $selection = $info['tableName']."_".$idx.".".$propertyName; 
@@ -2390,18 +2390,17 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param array $data
      * @param array $row
-     * @param PicoTableInfo $info
      * @param array $subqueryInfo
      * @return array
      */
-    public function applySubqueryResult($data, $row, $info, $subqueryInfo)
+    public static function applySubqueryResult($data, $row, $subqueryInfo)
     {
         if(isset($subqueryInfo) && is_array($subqueryInfo))
         {      
             foreach($subqueryInfo as $info)
             {
                 $objectName = $info['objectName'];
-                $objectNameSub = $info['objectName']."_sub";
+                $objectNameSub = $info['objectName'];
                 if(isset($row[$objectNameSub]))
                 {
                     $data[$objectName] = (new MagicObject())
@@ -2440,7 +2439,7 @@ class PicoDatabasePersistence // NOSONAR
             $stmt = $this->database->executeQuery($sqlQuery);
             if($this->matchRow($stmt))
             {
-                while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT))                
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT))                
                 {
                     $data = $this->fixDataType($row, $info); 
                     $data = $this->join($data, $row, $info);
@@ -2524,7 +2523,7 @@ class PicoDatabasePersistence // NOSONAR
             $stmt = $this->database->executeQuery($sqlQuery);
             if($this->matchRow($stmt))
             {
-                while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT))               
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT))               
                 {
                     $data = $this->fixDataType($row, $info); 
                     $data = $this->join($data, $row, $info);
@@ -3318,7 +3317,7 @@ class PicoDatabasePersistence // NOSONAR
             $stmt = $this->database->executeQuery($sqlQuery);
             if($this->matchRow($stmt))
             {
-                while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT))
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT))
                 {
                     $data = $this->fixDataType($row, $info);
                     $data = $this->join($data, $row, $info);
