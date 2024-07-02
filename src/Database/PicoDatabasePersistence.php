@@ -2250,7 +2250,7 @@ class PicoDatabasePersistence // NOSONAR
     public function findAll($specification, $pageable = null, $sortable = null, $subqueryInfo = null)
     {
         $info = $this->getTableInfo(); 
-        if($subqueryInfo === null)    
+        if($subqueryInfo == null)    
         {
             return $this->findSpecific($this->getAllColumns($info), $specification, $pageable, $sortable);
         }
@@ -2344,7 +2344,14 @@ class PicoDatabasePersistence // NOSONAR
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT))                
                 {
                     $data = $this->fixDataType($row, $info); 
-                    $data = self::applySubqueryResult($data, $row, $subqueryInfo);
+                    if($subqueryInfo == null)
+                    {
+                        $data = $this->join($data, $row, $info);
+                    }
+                    else
+                    {
+                        $data = self::applySubqueryResult($data, $row, $subqueryInfo);
+                    }
                     $result[] = $data;
                 }
             }
@@ -2905,7 +2912,7 @@ class PicoDatabasePersistence // NOSONAR
      * @param PicoTableInfo $info Table information
      * @return object
      */
-    private function join($data, $row, $info)
+    public function join($data, $row, $info)
     {
         if(!empty($info->getJoinColumns()))
         {
@@ -2983,7 +2990,7 @@ class PicoDatabasePersistence // NOSONAR
      * @param PicoTableInfo $info Table information
      * @return array
      */
-    private function fixDataType($data, $info)
+    public function fixDataType($data, $info)
     {
         $result = array();
         $typeMap = $this->createTypeMap($info);

@@ -135,7 +135,6 @@ class MagicObject extends stdClass // NOSONAR
             }
             catch(InvalidQueryInputException $e)
             {
-                echo $e->getMessage();
                 throw new InvalidAnnotationException("Invalid annotation @".$paramName);
             }    
         }
@@ -1231,6 +1230,7 @@ class MagicObject extends stdClass // NOSONAR
                 }
                 else
                 {
+
                     $result = $persist->findAll($specification, $pageable, $sortable, $subqueryInfo);
                     $stmt = null;
                 }

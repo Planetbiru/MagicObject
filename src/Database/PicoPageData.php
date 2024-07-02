@@ -114,6 +114,13 @@ class PicoPageData
      * @var boolean
      */
     private $byCountResult = false;
+    
+    /**
+     * Entity
+     *
+     * @var MagicObject
+     */
+    private $entity;
 
     /**
      * Constructor
@@ -157,6 +164,7 @@ class PicoPageData
         }
         if($entity != null)
         {
+            $this->entity = $entity;
             $this->className = get_class($entity);
         }
         if($subqueryInfo != null)
@@ -375,7 +383,7 @@ class PicoPageData
     {
         $data = $row;
         if(isset($this->subqueryInfo) && is_array($this->subqueryInfo))
-        {      
+        { 
             foreach($this->subqueryInfo as $info)
             {
                 $objectName = $info['objectName'];
@@ -392,6 +400,13 @@ class PicoPageData
                     $data[$objectName] = new MagicObject();
                 }
             }
+        }
+        else
+        {
+            $persist = new PicoDatabasePersistence($this->entity->currentDatabase(), $this->entity);
+            $info = $this->entity->tableInfo();
+            $data = $persist->fixDataType($row, $info);
+            $data = $persist->join($data, $row, $info);
         }
         return new $this->className($data);
     }

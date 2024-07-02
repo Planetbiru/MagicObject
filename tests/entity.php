@@ -624,7 +624,7 @@ class Artist extends MagicObject
 $databaseCredential = new SecretObject();
 $databaseCredential->loadYamlFile(dirname(dirname(__DIR__))."/test.yml", false, true, true);
 $database = new PicoDatabase($databaseCredential->getDatabase(), function(){}, function($sql){
-	echo $sql;
+	// echo $sql;
 });
 $database->connect();
 
@@ -713,14 +713,16 @@ try
 		)
 	);
 	
+	
 	$r = $album->findAll(null, null, null, true, $arr, MagicObject::FIND_OPTION_NO_FETCH_DATA);
-	/*
+	
 	while(($data = $r->fetch()) !== false)
 	{
-		echo ($data);
+		//echo ($data);
 	}
-	*/
-	echo $r;
+		
+	
+	//echo $r;
 	
 
 	/*
@@ -730,7 +732,8 @@ try
 	{
 		echo $row."\r\n";
 	}
-	*/
+		*/
+	
 	
 	//$album->findOneWithPrimaryKeyValue('0648d495ade4515811f2', $arr);
 	//echo $album;
