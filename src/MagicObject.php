@@ -15,6 +15,7 @@ use MagicObject\Database\PicoPageData;
 use MagicObject\Database\PicoSortable;
 use MagicObject\Database\PicoSpecification;
 use MagicObject\Database\PicoTableInfo;
+use MagicObject\Exceptions\FindOptionException;
 use MagicObject\Exceptions\InvalidAnnotationException;
 use MagicObject\Exceptions\InvalidQueryInputException;
 use MagicObject\Exceptions\NoDatabaseConnectionException;
@@ -51,6 +52,11 @@ class MagicObject extends stdClass // NOSONAR
     
     const ATTR_CHECKED = ' checked="checked"';
     const ATTR_SELECTED = ' selected="selected"';
+
+
+    const FIND_OPTION_DEFAULT = 0;
+    const FIND_OPTION_NO_COUNT_DATA = 1;
+    const FIND_OPTION_NO_FETCH_DATA = 2;
     
     /**
      * Flag readonly
@@ -482,7 +488,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function save($includeNull = false)
     {
-        if($this->_database != null && $this->_database->isConnected())
+        if($this->_databaseConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             return $persist->save($includeNull);
@@ -520,7 +526,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function select()
     {
-        if($this->_database != null && $this->_database->isConnected())
+        if($this->_databaseConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             $data = $persist->select();
@@ -545,7 +551,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function selectAll()
     {
-        if($this->_database != null && $this->_database->isConnected())
+        if($this->_databaseConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             $data = $persist->selectAll();
@@ -590,7 +596,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function insert($includeNull = false)
     {
-        if($this->_database != null && $this->_database->isConnected())
+        if($this->_databaseConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             return $persist->insert($includeNull);
@@ -630,7 +636,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function update($includeNull = false)
     {
-        if($this->_database != null && $this->_database->isConnected())
+        if($this->_databaseConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             return $persist->update($includeNull);
@@ -669,7 +675,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function delete()
     {
-        if($this->_database != null && $this->_database->isConnected())
+        if($this->_databaseConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             return $persist->delete();
@@ -1144,13 +1150,56 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param PicoSpecification $specification
      * @param PicoPageable|string $pageable
+     * @param PicoSortable|string $sortable
+     * @param boolean $passive
+     * @param array $subqueryInfo
      * @return PicoPageData
      * @throws NoRecordFoundException if no record found
      * @throws NoDatabaseConnectionException if no database connection
      */
-    public function listAll($specification = null, $pageable = null)
+    public function listAll($specification = null, $pageable = null, $sortable = null, $passive = false, $subqueryInfo = null)
     {
-        return $this->findAll($specification, $pageable, true);
+        return $this->findAll($specification, $pageable, $sortable, $passive, $subqueryInfo);
+    }
+
+    /**
+     * Check if database is connected or not
+     * 
+     * @return boolean
+     */
+    private function _databaseConnected()
+    {
+        return $this->_database != null && $this->_database->isConnected();
+    }
+
+    /**
+     * Count data
+     *
+     * @param PicoDatabasePersistence $persist
+     * @param PicoSpecification $specification
+     * @param integer $findOption
+     * @param array $result
+     * @return integer
+     */
+    private function countData($persist, $specification, $findOption, $result)
+    {
+        if($findOption & self::FIND_OPTION_NO_COUNT_DATA)
+        {
+            if(isset($result) && is_array($result))
+            {
+                $match = count($result);
+            }
+            else
+            {
+                $match = 0;
+            }
+        }
+        else
+        {
+            $match = $persist->countAll($specification);
+        }
+
+        return $match;
     }
 
     /**
@@ -1161,47 +1210,58 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoSortable|string $sortable
      * @param boolean $passive
      * @param array $subqueryInfo
+     * @param integer $findOption
      * @return PicoPageData
      * @throws NoRecordFoundException if no record found
      * @throws NoDatabaseConnectionException if no database connection
      */
-    public function findAll($specification = null, $pageable = null, $sortable = null, $passive = false, $subqueryInfo = null)
+    public function findAll($specification = null, $pageable = null, $sortable = null, $passive = false, $subqueryInfo = null, $findOption = self::FIND_OPTION_DEFAULT)
     {
         $startTime = microtime(true);
         try
         {
-            $pageData = null;
-            if($this->_database != null && $this->_database->isConnected())
+            $pageData = new PicoPageData(array(), $startTime);
+            if($this->_databaseConnected())
             {
                 $persist = new PicoDatabasePersistence($this->_database, $this);
-                $result = $persist->findAll($specification, $pageable, $sortable, $subqueryInfo);
-                
-                if($this->_notNullAndNotEmpty($result))
+                if($findOption & self::FIND_OPTION_NO_FETCH_DATA)
                 {
-                    if($pageable != null && $pageable instanceof PicoPageable)
-                    {
-                        $match = $persist->countAll($specification);
-                        $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable);
-                    }
-                    else
-                    {
-                        $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime);
-                    }
+                    $result = null;
+                    $stmt = $persist->createPDOStatement($specification, $pageable, $sortable, $subqueryInfo);
                 }
                 else
                 {
-                    $pageData = new PicoPageData(array(), $startTime);
+                    $result = $persist->findAll($specification, $pageable, $sortable, $subqueryInfo);
+                    $stmt = null;
                 }
+                
+                if($pageable != null && $pageable instanceof PicoPageable)
+                {
+                    $match = $this->countData($persist, $specification, $findOption, $result);
+                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable, $stmt);
+                }
+                else
+                {
+                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, 0, null, $stmt);
+                }
+                return $pageData;
             }
             else
             {
-                $pageData = new PicoPageData(array(), $startTime);
-            }
-            return $pageData;
+                throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
+            }         
+        }
+        catch(FindOptionException $e)
+        {
+            throw new FindOptionException($e->getMessage());
+        }
+        catch(NoRecordFoundException $e)
+        {
+            throw new NoRecordFoundException($e->getMessage());
         }
         catch(Exception $e)
         {
-            return new PicoPageData(array(), $startTime);
+            throw new PDOException($e->getMessage());
         }
     }
 
@@ -1213,47 +1273,59 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoPageable|string $pageable
      * @param PicoSortable|string $sortable
      * @param boolean $passive
+     * @param array $subqueryInfo
+     * @param integer $findOption
      * @return PicoPageData
      * @throws NoRecordFoundException if no record found
      * @throws NoDatabaseConnectionException if no database connection
      */
-    public function findSpecific($selected, $specification = null, $pageable = null, $sortable = null, $passive = false)
+    public function findSpecific($selected, $specification = null, $pageable = null, $sortable = null, $passive = false, $subqueryInfo = null, $findOption = self::FIND_OPTION_DEFAULT)
     {
         $startTime = microtime(true);
         try
         {
-            $pageData = null;
-            if($this->_database != null && $this->_database->isConnected())
+            $pageData = new PicoPageData(array(), $startTime);
+            if($this->_databaseConnected())
             {
                 $persist = new PicoDatabasePersistence($this->_database, $this);
-                $result = $persist->findSpecific($selected, $specification, $pageable, $sortable);
-                
-                if($this->_notNullAndNotEmpty($result))
+                if($findOption & self::FIND_OPTION_NO_FETCH_DATA)
                 {
-                    if($pageable != null && $pageable instanceof PicoPageable)
-                    {
-                        $match = $persist->countAll($specification);
-                        $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable);
-                    }
-                    else
-                    {
-                        $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime);
-                    }
+                    $result = null;
+                    $stmt = $persist->createPDOStatement($specification, $pageable, $sortable, $subqueryInfo, $selected);
                 }
                 else
                 {
-                    $pageData = new PicoPageData(array(), $startTime);
+                    $result = $persist->findSpecificWithSubquery($selected, $specification, $pageable, $sortable, $subqueryInfo);
+                    $stmt = null;
                 }
+                
+                if($pageable != null && $pageable instanceof PicoPageable)
+                {
+                    $match = $this->countData($persist, $specification, $findOption, $result);
+                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable, $stmt);
+                }
+                else
+                {
+                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, 0, null, $stmt);
+                }
+                return $pageData;
             }
             else
             {
-                $pageData = new PicoPageData(array(), $startTime);
-            }
-            return $pageData;
+                throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
+            }         
+        }
+        catch(FindOptionException $e)
+        {
+            throw new FindOptionException($e->getMessage());
+        }
+        catch(NoRecordFoundException $e)
+        {
+            throw new NoRecordFoundException($e->getMessage());
         }
         catch(Exception $e)
         {
-            return new PicoPageData(array(), $startTime);
+            throw new PDOException($e->getMessage());
         }
     }
 
@@ -1270,7 +1342,7 @@ class MagicObject extends stdClass // NOSONAR
         $result = false;
         try
         {
-            if($this->_database != null && $this->_database->isConnected())
+            if($this->_databaseConnected())
             {
                 $persist = new PicoDatabasePersistence($this->_database, $this);
                 if($specification != null && $specification instanceof PicoSpecification)
@@ -1284,7 +1356,7 @@ class MagicObject extends stdClass // NOSONAR
             }
             else
             {
-                $result = false;
+                throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
             }
         }
         catch(Exception $e)
@@ -1300,18 +1372,16 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoSpecification $specification
      * @param PicoPageable|string $pageable
      * @param PicoSortable|string $sortable
-     * @param boolean $passive
      * @return PicoDatabaseQueryBuilder
      * @throws NoRecordFoundException if no record found
      * @throws NoDatabaseConnectionException if no database connection
      */
-    public function findAllQuery($specification = null, $pageable = null, $sortable = null, $passive = false)
+    public function findAllQuery($specification = null, $pageable = null, $sortable = null)
     {
         try
         {
-            if($this->_database != null && $this->_database->isConnected())
-            {
-                
+            if($this->_databaseConnected())
+            {  
                 $persist = new PicoDatabasePersistence($this->_database, $this);
                 $result = $persist->findAllQuery($specification, $pageable, $sortable);
             }
@@ -1335,7 +1405,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function find($params)
     {
-        if($this->_database != null && $this->_database->isConnected())
+        if($this->_databaseConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             $result = $persist->find($params);
@@ -1397,25 +1467,18 @@ class MagicObject extends stdClass // NOSONAR
         try
         {
             $pageData = null;
-            if($this->_database != null && $this->_database->isConnected())
+            if($this->_databaseConnected())
             {
                 $persist = new PicoDatabasePersistence($this->_database, $this);
                 $result = $persist->findBy($method, $params, $pageable, $sortable);
-                if($this->_notNullAndNotEmpty($result))
+                if($pageable != null && $pageable instanceof PicoPageable)
                 {
-                    if($pageable != null && $pageable instanceof PicoPageable)
-                    {
-                        $match = $persist->countBy($method, $params);
-                        $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable);
-                    }
-                    else
-                    {
-                        $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime);
-                    }
+                    $match = $persist->countBy($method, $params);
+                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable);
                 }
                 else
                 {
-                    $pageData = new PicoPageData(array(), $startTime);
+                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime);
                 }
             }
             else
@@ -1439,7 +1502,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     private function countBy($method, $params)
     {
-        if($this->_database != null && $this->_database->isConnected())
+        if($this->_databaseConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             return $persist->countBy($method, $params);
@@ -1459,7 +1522,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     private function deleteBy($method, $params)
     {
-        if($this->_database != null && $this->_database->isConnected())
+        if($this->_databaseConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             return $persist->deleteBy($method, $params);
@@ -1479,7 +1542,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryInfo = null)
     {
-        if($this->_database != null && $this->_database->isConnected())
+        if($this->_databaseConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             $result = $persist->findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryInfo);
@@ -1509,7 +1572,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     private function findOneBy($method, $params, $sortable = null)
     {
-        if($this->_database != null && $this->_database->isConnected())
+        if($this->_databaseConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             $result = $persist->findOneBy($method, $params, $sortable);
@@ -1567,7 +1630,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     private function deleteOneBy($method, $params)
     {
-        if($this->_database != null && $this->_database->isConnected())
+        if($this->_databaseConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             return $persist->deleteOneBy($method, $params);
@@ -1588,7 +1651,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     private function existsBy($method, $params)
     {
-        if($this->_database != null && $this->_database->isConnected())
+        if($this->_databaseConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             return $persist->existsBy($method, $params);
@@ -1631,11 +1694,14 @@ class MagicObject extends stdClass // NOSONAR
     {
         $instance = array();
         $index = 0;
-        foreach($result as $value)
+        if(isset($result) && is_array($result))
         {
-            $className = get_class($this);
-            $instance[$index] = new $className($value, $passive ? null : $this->_database);
-            $index++;
+            foreach($result as $value)
+            {
+                $className = get_class($this);
+                $instance[$index] = new $className($value, $passive ? null : $this->_database);
+                $index++;
+            }
         }
         return $instance;
     }

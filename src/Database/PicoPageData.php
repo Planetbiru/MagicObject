@@ -2,7 +2,9 @@
 
 namespace MagicObject\Database;
 
+use MagicObject\Exceptions\FindOptionException;
 use MagicObject\MagicObject;
+use PDOStatement;
 use stdClass;
 
 class PicoPageData
@@ -85,6 +87,13 @@ class PicoPageData
     private $pagination = array();
 
     /**
+     * PDO statement
+     *
+     * @var PDOStatement
+     */
+    private $stmt = null;
+
+    /**
      * Constructor
      *
      * @param MagicObject[] $result
@@ -92,7 +101,7 @@ class PicoPageData
      * @param integer $totalResult
      * @param PicoPageable $pageable
      */
-    public function __construct($result, $startTime, $totalResult = 0, $pageable = null)
+    public function __construct($result, $startTime, $totalResult = 0, $pageable = null, $stmt = null)
     {
         $this->startTime = $startTime;
         $this->result = $result;
@@ -119,6 +128,7 @@ class PicoPageData
         }
         $this->endTime = microtime(true);
         $this->executionTime = $this->endTime - $this->startTime;
+        $this->stmt = $stmt;
     }
 
 
@@ -258,5 +268,19 @@ class PicoPageData
     public function getDataOffset()
     {
         return $this->dataOffset;
+    }
+
+    /**
+     * Get pDO statement
+     *
+     * @return  PDOStatement
+     */ 
+    public function getStmt()
+    {
+        if($this->stmt == null)
+        {
+            throw new FindOptionException("Statement is null. See MagicObject::FIND_OPTION_NO_FETCH_DATA option");
+        }
+        return $this->stmt;
     }
 }

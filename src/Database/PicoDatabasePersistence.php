@@ -2118,6 +2118,32 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
+     * Create PDO statement
+     *
+     * @param PicoSpecification $specification
+     * @param PicoPageable $pageable
+     * @param PicoSortable $sortable
+     * @param array $subqueryInfo
+     * @param string $selected
+     * @return PDOStatement
+     * @throws PDOException
+     */
+    public function createPDOStatement($specification, $pageable, $sortable, $subqueryInfo = null, $selected = null)
+    {
+        $info = $this->getTableInfo();
+        if($selected == null || empty($selected))
+        {
+            $selected = $this->getAllColumns($info);
+        }
+        if($subqueryInfo != null)
+        {
+            $selected = $this->joinString($selected, $this->subquery($info, $subqueryInfo), self::COMMA_RETURN);
+        }
+        $sql = $this->findSpecificQuery($selected, $specification, $pageable, $sortable, $info);
+        return $this->database->query($sql);
+    }
+
+    /**
      * Get findAll query
      *
      * @param PicoSpecification $specification Specification
@@ -2272,7 +2298,10 @@ class PicoDatabasePersistence // NOSONAR
         $data = null;
         $result = array();
         $info = $this->getTableInfo();
-        $selected = $this->joinString($selected, $this->subquery($info, $subqueryInfo), self::COMMA_RETURN);
+        if($subqueryInfo != null)
+        {
+            $selected = $this->joinString($selected, $this->subquery($info, $subqueryInfo), self::COMMA_RETURN);
+        }
         $sqlQuery = $this->findSpecificQuery($selected, $specification, $pageable, $sortable, $info);
     
         try
@@ -2431,29 +2460,32 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get all mathced record from database
+     * Get query for all mathced record from database
      *
      * @param string $propertyName Property name
      * @param mixed $propertyValue Property value
      * @param PicoPageable $pageable Pagable
      * @param PicoSortable|string $sortable Sortable
-     * @return array|null
+     * @param PicoTableInfo $info Table info
+     * @return PicoDatabaseQueryBuilder
      * @throws PDOException|NoDatabaseConnectionException|EntityException
      */
-    public function findBy($propertyName, $propertyValue, $pageable = null, $sortable = null)
+    public function findByQuery($propertyName, $propertyValue, $pageable = null, $sortable = null, $info = null, $subqueryInfo = null)
     {
-        $info = $this->getTableInfo();
+        $selected = $this->getAllColumns($info);
+        if($subqueryInfo != null)
+        {
+            $selected = $this->joinString($selected, $this->subquery($info, $subqueryInfo), self::COMMA_RETURN);
+        }
         $where = $this->createWhereFromArgs($info, $propertyName, $propertyValue);
         if(!$this->isValidFilter($where))
         {
             throw new InvalidFilterException(self::MESSAGE_INVALID_FILTER);
         }
         $queryBuilder = new PicoDatabaseQueryBuilder($this->database);
-        $data = null;
-        $result = array();
         $sqlQuery = $queryBuilder
             ->newQuery()
-            ->select($this->getAllColumns($info))
+            ->select($selected)
             ->from($info->getTableName())
             ->where($where);
         if($pageable != null)
@@ -2464,6 +2496,29 @@ class PicoDatabasePersistence // NOSONAR
         {
             $sqlQuery = $this->setSortable($sqlQuery, $pageable, $sortable, $info);        
         }
+
+        return $sqlQuery;
+    }
+
+    /**
+     * Get all mathced record from database
+     *
+     * @param string $propertyName Property name
+     * @param mixed $propertyValue Property value
+     * @param PicoPageable $pageable Pagable
+     * @param PicoSortable|string $sortable Sortable
+     * @param array $subqueryInfo
+     * @return array|null
+     * @throws PDOException|NoDatabaseConnectionException|EntityException
+     */
+    public function findBy($propertyName, $propertyValue, $pageable = null, $sortable = null, $subqueryInfo = null)
+    {
+        $info = $this->getTableInfo();
+        $data = null;
+        $result = array();
+
+        $sqlQuery = $this->findByQuery($propertyName, $propertyValue, $pageable, $sortable, $info, $subqueryInfo);
+
         try
         {
             $stmt = $this->database->executeQuery($sqlQuery);
