@@ -702,7 +702,9 @@ try
 	
 	//$sql = $dumper->createAlterTableAdd($album);
 	//print_r($sql);
-	$arr = array(
+	
+	
+	$subqueryInfo = array(
 		'producer'=>array(
 			'entityName'=>'Producer',
 			'tableName'=>'producer',
@@ -713,26 +715,28 @@ try
 		)
 	);
 	
+	/*
 	
-	$r = $album->findAll(null, null, null, true, null, MagicObject::FIND_OPTION_NO_FETCH_DATA);
+	$result = $album->findAll(null, null, null, true, $subqueryInfo, MagicObject::FIND_OPTION_NO_COUNT_DATA | MagicObject::FIND_OPTION_NO_FETCH_DATA);
 	
-	while(($data = $r->fetch()) !== false)
+	while($data = $result->fetch())
 	{
-		echo ($data);
+		echo $data;
 	}
+		*/
 		
 	
 	//echo $r;
 	
 
-	/*
-	$r = $album->findAll(null, null, null, true, $arr);
 	
-	foreach($r->getResult() as $row)
+	$result = $album->findAll(null, null, null, true, $subqueryInfo);
+	
+	foreach($result->getResult() as $row)
 	{
-		echo $row."\r\n";
+		echo $row;
 	}
-		*/
+
 	
 	
 	//$album->findOneWithPrimaryKeyValue('0648d495ade4515811f2', $arr);
