@@ -714,11 +714,11 @@ try
 	);
 	
 	
-	$r = $album->findAll(null, null, null, true, $arr, MagicObject::FIND_OPTION_NO_FETCH_DATA);
+	$r = $album->findAll(null, null, null, true, null, MagicObject::FIND_OPTION_NO_FETCH_DATA);
 	
 	while(($data = $r->fetch()) !== false)
 	{
-		//echo ($data);
+		echo ($data);
 	}
 		
 	
