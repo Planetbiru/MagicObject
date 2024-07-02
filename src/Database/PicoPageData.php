@@ -107,6 +107,13 @@ class PicoPageData
      * @var array
      */
     private $subqueryInfo;
+    
+    /**
+     * By count result
+     *
+     * @var boolean
+     */
+    private $byCountResult = false;
 
     /**
      * Constructor
@@ -120,13 +127,14 @@ class PicoPageData
     {
         $this->startTime = $startTime;
         $this->result = $result;
-        $countResult = count($result);
+        $countResult = $this->countData($result);
         if($totalResult != 0)
         {
             $this->totalResult = $totalResult;
         }
         else
         {
+            $this->byCountResult = true;
             $this->totalResult = $countResult;
         }
         if($pageable != null && $pageable instanceof PicoPageable)
@@ -156,6 +164,21 @@ class PicoPageData
             $this->subqueryInfo = $subqueryInfo;
         }
     }
+    
+    /**
+     * Count data
+     *
+     * @param array $result
+     * @return integer
+     */
+    private function countData($result)
+    {
+        if(isset($result) && is_array($result))
+        {
+            return count($result);
+        }
+        return 0;
+    }
 
 
     /**
@@ -167,6 +190,7 @@ class PicoPageData
     {
         $this->pageNumber = $this->pageable->getPage()->getPageNumber();
         $this->totalPage = ceil($this->totalResult / $this->pageable->getPage()->getPageSize());
+        
         $this->pageSize = $this->pageable->getPage()->getPageSize();
         $this->dataOffset = ($this->pageNumber - 1) * $this->pageSize;
 
@@ -179,7 +203,7 @@ class PicoPageData
             $minPage = 1;
         }
         $maxPage = $curPage + 3;
-        if($maxPage > $totalPage)
+        if(!$this->byCountResult && $maxPage > $totalPage)
         {
             $maxPage = $totalPage;
         }
@@ -238,9 +262,21 @@ class PicoPageData
     public function __toString()
     {
         $obj = new stdClass;
+        $exposedProps = array(
+            "pageable",
+            "totalResult",
+            "totalPage",
+            "pageNumber",
+            "pageSize", 
+            "dataOffset",
+            "startTime",
+            "endTime",
+            "executionTime",
+            "pagination"
+        );
         foreach($this as $key=>$value)
         {
-            if($key != self::RESULT && $key != self::PAGABLE)
+            if($key != self::RESULT && $key != self::PAGABLE && in_array($key, $exposedProps))
             {
                 $obj->{$key} = $value;
             }
