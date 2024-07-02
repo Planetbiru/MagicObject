@@ -2280,7 +2280,7 @@ class PicoDatabasePersistence // NOSONAR
             $stmt = $this->database->executeQuery($sqlQuery);
             if($this->matchRow($stmt))
             {
-                while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT))                
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT))                
                 {
                     $data = $this->fixDataType($row, $info); 
                     $data = $this->applySubqueryResult($data, $row, $info, $subqueryInfo);
@@ -2411,7 +2411,7 @@ class PicoDatabasePersistence // NOSONAR
             $stmt = $this->database->executeQuery($sqlQuery);
             if($this->matchRow($stmt))
             {
-                while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT))                
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT))                
                 {
                     $data = $this->fixDataType($row, $info); 
                     $data = $this->join($data, $row, $info);
@@ -2469,7 +2469,7 @@ class PicoDatabasePersistence // NOSONAR
             $stmt = $this->database->executeQuery($sqlQuery);
             if($this->matchRow($stmt))
             {
-                while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT))               
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT))               
                 {
                     $data = $this->fixDataType($row, $info); 
                     $data = $this->join($data, $row, $info);
@@ -3263,7 +3263,7 @@ class PicoDatabasePersistence // NOSONAR
             $stmt = $this->database->executeQuery($sqlQuery);
             if($this->matchRow($stmt))
             {
-                while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT))
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT))
                 {
                     $data = $this->fixDataType($row, $info);
                     $data = $this->join($data, $row, $info);
