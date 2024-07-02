@@ -4,6 +4,7 @@ namespace MagicObject\Database;
 
 use MagicObject\Exceptions\FindOptionException;
 use MagicObject\MagicObject;
+use PDO;
 use PDOStatement;
 use stdClass;
 
@@ -92,6 +93,20 @@ class PicoPageData
      * @var PDOStatement
      */
     private $stmt = null;
+    
+    /**
+     * Class name
+     *
+     * @var string
+     */
+    private $className;
+    
+    /**
+     * Subquery info
+     *
+     * @var array
+     */
+    private $subqueryInfo;
 
     /**
      * Constructor
@@ -101,7 +116,7 @@ class PicoPageData
      * @param integer $totalResult
      * @param PicoPageable $pageable
      */
-    public function __construct($result, $startTime, $totalResult = 0, $pageable = null, $stmt = null)
+    public function __construct($result, $startTime, $totalResult = 0, $pageable = null, $stmt = null, $entity = null, $subqueryInfo = null)
     {
         $this->startTime = $startTime;
         $this->result = $result;
@@ -128,7 +143,18 @@ class PicoPageData
         }
         $this->endTime = microtime(true);
         $this->executionTime = $this->endTime - $this->startTime;
-        $this->stmt = $stmt;
+        if($stmt != null)
+        {
+            $this->stmt = $stmt;
+        }
+        if($entity != null)
+        {
+            $this->className = get_class($entity);
+        }
+        if($subqueryInfo != null)
+        {
+            $this->subqueryInfo = $subqueryInfo;
+        }
     }
 
 
@@ -282,5 +308,55 @@ class PicoPageData
             throw new FindOptionException("Statement is null. See MagicObject::FIND_OPTION_NO_FETCH_DATA option");
         }
         return $this->stmt;
+    }
+    
+    /**
+     * Fetch data
+     *
+     * @return MagicObject|mixed
+     */
+    public function fetch()
+    {
+        if($this->stmt == null)
+        {
+            throw new FindOptionException("Statement is null. See MagicObject::FIND_OPTION_NO_FETCH_DATA option");
+        }
+        $result = $this->stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT);
+        if($result === false)
+        {
+            return false;
+        }
+        return $this->applySubqueryResult($result);
+    }
+    
+    /**
+     * Apply subquery result
+     *
+     * @param array $row
+     * @return MagicObject
+     */
+    public function applySubqueryResult($row)
+    {
+        $data = $row;
+        if(isset($this->subqueryInfo) && is_array($this->subqueryInfo))
+        {      
+            foreach($this->subqueryInfo as $info)
+            {
+                $objectName = $info['objectName'];
+                $objectNameSub = $info['objectName'];
+                if(isset($row[$objectNameSub]))
+                {
+                    $data[$objectName] = (new MagicObject())
+                        ->set($info['primaryKey'], $row[$info['columnName']])
+                        ->set($info['propertyName'], $row[$objectNameSub])
+                    ;
+                }
+                else
+                {
+                    $data[$objectName] = new MagicObject();
+                }
+            }
+        }
+        return new $this->className($data);
     }
 }

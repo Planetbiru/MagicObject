@@ -1238,11 +1238,11 @@ class MagicObject extends stdClass // NOSONAR
                 if($pageable != null && $pageable instanceof PicoPageable)
                 {
                     $match = $this->countData($persist, $specification, $findOption, $result);
-                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable, $stmt);
+                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable, $stmt, $this, $subqueryInfo);
                 }
                 else
                 {
-                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, 0, null, $stmt);
+                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, 0, null, $stmt, $this, $subqueryInfo);
                 }
                 return $pageData;
             }
@@ -1302,11 +1302,11 @@ class MagicObject extends stdClass // NOSONAR
                 if($pageable != null && $pageable instanceof PicoPageable)
                 {
                     $match = $this->countData($persist, $specification, $findOption, $result);
-                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable, $stmt);
+                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable, $stmt, $this, $subqueryInfo);
                 }
                 else
                 {
-                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, 0, null, $stmt);
+                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, 0, null, $stmt, $this, $subqueryInfo);
                 }
                 return $pageData;
             }

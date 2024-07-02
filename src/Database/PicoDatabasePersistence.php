@@ -208,18 +208,6 @@ class PicoDatabasePersistence // NOSONAR
         $this->className = get_class($object);
         $this->object = $object;
     }
-
-    /**
-     * Set flag to skip null column
-     *
-     * @param boolean $skip Skip null
-     * @return self
-     */
-    public function includeNull($skip)
-    {
-        $this->flagIncludeNull = $skip;
-        return $this;
-    }
     
     /**
      * Check if string is null or empty
@@ -227,7 +215,7 @@ class PicoDatabasePersistence // NOSONAR
      * @param string $string
      * @return string
      */
-    private function nulOrEmpty($string)
+    public static function nulOrEmpty($string)
     {
         return $string == null || empty($string);
     }
@@ -238,9 +226,53 @@ class PicoDatabasePersistence // NOSONAR
      * @param string $string
      * @return string
      */
-    private function notNullAndNotEmpty($string)
+    public static function notNullAndNotEmpty($string)
     {
         return $string != null && !empty($string);
+    }
+    
+    /**
+     * Apply subquery result
+     *
+     * @param array $data
+     * @param array $row
+     * @param array $subqueryInfo
+     * @return array
+     */
+    public static function applySubqueryResult($data, $row, $subqueryInfo)
+    {
+        if(isset($subqueryInfo) && is_array($subqueryInfo))
+        {      
+            foreach($subqueryInfo as $info)
+            {
+                $objectName = $info['objectName'];
+                $objectNameSub = $info['objectName'];
+                if(isset($row[$objectNameSub]))
+                {
+                    $data[$objectName] = (new MagicObject())
+                        ->set($info['primaryKey'], $row[$info['columnName']])
+                        ->set($info['propertyName'], $row[$objectNameSub])
+                    ;
+                }
+                else
+                {
+                    $data[$objectName] = new MagicObject();
+                }
+            }
+        }
+        return $data;
+    }
+    
+    /**
+     * Set flag to skip null column
+     *
+     * @param boolean $skip Skip null
+     * @return self
+     */
+    public function includeNull($skip)
+    {
+        $this->flagIncludeNull = $skip;
+        return $this;
     }
 
     /**
@@ -926,7 +958,7 @@ class PicoDatabasePersistence // NOSONAR
                 foreach($keys as $prop=>$col)
                 {
                     $autoVal = $this->object->get($prop);
-                    if($this->nulOrEmpty($autoVal) && isset($col[self::KEY_STRATEGY]))
+                    if(self::nulOrEmpty($autoVal) && isset($col[self::KEY_STRATEGY]))
                     {
                         $this->setGeneratedValue($prop, $col[self::KEY_STRATEGY], $fisrtCall);
                     }
@@ -1892,7 +1924,7 @@ class PicoDatabasePersistence // NOSONAR
         if($specification != null && $specification instanceof PicoSpecification && !$specification->isEmpty())
         {
             $where = $this->createWhereFromSpecification($sqlQuery, $specification, $info);
-            if($this->notNullAndNotEmpty($where))
+            if(self::notNullAndNotEmpty($where))
             {
                 $sqlQuery->where($where);
             }
@@ -2385,37 +2417,7 @@ class PicoDatabasePersistence // NOSONAR
         }
     }
     
-    /**
-     * Apply subquery result
-     *
-     * @param array $data
-     * @param array $row
-     * @param array $subqueryInfo
-     * @return array
-     */
-    public static function applySubqueryResult($data, $row, $subqueryInfo)
-    {
-        if(isset($subqueryInfo) && is_array($subqueryInfo))
-        {      
-            foreach($subqueryInfo as $info)
-            {
-                $objectName = $info['objectName'];
-                $objectNameSub = $info['objectName'];
-                if(isset($row[$objectNameSub]))
-                {
-                    $data[$objectName] = (new MagicObject())
-                        ->set($info['primaryKey'], $row[$info['columnName']])
-                        ->set($info['propertyName'], $row[$objectNameSub])
-                    ;
-                }
-                else
-                {
-                    $data[$objectName] = new MagicObject();
-                }
-            }
-        }
-        return $data;
-    }
+    
 
     /**
      * Get all record from database wihout filter
