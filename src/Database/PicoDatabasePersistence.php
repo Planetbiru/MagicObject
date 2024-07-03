@@ -2994,11 +2994,13 @@ class PicoDatabasePersistence // NOSONAR
     {
         $result = array();
         $typeMap = $this->createTypeMap($info);
-        foreach($data as $columnName=>$value)
+        foreach($info->getColumns() as $prop=>$column)
         {
+            $columnName = $column[self::KEY_NAME];
+            $value = $data[$columnName];
             if(isset($typeMap[$columnName]))
             {
-                $result[$columnName] = $this->fixData($value, $typeMap[$columnName]);
+                $result[$prop] = $this->fixData($value, $typeMap[$columnName]);
             }
         }
         return $result;
