@@ -1,5 +1,6 @@
-
 <?php
+
+namespace MagicObject\Util\File;
 
 class FileUtil
 {
