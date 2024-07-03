@@ -1309,7 +1309,7 @@ class PicoDatabasePersistence // NOSONAR
         $tableName = $entityName;
         try
         {
-            $className = $this->getRealClassName($entityName);
+            $className = $this->getRealClassName($entityName);          
             $annotationParser = new PicoAnnotationParser($className);
             $parameters = $annotationParser->getParametersAsObject();
             if($parameters->getTable() != null)
@@ -1319,9 +1319,6 @@ class PicoDatabasePersistence // NOSONAR
                 {
                     $tableName = $attribute->getName();
                     $this->entityTable[$entityName] = $tableName;
-                    
-                    
-                    //$this->joinPrimaryKeys[]
                 }
             }
         }
@@ -1330,7 +1327,6 @@ class PicoDatabasePersistence // NOSONAR
             // do nothing
             $tableName = null;
         }
-        
         return $tableName;
     }
     
@@ -1357,9 +1353,7 @@ class PicoDatabasePersistence // NOSONAR
                     $properties = $reflexProp->parseKeyValueAsObject($parameters->getColumn());
                     $columns[$prop->name] = $properties->getName();
                 }
-
                 // get column name of each parameters
-                
             }
         }
         catch(Exception $e)
@@ -1390,8 +1384,7 @@ class PicoDatabasePersistence // NOSONAR
                 $properties = $reflexProp->parseKeyValueAsObject($parameters->getColumn());
                 $columns[$prop->name] = $properties->getName();
 
-                // get column name of each parameters
-                
+                // get column name of each parameters       
             }
         }
         catch(Exception $e)
@@ -1412,7 +1405,6 @@ class PicoDatabasePersistence // NOSONAR
      */
     private function getJoinSource($parentName, $masterTable, $entityTable, $field, $master = false)
     {
- 
         $result = $masterTable.".".$field;
         if($entityTable != null && $parentName != null)
         {
@@ -1540,7 +1532,7 @@ class PicoDatabasePersistence // NOSONAR
         if($spec instanceof PicoPredicate)
         {
             $masterTable = $info->getTableName();
-            $entityField = new PicoEntityField($spec->getField());
+            $entityField = new PicoEntityField($spec->getField(), $info);
             $field = $entityField->getField();
             $entityName = $entityField->getEntity();
             $parentName = $entityField->getParentField();
@@ -1699,7 +1691,7 @@ class PicoDatabasePersistence // NOSONAR
         $ret = null;
         if($info == null)
         {
-            $ret = $this->createWithoutMapping($order);
+            $ret = $this->createWithoutMapping($order, $info);
         }
         else
         {
@@ -1712,9 +1704,10 @@ class PicoDatabasePersistence // NOSONAR
      * Create sort without mapping
      *
      * @param PicoSortable $order Sortable
+     * @param PicoTableInfo|null $info
      * @return string
      */
-    private function createWithoutMapping($order)
+    private function createWithoutMapping($order, $info)
     {
         $ret = null;
         $sorts = array();
@@ -1723,7 +1716,7 @@ class PicoDatabasePersistence // NOSONAR
             $columnName = $sortable->getSortBy();
             $sortType = $sortable->getSortType();             
             $sortBy = $columnName;
-            $entityField = new PicoEntityField($sortBy);
+            $entityField = new PicoEntityField($sortBy, $info);
             if($entityField->getEntity() != null)
             {
                 $tableName = $this->getTableOf($entityField->getEntity());
@@ -1754,10 +1747,11 @@ class PicoDatabasePersistence // NOSONAR
     
         foreach($order->getSortable() as $sortOrder)
         {           
-            $entityField = new PicoEntityField($sortOrder->getSortBy());
+            $entityField = new PicoEntityField($sortOrder->getSortBy(), $info);
             $field = $entityField->getField();
             $entityName = $entityField->getEntity();
             $parentName = $entityField->getParentField();
+            
             if($entityName != null)
             {
                 $entityTable = $this->getTableOf($entityName);
@@ -3569,6 +3563,12 @@ class PicoDatabasePersistence // NOSONAR
         return $persist;
     }
 
+    /**
+     * Check if parameter is array
+     *
+     * @param mixed $array
+     * @return boolean
+     */
     public function isArray($array)
     {
         return isset($array) && is_array($array);
