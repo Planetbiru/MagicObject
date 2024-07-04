@@ -145,6 +145,7 @@ class PicoDatabaseDump
         $tableInfo = $this->getTableInfo($entity);
         $tableName = $tableInfo->getTableName();
         $queryAlter = array();
+        $numberOfColumn = count($tableInfo->getColumns());
         if($tableInfo != null)
         {
             $dbColumnNames = array();
@@ -173,7 +174,7 @@ class PicoDatabaseDump
                     $lastColumn = $entityColumn['name'];
                 }
             }
-            else
+            else if($numberOfColumn > 0)
             {
                 $queryAlter[] = $this->dumpStructure($entity, $database->getDatabaseType());
             }
