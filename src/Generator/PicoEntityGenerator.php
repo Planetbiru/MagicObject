@@ -81,7 +81,7 @@ class PicoEntityGenerator
      * @param string[] $nonupdatables
      * @return string
      */
-    protected function createProperty($typeMap, $row, $nonupdatables)
+    protected function createProperty($typeMap, $row, $nonupdatables = null)
     {
         $columnName = $row['Field'];
         $columnType = $row['Type'];
@@ -140,7 +140,7 @@ class PicoEntityGenerator
             $attrs[] = "nullable=$val";
         }
 
-        if(in_array($columnName, $nonupdatables))
+        if(is_array($nonupdatables) && in_array($columnName, $nonupdatables))
         {
             $attrs[] = "updatable=false";
         }
@@ -155,7 +155,6 @@ class PicoEntityGenerator
         {
             $docs[] = "\t * @DefaultColumn(value=\"".$columnDefault."\")";        
         }
-
 
         $docs[] = "\t * @Label(content=\"$description\")";
         $docs[] = "\t * @var $type";
@@ -270,7 +269,7 @@ class PicoEntityGenerator
      * @param string[] $nonupdatables
      * @return string
      */
-    public function generate($nonupdatables)
+    public function generate($nonupdatables = null)
     {
         $typeMap = $this->getTypeMap();
         $picoTableName = $this->tableName;
