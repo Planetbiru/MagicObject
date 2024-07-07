@@ -4996,7 +4996,7 @@ class Producer extends MagicObject
 
 $album = new EntityAlbum(null, $database);
 
-$subqueryInfo = array(
+$subqueryMap = array(
     'producer'=&gt;array(
         'entityName'=&gt;'Producer',
         'tableName'=&gt;'producer',
@@ -5007,7 +5007,7 @@ $subqueryInfo = array(
     )
 );
 
-$result = $album-&gt;findAll(null, null, null, true, $subqueryInfo);
+$result = $album-&gt;findAll(null, null, null, true, $subqueryMap);
 
 foreach($result-&gt;getResult() as $row)
 {
@@ -5417,7 +5417,7 @@ class Producer extends MagicObject
 
 $album = new EntityAlbum(null, $database);
 
-$subqueryInfo = array(
+$subqueryMap = array(
     'producer'=&gt;array(
         'entityName'=&gt;'Producer',
         'tableName'=&gt;'producer',

@@ -1151,14 +1151,14 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoPageable|string $pageable
      * @param PicoSortable|string $sortable
      * @param boolean $passive
-     * @param array $subqueryInfo
+     * @param array $subqueryMap
      * @return PicoPageData
      * @throws NoRecordFoundException if no record found
      * @throws NoDatabaseConnectionException if no database connection
      */
-    public function listAll($specification = null, $pageable = null, $sortable = null, $passive = false, $subqueryInfo = null)
+    public function listAll($specification = null, $pageable = null, $sortable = null, $passive = false, $subqueryMap = null)
     {
-        return $this->findAll($specification, $pageable, $sortable, $passive, $subqueryInfo);
+        return $this->findAll($specification, $pageable, $sortable, $passive, $subqueryMap);
     }
 
     /**
@@ -1208,13 +1208,13 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoPageable|string $pageable
      * @param PicoSortable|string $sortable
      * @param boolean $passive
-     * @param array $subqueryInfo
+     * @param array $subqueryMap
      * @param integer $findOption
      * @return PicoPageData
      * @throws NoRecordFoundException if no record found
      * @throws NoDatabaseConnectionException if no database connection
      */
-    public function findAll($specification = null, $pageable = null, $sortable = null, $passive = false, $subqueryInfo = null, $findOption = self::FIND_OPTION_DEFAULT)
+    public function findAll($specification = null, $pageable = null, $sortable = null, $passive = false, $subqueryMap = null, $findOption = self::FIND_OPTION_DEFAULT)
     {
         $startTime = microtime(true);
         try
@@ -1226,23 +1226,23 @@ class MagicObject extends stdClass // NOSONAR
                 if($findOption & self::FIND_OPTION_NO_FETCH_DATA)
                 {
                     $result = null;
-                    $stmt = $persist->createPDOStatement($specification, $pageable, $sortable, $subqueryInfo);
+                    $stmt = $persist->createPDOStatement($specification, $pageable, $sortable, $subqueryMap);
                 }
                 else
                 {
 
-                    $result = $persist->findAll($specification, $pageable, $sortable, $subqueryInfo);
+                    $result = $persist->findAll($specification, $pageable, $sortable, $subqueryMap);
                     $stmt = null;
                 }
                 
                 if($pageable != null && $pageable instanceof PicoPageable)
                 {
                     $match = $this->countData($persist, $specification, $findOption, $result);
-                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable, $stmt, $this, $subqueryInfo);
+                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable, $stmt, $this, $subqueryMap);
                 }
                 else
                 {
-                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, 0, null, $stmt, $this, $subqueryInfo);
+                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, 0, null, $stmt, $this, $subqueryMap);
                 }
                 return $pageData;
             }
@@ -1273,13 +1273,13 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoPageable|string $pageable
      * @param PicoSortable|string $sortable
      * @param boolean $passive
-     * @param array $subqueryInfo
+     * @param array $subqueryMap
      * @param integer $findOption
      * @return PicoPageData
      * @throws NoRecordFoundException if no record found
      * @throws NoDatabaseConnectionException if no database connection
      */
-    public function findSpecific($selected, $specification = null, $pageable = null, $sortable = null, $passive = false, $subqueryInfo = null, $findOption = self::FIND_OPTION_DEFAULT)
+    public function findSpecific($selected, $specification = null, $pageable = null, $sortable = null, $passive = false, $subqueryMap = null, $findOption = self::FIND_OPTION_DEFAULT)
     {
         $startTime = microtime(true);
         try
@@ -1291,22 +1291,22 @@ class MagicObject extends stdClass // NOSONAR
                 if($findOption & self::FIND_OPTION_NO_FETCH_DATA)
                 {
                     $result = null;
-                    $stmt = $persist->createPDOStatement($specification, $pageable, $sortable, $subqueryInfo, $selected);
+                    $stmt = $persist->createPDOStatement($specification, $pageable, $sortable, $subqueryMap, $selected);
                 }
                 else
                 {
-                    $result = $persist->findSpecificWithSubquery($selected, $specification, $pageable, $sortable, $subqueryInfo);
+                    $result = $persist->findSpecificWithSubquery($selected, $specification, $pageable, $sortable, $subqueryMap);
                     $stmt = null;
                 }
                 
                 if($pageable != null && $pageable instanceof PicoPageable)
                 {
                     $match = $this->countData($persist, $specification, $findOption, $result);
-                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable, $stmt, $this, $subqueryInfo);
+                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable, $stmt, $this, $subqueryMap);
                 }
                 else
                 {
-                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, 0, null, $stmt, $this, $subqueryInfo);
+                    $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, 0, null, $stmt, $this, $subqueryMap);
                 }
                 return $pageData;
             }
@@ -1537,15 +1537,15 @@ class MagicObject extends stdClass // NOSONAR
      * Find one with primary key value
      *
      * @param mixed $primaryKeyVal
-     * @param array $subqueryInfo
+     * @param array $subqueryMap
      * @return self
      */
-    public function findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryInfo = null)
+    public function findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryMap = null)
     {
         if($this->_databaseConnected())
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
-            $result = $persist->findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryInfo);
+            $result = $persist->findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryMap);
             if($this->_notNullAndNotEmpty($result))
             {
                 $this->loadData($result);

@@ -106,7 +106,7 @@ class PicoPageData
      *
      * @var array
      */
-    private $subqueryInfo;
+    private $subqueryMap;
     
     /**
      * By count result
@@ -130,7 +130,7 @@ class PicoPageData
      * @param integer $totalResult
      * @param PicoPageable $pageable
      */
-    public function __construct($result, $startTime, $totalResult = 0, $pageable = null, $stmt = null, $entity = null, $subqueryInfo = null)
+    public function __construct($result, $startTime, $totalResult = 0, $pageable = null, $stmt = null, $entity = null, $subqueryMap = null)
     {
         $this->startTime = $startTime;
         $this->result = $result;
@@ -167,9 +167,9 @@ class PicoPageData
             $this->entity = $entity;
             $this->className = get_class($entity);
         }
-        if($subqueryInfo != null)
+        if($subqueryMap != null)
         {
-            $this->subqueryInfo = $subqueryInfo;
+            $this->subqueryMap = $subqueryMap;
         }
     }
     
@@ -394,9 +394,9 @@ class PicoPageData
     public function applySubqueryResult($row)
     {
         $data = $row;
-        if(isset($this->subqueryInfo) && is_array($this->subqueryInfo))
+        if(isset($this->subqueryMap) && is_array($this->subqueryMap))
         { 
-            foreach($this->subqueryInfo as $info)
+            foreach($this->subqueryMap as $info)
             {
                 $objectName = $info['objectName'];
                 $objectNameSub = $info['objectName'];

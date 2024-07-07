@@ -704,7 +704,7 @@ try
 	//print_r($sql);
 	
 	
-	$subqueryInfo = array(
+	$subqueryMap = array(
 		'producer'=>array(
 			'entityName'=>'Producer',
 			'tableName'=>'producer',
@@ -717,7 +717,7 @@ try
 	
 	/*
 	
-	$result = $album->findAll(null, null, null, true, $subqueryInfo, MagicObject::FIND_OPTION_NO_COUNT_DATA | MagicObject::FIND_OPTION_NO_FETCH_DATA);
+	$result = $album->findAll(null, null, null, true, $subqueryMap, MagicObject::FIND_OPTION_NO_COUNT_DATA | MagicObject::FIND_OPTION_NO_FETCH_DATA);
 	
 	while($data = $result->fetch())
 	{
@@ -730,7 +730,7 @@ try
 	
 
 	
-	$result = $album->findAll(null, null, null, true, $subqueryInfo);
+	$result = $album->findAll(null, null, null, true, $subqueryMap);
 	
 	foreach($result->getResult() as $row)
 	{
