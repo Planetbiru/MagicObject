@@ -311,6 +311,18 @@ class PicoPageData
     }
 
     /**
+     * Get page control
+     *
+     * @param string $parameterName
+     * @param string $path
+     * @return PicoPageControl
+     */
+    public function getPageControl($parameterName = 'page', $path = null)
+    {
+        return new PicoPageControl($this, $parameterName, $path);
+    }
+
+    /**
      * Get total match
      *
      * @return integer
