@@ -33,6 +33,7 @@ class PicoSortable
             $this->initSortable($argc, $params);
         }
     }
+    
     /**
      * Initialize sortable
      *
