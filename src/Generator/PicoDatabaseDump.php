@@ -209,7 +209,7 @@ class PicoDatabaseDump
 
         $queryAlter = array();
         $numberOfColumn = count($tableInfo->getColumns());
-        if(!empty($columns))
+        if(!empty($tableInfo->getColumns()))
         {
             $dbColumnNames = array();
             
@@ -222,7 +222,7 @@ class PicoDatabaseDump
                     $dbColumnNames[] = $columnName;
                 }
                 $lastColumn = null;
-                foreach($columns as $entityColumn)
+                foreach($tableInfo->getColumns() as $entityColumn)
                 {
                     if(!in_array($entityColumn['name'], $dbColumnNames))
                     {
@@ -238,9 +238,8 @@ class PicoDatabaseDump
             }
             else if($numberOfColumn > 0)
             {
-                $queryAlter[] = $this->dumpStructureTable($tableName, $tableInfo, $databaseType);
-            }
-            
+                $queryAlter[] = $this->dumpStructureTable($tableInfo, $databaseType);
+            }          
         }
         return $queryAlter;
     }
