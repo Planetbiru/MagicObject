@@ -2,6 +2,7 @@
 
 namespace MagicObject\Generator;
 
+use MagicObject\Database\PicoDatabase;
 use MagicObject\Database\PicoDatabasePersistence;
 use MagicObject\Database\PicoDatabaseType;
 use MagicObject\Database\PicoPageData;
@@ -60,6 +61,32 @@ class PicoDatabaseDump
             return "";
         }
     }
+
+    /**
+     * Dump strcuture of table
+     *
+     * @param PicoTableInfo $tableInfo
+     * @param string $databaseType
+     * @param boolean $createIfNotExists
+     * @param boolean $dropIfExists
+     * @param string $engine
+     * @param string $charset
+     * @return string
+     */
+    public function dumpStructureTable($tableInfo, $databaseType, $createIfNotExists = false, $dropIfExists = false, $engine = 'InnoDB', $charset = 'utf8mb4')
+    {
+        $picoTableName = $tableInfo->getTableName();
+        
+        if($databaseType == PicoDatabaseType::DATABASE_TYPE_MARIADB || $databaseType == PicoDatabaseType::DATABASE_TYPE_MYSQL)
+        {
+            return PicoDatabaseUtilMySql::dumpStructure($tableInfo, $picoTableName, $createIfNotExists, $dropIfExists, $engine, $charset);
+        }
+        else
+        {
+            return "";
+        }
+    }
+
     /**
      * Get entity table info 
      *
@@ -137,10 +164,95 @@ class PicoDatabaseDump
     /**
      * Create query ALTER TABLE ADD COLUMN
      *
-     * @param MagicObject $entity Entity
+     * @param MagicObject|MagicObject[] $entity Entity
+     * @param PicoDatabase $database
      * @return string[]
      */
-    public function createAlterTableAdd($entity)
+    public function createAlterTableAdd($entity, $database = null)
+    {
+        if(is_array($entity))
+        {
+            return $this->createAlterTableAddFromEntities($entity, $database);
+        }
+        else
+        {
+            return $this->createAlterTableAddFromEntity($entity);
+        }
+    }
+
+    /**
+     * Create query ALTER TABLE ADD COLUMN
+     *
+     * @param MagicObject[] $entity Entity
+     * @param PicoDatabase $database
+     * @return string[]
+     */
+    public function createAlterTableAddFromEntities($entities, $tableName = null, $database = null)
+    {
+        $tableInfo = $this->getMergedTableInfo($entities);
+        if(!isset($database))
+        {
+            $database = $entities[0]->currentDatabase();
+        }
+        if(isset($database))
+        {
+            $databaseType = $database->getDatabaseType();
+        }
+        else
+        {
+            $databaseType = PicoDatabaseType::DATABASE_TYPE_MYSQL;
+        }
+        if(!isset($tableName))
+        {
+            $tableName = $tableInfo->getTableName();
+        }
+
+        $queryAlter = array();
+        $numberOfColumn = count($tableInfo->getColumns());
+        if(!empty($columns))
+        {
+            $dbColumnNames = array();
+            
+            $rows = PicoColumnGenerator::getColumnList($database, $tableInfo->getTableName());
+            if(is_array($rows) && !empty($rows))
+            {
+                foreach($rows as $row)
+                {
+                    $columnName = $row['Field'];
+                    $dbColumnNames[] = $columnName;
+                }
+                $lastColumn = null;
+                foreach($columns as $entityColumn)
+                {
+                    if(!in_array($entityColumn['name'], $dbColumnNames))
+                    {
+                        $query = "ALTER TABLE $tableName ADD COLUMN ".$entityColumn['name']." ".$entityColumn['type'];
+                        $query = $this->updateQueryAlterTableNullable($query, $entityColumn);
+                        $query = $this->updateQueryAlterTableDefaultValue($query, $entityColumn);  
+                        $query = $this->updateQueryAlterTableAddColumn($query, $lastColumn, $database->getDatabaseType());
+                        
+                        $queryAlter[]  = $query.";";
+                    }
+                    $lastColumn = $entityColumn['name'];
+                }
+            }
+            else if($numberOfColumn > 0)
+            {
+                $queryAlter[] = $this->dumpStructureTable($tableName, $tableInfo, $databaseType);
+            }
+            
+        }
+        return $queryAlter;
+    }
+
+    /**
+     * Create query ALTER TABLE ADD COLUMN
+     *
+     * @param MagicObject|MagicObject[] $entity Entity
+     * @param PicoDatabase $database
+     * @return string[]
+     */
+    public function createAlterTableAddFromEntity($entity)
     {
         $tableInfo = $this->getTableInfo($entity);
         $tableName = $tableInfo->getTableName();
@@ -181,6 +293,32 @@ class PicoDatabaseDump
             
         }
         return $queryAlter;
+    }
+
+    public function getMergedTableInfo($entities)
+    {
+        $mergedTableInfo = PicoTableInfo::getInstance();
+        foreach($entities as $entity)
+        {
+            $tableInfo = $this->getTableInfo($entity);
+            $mergedTableInfo->setTableName($tableInfo->getTableName());
+
+            $mergedTableInfo->setColumns(array_merge($mergedTableInfo->getColumns(), $tableInfo->getColumns()));
+            $mergedTableInfo->setJoinColumns(array_merge($mergedTableInfo->getJoinColumns(), $tableInfo->getJoinColumns()));
+            $mergedTableInfo->setPrimaryKeys(array_merge($mergedTableInfo->getPrimaryKeys(), $tableInfo->getPrimaryKeys()));
+            $mergedTableInfo->setAutoIncrementKeys(array_merge($mergedTableInfo->getAutoIncrementKeys(), $tableInfo->getAutoIncrementKeys()));
+            $mergedTableInfo->setDefaultValue(array_merge($mergedTableInfo->getDefaultValue(), $tableInfo->getDefaultValue()));
+            $mergedTableInfo->setNotNullColumns(array_merge($mergedTableInfo->getNotNullColumns(), $tableInfo->getNotNullColumns()));
+        }
+
+        $mergedTableInfo->uniqueColumns();
+        $mergedTableInfo->uniqueJoinColumns();
+        $mergedTableInfo->uniquePrimaryKeys();
+        $mergedTableInfo->uniqueAutoIncrementKeys();
+        $mergedTableInfo->uniqueDefaultValue();
+        $mergedTableInfo->uniqueNotNullColumns();
+
+        return $mergedTableInfo;
     }
     
     /**

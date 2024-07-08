@@ -6,6 +6,7 @@ use stdClass;
 
 class PicoTableInfo
 {
+    const NAME = "name";
     /**
      * Table name
      *
@@ -56,6 +57,16 @@ class PicoTableInfo
     private $notNullColumns = array();
 
     /**
+     * Get instance
+     *
+     * @return self
+     */
+    public static function getInstance()
+    {
+        return new self(null, array(), array(), array(), array(), array(), array());
+    }
+
+    /**
      * Constructor
      *
      * @param string $picoTableName
@@ -76,6 +87,133 @@ class PicoTableInfo
         $this->defaultValue = $defaultValue;
         $this->notNullColumns = $notNullColumns;
     }
+
+    /**
+     * Unique column
+     *
+     * @return self
+     */
+    public function uniqueColumns()
+    {
+        $tmp = array();
+        $test = array();
+        foreach($this->columns as $elem)
+        {
+            if(!in_array($test, $elem[self::NAME]))
+            {
+                $tmp[] = $elem;
+                $test[] = $elem[self::NAME];
+            }
+        }
+        $this->columns = $tmp;
+        return $this;
+    }
+
+    /**
+     * Unique join column
+     *
+     * @return self
+     */
+    public function uniqueJoinColumns()
+    {
+        $tmp = array();
+        $test = array();
+        foreach($this->joinColumns as $elem)
+        {
+            if(!in_array($test, $elem[self::NAME]))
+            {
+                $tmp[] = $elem;
+                $test[] = $elem[self::NAME];
+            }
+        }
+        $this->joinColumns = $tmp;
+        return $this;
+    }
+
+    /**
+     * Unique primary key
+     *
+     * @return self
+     */
+    public function uniquePrimaryKeys()
+    {
+        $tmp = array();
+        $test = array();
+        foreach($this->primaryKeys as $elem)
+        {
+            if(!in_array($test, $elem[self::NAME]))
+            {
+                $tmp[] = $elem;
+                $test[] = $elem[self::NAME];
+            }
+        }
+        $this->primaryKeys = $tmp;
+        return $this;
+    }
+
+    /**
+     * Unique auto increment
+     *
+     * @return self
+     */
+    public function uniqueAutoIncrementKeys()
+    {
+        $tmp = array();
+        $test = array();
+        foreach($this->autoIncrementKeys as $elem)
+        {
+            if(!in_array($test, $elem[self::NAME]))
+            {
+                $tmp[] = $elem;
+                $test[] = $elem[self::NAME];
+            }
+        }
+        $this->autoIncrementKeys = $tmp;
+        return $this;
+    }
+
+    /**
+     * Unique default value
+     *
+     * @return self
+     */
+    public function uniqueDefaultValue()
+    {
+        $tmp = array();
+        $test = array();
+        foreach($this->defaultValue as $elem)
+        {
+            if(!in_array($test, $elem[self::NAME]))
+            {
+                $tmp[] = $elem;
+                $test[] = $elem[self::NAME];
+            }
+        }
+        $this->defaultValue = $tmp;
+        return $this;
+    }
+
+    /**
+     * Unique not null column
+     *
+     * @return self
+     */
+    public function uniqueNotNullColumns()
+    {
+        $tmp = array();
+        $test = array();
+        foreach($this->notNullColumns as $elem)
+        {
+            if(!in_array($test, $elem[self::NAME]))
+            {
+                $tmp[] = $elem;
+                $test[] = $elem[self::NAME];
+            }
+        }
+        $this->notNullColumns = $tmp;
+        return $this;
+    }
+
 
     /**
      * Get table name
