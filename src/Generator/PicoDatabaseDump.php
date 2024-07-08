@@ -181,6 +181,57 @@ class PicoDatabaseDump
     }
 
     /**
+     * Get database
+     * 
+     * @param PicoDatabase $database
+     * @param MagicObject[] $entities
+     * @return PicoDatabase
+     */
+    private function getDatabase($database, $entities)
+    {
+        if(!isset($database))
+        {
+            $database = $entities[0]->currentDatabase();
+        }
+        return $database;
+    }
+
+    /**
+     * 
+     * Get database type
+     * @param PicoDatabase $database
+     * @return string
+     */
+    private function getDatabaseType($database)
+    {
+        if(isset($database))
+        {
+            $databaseType = $database->getDatabaseType();
+        }
+        else
+        {
+            $databaseType = PicoDatabaseType::DATABASE_TYPE_MYSQL;
+        }
+        return $databaseType;
+    }
+
+    /**
+     * 
+     * Get table name
+     * @param string $tableName
+     * @param PicoTableInfo $tableInfo
+     * @return string
+     */
+    private function getTableName($tableName, $tableInfo)
+    {
+        if(!isset($tableName))
+        {
+            $tableName = $tableInfo->getTableName();
+        }
+        return $tableName;
+    }
+
+    /**
      * Create query ALTER TABLE ADD COLUMN
      *
      * @param MagicObject[] $entity Entity
@@ -190,22 +241,9 @@ class PicoDatabaseDump
     public function createAlterTableAddFromEntities($entities, $tableName = null, $database = null)
     {
         $tableInfo = $this->getMergedTableInfo($entities);
-        if(!isset($database))
-        {
-            $database = $entities[0]->currentDatabase();
-        }
-        if(isset($database))
-        {
-            $databaseType = $database->getDatabaseType();
-        }
-        else
-        {
-            $databaseType = PicoDatabaseType::DATABASE_TYPE_MYSQL;
-        }
-        if(!isset($tableName))
-        {
-            $tableName = $tableInfo->getTableName();
-        }
+        $database = $this->getDatabase($database, $entities);
+        $databaseType = $this->getDatabaseType($database);
+        $tableName = $this->getTableName($tableName, $tableInfo);
 
         $queryAlter = array();
         $numberOfColumn = count($tableInfo->getColumns());
