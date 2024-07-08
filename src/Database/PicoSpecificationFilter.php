@@ -17,6 +17,7 @@ class PicoSpecificationFilter
      * @var string
      */
     private $dataType;
+    
     /**
      * Constructor
      *
