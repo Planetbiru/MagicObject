@@ -99,7 +99,7 @@ class PicoTableInfo
         $test = array();
         foreach($this->columns as $elem)
         {
-            if(!in_array($test, $elem[self::NAME]))
+            if(!in_array($elem[self::NAME], $test))
             {
                 $tmp[] = $elem;
                 $test[] = $elem[self::NAME];
@@ -120,7 +120,7 @@ class PicoTableInfo
         $test = array();
         foreach($this->joinColumns as $elem)
         {
-            if(!in_array($test, $elem[self::NAME]))
+            if(!in_array($elem[self::NAME], $test))
             {
                 $tmp[] = $elem;
                 $test[] = $elem[self::NAME];
@@ -141,7 +141,7 @@ class PicoTableInfo
         $test = array();
         foreach($this->primaryKeys as $elem)
         {
-            if(!in_array($test, $elem[self::NAME]))
+            if(!in_array($elem[self::NAME], $test))
             {
                 $tmp[] = $elem;
                 $test[] = $elem[self::NAME];
@@ -162,7 +162,7 @@ class PicoTableInfo
         $test = array();
         foreach($this->autoIncrementKeys as $elem)
         {
-            if(!in_array($test, $elem[self::NAME]))
+            if(!in_array($elem[self::NAME], $test))
             {
                 $tmp[] = $elem;
                 $test[] = $elem[self::NAME];
@@ -183,7 +183,7 @@ class PicoTableInfo
         $test = array();
         foreach($this->defaultValue as $elem)
         {
-            if(!in_array($test, $elem[self::NAME]))
+            if(!in_array($elem[self::NAME], $test))
             {
                 $tmp[] = $elem;
                 $test[] = $elem[self::NAME];
@@ -204,7 +204,7 @@ class PicoTableInfo
         $test = array();
         foreach($this->notNullColumns as $elem)
         {
-            if(!in_array($test, $elem[self::NAME]))
+            if(!in_array($elem[self::NAME], $test))
             {
                 $tmp[] = $elem;
                 $test[] = $elem[self::NAME];
