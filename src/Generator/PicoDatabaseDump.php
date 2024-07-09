@@ -7,6 +7,7 @@ use MagicObject\Database\PicoDatabasePersistence;
 use MagicObject\Database\PicoDatabaseType;
 use MagicObject\Database\PicoPageData;
 use MagicObject\Database\PicoTableInfo;
+use MagicObject\Database\PicoTableInfoExtended;
 use MagicObject\MagicObject;
 use MagicObject\Util\Database\PicoDatabaseUtil;
 use MagicObject\Util\Database\PicoDatabaseUtilMySql;
@@ -332,9 +333,9 @@ class PicoDatabaseDump
         return $queryAlter;
     }
 
-    public function getMergedTableInfo($entities)
+    public function getMergedTableInfoOld($entities)
     {
-        $mergedTableInfo = PicoTableInfo::getInstance();
+        $mergedTableInfo = PicoTableInfoExtended::getInstance();
         foreach($entities as $entity)
         {
             $tableInfo = $this->getTableInfo($entity);
@@ -354,6 +355,25 @@ class PicoDatabaseDump
         $mergedTableInfo->uniqueAutoIncrementKeys();
         $mergedTableInfo->uniqueDefaultValue();
         $mergedTableInfo->uniqueNotNullColumns();
+
+        return $mergedTableInfo;
+    }
+    
+    public function getMergedTableInfo($entities)
+    {
+        $mergedTableInfo = PicoTableInfoExtended::getInstance();
+        foreach($entities as $entity)
+        {
+            $tableInfo = $this->getTableInfo($entity);
+            $mergedTableInfo->setTableName($tableInfo->getTableName());
+
+            $mergedTableInfo->mergeColumns($tableInfo->getColumns());
+            $mergedTableInfo->mergeJoinColumns($tableInfo->getJoinColumns());
+            $mergedTableInfo->mergePrimaryKeys($tableInfo->getPrimaryKeys());
+            $mergedTableInfo->mergeAutoIncrementKeys($tableInfo->getAutoIncrementKeys());
+            $mergedTableInfo->mergeDefaultValue($tableInfo->getDefaultValue());
+            $mergedTableInfo->mergeNotNullColumns($tableInfo->getNotNullColumns());
+        }
 
         return $mergedTableInfo;
     }
