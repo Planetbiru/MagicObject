@@ -67,16 +67,6 @@ class PicoTableInfo
     }
 
     /**
-     * Get instance
-     *
-     * @return self
-     */
-    public static function getInstance()
-    {
-        return new self(null, array(), array(), array(), array(), array(), array());
-    }
-
-    /**
      * Constructor
      *
      * @param string $picoTableName
