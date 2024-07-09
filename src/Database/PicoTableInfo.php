@@ -6,7 +6,6 @@ use stdClass;
 
 class PicoTableInfo
 {
-    const NAME = "name";
     /**
      * Table name
      *
