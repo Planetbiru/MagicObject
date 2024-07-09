@@ -333,6 +333,12 @@ class PicoDatabaseDump
         return $queryAlter;
     }
 
+    /**
+     * Merge entities
+     * @param mixed $entities
+     * @return PicoTableInfoExtended
+     * @deprecated deprecated since version 1.13
+     */
     public function getMergedTableInfoOld($entities)
     {
         $mergedTableInfo = PicoTableInfoExtended::getInstance();
@@ -359,6 +365,12 @@ class PicoDatabaseDump
         return $mergedTableInfo;
     }
     
+    /**
+     * Get merged table info
+     *
+     * @param MagicObject[] $entities
+     * @return PicoTableInfoExtended
+     */
     public function getMergedTableInfo($entities)
     {
         $mergedTableInfo = PicoTableInfoExtended::getInstance();
