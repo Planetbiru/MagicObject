@@ -23,6 +23,29 @@ class PicoDatabaseUtilMySql
         $sql = "SHOW COLUMNS FROM $picoTableName";
         return $database->fetchAll($sql);
     }
+
+    /**
+     * Get auto increment keys
+     * 
+     * @param PicoTableInfo $tableInfo Table information
+     * @return array
+     */
+    public static function getAutoIncrementKey($tableInfo)
+    {
+        $autoIncrement = $tableInfo->getAutoIncrementKeys();
+        $autoIncrementKeys = array();
+        if(is_array($autoIncrement) && !empty($autoIncrement))
+        {
+            foreach($autoIncrement as $col)
+            {
+                if($col["strategy"] == 'GenerationType.IDENTITY')
+                {
+                    $autoIncrementKeys[] = $col["name"];
+                }
+            }
+        }
+        return $autoIncrementKeys;
+    }
     
     /**
      * Dump database structure
@@ -48,15 +71,7 @@ class PicoDatabaseUtilMySql
             $createStatement .= " IF NOT EXISTS";
         }
 
-        $autoIncrement = $tableInfo->getAutoIncrementKeys();
-        $autoIncrementKeys = array();
-        if(is_array($autoIncrement) && !empty($autoIncrement))
-        {
-            foreach($autoIncrement as $col)
-            {
-                $autoIncrementKeys[] = $col["name"];
-            }
-        }
+        $autoIncrementKeys = self::getAutoIncrementKey($tableInfo);
 
         $query[] = "$createStatement `$picoTableName` (";
         
