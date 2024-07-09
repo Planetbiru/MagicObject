@@ -119,7 +119,6 @@ class PicoDatabase //NOSONAR
 				$initialQueries .= "SET search_path TO ".$this->databaseCredentials->getDatabaseShema();
 			}
 
-			
 			$this->databaseType = $this->databaseCredentials->getDriver();
 			$this->databaseConnection = new PDO(
 				$connectionString,

@@ -28,7 +28,6 @@ class PicoDatabaseDump
      */
     protected $picoTableName = "";
     
-    
     /**
      * Columns
      *
