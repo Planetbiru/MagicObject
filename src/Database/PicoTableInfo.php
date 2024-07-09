@@ -6,54 +6,65 @@ use stdClass;
 
 class PicoTableInfo
 {
+    const NAME = "name";
     /**
      * Table name
      *
      * @var string
      */
-    private $tableName = null;
+    protected $tableName = null;
 
     /**
      * Columns
      *
      * @var array
      */
-    private $columns = array();
+    protected $columns = array();
 
     /**
      * Join columns
      *
      * @var array
      */
-    private $joinColumns = array();
+    protected $joinColumns = array();
 
     /**
      * Primary keys
      *
      * @var array
      */
-    private $primaryKeys = array();
+    protected $primaryKeys = array();
 
     /**
      * Auto increment keys
      *
      * @var array
      */
-    private $autoIncrementKeys = array();
+    protected $autoIncrementKeys = array();
 
     /**
      * Default value keys
      *
      * @var array
      */
-    private $defaultValue = array();
+    protected $defaultValue = array();
 
     /**
      * Not null columns
      *
      * @var array
      */
-    private $notNullColumns = array();
+    protected $notNullColumns = array();
+
+    /**
+     * Get instance
+     *
+     * @return self
+     */
+    public static function getInstance()
+    {
+        return new self(null, array(), array(), array(), array(), array(), array());
+    }
 
     /**
      * Constructor
@@ -76,6 +87,25 @@ class PicoTableInfo
         $this->defaultValue = $defaultValue;
         $this->notNullColumns = $notNullColumns;
     }
+    
+    /**
+     * Magic method to debug object
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        // create new object because all properties are private
+        $stdClass = new stdClass;
+        $stdClass->tableName = $this->tableName;
+        $stdClass->columns = $this->columns;
+        $stdClass->joinColumns = $this->joinColumns;
+        $stdClass->primaryKeys = $this->primaryKeys;
+        $stdClass->autoIncrementKeys = $this->autoIncrementKeys;
+        $stdClass->defaultValue = $this->defaultValue;
+        $stdClass->notNullColumns = $this->notNullColumns;
+        return json_encode($stdClass);
+    }
 
     /**
      * Get table name
@@ -94,7 +124,7 @@ class PicoTableInfo
      *
      * @return self
      */ 
-    public function setTableName(string $tableName)
+    public function setTableName($tableName)
     {
         $this->tableName = $tableName;
 
@@ -118,7 +148,7 @@ class PicoTableInfo
      *
      * @return self
      */ 
-    public function setColumns(array $columns)
+    public function setColumns($columns)
     {
         $this->columns = $columns;
 
@@ -142,7 +172,7 @@ class PicoTableInfo
      *
      * @return self
      */ 
-    public function setJoinColumns(array $joinColumns)
+    public function setJoinColumns($joinColumns)
     {
         $this->joinColumns = $joinColumns;
 
@@ -166,7 +196,7 @@ class PicoTableInfo
      *
      * @return self
      */ 
-    public function setPrimaryKeys(array $primaryKeys)
+    public function setPrimaryKeys($primaryKeys)
     {
         $this->primaryKeys = $primaryKeys;
 
@@ -190,7 +220,7 @@ class PicoTableInfo
      *
      * @return self
      */ 
-    public function setAutoIncrementKeys(array $autoIncrementKeys)
+    public function setAutoIncrementKeys($autoIncrementKeys)
     {
         $this->autoIncrementKeys = $autoIncrementKeys;
 
@@ -214,7 +244,7 @@ class PicoTableInfo
      *
      * @return self
      */ 
-    public function setDefaultValue(array $defaultValue)
+    public function setDefaultValue($defaultValue)
     {
         $this->defaultValue = $defaultValue;
 
@@ -238,29 +268,10 @@ class PicoTableInfo
      *
      * @return self
      */ 
-    public function setNotNullColumns(array $notNullColumns)
+    public function setNotNullColumns($notNullColumns)
     {
         $this->notNullColumns = $notNullColumns;
 
         return $this;
-    }
-    
-    /**
-     * Magic method to debug object
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        // create new object because all properties are private
-        $stdClass = new stdClass;
-        $stdClass->tableName = $this->tableName;
-        $stdClass->columns = $this->columns;
-        $stdClass->joinColumns = $this->joinColumns;
-        $stdClass->primaryKeys = $this->primaryKeys;
-        $stdClass->autoIncrementKeys = $this->autoIncrementKeys;
-        $stdClass->defaultValue = $this->defaultValue;
-        $stdClass->notNullColumns = $this->notNullColumns;
-        return json_encode($stdClass);
     }
 }

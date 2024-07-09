@@ -624,7 +624,7 @@ class Artist extends MagicObject
 $databaseCredential = new SecretObject();
 $databaseCredential->loadYamlFile(dirname(dirname(__DIR__))."/test.yml", false, true, true);
 $database = new PicoDatabase($databaseCredential->getDatabase(), function(){}, function($sql){
-	echo $sql;
+	// echo $sql;
 });
 $database->connect();
 
@@ -702,7 +702,9 @@ try
 	
 	//$sql = $dumper->createAlterTableAdd($album);
 	//print_r($sql);
-	$arr = array(
+	
+	
+	$subqueryMap = array(
 		'producer'=>array(
 			'entityName'=>'Producer',
 			'tableName'=>'producer',
@@ -712,15 +714,33 @@ try
 			'propertyName'=>'name'
 		)
 	);
+	
 	/*
-	$r = $album->findAll(null, null, null, true, $arr);
-	foreach($r->getResult() as $row)
+	
+	$result = $album->findAll(null, null, null, true, $subqueryMap, MagicObject::FIND_OPTION_NO_COUNT_DATA | MagicObject::FIND_OPTION_NO_FETCH_DATA);
+	
+	while($data = $result->fetch())
 	{
-		echo $row."\r\n";
+		echo $data;
 	}
-	*/
-	$album->findOneWithPrimaryKeyValue('0648d495ade4515811f2', $arr);
-	echo $album;
+		*/
+		
+	
+	//echo $r;
+	
+
+	
+	$result = $album->findAll(null, null, null, true, $subqueryMap);
+	
+	foreach($result->getResult() as $row)
+	{
+		echo $row;
+	}
+
+	
+	
+	//$album->findOneWithPrimaryKeyValue('0648d495ade4515811f2', $arr);
+	//echo $album;
 }
 catch(Exception $e)
 {

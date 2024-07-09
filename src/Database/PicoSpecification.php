@@ -148,7 +148,6 @@ class PicoSpecification
         return $this;
     }
 
-
     /**
      * Check id specification is empty or not
      *
@@ -158,7 +157,6 @@ class PicoSpecification
     {
         return empty($this->specifications);
     }
-
 
     /**
      * Get predicate
