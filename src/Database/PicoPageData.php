@@ -216,7 +216,7 @@ class PicoPageData
             $maxPage = $totalPage;
         }
         $this->pagination = array();
-        for($i = $minPage; $i<=$maxPage; $i++)
+        for($i = $minPage; $i <= $maxPage; $i++)
         {
             $this->pagination[] = array('page'=>$i, 'selected'=>$i == $curPage);
         }
