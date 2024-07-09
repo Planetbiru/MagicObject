@@ -25,10 +25,10 @@ class PicoTableInfoExtended extends PicoTableInfo
         $test = array();
         foreach($this->columns as $elem)
         {
-            if(!in_array($elem[self::NAME], $test))
+            if(!in_array($elem[parent::NAME], $test))
             {
                 $tmp[] = $elem;
-                $test[] = $elem[self::NAME];
+                $test[] = $elem[parent::NAME];
             }
         }
         $this->columns = $tmp;
@@ -46,10 +46,10 @@ class PicoTableInfoExtended extends PicoTableInfo
         $test = array();
         foreach($this->joinColumns as $elem)
         {
-            if(!in_array($elem[self::NAME], $test))
+            if(!in_array($elem[parent::NAME], $test))
             {
                 $tmp[] = $elem;
-                $test[] = $elem[self::NAME];
+                $test[] = $elem[parent::NAME];
             }
         }
         $this->joinColumns = $tmp;
@@ -67,10 +67,10 @@ class PicoTableInfoExtended extends PicoTableInfo
         $test = array();
         foreach($this->primaryKeys as $elem)
         {
-            if(!in_array($elem[self::NAME], $test))
+            if(!in_array($elem[parent::NAME], $test))
             {
                 $tmp[] = $elem;
-                $test[] = $elem[self::NAME];
+                $test[] = $elem[parent::NAME];
             }
         }
         $this->primaryKeys = $tmp;
@@ -88,10 +88,10 @@ class PicoTableInfoExtended extends PicoTableInfo
         $test = array();
         foreach($this->autoIncrementKeys as $elem)
         {
-            if(!in_array($elem[self::NAME], $test))
+            if(!in_array($elem[parent::NAME], $test))
             {
                 $tmp[] = $elem;
-                $test[] = $elem[self::NAME];
+                $test[] = $elem[parent::NAME];
             }
         }
         $this->autoIncrementKeys = $tmp;
@@ -109,10 +109,10 @@ class PicoTableInfoExtended extends PicoTableInfo
         $test = array();
         foreach($this->defaultValue as $elem)
         {
-            if(!in_array($elem[self::NAME], $test))
+            if(!in_array($elem[parent::NAME], $test))
             {
                 $tmp[] = $elem;
-                $test[] = $elem[self::NAME];
+                $test[] = $elem[parent::NAME];
             }
         }
         $this->defaultValue = $tmp;
@@ -130,10 +130,10 @@ class PicoTableInfoExtended extends PicoTableInfo
         $test = array();
         foreach($this->notNullColumns as $elem)
         {
-            if(!in_array($elem[self::NAME], $test))
+            if(!in_array($elem[parent::NAME], $test))
             {
                 $tmp[] = $elem;
-                $test[] = $elem[self::NAME];
+                $test[] = $elem[parent::NAME];
             }
         }
         $this->notNullColumns = $tmp;
@@ -152,37 +152,43 @@ class PicoTableInfoExtended extends PicoTableInfo
     {
         $prevColumName = "";
         $listToInsert = array();
-        foreach($newList as $elem)
+        foreach($newList as $prop=>$elem)
         {
-            if(!in_array($elem[self::NAME], $oldListCheck))
+            if(!in_array($elem[parent::NAME], $oldListCheck))
             {
-                $listToInsert[] = array('element'=>$elem, 'prevColumnName'=>$prevColumName);
+                $listToInsert[$prop] = array('element'=>$elem, 'prevColumnName'=>$prevColumName);
             }
-            $prevColumName = $elem[self::NAME];
+            $prevColumName = $elem[parent::NAME];
         }
-        foreach($listToInsert as $toInsert)
+        foreach($listToInsert as $prop=>$toInsert)
         {
-            if(empty($prevColumName))
+            error_log($prevColumName);
+            if(empty($toInsert['prevColumnName']))
             {
                 // insert to the end of table
-                $tmp[] = $toInsert['element'];
+                $tmp[$prop] = $toInsert['element'];
             }
             else
             {
                 $tmp2 = array();
-                foreach($tmp as $elem2)
+                //$tmp2[$prop] = $toInsert['element'];
+                
+                foreach($tmp as $prop2=>$elem2)
                 {
-                    $tmp2[] = $elem;
-                    if($elem2[self::NAME] == $toInsert['prevColumnName'])
+                    $tmp2[$prop2] = $elem2;
+                    if($elem2[parent::NAME] == $toInsert['prevColumnName'])
                     {
                         // insert after prevColumnName
-                        $tmp2[] = $toInsert;
+                        $tmp2[$prop] = $toInsert['element'];
                     }
                 }
                 // update temporary list
                 $tmp = $tmp2;
+                
             }
+            
         }
+        error_log(print_r($tmp, true));
         return $tmp;
     }
     
@@ -197,7 +203,7 @@ class PicoTableInfoExtended extends PicoTableInfo
         $oldListCheck = array();
         foreach($oldList as $elem)
         {
-            $oldListCheck[] = $elem[self::NAME];
+            $oldListCheck[] = $elem[parent::NAME];
         }
         return $oldListCheck;
     }
@@ -291,11 +297,11 @@ class PicoTableInfoExtended extends PicoTableInfo
         $listToInsert = array();
         foreach($newList as $elem)
         {
-            if(!in_array($elem[self::NAME], $oldListCheck))
+            if(!in_array($elem[parent::NAME], $oldListCheck))
             {
                 $listToInsert[] = array("element"=>$elem, 'prevColumnName'=>$prevColumName);
             }
-            $prevColumName = $elem[self::NAME];
+            $prevColumName = $elem[parent::NAME];
         }
         $this->notNullColumns = $tmp;
         return $this;
