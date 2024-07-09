@@ -41,13 +41,11 @@ class PicoDatabaseUtilMySql
             $query[] = "";
         }
         $createStatement = "";
+
+        $createStatement = "CREATE TABLE";
         if($createIfNotExists)
         {
-            $createStatement = "CREATE TABLE IF NOT EXISTS";
-        }
-        else
-        {
-            $createStatement = "CREATE TABLE";
+            $createStatement .= " IF NOT EXISTS";
         }
 
         $autoIncrement = $tableInfo->getAutoIncrementKeys();
