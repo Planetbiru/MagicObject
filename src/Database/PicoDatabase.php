@@ -272,14 +272,7 @@ class PicoDatabase //NOSONAR
 		try 
 		{
 			$stmt->execute();
-			if ($stmt->rowCount() > 0) 
-			{
-				$result = $stmt->fetch($tentativeType);
-			} 
-			else 
-			{
-				$result = $defaultValue;
-			}
+			$result = $stmt->rowCount() > 0 ? $stmt->fetch($tentativeType) : $defaultValue;
 		} 
 		catch (PDOException $e) 
 		{
@@ -333,14 +326,7 @@ class PicoDatabase //NOSONAR
 		try 
 		{
 			$stmt->execute();
-			if ($stmt->rowCount() > 0) 
-			{
-				$result = $stmt->fetchAll($tentativeType);
-			} 
-			else 
-			{
-				$result = $defaultValue;
-			}
+			$result = $stmt->rowCount() > 0 ? $stmt->fetchAll($tentativeType) : $defaultValue;
 		} 
 		catch (PDOException $e) 
 		{
