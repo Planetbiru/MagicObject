@@ -104,8 +104,7 @@ class PicoEnvironmentVariable
         {
             $result = $value;
             $regex = '/\$\\{([^}]+)\\}/m';
-            preg_match_all($regex, $value, $matches);
-            
+            preg_match_all($regex, $value, $matches);        
             $pair = array_combine($matches[0], $matches[1]);  
             if(!empty($pair))
             {

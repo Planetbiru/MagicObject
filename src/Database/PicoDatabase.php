@@ -119,7 +119,6 @@ class PicoDatabase //NOSONAR
 				$initialQueries .= "SET search_path TO ".$this->databaseCredentials->getDatabaseShema();
 			}
 
-			
 			$this->databaseType = $this->databaseCredentials->getDriver();
 			$this->databaseConnection = new PDO(
 				$connectionString,
@@ -273,14 +272,7 @@ class PicoDatabase //NOSONAR
 		try 
 		{
 			$stmt->execute();
-			if ($stmt->rowCount() > 0) 
-			{
-				$result = $stmt->fetch($tentativeType);
-			} 
-			else 
-			{
-				$result = $defaultValue;
-			}
+			$result = $stmt->rowCount() > 0 ? $stmt->fetch($tentativeType) : $defaultValue;
 		} 
 		catch (PDOException $e) 
 		{
@@ -334,14 +326,7 @@ class PicoDatabase //NOSONAR
 		try 
 		{
 			$stmt->execute();
-			if ($stmt->rowCount() > 0) 
-			{
-				$result = $stmt->fetchAll($tentativeType);
-			} 
-			else 
-			{
-				$result = $defaultValue;
-			}
+			$result = $stmt->rowCount() > 0 ? $stmt->fetchAll($tentativeType) : $defaultValue;
 		} 
 		catch (PDOException $e) 
 		{

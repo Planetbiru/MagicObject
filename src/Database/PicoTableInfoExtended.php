@@ -4,6 +4,10 @@ namespace MagicObject\Database;
 
 class PicoTableInfoExtended extends PicoTableInfo
 {
+    const NAME = "name";
+    const PREV_NAME = "prevColumnName";
+    const ELEMENT = "element";
+    
     /**
      * Get instance
      *
@@ -25,10 +29,10 @@ class PicoTableInfoExtended extends PicoTableInfo
         $test = array();
         foreach($this->columns as $elem)
         {
-            if(!in_array($elem[parent::NAME], $test))
+            if(!in_array($elem[self::NAME], $test))
             {
                 $tmp[] = $elem;
-                $test[] = $elem[parent::NAME];
+                $test[] = $elem[self::NAME];
             }
         }
         $this->columns = $tmp;
@@ -46,10 +50,10 @@ class PicoTableInfoExtended extends PicoTableInfo
         $test = array();
         foreach($this->joinColumns as $elem)
         {
-            if(!in_array($elem[parent::NAME], $test))
+            if(!in_array($elem[self::NAME], $test))
             {
                 $tmp[] = $elem;
-                $test[] = $elem[parent::NAME];
+                $test[] = $elem[self::NAME];
             }
         }
         $this->joinColumns = $tmp;
@@ -67,10 +71,10 @@ class PicoTableInfoExtended extends PicoTableInfo
         $test = array();
         foreach($this->primaryKeys as $elem)
         {
-            if(!in_array($elem[parent::NAME], $test))
+            if(!in_array($elem[self::NAME], $test))
             {
                 $tmp[] = $elem;
-                $test[] = $elem[parent::NAME];
+                $test[] = $elem[self::NAME];
             }
         }
         $this->primaryKeys = $tmp;
@@ -88,10 +92,10 @@ class PicoTableInfoExtended extends PicoTableInfo
         $test = array();
         foreach($this->autoIncrementKeys as $elem)
         {
-            if(!in_array($elem[parent::NAME], $test))
+            if(!in_array($elem[self::NAME], $test))
             {
                 $tmp[] = $elem;
-                $test[] = $elem[parent::NAME];
+                $test[] = $elem[self::NAME];
             }
         }
         $this->autoIncrementKeys = $tmp;
@@ -109,10 +113,10 @@ class PicoTableInfoExtended extends PicoTableInfo
         $test = array();
         foreach($this->defaultValue as $elem)
         {
-            if(!in_array($elem[parent::NAME], $test))
+            if(!in_array($elem[self::NAME], $test))
             {
                 $tmp[] = $elem;
-                $test[] = $elem[parent::NAME];
+                $test[] = $elem[self::NAME];
             }
         }
         $this->defaultValue = $tmp;
@@ -130,10 +134,10 @@ class PicoTableInfoExtended extends PicoTableInfo
         $test = array();
         foreach($this->notNullColumns as $elem)
         {
-            if(!in_array($elem[parent::NAME], $test))
+            if(!in_array($elem[self::NAME], $test))
             {
                 $tmp[] = $elem;
-                $test[] = $elem[parent::NAME];
+                $test[] = $elem[self::NAME];
             }
         }
         $this->notNullColumns = $tmp;
@@ -154,41 +158,35 @@ class PicoTableInfoExtended extends PicoTableInfo
         $listToInsert = array();
         foreach($newList as $prop=>$elem)
         {
-            if(!in_array($elem[parent::NAME], $oldListCheck))
+            if(!in_array($elem[self::NAME], $oldListCheck))
             {
-                $listToInsert[$prop] = array('element'=>$elem, 'prevColumnName'=>$prevColumName);
+                $listToInsert[$prop] = array(self::ELEMENT=>$elem, self::PREV_NAME=>$prevColumName);
             }
-            $prevColumName = $elem[parent::NAME];
+            $prevColumName = $elem[self::NAME];
         }
         foreach($listToInsert as $prop=>$toInsert)
         {
-            error_log($prevColumName);
-            if(empty($toInsert['prevColumnName']))
+            if(empty($toInsert[self::PREV_NAME]))
             {
                 // insert to the end of table
-                $tmp[$prop] = $toInsert['element'];
+                $tmp[$prop] = $toInsert[self::ELEMENT];
             }
             else
             {
-                $tmp2 = array();
-                //$tmp2[$prop] = $toInsert['element'];
-                
+                $tmp2 = array();                
                 foreach($tmp as $prop2=>$elem2)
                 {
                     $tmp2[$prop2] = $elem2;
-                    if($elem2[parent::NAME] == $toInsert['prevColumnName'])
+                    if($elem2[self::NAME] == $toInsert[self::PREV_NAME])
                     {
                         // insert after prevColumnName
-                        $tmp2[$prop] = $toInsert['element'];
+                        $tmp2[$prop] = $toInsert[self::ELEMENT];
                     }
                 }
                 // update temporary list
-                $tmp = $tmp2;
-                
-            }
-            
+                $tmp = $tmp2;  
+            }     
         }
-        error_log(print_r($tmp, true));
         return $tmp;
     }
     
@@ -203,7 +201,7 @@ class PicoTableInfoExtended extends PicoTableInfo
         $oldListCheck = array();
         foreach($oldList as $elem)
         {
-            $oldListCheck[] = $elem[parent::NAME];
+            $oldListCheck[] = $elem[self::NAME];
         }
         return $oldListCheck;
     }
@@ -297,16 +295,13 @@ class PicoTableInfoExtended extends PicoTableInfo
         $listToInsert = array();
         foreach($newList as $elem)
         {
-            if(!in_array($elem[parent::NAME], $oldListCheck))
+            if(!in_array($elem[self::NAME], $oldListCheck))
             {
-                $listToInsert[] = array("element"=>$elem, 'prevColumnName'=>$prevColumName);
+                $listToInsert[] = array(self::ELEMENT=>$elem, self::PREV_NAME=>$prevColumName);
             }
-            $prevColumName = $elem[parent::NAME];
+            $prevColumName = $elem[self::NAME];
         }
         $this->notNullColumns = $tmp;
         return $this;
     }
-
-
-    
 }

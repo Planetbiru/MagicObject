@@ -6,7 +6,6 @@ use stdClass;
 
 class PicoTableInfo
 {
-    const NAME = "name";
     /**
      * Table name
      *
@@ -69,17 +68,17 @@ class PicoTableInfo
     /**
      * Constructor
      *
-     * @param string $picoTableName
-     * @param array $columns
-     * @param array $joinColumns
-     * @param array $primaryKeys
-     * @param array $autoIncrementKeys
-     * @param array $defaultValue
-     * @param array $notNullColumns
+     * @param string $tableName Table name
+     * @param array $columns Columns
+     * @param array $joinColumns Join columns
+     * @param array $primaryKeys Primary keys
+     * @param array $autoIncrementKeys Auto increment keys
+     * @param array $defaultValue Columns with default value
+     * @param array $notNullColumns Columns with not null
      */
-    public function __construct($picoTableName, $columns, $joinColumns, $primaryKeys, $autoIncrementKeys, $defaultValue, $notNullColumns)
+    public function __construct($tableName, $columns, $joinColumns, $primaryKeys, $autoIncrementKeys, $defaultValue, $notNullColumns)
     {
-        $this->tableName = $picoTableName;
+        $this->tableName = $tableName;
         $this->columns = $columns;
         $this->joinColumns = $joinColumns;
         $this->primaryKeys = $primaryKeys;
