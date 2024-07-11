@@ -287,7 +287,7 @@ class PicoDatabaseDump
                     $lastColumn = $entityColumn['name'];
                 }
                 $queryAlter = $this->addPrimaryKey($queryAlter, $tableInfo, $tableName, $createdColumns);
-                $queryAlter = $this->addAutoIncrement($queryAlter, $tableInfo, $tableName, $createdColumns);
+                $queryAlter = $this->addAutoIncrement($queryAlter, $tableInfo, $tableName, $createdColumns, $database->getDatabaseType());
             }
             else if($numberOfColumn > 0)
             {
@@ -339,7 +339,7 @@ class PicoDatabaseDump
                     $lastColumn = $entityColumn['name'];
                 }
                 $queryAlter = $this->addPrimaryKey($queryAlter, $tableInfo, $tableName, $createdColumns);
-                $queryAlter = $this->addAutoIncrement($queryAlter, $tableInfo, $tableName, $createdColumns);
+                $queryAlter = $this->addAutoIncrement($queryAlter, $tableInfo, $tableName, $createdColumns, $database->getDatabaseType());
             }
             else if($numberOfColumn > 0)
             {
@@ -386,9 +386,10 @@ class PicoDatabaseDump
      * @param PicoTableInfoExtended $tableInfo
      * @param string $tableName
      * @param string[] $createdColumns
+     * @param string $databaseType
      * @return string[]
      */
-    private function addAutoIncrement($queryAlter, $tableInfo, $tableName, $createdColumns)
+    private function addAutoIncrement($queryAlter, $tableInfo, $tableName, $createdColumns, $databaseType)
     {
         $queries = array();
         $aik = $this->getAutoIncrementKey($tableInfo);
@@ -400,9 +401,23 @@ class PicoDatabaseDump
                 $query = $this->updateQueryAlterTableNullable($query, $entityColumn);
                 $query = $this->updateQueryAlterTableDefaultValue($query, $entityColumn);  
                 
-                $queries[] = "";
-                $queries[] = "ALTER TABLE $tableName \r\n\tMODIFY $query AUTO_INCREMENT";
-                $queries[] = ";";
+                if($databaseType == PicoDatabaseType::DATABASE_TYPE_POSTGRESQL)
+                {
+                    $columnName = $entityColumn['name'];
+                    $sequenceName = $tableName."_".$columnName;
+ 
+                    $queries[] = "";
+                    $queries[] = "DROP SEQUENCE IF EXISTS $sequenceName;";
+                    $queries[] = "CREATE SEQUENCE $sequenceName MINVALUE 1;";
+                    $queries[] = "ALTER TABLE $tableName ALTER $columnName SET DEFAULT nextval('$sequenceName');";
+                    $queries[] = ";";
+                }
+                else
+                {
+                    $queries[] = "";
+                    $queries[] = "ALTER TABLE $tableName \r\n\tMODIFY $query AUTO_INCREMENT";
+                    $queries[] = ";";
+                }
 
                 $queryAlter[] = implode("\r\n", $queries);
             }
