@@ -255,16 +255,14 @@ class PicoDatabaseDump
     public function createAlterTableAddFromEntities($entities, $tableName = null, $database = null)
     {
         $tableInfo = $this->getMergedTableInfo($entities);
-        $database = $this->getDatabase($database, $entities);
-        $databaseType = $this->getDatabaseType($database);
         $tableName = $this->getTableName($tableName, $tableInfo);
+        $database = $this->getDatabase($database, $entities);
 
         $queryAlter = array();
         $numberOfColumn = count($tableInfo->getColumns());
         if(!empty($tableInfo->getColumns()))
         {
-            $dbColumnNames = array();
-            
+            $dbColumnNames = array();       
             $rows = PicoColumnGenerator::getColumnList($database, $tableInfo->getTableName());
             $createdColumns = array();
             if(is_array($rows) && !empty($rows))
@@ -283,20 +281,17 @@ class PicoDatabaseDump
                         $query = $this->createQueryAlterTable($tableName, $entityColumn['name'], $entityColumn['type']);
                         $query = $this->updateQueryAlterTableNullable($query, $entityColumn);
                         $query = $this->updateQueryAlterTableDefaultValue($query, $entityColumn);  
-                        $query = $this->updateQueryAlterTableAddColumn($query, $lastColumn, $database->getDatabaseType());
-                        
+                        $query = $this->updateQueryAlterTableAddColumn($query, $lastColumn, $database->getDatabaseType());                   
                         $queryAlter[]  = $query.";";
                     }
                     $lastColumn = $entityColumn['name'];
                 }
-
                 $queryAlter = $this->addPrimaryKey($queryAlter, $tableInfo, $tableName, $createdColumns);
                 $queryAlter = $this->addAutoIncrement($queryAlter, $tableInfo, $tableName, $createdColumns);
-                
             }
             else if($numberOfColumn > 0)
             {
-                $queryAlter[] = $this->dumpStructureTable($tableInfo, $databaseType);
+                $queryAlter[] = $this->dumpStructureTable($tableInfo, $database->getDatabaseType());
             }          
         }
         return $queryAlter;
@@ -313,13 +308,13 @@ class PicoDatabaseDump
     {
         $tableInfo = $this->getTableInfo($entity);
         $tableName = $tableInfo->getTableName();
+        $database = $entity->currentDatabase();
+
         $queryAlter = array();
         $numberOfColumn = count($tableInfo->getColumns());
-        if($tableInfo != null)
+        if(!empty($tableInfo->getColumns()))
         {
-            $dbColumnNames = array();
-            
-            $database = $entity->currentDatabase();
+            $dbColumnNames = array();         
             $rows = PicoColumnGenerator::getColumnList($database, $tableInfo->getTableName());
             $createdColumns = array();
             if(is_array($rows) && !empty($rows))
@@ -338,22 +333,18 @@ class PicoDatabaseDump
                         $query = $this->createQueryAlterTable($tableName, $entityColumn['name'], $entityColumn['type']);
                         $query = $this->updateQueryAlterTableNullable($query, $entityColumn);
                         $query = $this->updateQueryAlterTableDefaultValue($query, $entityColumn);  
-                        $query = $this->updateQueryAlterTableAddColumn($query, $lastColumn, $database->getDatabaseType());
-                        
+                        $query = $this->updateQueryAlterTableAddColumn($query, $lastColumn, $database->getDatabaseType());                    
                         $queryAlter[]  = $query.";";
                     }
                     $lastColumn = $entityColumn['name'];
                 }
-
                 $queryAlter = $this->addPrimaryKey($queryAlter, $tableInfo, $tableName, $createdColumns);
                 $queryAlter = $this->addAutoIncrement($queryAlter, $tableInfo, $tableName, $createdColumns);
-
             }
             else if($numberOfColumn > 0)
             {
                 $queryAlter[] = $this->dumpStructure($entity, $database->getDatabaseType());
-            }
-            
+            }     
         }
         return $queryAlter;
     }
@@ -405,7 +396,6 @@ class PicoDatabaseDump
         {
             if(isset($aik) && is_array($aik) && in_array($entityColumn['name'], $aik) && in_array($entityColumn['name'], $createdColumns))
             {
-
                 $query = sprintf("%s %s", $entityColumn['name'], $entityColumn['type']);
                 $query = $this->updateQueryAlterTableNullable($query, $entityColumn);
                 $query = $this->updateQueryAlterTableDefaultValue($query, $entityColumn);  
