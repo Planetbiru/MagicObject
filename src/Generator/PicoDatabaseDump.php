@@ -290,47 +290,132 @@ class PicoDatabaseDump
                     $lastColumn = $entityColumn['name'];
                 }
 
-                $pk = $tableInfo->getPrimaryKeys();
-                $queries = array();
-                if(isset($pk) && is_array($pk) && !empty($pk))
-                {
-                    
-                    foreach($pk as $primaryKey)
-                    {
-                        if(in_array($primaryKey['name'], $createdColumns))
-                        {
-                            $queries[] = "";
-                            $queries[] = "ALTER TABLE $tableName";
-                            $queries[] = "\tADD PRIMARY KEY ($primaryKey[name])";
-                            $queries[] = ";";
-                        }
-                    }                 
-                    $queryAlter[] = implode("\r\n", $queries);
-                }
-
-                $queries = array();
-                $aik = $this->getAutoIncrementKey($tableInfo);
-                foreach($tableInfo->getColumns() as $entityColumn)
-                {
-                    if(isset($aik) && is_array($aik) && in_array($entityColumn['name'], $aik) && in_array($entityColumn['name'], $createdColumns))
-                    {
-
-                        $query = sprintf("%s %s", $entityColumn['name'], $entityColumn['type']);
-                        $query = $this->updateQueryAlterTableNullable($query, $entityColumn);
-                        $query = $this->updateQueryAlterTableDefaultValue($query, $entityColumn);  
-                        
-                        $queries[] = "";
-                        $queries[] = "ALTER TABLE $tableName \r\n\tMODIFY $query AUTO_INCREMENT";
-                        $queries[] = ";";
-
-                        $queryAlter[] = implode("\r\n", $queries);
-                    }
-                }
+                $queryAlter = $this->addPrimaryKey($queryAlter, $tableInfo, $tableName, $createdColumns);
+                $queryAlter = $this->addAutoIncrement($queryAlter, $tableInfo, $tableName, $createdColumns);
+                
             }
             else if($numberOfColumn > 0)
             {
                 $queryAlter[] = $this->dumpStructureTable($tableInfo, $databaseType);
             }          
+        }
+        return $queryAlter;
+    }
+
+    /**
+     * Create query ALTER TABLE ADD COLUMN
+     *
+     * @param MagicObject|MagicObject[] $entity Entity
+     * @param PicoDatabase $database
+     * @return string[]
+     */
+    public function createAlterTableAddFromEntity($entity)
+    {
+        $tableInfo = $this->getTableInfo($entity);
+        $tableName = $tableInfo->getTableName();
+        $queryAlter = array();
+        $numberOfColumn = count($tableInfo->getColumns());
+        if($tableInfo != null)
+        {
+            $dbColumnNames = array();
+            
+            $database = $entity->currentDatabase();
+            $rows = PicoColumnGenerator::getColumnList($database, $tableInfo->getTableName());
+            $createdColumns = array();
+            if(is_array($rows) && !empty($rows))
+            {
+                foreach($rows as $row)
+                {
+                    $columnName = $row['Field'];
+                    $dbColumnNames[] = $columnName;
+                }
+                $lastColumn = null;
+                foreach($tableInfo->getColumns() as $entityColumn)
+                {
+                    if(!in_array($entityColumn['name'], $dbColumnNames))
+                    {
+                        $createdColumns[] = $entityColumn['name'];
+                        $query = $this->createQueryAlterTable($tableName, $entityColumn['name'], $entityColumn['type']);
+                        $query = $this->updateQueryAlterTableNullable($query, $entityColumn);
+                        $query = $this->updateQueryAlterTableDefaultValue($query, $entityColumn);  
+                        $query = $this->updateQueryAlterTableAddColumn($query, $lastColumn, $database->getDatabaseType());
+                        
+                        $queryAlter[]  = $query.";";
+                    }
+                    $lastColumn = $entityColumn['name'];
+                }
+
+                $queryAlter = $this->addPrimaryKey($queryAlter, $tableInfo, $tableName, $createdColumns);
+                $queryAlter = $this->addAutoIncrement($queryAlter, $tableInfo, $tableName, $createdColumns);
+
+            }
+            else if($numberOfColumn > 0)
+            {
+                $queryAlter[] = $this->dumpStructure($entity, $database->getDatabaseType());
+            }
+            
+        }
+        return $queryAlter;
+    }
+
+    /**
+     * Add primary key
+     * @param string[] $queryAlter
+     * @param PicoTableInfoExtended $tableInfo
+     * @param string $tableName
+     * @param string[] $createdColumns
+     * @return string[]
+     */
+    private function addPrimaryKey($queryAlter, $tableInfo, $tableName, $createdColumns)
+    {
+        $pk = $tableInfo->getPrimaryKeys();
+        $queries = array();
+        if(isset($pk) && is_array($pk) && !empty($pk))
+        {
+            
+            foreach($pk as $primaryKey)
+            {
+                if(in_array($primaryKey['name'], $createdColumns))
+                {
+                    $queries[] = "";
+                    $queries[] = "ALTER TABLE $tableName";
+                    $queries[] = "\tADD PRIMARY KEY ($primaryKey[name])";
+                    $queries[] = ";";
+                }
+            }                 
+            $queryAlter[] = implode("\r\n", $queries);
+        }
+        return $queryAlter;
+    }
+
+    /**
+     * Add auto increment
+     * 
+     * @param string[] $queryAlter
+     * @param PicoTableInfoExtended $tableInfo
+     * @param string $tableName
+     * @param string[] $createdColumns
+     * @return string[]
+     */
+    private function addAutoIncrement($queryAlter, $tableInfo, $tableName, $createdColumns)
+    {
+        $queries = array();
+        $aik = $this->getAutoIncrementKey($tableInfo);
+        foreach($tableInfo->getColumns() as $entityColumn)
+        {
+            if(isset($aik) && is_array($aik) && in_array($entityColumn['name'], $aik) && in_array($entityColumn['name'], $createdColumns))
+            {
+
+                $query = sprintf("%s %s", $entityColumn['name'], $entityColumn['type']);
+                $query = $this->updateQueryAlterTableNullable($query, $entityColumn);
+                $query = $this->updateQueryAlterTableDefaultValue($query, $entityColumn);  
+                
+                $queries[] = "";
+                $queries[] = "ALTER TABLE $tableName \r\n\tMODIFY $query AUTO_INCREMENT";
+                $queries[] = ";";
+
+                $queryAlter[] = implode("\r\n", $queries);
+            }
         }
         return $queryAlter;
     }
@@ -356,56 +441,6 @@ class PicoDatabaseDump
             }
         }
         return $autoIncrementKeys;
-    }
-
-    /**
-     * Create query ALTER TABLE ADD COLUMN
-     *
-     * @param MagicObject|MagicObject[] $entity Entity
-     * @param PicoDatabase $database
-     * @return string[]
-     */
-    public function createAlterTableAddFromEntity($entity)
-    {
-        $tableInfo = $this->getTableInfo($entity);
-        $tableName = $tableInfo->getTableName();
-        $queryAlter = array();
-        $numberOfColumn = count($tableInfo->getColumns());
-        if($tableInfo != null)
-        {
-            $dbColumnNames = array();
-            
-            $database = $entity->currentDatabase();
-            $rows = PicoColumnGenerator::getColumnList($database, $tableInfo->getTableName());
-            if(is_array($rows) && !empty($rows))
-            {
-                foreach($rows as $row)
-                {
-                    $columnName = $row['Field'];
-                    $dbColumnNames[] = $columnName;
-                }
-                $lastColumn = null;
-                foreach($tableInfo->getColumns() as $entityColumn)
-                {
-                    if(!in_array($entityColumn['name'], $dbColumnNames))
-                    {
-                        $query = "ALTER TABLE $tableName ADD COLUMN ".$entityColumn['name']." ".$entityColumn['type'];
-                        $query = $this->updateQueryAlterTableNullable($query, $entityColumn);
-                        $query = $this->updateQueryAlterTableDefaultValue($query, $entityColumn);  
-                        $query = $this->updateQueryAlterTableAddColumn($query, $lastColumn, $database->getDatabaseType());
-                        
-                        $queryAlter[]  = $query.";";
-                    }
-                    $lastColumn = $entityColumn['name'];
-                }
-            }
-            else if($numberOfColumn > 0)
-            {
-                $queryAlter[] = $this->dumpStructure($entity, $database->getDatabaseType());
-            }
-            
-        }
-        return $queryAlter;
     }
 
     /**
