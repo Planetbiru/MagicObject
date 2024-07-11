@@ -184,10 +184,8 @@ class PicoTableInfoExtended extends PicoTableInfo
                     }
                 }
                 // update temporary list
-                $tmp = $tmp2;
-                
-            }
-            
+                $tmp = $tmp2;  
+            }     
         }
         return $tmp;
     }
@@ -299,12 +297,11 @@ class PicoTableInfoExtended extends PicoTableInfo
         {
             if(!in_array($elem[self::NAME], $oldListCheck))
             {
-                $listToInsert[] = array("element"=>$elem, self::PREV_NAME=>$prevColumName);
+                $listToInsert[] = array(self::ELEMENT=>$elem, self::PREV_NAME=>$prevColumName);
             }
             $prevColumName = $elem[self::NAME];
         }
         $this->notNullColumns = $tmp;
         return $this;
     }
-    
 }
