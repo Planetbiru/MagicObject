@@ -404,12 +404,11 @@ class PicoDatabaseDump
                 if($databaseType == PicoDatabaseType::DATABASE_TYPE_POSTGRESQL)
                 {
                     $columnName = $entityColumn['name'];
-                    $sequenceName = $tableName."_".$columnName;
- 
+                    $sequenceName = $tableName."_".$columnName; 
                     $queries[] = "";
                     $queries[] = "DROP SEQUENCE IF EXISTS $sequenceName;";
                     $queries[] = "CREATE SEQUENCE $sequenceName MINVALUE 1;";
-                    $queries[] = "ALTER TABLE $tableName ALTER $columnName SET DEFAULT nextval('$sequenceName');";
+                    $queries[] = "ALTER TABLE $tableName \r\n\tALTER $columnName SET DEFAULT nextval('$sequenceName')";
                     $queries[] = ";";
                 }
                 else
