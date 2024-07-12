@@ -95,7 +95,7 @@ class PicoDatabase //NOSONAR
 	/**
 	 * Connect to database
 	 * 
-	 * @param boolan $withDatabase
+	 * @param boolean $withDatabase
 	 * @return boolean true if success and false if failed
 	 */
 	public function connect($withDatabase = true)
@@ -155,7 +155,10 @@ class PicoDatabase //NOSONAR
 		$emptyHost = !$this->databaseCredentials->issetHost();
 		$emptyPort = !$this->databaseCredentials->issetPort();
 		$emptyName = !$this->databaseCredentials->issetDatabaseName();
-		
+		$emptyValue = "";
+		$emptyValue .= $emptyDriver ? "{driver}" : "";
+		$emptyValue .= $emptyHost ? "{host}" : "";
+		$emptyValue .= $emptyPort ? "{port}" : "";		
 		$invalidParam1 = $emptyDriver || $emptyHost || $emptyPort;
 		
 		if($withDatabase)
@@ -166,10 +169,6 @@ class PicoDatabase //NOSONAR
 				$emptyName
 			)
 			{
-				$emptyValue = "";
-				$emptyValue .= $emptyDriver ? "{driver}" : "";
-				$emptyValue .= $emptyHost ? "{host}" : "";
-				$emptyValue .= $emptyPort ? "{port}" : "";
 				$emptyValue .= $emptyName ? "{database_name}" : "";
 				throw new InvalidDatabaseConfiguration("Invalid database configuration. $emptyValue. Please check your database configuration!");
 			}
@@ -177,18 +176,8 @@ class PicoDatabase //NOSONAR
 		}
 		else
 		{
-			if(
-				$emptyDriver
-				||
-				$emptyHost
-				||
-				$emptyPort
-			)
+			if($invalidParam1)
 			{
-				$emptyValue = "";
-				$emptyValue .= $emptyDriver ? "{driver}" : "";
-				$emptyValue .= $emptyHost ? "{host}" : "";
-				$emptyValue .= $emptyPort ? "{port}" : "";
 				throw new InvalidDatabaseConfiguration("Invalid database configuration. $emptyValue. Please check your database configuration!");
 			}
 			return $this->databaseCredentials->getDriver() . ':host=' . $this->databaseCredentials->getHost() . '; port=' . ((int) $this->databaseCredentials->getPort());
