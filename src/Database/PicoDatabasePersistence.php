@@ -2535,7 +2535,7 @@ class PicoDatabasePersistence // NOSONAR
         }
         catch(PDOException $e)
         {
-            throw new PDOException($e->getMessage(), $e->getCode());
+            throw new PDOException($e->getMessage(), intval($e->getCode()));
         }
         catch(NoDatabaseConnectionException $e)
         {

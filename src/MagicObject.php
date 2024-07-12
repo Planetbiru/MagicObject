@@ -1261,7 +1261,7 @@ class MagicObject extends stdClass // NOSONAR
         }
         catch(Exception $e)
         {
-            throw new PDOException($e->getMessage(), $e->getCode());
+            throw new PDOException($e->getMessage(), intval($e->getCode()));
         }
     }
 
@@ -1325,7 +1325,7 @@ class MagicObject extends stdClass // NOSONAR
         }
         catch(Exception $e)
         {
-            throw new PDOException($e->getMessage(), $e->getCode());
+            throw new PDOException($e->getMessage(), intval($e->getCode()));
         }
     }
 

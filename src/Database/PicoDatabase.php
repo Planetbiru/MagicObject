@@ -138,7 +138,7 @@ class PicoDatabase //NOSONAR
 		} 
 		catch (Exception $e) 
 		{
-			throw new PDOException($e, $e->getCode());
+			throw new PDOException($e->getMessage(), intval($e->getCode()));
 		}
 		return $connected;
 	}
@@ -312,7 +312,7 @@ class PicoDatabase //NOSONAR
 		} 
 		catch (PDOException $e) 
 		{
-			throw new PDOException($e, $e->getCode());
+			throw new PDOException($e->getMessage(), intval($e->getCode()));
 		}
 	}
 
@@ -386,7 +386,7 @@ class PicoDatabase //NOSONAR
 		} 
 		catch (PDOException $e) 
 		{
-			throw new PDOException($e, $e->getCode());
+			throw new PDOException($e->getMessage(), intval($e->getCode()));
 		}
 		return $stmt;
 	}
