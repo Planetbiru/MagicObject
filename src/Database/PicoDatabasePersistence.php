@@ -1042,7 +1042,6 @@ class PicoDatabasePersistence // NOSONAR
         if(!$this->generatedValue)
         {
             $this->addGeneratedValue($info, false);
-            $this->object->update();
         }
         return $stmt;
     }
@@ -1118,7 +1117,7 @@ class PicoDatabasePersistence // NOSONAR
         {
             foreach($info->getAutoIncrementKeys() as $name=>$col)
             {
-                if(strcasecmp($col[self::KEY_STRATEGY], "GenerationType.UUID") == 0)
+                if(strcasecmp($col[self::KEY_STRATEGY], "GenerationType.UUID") == 0 && !$this->generatedValue)
                 {
                     $value = $this->database->generateNewId();
                     $values[$col[self::KEY_NAME]] = $value;
