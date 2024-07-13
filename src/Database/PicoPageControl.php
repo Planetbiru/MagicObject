@@ -121,11 +121,23 @@ class PicoPageControl
             $lines[] = sprintf($format2, '', $prevPg, PicoPagination::getPageUrl($prevPg, $this->parameterName, $this->path), $this->prev);
         }
 
+        $pn = '';
+        $i = 0;
+        $max = count($this->pageData->getPagination());
         foreach($this->pageData->getPagination() as $pg)
         {
             $lastNavPg = $pg['page'];
             $selected = $pg['selected'] ? ' page-selected' : '';
+            if($i == 0)
+            {
+                $selected = ' page-first'.$selected;
+            }
+            if($i == ($max - 1))
+            {
+                $selected = ' page-last'.$selected;
+            }
             $lines[] = sprintf($format1, $selected, $lastNavPg, PicoPagination::getPageUrl($lastNavPg, $this->parameterName, $this->path), $lastNavPg);
+            $i++;
         }
 
         if(isset($this->next) && $this->pageData->getPageNumber() < ($this->pageData->getTotalPage()))
