@@ -1352,7 +1352,6 @@ class PicoDatabasePersistence // NOSONAR
                     $properties = $reflexProp->parseKeyValueAsObject($parameters->getColumn());
                     $columns[$prop->name] = $properties->getName();
                 }
-                // get column name of each parameters
             }
         }
         catch(Exception $e)
@@ -1382,8 +1381,6 @@ class PicoDatabasePersistence // NOSONAR
                 $parameters = $reflexProp->getParametersAsObject();
                 $properties = $reflexProp->parseKeyValueAsObject($parameters->getColumn());
                 $columns[$prop->name] = $properties->getName();
-
-                // get column name of each parameters       
             }
         }
         catch(Exception $e)
@@ -1431,8 +1428,7 @@ class PicoDatabasePersistence // NOSONAR
      */
     protected function createWhereFromSpecification($sqlQuery, $specification, $info)
     {
-        $masterColumnMaps = $this->getColumnMap($info);
-        
+        $masterColumnMaps = $this->getColumnMap($info);   
         $arr = array();
         $arr[] = "(1=1)";
         if($specification != null && !$specification->isEmpty())
@@ -2836,7 +2832,7 @@ class PicoDatabasePersistence // NOSONAR
     {
         if(isset($join[self::KEY_REFERENCE_COLUMN_NAME]))
         {
-             return $join[self::KEY_REFERENCE_COLUMN_NAME];
+            return $join[self::KEY_REFERENCE_COLUMN_NAME];
         }
         else
         {
@@ -2851,9 +2847,30 @@ class PicoDatabasePersistence // NOSONAR
      * @param string $referenceColumName Reference column name
      * @return string|null
      */
-    private function getJoinKey($row, $referenceColumName)
+    private function getJoinKeyValue($row, $referenceColumName)
     {
         return isset($row[$referenceColumName]) ? $row[$referenceColumName] : null;
+    }
+
+    /**
+     * Get property name
+     * @param string $classNameJoin
+     * @param string $referenceColumName
+     * @return string|null
+     */
+    private function getJoinKeyName($classNameJoin, $referenceColumName)
+    {
+        $className = $this->getRealClassName($classNameJoin);
+        $persist = new PicoDatabasePersistence(null, new $className());
+        $info = $persist->getTableInfo();
+        foreach($info->getColumns() as $prop => $col)
+        {
+            if($col['name'] == $referenceColumName)
+            {
+                return $prop;
+            }
+        }
+        return $referenceColumName;
     }
 
     /**
@@ -2874,22 +2891,23 @@ class PicoDatabasePersistence // NOSONAR
      * Get join data
      *
      * @param string $classNameJoin Join class name
-     * @param string $joinKey Join key
+     * @param string $referenceColumName Join key
+     * @param mixed $joinKeyValue Join key
      * @return MagicObject|null
      */
-    private function getJoinData($classNameJoin, $joinKey)
+    private function getJoinData($classNameJoin, $referenceColumName, $joinKeyValue)
     {
-        if(isset($joinKey) && (!isset($this->joinCache[$classNameJoin]) || !isset($this->joinCache[$classNameJoin][$joinKey])))
-        {              
+        if((!isset($this->joinCache[$classNameJoin]) || !isset($this->joinCache[$classNameJoin][$joinKeyValue])))
+        {      
             $className = $this->getRealClassName($classNameJoin);
             $obj = new $className(null, $this->database);
-            $obj->find($joinKey); 
-            $this->joinCache[$classNameJoin][$joinKey] = $obj;
+            $obj->{'findOneBy'.ucfirst($referenceColumName)}($joinKeyValue);           
+            $this->joinCache[$classNameJoin][$joinKeyValue] = $obj;
             return $obj;
         }
-        else if(isset($this->joinCache[$classNameJoin]) && isset($this->joinCache[$classNameJoin][$joinKey]))
+        else if(isset($this->joinCache[$classNameJoin]) && isset($this->joinCache[$classNameJoin][$joinKeyValue]))
         {
-            return $this->joinCache[$classNameJoin][$joinKey];
+            return $this->joinCache[$classNameJoin][$joinKeyValue];
         }
         else
         {
@@ -2913,11 +2931,12 @@ class PicoDatabasePersistence // NOSONAR
             {
                 $referenceColumName = $this->getReferenceColumnName($join);
                 $classNameJoin = $join[self::KEY_PROPERTY_TYPE];
-                $joinKey = $this->getJoinKey($row, $referenceColumName);
+                $joinKeyName = $this->getJoinKeyName($classNameJoin, $referenceColumName);
+                $joinKeyValue = $this->getJoinKeyValue($row, $referenceColumName);
                 try
                 {
                     $this->prepareJoinCache($classNameJoin);
-                    $obj = $this->getJoinData($classNameJoin, $joinKey);
+                    $obj = $this->getJoinData($classNameJoin, $joinKeyName, $joinKeyValue);
                     if($obj != null)
                     {
                         $data = $this->addProperty($data, $propName, $obj);
