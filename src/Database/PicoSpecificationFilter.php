@@ -21,8 +21,8 @@ class PicoSpecificationFilter
     /**
      * Constructor
      *
-     * @param string $columnName
-     * @param string $dataType
+     * @param string $columnName Column name
+     * @param string $dataType Data type
      */
     public function __construct($columnName, $dataType)
     {
