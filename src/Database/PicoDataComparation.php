@@ -248,7 +248,7 @@ class PicoDataComparation
         {
             $ret = $this->comparison;
         }
-        else if($this->comparison == self::IN)
+        else if($this->comparison == self::IN || $this->comparison == self::NOT_IN)
         {
             $ret = $this->comparison;
         }
