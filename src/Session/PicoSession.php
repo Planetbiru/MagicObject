@@ -70,7 +70,7 @@ class PicoSession
     public static function getInstance($name = null, $maxLifeTime = 0)
     {
         if (!isset(self::$_instance)) {
-            self::$_instance = new self();
+            self::$_instance = new self;
             if(isset($name))
             {
                 self::$_instance->setSessionName($name);

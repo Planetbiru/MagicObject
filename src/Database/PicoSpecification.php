@@ -136,7 +136,7 @@ class PicoSpecification
     {
         if($predicate instanceof PicoSpecification)
         {
-            $specification = new self();
+            $specification = new self;
             $specification->setParentFilterLogic($logic);
             $specifications = $predicate->getSpecifications();
             foreach($specifications as $pred)
@@ -272,7 +272,7 @@ class PicoSpecification
      */
     public static function getInstance()
     {
-        return new self();
+        return new self;
     }
     
     /**
@@ -299,7 +299,7 @@ class PicoSpecification
      */
     public static function fromUserInput($request, $map = null)
     {
-        $specification = new self();
+        $specification = new self;
         if(isset($map) && is_array($map))
         {
             foreach($map as $key=>$filter)

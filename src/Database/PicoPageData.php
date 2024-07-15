@@ -125,10 +125,13 @@ class PicoPageData
     /**
      * Constructor
      *
-     * @param MagicObject[] $result
-     * @param integer $startTime
-     * @param integer $totalResult
-     * @param PicoPageable $pageable
+     * @param MagicObject[] $result Array of MagicObject or null
+     * @param integer $startTime Timestamp when query is sent
+     * @param integer $totalResult Total result of 0 for no result
+     * @param PicoPageable $pageable Pagable
+     * @param PDOStatement $stmt PDO statement
+     * @param MagicObject $entity Entity
+     * @param array $subqueryMap Subquery map
      */
     public function __construct($result, $startTime, $totalResult = 0, $pageable = null, $stmt = null, $entity = null, $subqueryMap = null)
     {

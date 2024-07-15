@@ -57,9 +57,9 @@ class PicoPageControl
     /**
      * Constructor
      *
-     * @param PicoPageData $pagination
-     * @param string $parameterName
-     * @param string $path
+     * @param PicoPageData $pageData Page data
+     * @param string $parameterName Parameter name for page
+     * @param string $path Full path
      */
     public function __construct($pageData, $parameterName = 'page', $path = null)
     {
@@ -74,6 +74,12 @@ class PicoPageControl
         }
     }
 
+    /**
+     * Set margin to pagination
+     *
+     * @param integer $margin Margin (previous and next) from current page
+     * @return self
+     */
     public function setMargin($margin)
     {
         $this->pageData->generatePagination($margin);
@@ -83,10 +89,10 @@ class PicoPageControl
     /**
      * Set navigation
      *
-     * @param string $prev
-     * @param string $next
-     * @param string $first
-     * @param string $last
+     * @param string $prev Button symbol for previous page
+     * @param string $next Button symbol for next page
+     * @param string $first Button symbol for first page
+     * @param string $last Button symbol for last page
      * @return self
      */
     public function setNavigation($prev = null, $next = null, $first = null, $last = null)

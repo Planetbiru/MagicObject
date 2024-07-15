@@ -233,7 +233,7 @@ class PicoSortable
      */
     public static function getInstance()
     {
-        return new self();
+        return new self;
     }
     
     /**
@@ -256,7 +256,7 @@ class PicoSortable
      */
     public static function fromUserInput($request, $map = null, $defaultSortable = null)
     {
-        $sortable = new self();
+        $sortable = new self;
         if(self::isArray($map))
         {
             foreach($map as $key=>$value)
