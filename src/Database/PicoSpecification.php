@@ -272,7 +272,7 @@ class PicoSpecification
      */
     public static function getInstance()
     {
-        return new PicoSpecification();
+        return new self();
     }
     
     /**
@@ -299,7 +299,7 @@ class PicoSpecification
      */
     public static function fromUserInput($request, $map = null)
     {
-        $specification = new PicoSpecification();
+        $specification = new self();
         if(isset($map) && is_array($map))
         {
             foreach($map as $key=>$filter)

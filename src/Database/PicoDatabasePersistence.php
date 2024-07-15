@@ -2861,7 +2861,7 @@ class PicoDatabasePersistence // NOSONAR
     private function getJoinKeyName($classNameJoin, $referenceColumName)
     {
         $className = $this->getRealClassName($classNameJoin);
-        $persist = new PicoDatabasePersistence(null, new $className());
+        $persist = new self(null, new $className());
         $info = $persist->getTableInfo();
         foreach($info->getColumns() as $prop => $col)
         {

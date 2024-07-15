@@ -134,7 +134,7 @@ class PicoPredicate //NOSONAR
     {
         $this->field = $field;
         $this->value = $value;
-        $this->comparation = PicoDataComparation::in($value);
+        $this->comparation = PicoDataComparation::notIn($value);
         return $this;
     }
 
@@ -332,7 +332,7 @@ class PicoPredicate //NOSONAR
      */
     public static function getInstance()
     {
-        return new PicoPredicate();
+        return new self();
     }
     
     /**

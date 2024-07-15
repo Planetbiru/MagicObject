@@ -127,7 +127,6 @@ class PicoPageControl
             $lines[] = sprintf($format2, '', $prevPg, PicoPagination::getPageUrl($prevPg, $this->parameterName, $this->path), $this->prev);
         }
 
-        $pn = '';
         $i = 0;
         $max = count($this->pageData->getPagination());
         foreach($this->pageData->getPagination() as $pg)
