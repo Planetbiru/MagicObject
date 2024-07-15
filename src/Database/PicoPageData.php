@@ -11,7 +11,7 @@ use stdClass;
 class PicoPageData
 {
     const RESULT = 'result';
-    const PAGABLE = 'pagable';
+    const PAGEABLE = 'pagable';
 
     /**
      * Result
@@ -284,7 +284,7 @@ class PicoPageData
         );
         foreach($this as $key=>$value)
         {
-            if($key != self::RESULT && $key != self::PAGABLE && in_array($key, $exposedProps))
+            if($key != self::RESULT && $key != self::PAGEABLE && in_array($key, $exposedProps))
             {
                 $obj->{$key} = $value;
             }
