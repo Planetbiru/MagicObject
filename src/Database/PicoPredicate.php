@@ -41,7 +41,14 @@ class PicoPredicate //NOSONAR
     {
         if($field != null)
         {
-            $this->equals($field, $value);
+            if(is_array($value))
+            {
+                $this->in($field, $value);
+            }
+            else
+            {
+                $this->equals($field, $value);
+            }
         }
     }
     
