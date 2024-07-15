@@ -125,6 +125,20 @@ class PicoPredicate //NOSONAR
     }
 
     /**
+     * Not in
+     * @param string $field
+     * @param mixed $value
+     * @return self
+     */
+    public function notIn($field, $value)
+    {
+        $this->field = $field;
+        $this->value = $value;
+        $this->comparation = PicoDataComparation::in($value);
+        return $this;
+    }
+
+    /**
      * Like
      * @param string $field
      * @param mixed $value

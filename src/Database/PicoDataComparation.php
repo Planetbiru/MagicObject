@@ -7,6 +7,7 @@ class PicoDataComparation
     const EQUALS = "=";
     const NOT_EQUALS = "!=";
     const IN = "in";
+    const NOT_IN = "not in";
     const IS = "is";
     const IS_NOT = "is not";
     const LIKE = "like";
@@ -66,6 +67,15 @@ class PicoDataComparation
     public static function in($value)
     {
         return new PicoDataComparation($value, self::IN);
+    }
+
+    /**
+     * Not in
+     * @param mixed $value
+     */
+    public static function notIn($value)
+    {
+        return new PicoDataComparation($value, self::NOT_IN);
     }
 
     /**
