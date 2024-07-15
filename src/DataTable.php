@@ -493,4 +493,14 @@ class DataTable extends SetterGetter
         }
          return $doc->saveHTML();
     } 
+
+    /**
+     * Get table info
+     *
+     * @return PicoTableInfo
+     */ 
+    public function get_tableInfo()
+    {
+        return $this->_tableInfo;
+    }
 }
