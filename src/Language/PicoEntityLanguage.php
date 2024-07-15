@@ -2,13 +2,10 @@
 
 namespace MagicObject\Language;
 
-use Exception;
-use MagicObject\Database\PicoTableInfo;
 use MagicObject\MagicObject;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\PicoGenericObject;
 use MagicObject\Util\PicoStringUtil;
-use MagicObject\Util\PicoTableUtil;
 use ReflectionClass;
 use stdClass;
 
