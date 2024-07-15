@@ -47,7 +47,14 @@ class PicoDataComparation
      */
     public static function equals($value)
     {
-        return new PicoDataComparation($value, self::EQUALS);
+        if(is_array($value))
+        {
+            return new PicoDataComparation($value, self::IN);
+        }
+        else
+        {
+            return new PicoDataComparation($value, self::EQUALS);
+        }
     }
 
     /**
