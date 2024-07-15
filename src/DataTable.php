@@ -499,7 +499,7 @@ class DataTable extends SetterGetter
      *
      * @return PicoTableInfo
      */ 
-    public function get_tableInfo()
+    public function getTableInfo()
     {
         return $this->_tableInfo;
     }
