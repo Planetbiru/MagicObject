@@ -125,7 +125,7 @@ class PicoSpecificationFilter
     /**
      * Get column name
      *
-     * @return  string
+     * @return string
      */ 
     public function getColumnName()
     {
@@ -135,7 +135,7 @@ class PicoSpecificationFilter
     /**
      * Get data type
      *
-     * @return  string
+     * @return string
      */ 
     public function getDataType()
     {

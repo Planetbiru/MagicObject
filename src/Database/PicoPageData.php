@@ -363,7 +363,7 @@ class PicoPageData
     /**
      * Get data offset
      *
-     * @return  integer
+     * @return integer
      */ 
     public function getDataOffset()
     {

@@ -320,7 +320,7 @@ class PicoEntityLanguage
     /**
      * Get entity language
      *
-     * @return  string
+     * @return string
      */ 
     public function getEntityLanguage()
     {
@@ -330,7 +330,7 @@ class PicoEntityLanguage
     /**
      * Get entity class name
      *
-     * @return  string
+     * @return string
      */ 
     public function getEntityClassName()
     {
