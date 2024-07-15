@@ -74,6 +74,12 @@ class PicoPageControl
         }
     }
 
+    public function setMargin($margin)
+    {
+        $this->pageData->generatePagination($margin);
+        return $this;
+    }
+
     /**
      * Set navigation
      *

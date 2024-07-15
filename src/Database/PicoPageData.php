@@ -192,25 +192,39 @@ class PicoPageData
     /**
      * Calculate content
      *
-     * @return void
+     * @return self
      */
-    private function calculateContent()
+    public function calculateContent()
     {
         $this->pageNumber = $this->pageable->getPage()->getPageNumber();
         $this->totalPage = ceil($this->totalResult / $this->pageable->getPage()->getPageSize());
         
         $this->pageSize = $this->pageable->getPage()->getPageSize();
         $this->dataOffset = ($this->pageNumber - 1) * $this->pageSize;
+        $this->generatePagination(3);
+        return $this;
+    }
 
+    /**
+     * Generate pagination
+     * @param integer $margin
+     * @return self
+     */
+    public function generatePagination($margin = 3)
+    {
+        if($margin < 1)
+        {
+            $margin = 1;
+        }
         $curPage = $this->pageNumber;
         $totalPage = $this->totalPage;
 
-        $minPage = $curPage - 3;
+        $minPage = $curPage - $margin;
         if($minPage < 1)
         {
             $minPage = 1;
         }
-        $maxPage = $curPage + 3;
+        $maxPage = $curPage + $margin;
         if(!$this->byCountResult && $maxPage > $totalPage)
         {
             $maxPage = $totalPage;
@@ -220,6 +234,7 @@ class PicoPageData
         {
             $this->pagination[] = array('page'=>$i, 'selected'=>$i == $curPage);
         }
+        return $this;
     }
 
     /**
