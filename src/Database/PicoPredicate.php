@@ -31,7 +31,7 @@ class PicoPredicate //NOSONAR
     private $filterLogic = null;
 
     /**
-     * Constructor. If $field given, it will call equals method
+     * Constructor. If $field given, it will call in method for array and equals for others
      *
      * @param string $field
      * @param mixed $value
