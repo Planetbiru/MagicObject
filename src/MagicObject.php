@@ -714,7 +714,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->_database != null && ($this->_database->getDatabaseType() != null && $this->_database->getDatabaseType() != ""))
         {
-            $persist = new PicoDatabasePersistence($this->_database, $this);
+            $persist = new PicoDatabasePersistenceExtended($this->_database, $this);
             return $persist->whereWithSpecification($specification);
         }
         else
