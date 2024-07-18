@@ -30,10 +30,26 @@ class ImageUtil
     const STAMP_POSITION_LEFT = 8;
     const STAMP_POSITION_RIGHT = 9;
     const STAMP_POSITION_RANDOM = 999;
+    
+    const TEXT_ALIGN_LEFT = 1;
+    const TEXT_ALIGN_RIGHT = 2;
+    const TEXT_ALIGN_CENTER = 3;
         
     private $fileName;
     private $info;
+    
+    /**
+     * Image
+     *
+     * @var GdImage
+     */
     private $image;
+    
+    /**
+     * Image
+     *
+     * @var GdImage
+     */
     private $orgImage;
 
     protected $width;
@@ -155,7 +171,7 @@ class ImageUtil
     /**
      * Enter description here...
      *
-     * @return resource
+     * @return GdImage
      */
     public function getImage()
     {
@@ -490,13 +506,15 @@ class ImageUtil
             $bbox = imagettfbbox($size, $angle, $font, $text);
 
             switch ($textAlignment) {
-                case TextAlignment::RIGHT:
+                case self::TEXT_ALIGN_RIGHT:
                     $curX = $point[0] - abs($bbox[2] - $bbox[0]);
                     break;
 
-                case TextAlignment::CENTER:
+                case self::TEXT_ALIGN_CENTER:
                     $curX = $point[0] - (abs($bbox[2] - $bbox[0]) / 2);
                     break;
+                default:
+                break;
             }
 
             imagettftext($this->image, $size, $angle, $curX, $curY, $color, $font, $text);
@@ -528,42 +546,6 @@ class ImageUtil
         return $this;
     }
 
-    /**
-     * Save the image to the given file. You can use this function to convert image types to. Just specify the image
-     * format you want as the extension. Argument:$file_name - the file name to which the image should be saved to
-     * Returns: false if save operation fails. Example: $img->save("image.png");
-     *            $image->save('file.jpg');
-     *
-     * @param null $filename
-     * @param int $quality
-     * @return ImageUtil The object if not destroyed
-     */
-    public function save($filename = null, $quality = 90)
-    {
-        if (is_null($filename)) {
-            $filename = $this->fileName;
-        }
-
-        $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-
-        ImageHandlerFactory::instanceFromExtension($extension)->save($this->image, $filename, ['quality' => $quality]);
-
-        return $this;
-    }
-
-    /**
-     * Display the image.
-     * Example: $img->show();
-     */
-    public function show()
-    {
-        if (ob_get_level()) {
-            ob_clean();
-        }
-        header("Content-type: " . $this->info['mime']);
-        ImageHandlerFactory::instanceFromMime($this->info['mime'])->output($this->image);
-        return $this;
-    }
 
     /**
      * Discard any changes made to the image and restore the original state
@@ -585,10 +567,10 @@ class ImageUtil
      * @param int $transpBlue
      * @return ImageUtil|GdImage|resource The image util object
      */
-    public function makeTransparent(Color $color = null, $image = null)
+    public function makeTransparent(ImageColor $color = null, $image = null)
     {
         if (empty($color)) {
-            $color = new Color(255, 255, 255);
+            $color = new ImageColor(255, 255, 255);
         }
 
         $customImage = true;
