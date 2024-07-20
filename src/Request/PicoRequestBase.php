@@ -482,17 +482,20 @@ class PicoRequestBase extends stdClass //NOSONAR
             $this->$var = $params[0];
             return $this;
         }
-        else if (strncasecmp($method, "equals", 6) === 0) {
+        else if (strncasecmp($method, "equals", 6) === 0) 
+        {
             $var = lcfirst(substr($method, 6));
             $value = isset($this->$var) ? $this->$var : null;
             return isset($params[0]) && $params[0] == $value;
         }
-        else if (strncasecmp($method, "checkbox", 8) === 0) {
+        else if (strncasecmp($method, "checkbox", 8) === 0) 
+        {
             $var = lcfirst(substr($method, 8));
             $this->$var = isset($this->$var) ? $this->$var : $params[0];
             return $this;
         }
-        else if (strncasecmp($method, "filter", 6) === 0) {
+        else if (strncasecmp($method, "filter", 6) === 0) 
+        {
             $var = lcfirst(substr($method, 6));
             if(isset($this->$var))
             {
@@ -500,21 +503,24 @@ class PicoRequestBase extends stdClass //NOSONAR
             }
             return $this;
         }
-        else if (strncasecmp($method, "createSelected", 14) === 0) {
+        else if (strncasecmp($method, "createSelected", 14) === 0) 
+        {
             $var = lcfirst(substr($method, 14));
             if(isset($this->$var))
             {
                 return $this->$var == $params[0] ? ' selected="selected"' : '';
             }
         }
-        else if (strncasecmp($method, "createChecked", 13) === 0) {
+        else if (strncasecmp($method, "createChecked", 13) === 0) 
+        {
             $var = lcfirst(substr($method, 13));
             if(isset($this->$var))
             {
                 return $this->$var == $params[0] ? ' checked="checked"' : '';
             }
         }
-        else if (strncasecmp($method, "unset", 5) === 0) {
+        else if (strncasecmp($method, "unset", 5) === 0) 
+        {
             $var = lcfirst(substr($method, 5));
             $this->removeValue($var, $params[0]);
             return $this;
