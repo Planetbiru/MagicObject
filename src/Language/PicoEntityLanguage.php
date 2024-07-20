@@ -170,10 +170,9 @@ class PicoEntityLanguage
      * @var boolean $asArrayProps
      * @return array
      */
-    protected function propertyList($asArrayProps = false)
+    public function propertyList($asArrayProps = false)
     {
         $class = new ReflectionClass($this->_entityClassName);
-
         // filter only the calling class properties
         // skip parent properties
         $properties = array_filter(
@@ -188,8 +187,7 @@ class PicoEntityLanguage
             $index = 0;
             foreach ($properties as $key) {
                 $prop = $key->name;
-                $result[$index] = $prop;
-                
+                $result[$index] = $prop;               
                 $index++;
             }
             return $result;
