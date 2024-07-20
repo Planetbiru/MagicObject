@@ -52,6 +52,8 @@ php composer.phar remove planetbiru/magic-object
 
 To install composer on your PC or download latest composer.phar, click https://getcomposer.org/download/ 
 
+To see available versions of MagicObject, visit https://packagist.org/packages/planetbiru/magic-object
+
 # Advantages
 
 MagicObject does not only pay attention to the ease of users in creating applications. MagicObject also pays attention to the efficiency of both time and resources used by applications so that applications can be run on servers with minimum specifications. This of course will save costs used both in application development and operations.
