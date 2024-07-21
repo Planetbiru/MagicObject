@@ -2201,12 +2201,7 @@ class PicoDatabasePersistence // NOSONAR
         
         if($this->isRequireJoin($specification, $pageable, $sortable, $info))
         {
-            echo "REQUIRE JOIN<br><br>";
             $sqlQuery = $this->addJoinQuery($sqlQuery, $info);
-        }
-        else
-        {
-            echo "NOT REQUIRE JOIN<br><br>";
         }
             
         if($specification != null)
