@@ -2127,9 +2127,7 @@ class PicoDatabasePersistence // NOSONAR
      */
     private function isRequireJoinFromSpecification($specification)
     {
-        return isset($specification) && (
-            ($specification instanceof PicoSpecification && $specification->isRequireJoin()) 
-        );
+        return isset($specification) && ($specification instanceof PicoSpecification && $specification->isRequireJoin());
     }
 
     /**
