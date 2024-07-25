@@ -2127,7 +2127,9 @@ class PicoDatabasePersistence // NOSONAR
      */
     private function isRequireJoinFromSpecification($specification)
     {
-        return isset($specification) && ($specification instanceof PicoSpecification && $specification->isRequireJoin());
+        return isset($specification) && (
+            ($specification instanceof PicoSpecification && $specification->isRequireJoin()) 
+        );
     }
 
     /**
@@ -2925,15 +2927,18 @@ class PicoDatabasePersistence // NOSONAR
             {
                 $referenceColumName = $this->getReferenceColumnName($join);
                 $classNameJoin = $join[self::KEY_PROPERTY_TYPE];
+                $columnName = $join[self::KEY_NAME];
                 $joinKeyName = $this->getJoinKeyName($classNameJoin, $referenceColumName);
-                $joinKeyValue = $this->getJoinKeyValue($row, $referenceColumName);
                 try
                 {
-                    $this->prepareJoinCache($classNameJoin);
-                    $obj = $this->getJoinData($classNameJoin, $joinKeyName, $joinKeyValue);
-                    if($obj != null)
+                    if(isset($row[$columnName]))
                     {
-                        $data = $this->addProperty($data, $propName, $obj);
+                        $this->prepareJoinCache($classNameJoin);
+                        $obj = $this->getJoinData($classNameJoin, $joinKeyName, $row[$columnName]);
+                        if($obj != null)
+                        {
+                            $data = $this->addProperty($data, $propName, $obj);
+                        }
                     }
                 }
                 catch(Exception $e)
