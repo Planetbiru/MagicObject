@@ -130,11 +130,15 @@ class PicoPasswordUtil{
      *
      * @param string $password
      * @param boolean $binary
+     * @param boolean $validate
      * @return string
      */
-    public function getHash($password, $binary = false)
+    public function getHash($password, $binary = false, $validate = true)
     {
-        $this->validate($password);
+        if($validate)
+        {
+            $this->validate($password);
+        }
         return hash($this->hashAlgorithm, $password, $binary);
     }
 
