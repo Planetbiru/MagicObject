@@ -100,7 +100,7 @@ class PicoPasswordUtil{
     {
         if(stripos($this->regex, '%d') !== false)
         {
-            return sprintf($this->regex, $this->minLength);
+            return str_replace('%d', $this->minLength, $this->regex);
         }
         return $this->regex;
     }
