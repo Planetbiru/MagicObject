@@ -21,11 +21,20 @@ class PicoPasswordUtil{
     
     private $hashAlgorithm = 'sha512';
     
-    public function __construct($hashAlgorithm, $minLength, $regex)
+    public function __construct($hashAlgorithm = null, $minLength = 8, $regex = null)
     {
-        $this->hashAlgorithm = $hashAlgorithm;
-        $this->minLength = $minLength;
-        $this->regex = $regex;
+        if(isset($hashAlgorithm))
+        {
+            $this->hashAlgorithm = $hashAlgorithm;
+        }
+        if($minLength > 0)
+        {
+            $this->minLength = $minLength;
+        }
+        if(isset($regex))
+        {
+            $this->regex = $regex;
+        }
     }
     
     /**
