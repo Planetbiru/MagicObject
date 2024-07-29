@@ -2,6 +2,8 @@
 
 namespace MagicObject\Database;
 
+use MagicObject\Exceptions\InvalidParameterException;
+
 /**
  * Limit and offset select database records
  */
@@ -29,6 +31,18 @@ class PicoLimit
      */
     public function __construct($offset = 0, $limit = 0)
     {
+        if($offset < 0)
+        {
+            $offset = 0;
+        }
+        if($limit < 1)
+        {
+            $limit = 1;
+        }
+
+        $offset = intval($offset);
+        $limit = intval($limit);
+        
         $this->setOffset($offset);
         $this->setLimit($limit);
     }

@@ -1,6 +1,8 @@
 <?php
 namespace MagicObject\Database;
 
+use MagicObject\Exceptions\InvalidParameterException;
+
 class PicoPage
 {
     /**
@@ -25,6 +27,18 @@ class PicoPage
      */
     public function __construct($pageNumber, $pageSize)
     {
+        if($pageNumber < 1)
+        {
+            $pageNumber = 1;
+        }
+        if($pageSize < 1)
+        {
+            $pageSize = 1;
+        }
+
+        $pageNumber = intval($pageNumber);
+        $pageSize = intval($pageSize);
+        
         $this->setPageNumber($pageNumber);
         $this->setPageSize($pageSize);
     }

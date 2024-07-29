@@ -149,7 +149,7 @@ class PicoDatabaseUtilMySql
         {
             return $defaultValue;
         }
-        if(stripos($type, 'char') !== false || stripos($type, 'text') !== false || stripos($type, 'int') !== false || stripos($type, 'float') !== false || stripos($type, 'double') !== false)
+        if(stripos($type, 'enum') !== false || stripos($type, 'char') !== false || stripos($type, 'text') !== false || stripos($type, 'int') !== false || stripos($type, 'float') !== false || stripos($type, 'double') !== false)
         {
             return "'".$defaultValue."'";
         }
@@ -164,7 +164,7 @@ class PicoDatabaseUtilMySql
      * @param MagicObject|PicoPageData $data
      * @return string
      */
-    public static function dumpData($columns, $picoTableName, $data)
+    public static function dumpData($columns, $picoTableName, $data) //NOSONAR
     {
         if($data instanceof PicoPageData && isset($data->getResult()[0]))
         {
