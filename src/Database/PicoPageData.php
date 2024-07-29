@@ -121,6 +121,13 @@ class PicoPageData
      * @var MagicObject
      */
     private $entity;
+    
+    /**
+     * Find option
+     *
+     * @var integer
+     */
+    private $findOption = 0;
 
     /**
      * Constructor
@@ -174,6 +181,12 @@ class PicoPageData
         {
             $this->subqueryMap = $subqueryMap;
         }
+    }
+    
+    public function setFindOption($findOption)
+    {
+        $this->findOption = $findOption;
+        return $this;
     }
     
     /**
