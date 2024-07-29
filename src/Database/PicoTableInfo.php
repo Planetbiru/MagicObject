@@ -54,6 +54,8 @@ class PicoTableInfo
      * @var array
      */
     protected $notNullColumns = array();
+    
+    protected $columnType;
 
     /**
      * Get instance
@@ -85,6 +87,7 @@ class PicoTableInfo
         $this->autoIncrementKeys = $autoIncrementKeys;
         $this->defaultValue = $defaultValue;
         $this->notNullColumns = $notNullColumns;
+        $this->columnType = new PicoColumnType($this->columns);
     }
     
     /**
@@ -104,6 +107,11 @@ class PicoTableInfo
         $stdClass->defaultValue = $this->defaultValue;
         $stdClass->notNullColumns = $this->notNullColumns;
         return json_encode($stdClass);
+    }
+    
+    public function getColumnType()
+    {
+        return new PicoColumnType($this->columns);
     }
 
     /**
@@ -150,7 +158,7 @@ class PicoTableInfo
     public function setColumns($columns)
     {
         $this->columns = $columns;
-
+        $this->columnType = new PicoColumnType($this->columns);
         return $this;
     }
 
