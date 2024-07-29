@@ -1,8 +1,6 @@
 <?php
 namespace MagicObject\Database;
 
-use MagicObject\Exceptions\InvalidParameterException;
-
 class PicoPage
 {
     /**
