@@ -53,7 +53,6 @@ class MagicObject extends stdClass // NOSONAR
     const ATTR_CHECKED = ' checked="checked"';
     const ATTR_SELECTED = ' selected="selected"';
 
-
     const FIND_OPTION_DEFAULT = 0;
     const FIND_OPTION_NO_COUNT_DATA = 1;
     const FIND_OPTION_NO_FETCH_DATA = 2;
@@ -1976,8 +1975,7 @@ class MagicObject extends stdClass // NOSONAR
                 {
                     $label = $reflexProp->parseKeyValueAsObject($parameters['Label']);
                     $this->_label[$var] = $label->getContent();
-                } 
-                
+                }             
             }
             if(isset($this->_label[$var]))
             {
