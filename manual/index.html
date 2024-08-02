@@ -5542,7 +5542,7 @@ $specification-&gt;addAnd($predicate2)</code></pre>
     -&gt;addAnd(['producerId', 'asdf'])
     -&gt;addAnd(['active', true])
 ;</code></pre>
-<p>When a user passes an array as a parameter to the <code>addAnd</code> and <code>addOr</code> methods, MagicObject will convert it to an instance of <code>PicoPredicate</code> with <code>equals</code> comparison. If using <code>array</code> is easier, feel free to use <code>array</code> but it is recommended to use <code>PicoPredicate</code> so that it can be used directly by MagicObject.</p>
+<p>When a user passes an array as a parameter to the <code>addAnd</code> and <code>addOr</code> methods, MagicObject will convert it to an instance of <code>PicoPredicate</code> with <code>equals</code> comparison. If using <code>array</code> is easier, feel free to use it but it is recommended to use <code>PicoPredicate</code> so that it can be used directly by MagicObject.</p>
 <p>For comparisons other than <code>equals</code>, we must specify them explicitly. Here are some examples of specifying AND logic.</p>
 <pre><code class="language-php">$specification = new PicoSpecification();
 $predicate1 = new PicoPredicate();
