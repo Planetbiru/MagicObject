@@ -5924,7 +5924,7 @@ We can form specifications in an unlimited number of stages. Note that users nee
 
 **PicoPredicate**
 
-Construcor:
+Constructor:
 
 Parameters:
 
