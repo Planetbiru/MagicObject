@@ -1838,7 +1838,7 @@ class MagicObject extends stdClass // NOSONAR
         else if (strncasecmp($method, "findBy", 6) === 0) {
             $var = lcfirst(substr($method, 6));
             // get Pageable
-            $pageable = PicoDatabaseUtil::pageableFromParams($params);ery builder
+            $pageable = PicoDatabaseUtil::pageableFromParams($params);
             // get sortable
             $sortable = PicoDatabaseUtil::sortableFromParams($params);
             // filter param
@@ -1848,7 +1848,7 @@ class MagicObject extends stdClass // NOSONAR
         else if (strncasecmp($method, "findAscBy", 9) === 0) {
             $var = lcfirst(substr($method, 9));
             // get Pageable
-            $pageable = PicoDatabaseUtil::pageableFromParams($params);ery builder
+            $pageable = PicoDatabaseUtil::pageableFromParams($params);
             // filter param
             $parameters = PicoDatabaseUtil::valuesFromParams($params);
             return $this->findBy($var, $parameters, $pageable, PicoDatabasePersistence::ORDER_ASC);
@@ -1856,7 +1856,7 @@ class MagicObject extends stdClass // NOSONAR
         else if (strncasecmp($method, "findDescBy", 10) === 0) {
             $var = lcfirst(substr($method, 10));
             // get Pageable
-            $pageable = PicoDatabaseUtil::pageableFromParams($params);ery builder
+            $pageable = PicoDatabaseUtil::pageableFromParams($params);
             // filter param
             $parameters = PicoDatabaseUtil::valuesFromParams($params);
             return $this->findBy($var, $parameters, $pageable, PicoDatabasePersistence::ORDER_DESC);
@@ -1864,7 +1864,7 @@ class MagicObject extends stdClass // NOSONAR
         else if (strncasecmp($method, "listBy", 6) === 0) {
             $var = lcfirst(substr($method, 6));
             // get Pageable
-            $pageable = PicoDatabaseUtil::pageableFromParams($params);ery builder
+            $pageable = PicoDatabaseUtil::pageableFromParams($params);
             // get sortable
             $sortable = PicoDatabaseUtil::sortableFromParams($params);
             // filter param
@@ -1874,7 +1874,7 @@ class MagicObject extends stdClass // NOSONAR
         else if (strncasecmp($method, "listAscBy", 9) === 0) {
             $var = lcfirst(substr($method, 9));
             // get Pageable
-            $pageable = PicoDatabaseUtil::pageableFromParams($params);ery builder
+            $pageable = PicoDatabaseUtil::pageableFromParams($params);
             // filter param
             $parameters = PicoDatabaseUtil::valuesFromParams($params);
             return $this->findBy($var, $parameters, $pageable, PicoDatabasePersistence::ORDER_ASC, true);
@@ -1882,7 +1882,7 @@ class MagicObject extends stdClass // NOSONAR
         else if (strncasecmp($method, "listDescBy", 10) === 0) {
             $var = lcfirst(substr($method, 10));
             // get Pageable
-            $pageable = PicoDatabaseUtil::pageableFromParams($params);ery builder
+            $pageable = PicoDatabaseUtil::pageableFromParams($params);
             // filter param
             $parameters = PicoDatabaseUtil::valuesFromParams($params);
             return $this->findBy($var, $parameters, $pageable, PicoDatabasePersistence::ORDER_DESC, true);
@@ -1891,14 +1891,14 @@ class MagicObject extends stdClass // NOSONAR
             // get spefification
             $specification = PicoDatabaseUtil::specificationFromParams($params);
             // get Pageable
-            $pageable = PicoDatabaseUtil::pageableFromParams($params);ery builder
+            $pageable = PicoDatabaseUtil::pageableFromParams($params);
             return $this->findAll($specification, $pageable, PicoDatabasePersistence::ORDER_ASC, true);
         }
         else if ($method == "listAllDesc") {
             // get spefification
             $specification = PicoDatabaseUtil::specificationFromParams($params);
             // get Pageable
-            $pageable = PicoDatabaseUtil::pageableFromParams($params);ery builder
+            $pageable = PicoDatabaseUtil::pageableFromParams($params);
             return $this->findAll($specification, $pageable, PicoDatabasePersistence::ORDER_DESC, true);
         }
         else if (strncasecmp($method, "countBy", 6) === 0) {
