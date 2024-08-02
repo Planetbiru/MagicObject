@@ -2127,9 +2127,7 @@ class PicoDatabasePersistence // NOSONAR
      */
     private function isRequireJoinFromSpecification($specification)
     {
-        return isset($specification) && (
-            ($specification instanceof PicoSpecification && $specification->isRequireJoin()) 
-        );
+        return isset($specification) && $specification instanceof PicoSpecification && $specification->isRequireJoin();
     }
 
     /**
@@ -2834,18 +2832,6 @@ class PicoDatabasePersistence // NOSONAR
         {
             return $join[self::KEY_NAME];
         }
-    }
-
-    /**
-     * Undocumented function
-     *
-     * @param array $row Row
-     * @param string $referenceColumName Reference column name
-     * @return string|null
-     */
-    private function getJoinKeyValue($row, $referenceColumName)
-    {
-        return isset($row[$referenceColumName]) ? $row[$referenceColumName] : null;
     }
 
     /**
