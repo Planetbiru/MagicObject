@@ -71,7 +71,7 @@ class PicoSpecification
         }
         else if(is_array($predicate) && count($predicate) > 1 && is_string($predicate[0]))
         {
-            $this->addSubfilter(new PicoPredicate($predicate[0], $predicate[1]), self::LOGIC_AND);      
+            $this->addFilter(new PicoPredicate($predicate[0], $predicate[1]), self::LOGIC_AND);      
         } 
         return $this;
     }
@@ -94,7 +94,7 @@ class PicoSpecification
         }
         else if(is_array($predicate) && count($predicate) > 1 && is_string($predicate[0]))
         {
-            $this->addSubfilter(new PicoPredicate($predicate[0], $predicate[1]), self::LOGIC_OR);      
+            $this->addFilter(new PicoPredicate($predicate[0], $predicate[1]), self::LOGIC_OR);      
         }   
         return $this;
     }

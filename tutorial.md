@@ -6017,6 +6017,8 @@ $specification = PicoSpecification::getInstance()
 ;
 ```
 
+When a user passes an array as a parameter to the `addAnd` and `addOr` methods, MagicObject will convert it to an instance of `PicoPredicate` with `equals` comparison. If using `array` is easier, feel free to use `array` but it is recommended to use `PicoPredicate` so that it can be used directly by MagicObject.
+
 For comparisons other than `equals`, we must specify them explicitly. Here are some examples of specifying AND logic.
 
 ```php
