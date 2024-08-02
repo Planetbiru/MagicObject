@@ -5518,7 +5518,7 @@ $predicate1-&gt;equals('producerId', 'asdf');
 $specification-&gt;addAnd($predicate1)</code></pre>
 <p><strong>Logic AND</strong></p>
 <p>Since we are only using one predicate, we use the <code>addAnd</code> method. We can add predicates to the specification. For example, we will add the following condition:</p>
-<p><code>SELECT * FROM album WHERE producer_id = 'asdf' AND</code>active<code>= true</code></p>
+<p><code>SELECT * FROM album WHERE producer_id = 'asdf' AND active = true</code></p>
 <p>So we can write it as</p>
 <pre><code class="language-php">$specification = new PicoSpecification();
 $predicate1 = new PicoPredicate();
@@ -5590,7 +5590,7 @@ $specification-&gt;addAnd($predicate2)</code></pre>
 <p>The first writing style is more recommended.</p>
 <p><strong>Logic OR</strong></p>
 <p>The <code>OR</code> logic requires at least two criteria. Never use <code>OR</code> logic if it only uses one criterion because it will not mean anything. For example, we will add the following condition:</p>
-<p><code>SELECT * FROM album WHERE producer_id = 'asdf' OR</code>active<code>= true</code></p>
+<p><code>SELECT * FROM album WHERE producer_id = 'asdf' OR active = true</code></p>
 <p>So we can write it as</p>
 <pre><code class="language-php">$specification = new PicoSpecification();
 $predicate1 = new PicoPredicate();

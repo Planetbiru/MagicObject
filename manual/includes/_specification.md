@@ -101,7 +101,7 @@ $specification->addAnd($predicate1)
 
 Since we are only using one predicate, we use the `addAnd` method. We can add predicates to the specification. For example, we will add the following condition:
 
-`SELECT * FROM album WHERE producer_id = 'asdf' AND `active` = true`
+`SELECT * FROM album WHERE producer_id = 'asdf' AND active = true`
 
 So we can write it as
 
@@ -228,7 +228,7 @@ The first writing style is more recommended.
 
 The `OR` logic requires at least two criteria. Never use `OR` logic if it only uses one criterion because it will not mean anything. For example, we will add the following condition:
 
-`SELECT * FROM album WHERE producer_id = 'asdf' OR `active` = true`
+`SELECT * FROM album WHERE producer_id = 'asdf' OR active = true`
 
 So we can write it as
 
