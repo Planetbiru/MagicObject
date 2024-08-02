@@ -74,4 +74,4 @@ greaterThanOrEquals
 Static Methods:
 generateLikeStarts
 generateLikeEnds
-generateLikeContians
+generateLikeContains
