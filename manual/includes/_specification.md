@@ -187,7 +187,6 @@ $specification = PicoSpecification::getInstance()
 ;
 ```
 
-
 To search for partial text in a row, we can use `like`. In MySQL and MariaDB, `like` comparison is `case insensitive` but in other databases it is `case sensitive`. For that, `like` comparison is usually combined with `upper` or `lower` function to make the comparison `case insensitive`.
 
 ```php
@@ -360,7 +359,7 @@ In real applications, logic is not always simple. Even very simple applications 
 
 Example:
 
-`SELECT * FROM album WHERE active = true and (lower(name) like '%jakarta' or lower(title) like '%jakarta')`
+`SELECT * FROM album WHERE active = true and (lower(name) like '%jakarta%' or lower(title) like '%jakarta%')`
 
 We can create specifications within specifications.
 

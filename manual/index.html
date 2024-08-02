@@ -5667,7 +5667,7 @@ $specification-&gt;addOr($predicate2)</code></pre>
 <li><strong>OR inside AND</strong></li>
 </ol>
 <p>Example:</p>
-<p><code>SELECT * FROM album WHERE active = true and (lower(name) like '%jakarta' or lower(title) like '%jakarta')</code></p>
+<p><code>SELECT * FROM album WHERE active = true and (lower(name) like '%jakarta%' or lower(title) like '%jakarta%')</code></p>
 <p>We can create specifications within specifications.</p>
 <pre><code class="language-php">$specification = new PicoSpecification();
 
