@@ -6362,7 +6362,71 @@ $specification = PicoSpecification::getInstance()
 ;
 ```
 
-### Pageable
+### Pageable and Sortable
+
+In MagicObject, pageable is used to divide data rows into several pages. This is required by the application to display a lot of data per page. While sortable is used to sort data before the data is divided per page.
+
+Pageable can stand alone without sortable. However, this method is not recommended because the data sequence is not as expected. If new data is entered, users will have difficulty finding where it is located in the list and on which page the data will appear. The solution is to add a sortable that will sort the data based on certain columns. For example, the time of data creation is descending, then the new data will be on the first page. Conversely, if sorted based on the time of data creation is ascending, then the new data will be on the last page.
+
+Sortable can use multiple columns. The order in which the columns are determined will determine the priority order in sorting the data.
+
+An example of implementing pageable and sortable in MagicObject.
+
+```php
+$pageNumber = 1;
+$pageSize = 20;
+
+$albumFinder = new Album(null, $database);
+$specification = null;
+$sortable = new PicoSortable();
+$sort1 = new PicoSort('releaseDate', PicoSort::ORDER_TYPE_DESC);
+$sortable->addSortable($sort1);
+$page = new PicoPage($pageNumber, $pageSize);
+$pageable = new PicoPageable($page);
+
+try
+{
+    $albumFinder->findAll($specification, $pagable, $sortable);
+    $pageData = $albumFinder->getResult();
+    foreach($pageData as $album)
+    {
+        echo $album."\r\n";
+    }
+}
+catch(Exception $e)
+{
+    error_log($e->getMessage());
+}
+
+```
+
+or
+
+```php
+$pageNumber = 1;
+$pageSize = 20;
+
+$albumFinder = new Album(null, $database);
+$sortable = PicoSortable::getInstance()
+    ->add(new PicoSort('releaseDate', PicoSort::ORDER_TYPE_DESC))
+;
+$pageable = new PicoPageable(new PicoPage($pageNumber, $pageSize));
+
+try
+{
+    $albumFinder->findAll(null, $pagable, $sortable);
+    $pageData = $albumFinder->getResult();
+    foreach($pageData as $album)
+    {
+        echo $album."\r\n";
+    }
+}
+catch(Exception $e)
+{
+    error_log($e->getMessage());
+}
+
+```
 
 **PicoPageable**
 
