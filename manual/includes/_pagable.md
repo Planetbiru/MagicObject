@@ -122,8 +122,8 @@ $sortable->add($sort2);
 $sortable->add($sort3);
 
 $pageable = new PicoPageable(new PicoLimit(0, 100), $sortable);
-// page limit = 100
-// page offset = 0
+// offset = 0
+/// limit = 100
 // ORDER BY user_name ASC, email DESC, phone ASC
 ```
 
@@ -147,8 +147,8 @@ $sortable = PicoSortable::getInstance()
 ;
 
 $pageable = new PicoPageable(new PicoLimit(0, 100), $sortable);
-// page limit = 100
-// page offset = 0
+// offset = 0
+/// limit = 100
 // ORDER BY user_name ASC, email DESC, phone ASC
 ```
 
