@@ -6614,11 +6614,31 @@ $pageable = new PicoPageable(new PicoLimit(0, 100), $sortable);
 or
 
 ```php
+$sortable = new PicoSortable(
+    'userName', 'asc',
+    'email', 'desc',
+    'phone', 'asc'
+);
+
+$pageable = new PicoPageable(new PicoLimit(0, 100), $sortable);
+// offset = 0
+/// limit = 100
+// ORDER BY user_name ASC, email DESC, phone ASC
+```
+
+or
+
+```php
 $sortable = PicoSortable::getInstance()
     ->add(new PicoSort('userName', 'asc'))
     ->add(new PicoSort('email', 'desc'))
     ->add(new PicoSort('phone', 'asc'))
 ;
+
+$pageable = new PicoPageable(new PicoLimit(0, 100), $sortable);
+// offset = 0
+/// limit = 100
+// ORDER BY user_name ASC, email DESC, phone ASC
 ```
 
 or
