@@ -5870,13 +5870,57 @@ catch(Exception $e)
 <li>getLimit</li>
 <li>setLimit</li>
 </ul>
+<p><strong>PicoSortable</strong></p>
+<p>Constructor:</p>
+<p>Parameters:</p>
+<p>Users can enter an even number of parameters where odd numbered parameters are columns while even numbered parameters are methods.</p>
 <p>Example:</p>
-<p><strong>With Page</strong></p>
+<pre><code class="language-php">$sortable = new PicoSortable("name", "asc", "phone", "desc");</code></pre>
+<p>Method:</p>
+<ul>
+<li>add</li>
+<li>addSortable</li>
+<li>createSortable</li>
+<li>createOrderBy</li>
+<li>isEmpty</li>
+<li>getSortable</li>
+</ul>
+<p>Static methods:</p>
+<ul>
+<li>getInstance</li>
+</ul>
+<p>addSortable</p>
+<p>Parameters:</p>
+<ul>
+<li>PicoSort|array</li>
+</ul>
+<p><strong>PicoSort</strong></p>
+<p>Constructor:</p>
+<p>Parameters:</p>
+<ul>
+<li>string $sortBy</li>
+<li>string $sortType</li>
+</ul>
+<p>Metods:</p>
+<ul>
+<li>getSortBy</li>
+<li>setSortBy</li>
+<li>getSortType</li>
+<li>setSortType</li>
+<li>__call</li>
+</ul>
+<p>Static methods:</p>
+<ul>
+<li>getInstance</li>
+<li>fixSortType</li>
+</ul>
+<p>Example:</p>
+<p><strong>Pageable without Sortable</strong></p>
 <pre><code class="language-php">$pageable = new PicoPageable(new Page(1, 100));
 // page number = 1
 // page size = 100
 // no sortable</code></pre>
-<p><strong>With Page and Sortable</strong></p>
+<p><strong>Pageable with Page and Sortable</strong></p>
 <pre><code class="language-php">$sortable = new PicoSortable();
 
 $sort1 = new PicoSort('userName', 'asc');
@@ -5934,6 +5978,17 @@ $pageable = new PicoPageable(new PicoLimit(0, 100), $sortable);
     -&gt;add(new PicoSort('userName', PicoSort::ORDER_TYPE_ASC))
     -&gt;add(new PicoSort('email', PicoSort::ORDER_TYPE_DESC))
     -&gt;add(new PicoSort('phone', PicoSort::ORDER_TYPE_ASC))
+;
+
+$pageable = new PicoPageable(new PicoLimit(0, 100), $sortable);
+// offset = 0
+/// limit = 100
+// ORDER BY user_name ASC, email DESC, phone ASC</code></pre>
+<p>or</p>
+<pre><code class="language-php">$sortable = PicoSortable::getInstance()
+    -&gt;add(PicoSort::getInstance()-&gt;sortByUserName(PicoSort::ORDER_TYPE_ASC))
+    -&gt;add(PicoSort::getInstance()-&gt;sortByEmail(PicoSort::ORDER_TYPE_DESC))
+    -&gt;add(PicoSort::getInstance()-&gt;sortByPhone(PicoSort::ORDER_TYPE_ASC))
 ;
 
 $pageable = new PicoPageable(new PicoLimit(0, 100), $sortable);

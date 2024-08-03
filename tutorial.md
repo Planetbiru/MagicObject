@@ -6480,10 +6480,66 @@ Metods:
 - getLimit
 - setLimit
 
+**PicoSortable**
+
+Constructor:
+
+Parameters:
+
+Users can enter an even number of parameters where odd numbered parameters are columns while even numbered parameters are methods.
+
+Example:
+
+```php
+$sortable = new PicoSortable("name", "asc", "phone", "desc");
+```
+
+Method:
+
+- add
+- addSortable
+- createSortable
+- createOrderBy
+- isEmpty
+- getSortable
+
+Static methods:
+
+- getInstance
+
+addSortable
+
+Parameters:
+
+- PicoSort|array
+
+**PicoSort**
+
+Constructor:
+
+Parameters:
+
+- string $sortBy
+- string $sortType
+
+Metods:
+
+- getSortBy
+- setSortBy
+- getSortType
+- setSortType
+- __call
+
+Static methods:
+
+- getInstance
+- fixSortType
+
+
 Example:
 
 
-**With Page**
+**Pageable without Sortable**
 
 ```php
 $pageable = new PicoPageable(new Page(1, 100));
@@ -6492,7 +6548,7 @@ $pageable = new PicoPageable(new Page(1, 100));
 // no sortable
 ```
 
-**With Page and Sortable**
+**Pageable with Page and Sortable**
 
 ```php
 $sortable = new PicoSortable();
@@ -6572,6 +6628,21 @@ $sortable = PicoSortable::getInstance()
     ->add(new PicoSort('userName', PicoSort::ORDER_TYPE_ASC))
     ->add(new PicoSort('email', PicoSort::ORDER_TYPE_DESC))
     ->add(new PicoSort('phone', PicoSort::ORDER_TYPE_ASC))
+;
+
+$pageable = new PicoPageable(new PicoLimit(0, 100), $sortable);
+// offset = 0
+/// limit = 100
+// ORDER BY user_name ASC, email DESC, phone ASC
+```
+
+or
+
+```php
+$sortable = PicoSortable::getInstance()
+    ->add(PicoSort::getInstance()->sortByUserName(PicoSort::ORDER_TYPE_ASC))
+    ->add(PicoSort::getInstance()->sortByEmail(PicoSort::ORDER_TYPE_DESC))
+    ->add(PicoSort::getInstance()->sortByPhone(PicoSort::ORDER_TYPE_ASC))
 ;
 
 $pageable = new PicoPageable(new PicoLimit(0, 100), $sortable);
