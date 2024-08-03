@@ -9,7 +9,7 @@ use stdClass;
 class EntityUtil
 {
     /**
-     * Table info
+     * Table property column
      * @param MagicObject $entity
      * @return string[]|array
      */
@@ -21,12 +21,28 @@ class EntityUtil
             return array();
         }
         $columns = $tableInfo->getColumns();
-        $joinColumns = $tableInfo->getColumns();
         $propertyColumns = array();
         foreach($columns as $prop=>$column)
         {
             $propertyColumns[$prop] = $column['name'];
         }
+        return $propertyColumns;
+    }
+
+    /**
+     * Table property join column
+     * @param MagicObject $entity
+     * @return string[]|array
+     */
+    public static function getPropertyJoinColumn($entity)
+    {
+        $tableInfo = $entity->tableInfo();
+        if($tableInfo == null)
+        {
+            return array();
+        }
+        $joinColumns = $tableInfo->getJoinColumns();
+        $propertyColumns = array();
         foreach($joinColumns as $prop=>$column)
         {
             $propertyColumns[$prop] = $column['name'];

@@ -624,7 +624,7 @@ class Artist extends MagicObject
 
 $album = new EntityAlbum();
 
-$map = EntityUtil::getPropertyColumn($album);
+$map = EntityUtil::getPropertyJoinColumn($album);
 print_r($map); exit();
 
 $databaseCredential = new SecretObject();
