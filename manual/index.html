@@ -5867,8 +5867,8 @@ $sortable-&gt;add($sort2);
 $sortable-&gt;add($sort3);
 
 $pageable = new PicoPageable(new PicoLimit(0, 100), $sortable);
-// page limit = 100
-// page offset = 0
+// offset = 0
+/// limit = 100
 // ORDER BY user_name ASC, email DESC, phone ASC</code></pre>
 <p>or</p>
 <pre><code class="language-php">$sortable = PicoSortable::getInstance()
@@ -5884,8 +5884,8 @@ $pageable = new PicoPageable(new PicoLimit(0, 100), $sortable);
 ;
 
 $pageable = new PicoPageable(new PicoLimit(0, 100), $sortable);
-// page limit = 100
-// page offset = 0
+// offset = 0
+/// limit = 100
 // ORDER BY user_name ASC, email DESC, phone ASC</code></pre>
 <ol>
 <li>Construtor with page as PicoPageable and sortable as PicoSortable</li>
