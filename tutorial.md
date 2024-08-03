@@ -6548,7 +6548,7 @@ $pageable = new PicoPageable(new Page(1, 100));
 // no sortable
 ```
 
-**Pageable with Page and Sortable**
+**Pageable with Sortable**
 
 ```php
 $sortable = new PicoSortable();
