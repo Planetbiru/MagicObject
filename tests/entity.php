@@ -4,7 +4,6 @@ use MagicObject\Database\PicoDatabase;
 use MagicObject\Generator\PicoDatabaseDump;
 use MagicObject\MagicObject;
 use MagicObject\SecretObject;
-use MagicObject\Util\Database\EntityUtil;
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 
@@ -621,11 +620,6 @@ class Artist extends MagicObject
 	protected $active;
 
 }
-
-$album = new EntityAlbum();
-
-$map = EntityUtil::getPropertyJoinColumn($album);
-print_r($map); exit();
 
 $databaseCredential = new SecretObject();
 $databaseCredential->loadYamlFile(dirname(dirname(__DIR__))."/test.yml", false, true, true);
