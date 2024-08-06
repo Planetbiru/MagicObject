@@ -83,7 +83,7 @@ class SetterGetter extends stdClass
      * Set property value
      *
      * @param string $propertyName Property name
-     * @param mixed|null
+     * @param mixed|null $propertyValue Property value
      * @return self
      */
     public function set($propertyName, $propertyValue)
@@ -97,7 +97,7 @@ class SetterGetter extends stdClass
      * Get property value
      *
      * @param string $propertyName Property name
-     * @return mixed|null
+     * @return mixed|null $propertyValue Property value
      */
     public function get($propertyName)
     {
@@ -109,8 +109,8 @@ class SetterGetter extends stdClass
      * Stores datas in the property.
      * Example: $instance->foo = 'bar';
      * 
-     * @param string $name Name of the property.
-     * @param string $value Value of the property.
+     * @param string $name Property name
+     * @param string $value Property value
      * @return void 
      **/
     public function __set($name, $value)
@@ -296,7 +296,7 @@ class SetterGetter extends stdClass
     }
 
     /**
-     * toString
+     * Magic method to stringify object
      *
      * @return string
      */

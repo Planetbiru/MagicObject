@@ -9,7 +9,7 @@ class PicoIniUtil
      *
      * @param array $array Array
      * @param string $path File path
-     * @return void
+     * @return boolean
      */
     public static function writeIniFile($array, $path)
     {

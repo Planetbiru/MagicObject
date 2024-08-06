@@ -179,7 +179,7 @@ class PicoPasswordUtil{
     /**
      * Set minimum length of the password
      *
-     * @param integer  $minLength  Minimum length of the password
+     * @param integer $minLength Minimum length of the password
      *
      * @return self
      */ 

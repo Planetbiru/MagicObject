@@ -172,6 +172,11 @@ class Getter extends stdClass
             ;
     }
 
+    /**
+     * Magic method to stringify object
+     *
+     * @return string
+     */
     public function __toString()
     {
         $obj = clone $this;

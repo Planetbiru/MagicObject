@@ -67,8 +67,8 @@ class PicoGenericObject extends stdClass
      * Stores datas in the property.
      * Example: $instance->foo = 'bar';
      * 
-     * @param string $name Name of the property.
-     * @param string $value Value of the property.
+     * @param string $name Property name
+     * @param string $value Property value
      * @return void 
      **/
     public function __set($name, $value)
