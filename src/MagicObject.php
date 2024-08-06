@@ -117,8 +117,8 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Constructor
      *
-     * @param self|array|stdClass|object $data
-     * @param PicoDatabase $database
+     * @param self|array|stdClass|object $data Initial data
+     * @param PicoDatabase $database Database connection
      */
     public function __construct($data = null, $database = null)
     {
@@ -152,7 +152,7 @@ class MagicObject extends stdClass // NOSONAR
     
     /**
      * Load data to object
-     * @param mixed $data
+     * @param mixed $data Data
      * @return self
      */
     public function loadData($data)
@@ -180,8 +180,8 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Load data from INI string
      *
-     * @param string $rawData
-     * @param boolean $systemEnv
+     * @param string $rawData Raw data
+     * @param boolean $systemEnv Flag to use environment variable
      * @return self
      */
     public function loadIniString($rawData, $systemEnv = false)
@@ -201,8 +201,8 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Load data from INI file
      *
-     * @param string $path
-     * @param boolean $systemEnv
+     * @param string $path File path
+     * @param boolean $systemEnv Flag to use environment variable
      * @return self
      */
     public function loadIniFile($path, $systemEnv = false)
@@ -400,7 +400,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Set readonly. When object is set to readonly, setter will not change value of its properties but loadData still works fine
      *
-     * @param boolean $readonly
+     * @param boolean $readonly Flag to set object to be readonly
      * @return self
      */
     protected function readOnly($readonly)
@@ -411,7 +411,7 @@ class MagicObject extends stdClass // NOSONAR
 
     /**
      * Set database connection
-     * @var PicoDatabase $database
+     * @var PicoDatabase $database Database connection
      * @return self
      */
     public function withDatabase($database)
@@ -423,7 +423,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Set or get current database. If parameter is not empty, set current database with database given. Return current database or null.
      *
-     * @param PicoDatabase|null $database
+     * @param PicoDatabase|null $database Database connection
      * @return PicoDatabase|null
      */
     public function currentDatabase($database = null)
@@ -442,8 +442,8 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Remove property
      *
-     * @param object $sourceData
-     * @param array $propertyNames
+     * @param object $sourceData Data
+     * @param array $propertyNames Properties name
      * @return mixed
      */
     public function removePropertyExcept($sourceData, $propertyNames)
@@ -705,7 +705,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Get MagicObject with WHERE specification
      *
-     * @param PicoSpecification $specification
+     * @param PicoSpecification $specification Specification
      * @return PicoDatabasePersistenceExtended
      */
     public function where($specification)
@@ -1090,7 +1090,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Check if data is not null and not empty
      *
-     * @param mixed $value
+     * @param mixed $value Value to be checked
      * @return boolean
      */
     private function _notNullAndNotEmpty($value)
@@ -1260,7 +1260,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Find specific
      *
-     * @param string $selected
+     * @param string $selected Selected field
      * @param PicoSpecification $specification Specification
      * @param PicoPageable|string $pageable Pageable
      * @param PicoSortable|string $sortable Sortable
@@ -1778,7 +1778,7 @@ class MagicObject extends stdClass // NOSONAR
             $var = lcfirst(substr($method, 3));
             return isset($this->$var) ? $this->$var : null;
         }
-        else if (strncasecmp($method, "set", 3) === 0 && isset($params) && isset($params[0]) && !$this->_readonly){
+        else if (strncasecmp($method, "set", 3) === 0 && isset($params) && isset($params[0]) && !$this->_readonly) {
             $var = lcfirst(substr($method, 3));
             $this->$var = $params[0];
             $this->modifyNullProperties($var, $params[0]);
@@ -2066,9 +2066,9 @@ class MagicObject extends stdClass // NOSONAR
      * The dump method, when supplied with an array, will do its best
      * to convert the array into friendly YAML.
      *
-     * @param int|null   $inline The level where you switch to inline YAML. If $inline set to NULL, MagicObject will use maximum value of array depth
-     * @param int   $indent The amount of spaces to use for indentation of nested nodes
-     * @param int   $flags  A bit field of DUMP_* constants to customize the dumped YAML string
+     * @param int|null $inline The level where you switch to inline YAML. If $inline set to NULL, MagicObject will use maximum value of array depth
+     * @param int $indent The amount of spaces to use for indentation of nested nodes
+     * @param int $flags  A bit field of DUMP_* constants to customize the dumped YAML string
      *
      * @return string A YAML string representing the original PHP value
      */

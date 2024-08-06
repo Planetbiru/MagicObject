@@ -43,7 +43,7 @@ class PicoYamlUtil
      *
      * @param int|null $inline The level where you switch to inline YAML. If $inline set to NULL, MagicObject will use maximum value of array depth
      * @param int $indent The amount of spaces to use for indentation of nested nodes
-     * @param int $flags  A bit field of DUMP_* constants to customize the dumped YAML string
+     * @param int $flags A bit field of DUMP_* constants to customize the dumped YAML string
      *
      * @return string A YAML string representing the original PHP value
      */
