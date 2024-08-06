@@ -11,7 +11,7 @@ class PicoYamlUtil
     /**
      * Get array depth
      *
-     * @param array $array Array to be check
+     * @param array $array Array to be checked
      * @return integer
      */
     public static function arrayDepth($array) {

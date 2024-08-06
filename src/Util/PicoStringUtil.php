@@ -8,7 +8,7 @@ class PicoStringUtil
     /**
      * Convert snake case to camel case
      *
-     * @param string $input Inout string
+     * @param string $input Input string
      * @param string $glue Glue
      * @return string
      */
@@ -21,7 +21,7 @@ class PicoStringUtil
     /**
      * Convert snake case to upper camel case
      *
-     * @param string $input Inout string
+     * @param string $input Input string
      * @param string $glue Glue
      * @return string
      */
@@ -34,7 +34,7 @@ class PicoStringUtil
     /**
      * Convert camel case to snake case
      *
-     * @param string $input Inout string
+     * @param string $input Input string
      * @param string $glue Glue
      * @return string
      */
@@ -82,8 +82,8 @@ class PicoStringUtil
     /**
      * Convert snake case to title
      *
-     * @param string $input
-     * @param string $glue
+     * @param string $input Input
+     * @param string $glue Glue
      * @return string
      */
     public static function snakeToTitle($input, $glue = '_')

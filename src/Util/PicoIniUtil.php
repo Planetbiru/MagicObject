@@ -4,6 +4,13 @@ namespace MagicObject\Util;
 
 class PicoIniUtil
 {
+    /**
+     * Write INI file
+     *
+     * @param array $array Array
+     * @param string $path File path
+     * @return void
+     */
     public static function writeIniFile($array, $path)
     {
         $arrayMulti = false;
@@ -32,8 +39,8 @@ class PicoIniUtil
     /**
      * Get INI content
      *
-     * @param string $content
-     * @param array $array
+     * @param string $content Content
+     * @param array $array Array
      * @return string
      */
     private static function getContent($content, $array)
@@ -55,8 +62,8 @@ class PicoIniUtil
     /**
      * Get INI content from multiple
      *
-     * @param string $content
-     * @param array $array
+     * @param string $content Content
+     * @param array $array Array
      * @return string
      */
     private static function getContentMulti($content, $array)
@@ -81,7 +88,7 @@ class PicoIniUtil
     /**
      * Parse ini file
      *
-     * @param string $path
+     * @param string $path File path
      * @return array|false
      */
     public static function parseIniFile($path) // NOSONAR
