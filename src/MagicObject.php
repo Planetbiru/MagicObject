@@ -1885,8 +1885,8 @@ class MagicObject extends stdClass // NOSONAR
             $pageable = PicoDatabaseUtil::pageableFromParams($params);
             return $this->findAll($specification, $pageable, PicoDatabasePersistence::ORDER_DESC, true);
         }
-        else if (strncasecmp($method, "countBy", 6) === 0) {
-            $var = lcfirst(substr($method, 6));
+        else if (strncasecmp($method, "countBy", 7) === 0) {
+            $var = lcfirst(substr($method, 7));
             $parameters = PicoDatabaseUtil::valuesFromParams($params);
             return $this->countBy($var, $parameters);
         }
