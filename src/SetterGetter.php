@@ -24,7 +24,7 @@ class SetterGetter extends stdClass
     /**
      * Constructor
      * 
-     * @param self|array|stdClass|object $data
+     * @param self|array|stdClass|object $data Data
      */
     public function __construct($data = null)
     {
@@ -54,7 +54,7 @@ class SetterGetter extends stdClass
 
     /**
      * Load data to object
-     * @param mixed $data
+     * @param mixed $data Data
      * @return self
      */
     public function loadData($data)
@@ -82,7 +82,7 @@ class SetterGetter extends stdClass
     /**
      * Set property value
      *
-     * @param string $propertyName
+     * @param string $propertyName Property name
      * @param mixed|null
      * @return self
      */
@@ -96,7 +96,7 @@ class SetterGetter extends stdClass
     /**
      * Get property value
      *
-     * @param string $propertyName
+     * @param string $propertyName Property name
      * @return mixed|null
      */
     public function get($propertyName)
@@ -159,7 +159,7 @@ class SetterGetter extends stdClass
     /**
      * Get value
      *
-     * @var boolean $snakeCase
+     * @var boolean $snakeCase Flag to snake case property
      */
     public function value($snakeCase = false)
     {
@@ -187,9 +187,8 @@ class SetterGetter extends stdClass
 
     /**
      * Property list
-     *
-     * @var boolean $reflectSelf
-     * @var boolean $asArrayProps
+     * @var boolean $reflectSelf Flag to reflect self
+     * @var boolean $asArrayProps Flag to convert properties as array
      * @return array
      */
     protected function propertyList($reflectSelf = false, $asArrayProps = false)
