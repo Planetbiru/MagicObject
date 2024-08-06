@@ -237,7 +237,7 @@ class PicoSpecification
     /**
      * Create where
      *
-     * @param PicoSpecification[] $specifications
+     * @param PicoSpecification[] $specifications Specifications
      * @return string[]
      */
     private function getWhere($specifications)
