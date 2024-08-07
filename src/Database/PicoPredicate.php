@@ -118,9 +118,12 @@ class PicoPredicate //NOSONAR
      */
     public function in($field, $value)
     {
-        $this->field = $field;
-        $this->value = $value;
-        $this->comparation = PicoDataComparation::in($value);
+        if(!empty($value))
+        {
+            $this->field = $field;
+            $this->value = $value;
+            $this->comparation = PicoDataComparation::in($value);
+        }
         return $this;
     }
 
