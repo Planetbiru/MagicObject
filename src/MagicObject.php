@@ -91,7 +91,7 @@ class MagicObject extends stdClass // NOSONAR
     private $_label = array(); // NOSONAR
     
     /**
-     * Table info
+     * Table information
      *
      * @var PicoTableInfo
      */
