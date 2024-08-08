@@ -107,7 +107,7 @@ class PicoIniUtil
     /**
      * Parse INI string
      *
-     * @param string $str
+     * @param string $str String to be parsed
      * @return array|false
      */
     public static function parseIniString($str)
@@ -158,6 +158,11 @@ class PicoIniUtil
         return $ret;
     }
     
+    /**
+     * check if match
+     * @param array $matches Mathes
+     * @return bool
+     */
     public static function matchValue($matches)
     {
         return !empty($matches) && isset($matches[0]);
@@ -166,7 +171,7 @@ class PicoIniUtil
     /**
      * Check if line is invalid
      *
-     * @param string $line
+     * @param string $line Line
      * @return boolean
      */
     public static function invalidLine($line)
@@ -177,7 +182,7 @@ class PicoIniUtil
     /**
      * Fix value
      *
-     * @param string $value
+     * @param string $value Value
      * @return string
      */
     public static function fixValue1($value)
@@ -194,7 +199,7 @@ class PicoIniUtil
     /**
      * Fix value
      *
-     * @param string $value
+     * @param string $value Value
      * @return string
      */
     public static function fixValue2($value)
@@ -208,12 +213,12 @@ class PicoIniUtil
     /**
      * Fix value
      *
-     * @param array $ret
-     * @param string $inside_section
-     * @param string $arr_name
-     * @param array $matches
-     * @param mixed $value
-     * @return void
+     * @param array $ret Return value from previous process
+     * @param string $inside_section Inside section
+     * @param string $arr_name Array name
+     * @param array $matches Matches
+     * @param mixed $value Value
+     * @return array
      */
     public static function fixValue3($ret, $inside_section, $arr_name, $matches, $value)
     {
