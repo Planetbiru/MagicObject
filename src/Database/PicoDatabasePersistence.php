@@ -2455,7 +2455,7 @@ class PicoDatabasePersistence // NOSONAR
      * @param mixed $propertyValue Property value
      * @param PicoPageable $pageable Pageable
      * @param PicoSortable|string $sortable Sortable
-     * @param PicoTableInfo $info Table info
+     * @param PicoTableInfo $info Table information
      * @return PicoDatabaseQueryBuilder
      * @throws PDOException|NoDatabaseConnectionException|EntityException
      */

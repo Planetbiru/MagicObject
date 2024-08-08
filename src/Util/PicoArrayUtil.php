@@ -52,7 +52,7 @@ class PicoArrayUtil
      * Camelize array keys
      *
      * @param array $array Array contains data to be processed
-     * @return array
+     * @return array|null
      */
     private static function _camelize(&$array) //NOSONAR
     {
@@ -85,7 +85,7 @@ class PicoArrayUtil
      * Snakeize array keys
      *
      * @param array $array Array contains data to be processed
-     * @return array
+     * @return array|null
      */
     private static function _snakeize(&$array) //NOSONAR
     {
