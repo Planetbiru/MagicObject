@@ -286,7 +286,7 @@ class PicoPredicate //NOSONAR
      */
     public static function generateLikeStarts($value)
     {
-        return $value."%";
+        return "$value%";
     }
     
     /**
@@ -297,7 +297,7 @@ class PicoPredicate //NOSONAR
      */
     public static function generateLikeEnds($value)
     {
-        return "%".$value;
+        return "%$value";
     }
     
     /**
@@ -308,7 +308,7 @@ class PicoPredicate //NOSONAR
      */
     public static function generateLikeContains($value)
     {
-        return "%".$value."%";
+        return "%$value%";
     }
 
     /**
