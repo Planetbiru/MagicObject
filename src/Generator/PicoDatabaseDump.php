@@ -482,7 +482,7 @@ class PicoDatabaseDump
     /**
      * Get merged table info
      *
-     * @param MagicObject[] $entities
+     * @param MagicObject[] $entities Entities
      * @return PicoTableInfoExtended
      */
     public function getMergedTableInfo($entities)
