@@ -163,3 +163,7 @@ Applications that uses **MagicObjects** are :
 2. **AppBuilder** https://github.com/Planetbiru/AppBuilder
 3. **Koperasi-Simpan-Pinjam-Syariah** https://github.com/kamshory/Koperasi-Simpan-Pinjam-Syariah
 4. **Toserba Online** https://toserba-online.top/
+
+# Credit
+
+1. Kamshory - https://github.com/kamshory/
