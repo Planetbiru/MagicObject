@@ -789,11 +789,11 @@ class MagicObject extends stdClass // NOSONAR
      * Set property value
      *
      * @param string $propertyName Property name
-     * @param mixed|null
+     * @param self
      */
     public function __set($propertyName, $propertyValue)
     {
-        $this->set($propertyName, $propertyValue);
+        return $this->set($propertyName, $propertyValue);
     }
 
     /**
