@@ -2733,27 +2733,6 @@ class PicoDatabasePersistence // NOSONAR
         }
         return $data;   
     }
-    
-    /**
-     * Delete one mathced record from database
-     *
-     * @param string $propertyName Property name
-     * @param array $propertyValues Property values
-     * @return PDOStatement|boolean
-     * @throws EntityException|InvalidFilterException|EmptyResultException
-     */
-    public function deleteOneBy($propertyName, $propertyValue)
-    {
-        try
-        {
-            $data = $this->findOneBy($propertyName, $propertyValue);
-            $data->delete();
-        }
-        catch(Exception $e)
-        {
-            throw new EmptyResultException($e->getMessage());
-        }
-    }
 
     /**
      * Get real class name
