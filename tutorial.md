@@ -5876,13 +5876,15 @@ while($data = $result->fetch())
 
 ### Method
 
-* find &raquo; search data from database by primary key value given and return one record. This method require database connection.
+**1. find**
+
+&raquo; search data from database by primary key value given and return one record. This method require database connection.
 
 Method type: native
 
 Parameters:
 
-1. mixed $parameters
+- mixed $parameters
 
 Parameters can be strings, integers, floats, booleans, or arrays of strings, integers, floats, and booleans. Parameters cannot be null. If the parameter is an array, then the order of the values ​​in the parameter must be the same as the order of the primary key in the entity and the number of elements must be the same as the number of primary keys in the entity. If the number of array elements in the parameter is more than the number of primary keys, then the elements behind will be ignored. If the number of array elements in the parameter is less than the number of primary keys, an exception will be thrown. The data type provided must match the primaty keys.
 
@@ -5902,18 +5904,20 @@ catch(Exception $e)
 }
 ```
 
-* findAll &raquo; search multiple record data from database with specification, pagable and sortable. This method require database connection.
+**2. findAll**
+
+&raquo; search multiple record data from database with specification, pagable and sortable. This method require database connection.
 
 Method type: native
 
 Parameters:
 
-1. PicoSpecification $specification Specification
-2. PicoPageable $pageable Pageable
-3. PicoSortable $sortable Sortable
-4. boolean $passive Flag that object is passive
-5. array $subqueryMap Subquery map
-6. integer $findOption Find option
+- PicoSpecification $specification Specification
+- PicoPageable $pageable Pageable
+- PicoSortable $sortable Sortable
+- boolean $passive Flag that object is passive
+- array $subqueryMap Subquery map
+- integer $findOption Find option
 
 Return: PicoPageable
 
@@ -5921,7 +5925,9 @@ Return: PicoPageable
 
 See Specification, Pageable and Sortable
 
-* findOneBy &raquo; search data from database by any column values and return one record. This method require database connection.
+**3. findOneBy**
+
+&raquo; search data from database by any column values and return one record. This method require database connection.
 
 Method type: magic
 
@@ -5947,7 +5953,9 @@ catch(Exception $e)
 }
 ```
 
-* findOneIfExistsBy &raquo; search data from database by any column values and return one record. This method require database connection.
+**4.findOneIfExistsBy**
+
+&raquo; search data from database by any column values and return one record. This method require database connection.
 
 Method type: magic
 
@@ -5973,7 +5981,9 @@ catch(Exception $e)
 }
 ```
 
-* deleteOneBy &raquo; delete data from database by any column values and return one record. This method require database connection.
+**5. deleteOneBy**
+
+&raquo; delete data from database by any column values and return one record. This method require database connection.
 
 Method type: magic
 
@@ -5999,7 +6009,9 @@ catch(Exception $e)
 }
 ```
 
-* findFirstBy &raquo; search data from database by any column values and return first record. This method require database connection.
+**6.findFirstBy**
+
+&raquo; search data from database by any column values and return first record. This method require database connection.
 
 Method type: magic
 
@@ -6025,7 +6037,9 @@ catch(Exception $e)
 }
 ```
 
-* findFirstIfExistsBy &raquo; search data from database by any column values and return first record. This method require database connection.
+**7. findFirstIfExistsBy**
+
+&raquo; search data from database by any column values and return first record. This method require database connection.
 
 Method type: magic
 
@@ -6051,7 +6065,9 @@ catch(Exception $e)
 }
 ```
 
-* findLastBy &raquo; search data from database by any column values and return last record. This method require database connection.
+**8. findLastBy**
+
+&raquo; search data from database by any column values and return last record. This method require database connection.
 
 Method type: magic
 
@@ -6073,7 +6089,9 @@ catch(Exception $e)
 }
 ```
 
-* findLastIfExistsBy &raquo; search data from database by any column values and return last record. This method require database connection.
+**9. findLastIfExistsBy**
+
+&raquo; search data from database by any column values and return last record. This method require database connection.
 
 Method type: magic
 
@@ -6095,7 +6113,9 @@ catch(Exception $e)
 }
 ```
 
-* findBy &raquo; search multiple record data from database by any column values. This method require database connection.
+**10. findBy**
+
+&raquo; search multiple record data from database by any column values. This method require database connection.
 
 Method type: magic
 
@@ -6120,7 +6140,9 @@ catch(Exception $e)
 }
 ```
 
-* findAscBy &raquo; search multiple record data from database order by primary keys ascending. This method require database connection.
+**11. findAscBy**
+
+&raquo; search multiple record data from database order by primary keys ascending. This method require database connection.
 
 Method type: magic
 
@@ -6145,7 +6167,9 @@ catch(Exception $e)
 }
 ```
 
-* findDescBy &raquo; search multiple record data from database order by primary keys descending. This method require database connection.
+**12. findDescBy**
+
+&raquo; search multiple record data from database order by primary keys descending. This method require database connection.
 
 Method type: magic
 
@@ -6170,12 +6194,28 @@ catch(Exception $e)
 }
 ```
 
-* listBy &raquo; search multiple record data from database. Similar to findBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
-* listAscBy &raquo; search multiple record data from database order by primary keys ascending. Similar to findAscBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
-* listDescBy &raquo; search multiple record data from database order by primary keys descending. Similar to findDescBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
-* listAllAsc &raquo; search multiple record data from database without filter order by primary keys ascending. Similar to findAllAsc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
-* listAllDesc &raquo; search multiple record data from database without filter order by primary keys descending. Similar to findAllDesc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
-* countBy &raquo; count data from database.
+**13. listBy**
+
+&raquo; search multiple record data from database. Similar to findBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+**14. listAscBy**
+
+&raquo; search multiple record data from database order by primary keys ascending. Similar to findAscBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+
+**15. listDescBy**
+
+&raquo; search multiple record data from database order by primary keys descending. Similar to findDescBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+
+**16. listAllAsc**
+
+&raquo; search multiple record data from database without filter order by primary keys ascending. Similar to findAllAsc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+
+**17. listAllDesc**
+
+&raquo; search multiple record data from database without filter order by primary keys descending. Similar to findAllDesc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+
+**18. countBy**
+
+&raquo; count data from database.
 
 Method type: magic
 
@@ -6198,7 +6238,9 @@ catch(Exception $e)
 }
 ```
 
-* existsBy &raquo; check data from database. This method require database connection.
+**19. existsBy**
+
+&raquo; check data from database. This method require database connection.
 
 Method type: magic
 
@@ -6220,7 +6262,9 @@ catch(Exception $e)
 }
 ```
 
-* deleteBy &raquo; delete data from database without read it first. This method require database connection.
+**20. deleteBy**
+
+&raquo; delete data from database without read it first. This method require database connection.
 
 Method type: magic
 
