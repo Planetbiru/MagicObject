@@ -1763,20 +1763,21 @@ class MagicObject extends stdClass // NOSONAR
      * set &raquo; set property value. This method not require database connection.
      * unset &raquo; unset property value. This method not require database connection.
      * findOneBy &raquo; search data from database and return one record. This method require database connection.
-     * findOneIfExistsBy &raquo; search data from database and return one record. This method require database connection.
-     * deleteOneBy &raquo; delete data from database and return one record. This method require database connection.
-     * findFirstBy &raquo; search data from database and return first record. This method require database connection.
-     * findLastBy &raquo; search data from database and return last record. This method require database connection.
-     * findBy &raquo; search data from database. This method require database connection.
-     * findAscBy &raquo; search data from database order by primary keys ascending. This method require database connection.
-     * findDescBy &raquo; search data from database order by primary keys descending. This method require database connection.
-     * findAllAsc &raquo; search data from database without filter order by primary keys ascending. This method require database connection.
-     * findAllDesc &raquo; search data from database without filter order by primary keys descending. This method require database connection.
-     * listBy &raquo; search data from database. Similar to findBy but does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
-     * listAscBy &raquo; search data from database order by primary keys ascending. Similar to findAscBy but does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
-     * listDescBy &raquo; search data from database order by primary keys descending. Similar to findDescBy but does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
-     * listAllAsc &raquo; search data from database without filter order by primary keys ascending. Similar to findAllAsc but does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
-     * listAllDesc &raquo; search data from database without filter order by primary keys descending. Similar to findAllDesc but does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+     * findOneIfExistsBy &raquo; search data from database by any column values and return one record. This method require database connection.
+     * deleteOneBy &raquo; delete data from database by any column values and return one record. This method require database connection.
+     * findFirstBy &raquo; search data from database by any column values and return first record. This method require database connection.
+     * findFirstIfExistsBy &raquo; search data from database by any column values and return first record. This method require database connection.
+     * findLastBy &raquo; search data from database by any column values and return last record. This method require database connection.
+     * findLastIfExistsBy &raquo; search data from database by any column values and return last record. This method require database connection.
+     * findBy &raquo; search multiple record data from database by any column values. This method require database connection.
+     * findAscBy &raquo; search multiple record data from database order by primary keys ascending. This method require database connection.
+     * findDescBy &raquo; search multiple record data from database order by primary keys descending. This method require database connection.
+     * listBy &raquo; search multiple record data from database. Similar to findBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+     * listAscBy &raquo; search multiple record data from database order by primary keys ascending. Similar to findAscBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+     * listDescBy &raquo; search multiple record data from database order by primary keys descending. Similar to findDescBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+     * listAllAsc &raquo; search multiple record data from database without filter order by primary keys ascending. Similar to findAllAsc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+     * listAllDesc &raquo; search multiple record data from database without filter order by primary keys descending. Similar to findAllDesc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+     * countBy &raquo; count data from database.
      * countBy &raquo; count data from database.
      * existsBy &raquo; check data from database. This method require database connection.
      * deleteBy &raquo; delete data from database without read it first. This method require database connection.
