@@ -4539,7 +4539,7 @@ catch(Exception $e)
 }
 ```
 
-**4.findOneIfExistsBy**
+**4. findOneIfExistsBy**
 
 &raquo; search data from database by any column values and return one record. This method require database connection.
 
