@@ -4459,3 +4459,370 @@ while($data = $result->fetch())
 	echo $data;
 }
 ```
+
+### Method
+
+* find &raquo; search data from database by primary key value given and return one record. This method require database connection.
+
+Method type: native
+
+Parameters:
+
+1. mixed $parameters
+
+Parameters can be strings, integers, floats, booleans, or arrays of strings, integers, floats, and booleans. Parameters cannot be null. If the parameter is an array, then the order of the values ​​in the parameter must be the same as the order of the primary key in the entity and the number of elements must be the same as the number of primary keys in the entity. If the number of array elements in the parameter is more than the number of primary keys, then the elements behind will be ignored. If the number of array elements in the parameter is less than the number of primary keys, an exception will be thrown. The data type provided must match the primaty keys.
+
+**Example**
+
+```php
+$album = new Album(null, $database);
+try
+{
+	// SELECT * FROM album WHERE album_id = '123456';
+	$album->find('123456');
+	// echo $album;
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+* findAll &raquo; search multiple record data from database with specification, pagable and sortable. This method require database connection.
+
+Method type: native
+
+Parameters:
+
+1. PicoSpecification $specification Specification
+2. PicoPageable $pageable Pageable
+3. PicoSortable $sortable Sortable
+4. boolean $passive Flag that object is passive
+5. array $subqueryMap Subquery map
+6. integer $findOption Find option
+
+Return: PicoPageable
+
+**Example**
+
+See Specification, Pageable and Sortable
+
+* findOneBy &raquo; search data from database by any column values and return one record. This method require database connection.
+
+Method type: magic
+
+Parameters:
+
+The user can provide one or more parameters in the form of strings, integers, floats, booleans or null. The number of parameters provided must match the method being called. The data type provided must match the property data type of the entity mentioned in the method being called.
+
+**Example**
+
+```php
+$album = new Album(null, $database);
+try
+{
+	// SELECT * FROM album WHERE album_id = '123456' AND active = true;
+	// albumId is string
+	// active is boolean
+	$album->findOneByAlbumIdAndActive('123456', true);
+	// echo $album;
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+* findOneIfExistsBy &raquo; search data from database by any column values and return one record. This method require database connection.
+
+Method type: magic
+
+Parameters:
+
+The user can provide one or more parameters in the form of strings, integers, floats, booleans or null. The number of parameters provided must match the method being called. The data type provided must match the property data type of the entity mentioned in the method being called.
+
+**Example**
+
+```php
+$album = new Album(null, $database);
+try
+{
+	// SELECT * FROM album WHERE album_id = '123456' AND active = true;
+	// albumId is string
+	// active is boolean
+	$album->findOneIfExistsByAlbumIdAndActive('123456', true);
+	// echo $album;
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+* deleteOneBy &raquo; delete data from database by any column values and return one record. This method require database connection.
+
+Method type: magic
+
+Parameters:
+
+The user can provide one or more parameters in the form of strings, integers, floats, booleans or null. The number of parameters provided must match the method being called. The data type provided must match the property data type of the entity mentioned in the method being called.
+
+**Example**
+
+```php
+$album = new Album(null, $database);
+try
+{
+	// DELETE FROM album WHERE album_id = '123456' AND active = true;
+	// albumId is string
+	// active is boolean
+	$album->deleteOneByAlbumIdAndActive('123456', true);
+	// echo $album;
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+* findFirstBy &raquo; search data from database by any column values and return first record. This method require database connection.
+
+Method type: magic
+
+Parameters:
+
+The user can provide one or more parameters in the form of strings, integers, floats, booleans or null. The number of parameters provided must match the method being called. The data type provided must match the property data type of the entity mentioned in the method being called.
+
+**Example**
+
+```php
+$album = new Album(null, $database);
+try
+{
+	// SELECT * FROM album WHERE producer_id = '7890123' AND active = true ORDER BY album_id ASC LIMIT 1 OFFSET 0;
+	// albumId is string
+	// active is boolean
+	$album->findFirstByProducerIdAndActive('7890123', true);
+	// echo $album;
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+* findFirstIfExistsBy &raquo; search data from database by any column values and return first record. This method require database connection.
+
+Method type: magic
+
+Parameters:
+
+The user can provide one or more parameters in the form of strings, integers, floats, booleans or null. The number of parameters provided must match the method being called. The data type provided must match the property data type of the entity mentioned in the method being called.
+
+**Example**
+
+```php
+$album = new Album(null, $database);
+try
+{
+	// SELECT * FROM album WHERE producer_id = '7890123' AND active = true ORDER BY album_id ASC LIMIT 1 OFFSET 0;
+	// albumId is string
+	// active is boolean
+	$album->findFirstIfExistsByProducerIdAndActive('7890123', true);
+	// echo $album;
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+* findLastBy &raquo; search data from database by any column values and return last record. This method require database connection.
+
+Method type: magic
+
+Parameters:
+
+The user can provide one or more parameters in the form of strings, integers, floats, booleans or null. The number of parameters provided must match the method being called. The data type provided must match the property data type of the entity mentioned in the method being called.
+
+```php
+$album = new Album(null, $database);
+try
+{
+	// SELECT * FROM album WHERE producer_id = '7890123' AND active = true ORDER BY album_id DESC LIMIT 1 OFFSET 0;
+	$album->findLastByProducerIdAndActive('7890123', true);
+	// echo $album;
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+* findLastIfExistsBy &raquo; search data from database by any column values and return last record. This method require database connection.
+
+Method type: magic
+
+Parameters:
+
+The user can provide one or more parameters in the form of strings, integers, floats, booleans or null. The number of parameters provided must match the method being called. The data type provided must match the property data type of the entity mentioned in the method being called.
+
+```php
+$album = new Album(null, $database);
+try
+{
+	// SELECT * FROM album WHERE producer_id = '7890123' AND active = true ORDER BY album_id DESC LIMIT 1 OFFSET 0;
+	$album->findLastIfExistsByProducerIdAndActive('7890123', true);
+	// echo $album;
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+* findBy &raquo; search multiple record data from database by any column values. This method require database connection.
+
+Method type: magic
+
+Parameters:
+
+The user can provide one or more parameters in the form of strings, integers, floats, booleans or null. The number of parameters provided must match the method being called. The data type provided must match the property data type of the entity mentioned in the method being called.
+
+```php
+$albumFinder = new Album(null, $database);
+try
+{
+	// SELECT * FROM album WHERE producer_id = '7890123' AND active = true;
+	$pageData = $albumFinder->findByProducerIdAndActive('7890123', true);
+	foreach($pageData as $album)
+	{
+		// echo $album;
+	}
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+* findAscBy &raquo; search multiple record data from database order by primary keys ascending. This method require database connection.
+
+Method type: magic
+
+Parameters:
+
+The user can provide one or more parameters in the form of strings, integers, floats, booleans or null. The number of parameters provided must match the method being called. The data type provided must match the property data type of the entity mentioned in the method being called.
+
+```php
+$albumFinder = new Album(null, $database);
+try
+{
+	// SELECT * FROM album WHERE producer_id = '7890123' AND active = true ORDER BY album_id ASC;
+	$pageData = $albumFinder->findAscByProducerIdAndActive('7890123', true);
+	foreach($pageData as $album)
+	{
+		// echo $album;
+	}
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+* findDescBy &raquo; search multiple record data from database order by primary keys descending. This method require database connection.
+
+Method type: magic
+
+Parameters:
+
+The user can provide one or more parameters in the form of strings, integers, floats, booleans or null. The number of parameters provided must match the method being called. The data type provided must match the property data type of the entity mentioned in the method being called.
+
+```php
+$albumFinder = new Album(null, $database);
+try
+{
+	// SELECT album WHERE producer_id = '7890123' AND active = true ORDER BY album_id DESC;
+	$pageData = $albumFinder->findDescByProducerIdAndActive('7890123', true);
+	foreach($pageData as $album)
+	{
+		// echo $album;
+	}
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+* listBy &raquo; search multiple record data from database. Similar to findBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+* listAscBy &raquo; search multiple record data from database order by primary keys ascending. Similar to findAscBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+* listDescBy &raquo; search multiple record data from database order by primary keys descending. Similar to findDescBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+* listAllAsc &raquo; search multiple record data from database without filter order by primary keys ascending. Similar to findAllAsc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+* listAllDesc &raquo; search multiple record data from database without filter order by primary keys descending. Similar to findAllDesc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+* countBy &raquo; count data from database.
+
+Method type: magic
+
+Parameters:
+
+The user can provide one or more parameters in the form of strings, integers, floats, booleans or null. The number of parameters provided must match the method being called. The data type provided must match the property data type of the entity mentioned in the method being called.
+
+```php
+$albumFinder = new Album(null, $database);
+try
+{
+	// SELECT COUNT(album_id) FROM album WHERE producer_id = '7890123' AND active = true;
+	$count = $albumFinder->countByProducerIdAndActive('7890123', true);
+	
+	// $count is an integer value
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+* existsBy &raquo; check data from database. This method require database connection.
+
+Method type: magic
+
+Parameters:
+
+The user can provide one or more parameters in the form of strings, integers, floats, booleans or null. The number of parameters provided must match the method being called. The data type provided must match the property data type of the entity mentioned in the method being called.
+
+```php
+$albumFinder = new Album(null, $database);
+try
+{
+	// SELECT COUNT(album_id) FROM album WHERE producer_id = '7890123' AND active = true;
+	$exists = $albumFinder->existsByProducerIdAndActive('7890123', true);
+	// $exists is a boolean value
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
+
+* deleteBy &raquo; delete data from database without read it first. This method require database connection.
+
+Method type: magic
+
+Parameters:
+
+The user can provide one or more parameters in the form of strings, integers, floats, booleans or null. The number of parameters provided must match the method being called. The data type provided must match the property data type of the entity mentioned in the method being called.
+
+```php
+$albumFinder = new Album(null, $database);
+try
+{
+	// DELETE FROM album WHERE producer_id = '7890123' AND active = true;
+	$albumFinder->deleteByProducerIdAndActive('7890123', true);
+}
+catch(Exception $e)
+{
+	error_log($e->getMessage());
+}
+```
