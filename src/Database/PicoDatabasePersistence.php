@@ -2744,29 +2744,15 @@ class PicoDatabasePersistence // NOSONAR
      */
     public function deleteOneBy($propertyName, $propertyValue)
     {
-        $info = $this->getTableInfo();
-        $where = $this->createWhereFromArgs($info, $propertyName, $propertyValue);
-        if(!$this->isValidFilter($where))
-        {
-            throw new InvalidFilterException(self::MESSAGE_INVALID_FILTER);
-        }
-        $queryBuilder = new PicoDatabaseQueryBuilder($this->database);
-        $stmt = null;
-        $sqlQuery = $queryBuilder
-            ->newQuery()
-            ->delete()
-            ->from($info->getTableName())
-            ->where($where)
-        ;
         try
         {
-            $stmt = $this->database->executeQuery($sqlQuery);
+            $data = $this->findOneBy($propertyName, $propertyValue);
+            $data->delete();
         }
         catch(Exception $e)
         {
             throw new EmptyResultException($e->getMessage());
         }
-        return $stmt;   
     }
 
     /**

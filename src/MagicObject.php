@@ -11,6 +11,7 @@ use MagicObject\Database\PicoDatabasePersistenceExtended;
 use MagicObject\Database\PicoDatabaseQueryBuilder;
 use MagicObject\Database\PicoPageable;
 use MagicObject\Database\PicoPageData;
+use MagicObject\Database\PicoSort;
 use MagicObject\Database\PicoSortable;
 use MagicObject\Database\PicoSpecification;
 use MagicObject\Database\PicoTableInfo;
@@ -1256,6 +1257,32 @@ class MagicObject extends stdClass // NOSONAR
             throw new PDOException($e->getMessage(), intval($e->getCode()));
         }
     }
+    
+    /**
+     * Find all record without filter and sort by primary key asc
+     *
+     * @return PicoPageData
+     */
+    public function findAllAsc()
+    {
+        $persist = new PicoDatabasePersistence($this->_database, $this);
+        $result = $persist->findAll(null, null, PicoSort::ORDER_TYPE_ASC);
+        $startTime = microtime(true);
+        return new PicoPageData($this->toArrayObject($result, false), $startTime);
+    }
+    
+    /**
+     * Find all record without filter and sort by primary key desc
+     *
+     * @return PicoPageData
+     */
+    public function findAllDesc()
+    {
+        $persist = new PicoDatabasePersistence($this->_database, $this);
+        $result = $persist->findAll(null, null, PicoSort::ORDER_TYPE_DESC);
+        $startTime = microtime(true);
+        return new PicoPageData($this->toArrayObject($result, false), $startTime);
+    }
 
     /**
      * Find specific
@@ -1627,8 +1654,15 @@ class MagicObject extends stdClass // NOSONAR
     {
         if($this->_databaseConnected())
         {
-            $persist = new PicoDatabasePersistence($this->_database, $this);
-            return $persist->deleteOneBy($method, $params);
+            try
+            {
+                $data = $this->findOneBy($method, $params);
+                $data->delete();
+            }
+            catch(NoRecordFoundException $e)
+            {
+                return $this;
+            }
         }
         else
         {
