@@ -4038,9 +4038,9 @@ foreach($result->getResult() as $row)
 1. MagicObject::FIND_OPTION_NO_COUNT_DATA
 2. MagicObject::FIND_OPTION_NO_FETCH_DATA
 
-If the `MagicObject::FIND_OPTION_NO_COUNT_DATA` option is provided, the MagicObject will not count data even if a PicoPageable is provided. This will reduce data processing time but the user does not know how much data actually is. This option can be selected when dealing with very large data.
+If the `MagicObject::FIND_OPTION_NO_COUNT_DATA` option is provided, the MagicObject will not count data even if a PicoPageable is provided. This will reduce data processing time but the user does not know how much data actually is. This option can be choosed when dealing with very large data.
 
-If the `MagicObject::FIND_OPTION_NO_FETCH_DATA` option is given, MagicObject will not directly fetch data and store it in the object. Users must retrieve data one by one using the fetch method. This option can be selected when handling very large data so that it does not consume much memory.
+If the `MagicObject::FIND_OPTION_NO_FETCH_DATA` option is given, MagicObject will not directly fetch data and store it in the object. Users must retrieve data one by one using the fetch method. Every time an application receives data from the database, it sends it directly to either a file or an output buffer instead of collecting it in a list in memory. This option can be choosed when handling very large data so that it does not consume much memory. 
 
 Example:
 
