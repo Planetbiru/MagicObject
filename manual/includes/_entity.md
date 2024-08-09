@@ -4035,8 +4035,8 @@ foreach($result->getResult() as $row)
 
 ### Find All with Option
 
-1. MagicObject::FIND_OPTION_NO_COUNT_DATA
-2. MagicObject::FIND_OPTION_NO_FETCH_DATA
+1. `MagicObject::FIND_OPTION_NO_COUNT_DATA`
+2. `MagicObject::FIND_OPTION_NO_FETCH_DATA`
 
 If the `MagicObject::FIND_OPTION_NO_COUNT_DATA` option is provided, the MagicObject will not count data even if a PicoPageable is provided. This will reduce data processing time but the user does not know how much data actually is. This option can be choosed when dealing with very large data.
 
