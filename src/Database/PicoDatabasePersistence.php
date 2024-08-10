@@ -2223,6 +2223,28 @@ class PicoDatabasePersistence // NOSONAR
      * Get all record from database wihout filter
      *
      * @param PicoSpecification $specification Specification
+     * @param PicoSortable|string|null $sortable Sortable
+     * @param array $subqueryMap
+     * @throws EntityException|EmptyResultException
+     */
+    public function findOne($specification, $sortable = null, $subqueryMap = null)
+    {
+        $info = $this->getTableInfo(); 
+        $pageable = new PicoPageable(array(1, 1));
+        if($subqueryMap == null)    
+        {
+            return $this->findSpecific($this->getAllColumns($info), $specification, $pageable, $sortable);
+        }
+        else
+        {
+            return $this->findSpecificWithSubquery($this->getAllColumns($info), $specification, $pageable, $sortable, $subqueryMap);
+        }
+    }
+
+    /**
+     * Get all record from database wihout filter
+     *
+     * @param PicoSpecification $specification Specification
      * @param PicoPageable|null $pageable Pageable
      * @param PicoSortable|string|null $sortable Sortable
      * @param array $subqueryMap

@@ -1198,6 +1198,54 @@ class MagicObject extends stdClass // NOSONAR
      * Find all
      *
      * @param PicoSpecification $specification Specification
+     * @param PicoSortable|string $sortable Sortable
+     * @param array $subqueryMap Subquery map
+     * @param integer $findOption Find option
+     * @return self
+     * @throws NoRecordFoundException if no record found
+     * @throws NoDatabaseConnectionException if no database connection
+     */
+    public function findOne($specification = null, $sortable = null, $subqueryMap = null)
+    {
+        try
+        {
+            if($this->_databaseConnected())
+            {
+                $persist = new PicoDatabasePersistence($this->_database, $this);
+                $result = $persist->findOne($specification, $sortable, $subqueryMap);
+                if(isset($result) && is_array($result) && !empty($result))
+                {
+                    $this->loadData($result[0]);
+                    return $this;
+                }
+                else
+                {
+                    throw new NoRecordFoundException("No record found");
+                }
+            }
+            else
+            {
+                throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
+            }         
+        }
+        catch(FindOptionException $e)
+        {
+            throw new FindOptionException($e->getMessage());
+        }
+        catch(NoRecordFoundException $e)
+        {
+            throw new NoRecordFoundException($e->getMessage());
+        }
+        catch(Exception $e)
+        {
+            throw new PDOException($e->getMessage(), intval($e->getCode()));
+        }
+    }
+
+    /**
+     * Find all
+     *
+     * @param PicoSpecification $specification Specification
      * @param PicoPageable|string $pageable Pageable
      * @param PicoSortable|string $sortable Sortable
      * @param boolean $passive Flag that object is passive
