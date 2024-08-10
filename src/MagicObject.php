@@ -1696,7 +1696,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param string $method Method
      * @param mixed $params Parameters
      * @param PicoSortable|string $sortable
-     * @return PDOStatement|boolean
+     * @return boolean
      */
     private function deleteOneBy($method, $params)
     {
@@ -1706,10 +1706,11 @@ class MagicObject extends stdClass // NOSONAR
             {
                 $data = $this->findOneBy($method, $params);
                 $data->delete();
+                return true;
             }
             catch(NoRecordFoundException $e)
             {
-                return $this;
+                return false;
             }
         }
         else

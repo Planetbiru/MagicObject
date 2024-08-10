@@ -2159,7 +2159,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Get findAll query
      *
-     * @param PicoSpecification $specification Specification
+     * @param PicoSpecification|null $specification Specification
      * @param PicoPageable|null $pageable Pageable
      * @param PicoSortable|string|null $sortable Sortable
      * @param PicoTableInfo $info Table information
@@ -2178,7 +2178,7 @@ class PicoDatabasePersistence // NOSONAR
      * Get findSpecific query
      *
      * @param string $selected
-     * @param PicoSpecification $specification Specification
+     * @param PicoSpecification|null $specification Specification
      * @param PicoPageable|null $pageable Pageable
      * @param PicoSortable|string|null $sortable Sortable
      * @param PicoTableInfo $info Table information
@@ -2222,9 +2222,9 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Get all record from database wihout filter
      *
-     * @param PicoSpecification $specification Specification
+     * @param PicoSpecification|null $specification Specification
      * @param PicoSortable|string|null $sortable Sortable
-     * @param array $subqueryMap
+     * @param array|null $subqueryMap
      * @throws EntityException|EmptyResultException
      */
     public function findOne($specification, $sortable = null, $subqueryMap = null)
@@ -2244,10 +2244,10 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Get all record from database wihout filter
      *
-     * @param PicoSpecification $specification Specification
+     * @param PicoSpecification|null $specification Specification
      * @param PicoPageable|null $pageable Pageable
      * @param PicoSortable|string|null $sortable Sortable
-     * @param array $subqueryMap
+     * @param array|null $subqueryMap
      * @throws EntityException|EmptyResultException
      */
     public function findAll($specification, $pageable = null, $sortable = null, $subqueryMap = null)
