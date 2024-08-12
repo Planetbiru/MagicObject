@@ -127,6 +127,34 @@ class PicoLimit
     }
     
     /**
+     * Get page
+     *
+     * @return PicoPage
+     */
+    public function getPage()
+    {
+        $limit = $this->limit;
+        $offset = $this->offset;      
+        if($limit <= 0)
+        {
+            $limit = 1;
+        }
+        if($limit > 0)
+        {
+            $pageNumber = round(($offset + $limit) / $limit);
+            if($pageNumber < 1)
+            {
+                $pageNumber = 1;
+            }
+        }
+        else
+        {
+            $pageNumber = 1;
+        }
+        return new PicoPage($pageNumber, $limit);
+    }
+    
+    /**
      * Magic method to debug object
      *
      * @return string
