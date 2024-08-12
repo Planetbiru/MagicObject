@@ -9,6 +9,7 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * Object parser
+ * @link https://github.com/Planetbiru/MagicObject
  */
 class PicoSecretParser
 {

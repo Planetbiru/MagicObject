@@ -13,6 +13,10 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
 
+/**
+ * Annotation parser
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoAnnotationParser
 {
     const METHOD = "method";
