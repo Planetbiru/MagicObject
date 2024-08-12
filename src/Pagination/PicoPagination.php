@@ -5,6 +5,10 @@ use MagicObject\Database\PicoSort;
 use MagicObject\Exceptions\NullPointerException;
 use MagicObject\Util\PicoStringUtil;
 
+/**
+ * Pagination
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoPagination
 {
     /**

@@ -2,6 +2,10 @@
 
 namespace MagicObject\Request;
 
+/**
+ * Filter constant
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoFilterConstant
 {
 	const FILTER_DEFAULT = 516;

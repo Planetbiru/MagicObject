@@ -1,6 +1,10 @@
 <?php
 namespace MagicObject\Database;
 
+/**
+ * Query builder
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoDatabaseQueryBuilder // NOSONAR
 {
 	/**

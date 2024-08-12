@@ -3,6 +3,10 @@
 namespace MagicObject\Database;
 use MagicObject\Pagination\PicoPagination;
 
+/**
+ * Page control
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoPageControl
 {
     /**

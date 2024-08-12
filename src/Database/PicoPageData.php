@@ -8,6 +8,10 @@ use PDO;
 use PDOStatement;
 use stdClass;
 
+/**
+ * Page data
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoPageData
 {
     const RESULT = 'result';

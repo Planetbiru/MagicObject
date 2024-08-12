@@ -7,6 +7,7 @@ use MagicObject\Util\PicoStringUtil;
 /**
  * Upload file tool
  * All atribute in this class is readonly
+ * @link https://github.com/Planetbiru/MagicObject
  */
 class PicoUplodFile
 {

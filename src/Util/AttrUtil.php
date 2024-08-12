@@ -2,6 +2,10 @@
 
 namespace MagicObject\Util;
 
+/**
+ * Attribute utility
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class AttrUtil
 {
     /**

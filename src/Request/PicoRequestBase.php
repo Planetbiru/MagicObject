@@ -9,6 +9,10 @@ use MagicObject\Util\PicoStringUtil;
 use ReflectionClass;
 use stdClass;
 
+/**
+ * Request base
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoRequestBase extends stdClass //NOSONAR
 {
     /**

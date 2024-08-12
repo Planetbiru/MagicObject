@@ -5,6 +5,10 @@ namespace MagicObject\Database;
 use MagicObject\Request\PicoRequestBase;
 use MagicObject\Util\Database\PicoDatabaseUtil;
 
+/**
+ * Specification
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoSpecification
 {
     const LOGIC_AND = "and";

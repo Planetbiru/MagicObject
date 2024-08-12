@@ -9,6 +9,10 @@ use MagicObject\Util\PicoStringUtil;
 use ReflectionClass;
 use stdClass;
 
+/**
+ * Entity language
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoEntityLanguage
 {
     const ANNOTATION_TABLE = "Table";

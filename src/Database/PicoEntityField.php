@@ -2,6 +2,10 @@
 
 namespace MagicObject\Database;
 
+/**
+ * Entity field
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoEntityField
 {
     /**

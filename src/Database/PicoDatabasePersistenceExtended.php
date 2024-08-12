@@ -5,6 +5,10 @@ namespace MagicObject\Database;
 use MagicObject\Exceptions\NoRecordFoundException;
 use MagicObject\MagicObject;
 
+/**
+ * Database persistence extended
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
 {
     public function __call($method, $params)

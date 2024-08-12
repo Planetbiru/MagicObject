@@ -9,6 +9,7 @@ use MagicObject\Util\PicoStringUtil;
  * PicoEntityGenerator is an entity generator for automatically generating PHP code. 
  * This class is optimized on the MariaDB database. 
  * Users must provide appropriate parameters so that the entity class can be directly used in the application.
+ * @link https://github.com/Planetbiru/MagicObject
  */
 class PicoEntityGenerator
 {

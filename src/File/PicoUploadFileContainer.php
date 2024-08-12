@@ -2,6 +2,10 @@
 
 namespace MagicObject\File;
 
+/**
+ * Upload file container
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoUploadFileContainer
 {
     /**

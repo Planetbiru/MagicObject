@@ -1,6 +1,10 @@
 <?php
 namespace MagicObject\Constants;
 
+/**
+ * HTTP status
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoHttpStatus
 {
     const HTTP_CONTINUE = 100;

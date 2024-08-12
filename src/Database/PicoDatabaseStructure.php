@@ -8,6 +8,10 @@ use MagicObject\Exceptions\MandatoryTableNameException;
 use MagicObject\MagicObject;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 
+/**
+ * Database stucture
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoDatabaseStructure
 {
     const ANNOTATION_TABLE = "Table";

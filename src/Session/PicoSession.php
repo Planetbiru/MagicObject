@@ -4,6 +4,10 @@ namespace MagicObject\Session;
 
 use MagicObject\SecretObject;
 
+/**
+ * Session
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoSession
 {
     const SESSION_STARTED = true;

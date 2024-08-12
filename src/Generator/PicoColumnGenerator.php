@@ -6,6 +6,10 @@ use MagicObject\Database\PicoDatabase;
 use MagicObject\Database\PicoDatabaseType;
 use MagicObject\Util\Database\PicoDatabaseUtilMySql;
 
+/**
+ * Column generator
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoColumnGenerator
 {
     /**

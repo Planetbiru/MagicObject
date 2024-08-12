@@ -5,6 +5,7 @@ namespace MagicObject\Secret;
 /**
  * Default secret key
  * WARNING: Use your own key instead of using default key
+ * @link https://github.com/Planetbiru/MagicObject
  */
 class PicoSecret
 {

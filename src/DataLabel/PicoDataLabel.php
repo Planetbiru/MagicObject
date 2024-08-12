@@ -7,6 +7,10 @@ use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\PicoStringUtil;
 use stdClass;
 
+/**
+ * Data label
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoDataLabel extends SetterGetter
 {
     const ANNOTATION_PROPERTIES = "Properties";

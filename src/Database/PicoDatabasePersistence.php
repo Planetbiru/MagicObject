@@ -22,6 +22,10 @@ use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\ClassUtil\PicoEmptyParameter;
 use ReflectionProperty;
 
+/**
+ * Database persistence
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoDatabasePersistence // NOSONAR
 {
     const ANNOTATION_TABLE = "Table";

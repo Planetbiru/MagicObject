@@ -2,6 +2,10 @@
 
 namespace MagicObject\Util;
 
+/**
+ * Decimal Degree Minute Second cobersion
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class Dms
 {
     /**

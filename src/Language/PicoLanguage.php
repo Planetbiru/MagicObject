@@ -5,6 +5,10 @@ namespace MagicObject\Language;
 use MagicObject\Util\PicoStringUtil;
 use stdClass;
 
+/**
+ * Language
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoLanguage
 {
     /**

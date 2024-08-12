@@ -5,6 +5,10 @@ namespace MagicObject\Database;
 use MagicObject\Exceptions\InvalidParameterException;
 use stdClass;
 
+/**
+ * Pageable
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoPageable
 {
     /**

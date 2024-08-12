@@ -16,6 +16,10 @@ use ReflectionClass;
 use stdClass;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * Secret object
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class SecretObject extends stdClass //NOSONAR
 {
     const JSON = 'JSON';

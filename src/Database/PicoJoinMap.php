@@ -2,6 +2,10 @@
 
 namespace MagicObject\Database;
 
+/**
+ * Join map
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoJoinMap
 {
     /**

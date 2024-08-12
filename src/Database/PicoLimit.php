@@ -4,6 +4,7 @@ namespace MagicObject\Database;
 
 /**
  * Limit and offset select database records
+ * @link https://github.com/Planetbiru/MagicObject
  */
 class PicoLimit
 {

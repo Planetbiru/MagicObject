@@ -2,6 +2,10 @@
 
 namespace MagicObject\Database;
 
+/**
+ * Predicate
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoPredicate //NOSONAR
 {
     /**

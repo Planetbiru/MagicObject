@@ -10,6 +10,10 @@ use MagicObject\Util\PicoStringUtil;
 use ReflectionClass;
 use stdClass;
 
+/**
+ * Setter getter
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class SetterGetter extends stdClass
 {
     const JSON = 'JSON';
