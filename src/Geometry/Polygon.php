@@ -95,4 +95,14 @@ class Polygon
         }
         return $sum;
     } 
+
+    /**
+     * Get points
+     *
+     * @return Point[]
+     */ 
+    public function getPoints()
+    {
+        return $this->points;
+    }
 }
