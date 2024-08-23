@@ -2,12 +2,15 @@
 
 namespace MagicObject\Util\Database;
 
+use Exception;
 use MagicObject\Database\PicoDatabase;
 use MagicObject\Database\PicoDatabaseQueryBuilder;
 use MagicObject\Database\PicoDatabaseType;
 use MagicObject\Database\PicoPageData;
 use MagicObject\Database\PicoTableInfo;
 use MagicObject\MagicObject;
+use MagicObject\SecretObject;
+use PDO;
 
 class PicoDatabaseUtilMySql
 {
@@ -23,7 +26,7 @@ class PicoDatabaseUtilMySql
     public static function getColumnList($database, $picoTableName)
     {
         $sql = "SHOW COLUMNS FROM $picoTableName";
-        return $database->fetchAll($sql);
+        $result = $database->fetchAll($sql);
     }
 
     /**
@@ -228,5 +231,296 @@ class PicoDatabaseUtilMySql
             ->values(array_values($rec));
             
         return $queryBuilder->toString();
+    }
+    
+    /**
+     * Show columns
+     *
+     * @param PicoDatabase $database
+     * @param string $tableName
+     * @return string[]
+     */
+    public static function showColumns($database, $tableName)
+    {
+        $sql = "SHOW COLUMNS FROM $tableName";
+        $result = $database->fetchAll($sql, PDO::FETCH_ASSOC);
+        
+        $columns = array();
+        foreach($result as $row)
+        {
+            $columns[$row['Field']] = $row['Type'];
+        }
+        return $columns;
+    }
+    
+    /**
+     * Importing data from another database. The destination table and column names can be different from the source table and column names.
+     *
+     * @param SecretObject $config Database import configuration
+     * @param callable $callbackFunction Callback function that will process the query made by the importer
+     * @return boolean
+     */
+    public static function importData($config, $callbackFunction)
+    {
+        $databaseConfigSource = $config->getDatabaseSource();
+        $databaseConfigTarget = $config->getDatabaseTarget();
+        
+        $databaseSource = new PicoDatabase($databaseConfigSource);
+        $databaseTarget = new PicoDatabase($databaseConfigTarget);
+        try
+        {
+            $databaseSource->connect();
+            $databaseTarget->connect();
+            $tables = $config->getTable();
+            $maxRecord = $config->getMaximumRecord();
+
+            // import data
+            foreach($tables as $tableInfo)
+            {
+                $tableNameTarget = $tableInfo->getTarget();
+                $tableNameSource = $tableInfo->getSource();
+                self::importDataTable($databaseSource, $databaseTarget, $tableNameSource, $tableNameTarget, $tableInfo, $maxRecord, $callbackFunction);
+            }
+            
+            // query post import data
+            foreach($tables as $tableInfo)
+            {
+                $tableNameTarget = $tableInfo->getTarget();
+                $tableNameSource = $tableInfo->getSource();
+                $postImportScript = $tableInfo->getPostImportScript();
+                if($postImportScript != null && is_array($postImportScript) && !empty($postImportScript))
+                {
+                    foreach($postImportScript as $sql)
+                    {
+                        call_user_func($callbackFunction, $sql, $tableNameSource, $tableNameTarget);
+                    }
+                }
+            }
+        }
+        catch(Exception $e)
+        {
+            error_log($e->getMessage());
+        }
+        return true;
+    }
+    
+    /**
+     * Import table
+     *
+     * @param PicoDatabase $databaseSource
+     * @param PicoDatabase $databaseTarget
+     * @param string $tableName
+     * @param SecretObject $tableInfo
+     * @param integer $maxRecord
+     * @param callable $callbackFunction
+     * @return void
+     */
+    public static function importDataTable($databaseSource, $databaseTarget, $tableNameSource, $tableNameTarget, $tableInfo, $maxRecord, $callbackFunction)
+    {
+        if($maxRecord < 1)
+        {
+            $maxRecord = 1;
+        }
+        try
+        {
+            $columns = self::showColumns($databaseTarget, $tableNameTarget);
+
+            $queryBuilderSource = new PicoDatabaseQueryBuilder($databaseSource);            
+            $sourceTable = $tableInfo->getSource();
+            $queryBuilderSource->newQuery()
+                ->select("*")
+                ->from($sourceTable);
+            $stmt = $databaseSource->query($queryBuilderSource);   
+            $records = array();
+            while($data = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT))
+            {
+                $data = self::processDataMapping($data, $columns, $tableInfo->getMap());
+                if(count($records) < $maxRecord)
+                {
+                    $records[] = $data;
+                }
+                else
+                {
+                    if(isset($callbackFunction) && is_callable($callbackFunction))
+                    {
+                        $sql = self::insert($tableNameTarget, $records);
+                        call_user_func($callbackFunction, $sql, $tableNameSource, $tableNameTarget);
+                    }
+                    // reset buffer
+                    $records = array();
+                }
+            }
+            if(!empty($records) && isset($callbackFunction) && is_callable($callbackFunction))
+            {
+                $sql = self::insert($tableNameTarget, $records);
+                call_user_func($callbackFunction, $sql, $tableNameSource, $tableNameTarget);
+            }
+        }
+        catch(Exception $e)
+        {
+            error_log($e->getMessage());
+        }
+    }
+    
+    /**
+     * Process data mapping
+     *
+     * @param array $data
+     * @param SecretObject[] $maps
+     * @return array
+     */
+    public static function processDataMapping($data, $columns, $maps)
+    {
+        if(isset($maps) && is_array($maps))
+        {
+            foreach($maps as $map)
+            {
+                $arr = explode(':', $map, 2);
+                $target = trim($arr[0]);
+                $source = trim($arr[1]);
+                
+                $data[$target] = $data[$source];
+                unset($data[$source]);
+                
+            }
+        }
+        $data = array_intersect_key($data, array_flip(array_keys($columns)));
+        $data = self::fixImportData($data, $columns);
+        return $data;
+    }
+    
+    public static function fixImportData($data, $columns)
+    {
+        foreach($data as $name=>$value)
+        {
+            if(isset($columns[$name]))
+            {
+                $type = $columns[$name];
+                
+                if(strtolower($type) == 'tinyint(1)' || strtolower($type) == 'boolean' || strtolower($type) == 'bool')
+                {
+                    $data = self::fixBooleanData($data, $name, $value);
+                }
+                else if(stripos($type, 'integer') !== false || stripos($type, 'int(') !== false)
+                {
+                    $data = self::fixIntegerData($data, $name, $value);
+                }
+                else if(stripos($type, 'float') !== false || stripos($type, 'double') !== false || stripos($type, 'decimal') !== false)
+                {
+                    $data = self::fixFloatData($data, $name, $value);
+                }
+            }
+        }
+        return $data;
+    }
+    
+    public static function fixBooleanData($data, $name, $value)
+    {
+        if($value === null || $value === '')
+        {
+            $data[$name] = null;
+        }
+        else
+        {
+            $data[$name] = $data[$name] == 1 ? true : false; 
+        }
+        return $data;
+    }
+    
+    public static function fixIntegerData($data, $name, $value)
+    {
+        if($value === null || $value === '')
+        {
+            $data[$name] = null;
+        }
+        else
+        {
+            $data[$name] = intval($data[$name]); 
+        }
+        return $data;
+    }
+    
+    public static function fixFloatData($data, $name, $value)
+    {
+        if($value === null || $value === '')
+        {
+            $data[$name] = null;
+        }
+        else
+        {
+            $data[$name] = floatval($data[$name]); 
+        }
+        return $data;
+    }
+    
+    /**
+     * Create query insert with multiple record
+     *
+     * @param string $tableName
+     * @param array $data
+     * @return string
+     */
+    public static function insert($tableName, $data)
+    {
+        // Kumpulkan semua kolom
+        $columns = [];
+        foreach ($data as $record) {
+            $columns = array_merge($columns, array_keys($record));
+        }
+        $columns = array_unique($columns);
+
+        // Buat placeholder untuk prepared statement
+        $placeholdersArr = array_fill(0, count($columns), '?');
+        $placeholders = '(' . implode(', ', $placeholdersArr) . ')';
+
+        // Buat query INSERT
+        $query = "INSERT INTO $tableName (" . implode(', ', $columns) . ") \r\nVALUES \r\n".
+        implode(",\r\n", array_fill(0, count($data), $placeholders));
+
+        // Siapkan nilai untuk bind
+        $values = [];
+        foreach ($data as $record) {
+            foreach ($columns as $column) {
+                $values[] = isset($record[$column]) && $record[$column] !== null ? $record[$column] : null;
+            }
+        }  
+        
+        // Fungsi untuk menambahkan single quote jika elemen adalah string
+
+        // Format elemen array
+        $formattedElements = array_map(function($element){
+            return self::fixData($element);
+        }, $values);
+
+        // Ganti tanda tanya dengan elemen array yang telah diformat
+        return vsprintf(str_replace('?', '%s', $query), $formattedElements);
+    }
+
+    /**
+     * Fix data
+     *
+     * @param mixed $value
+     * @return string
+     */
+    public static function fixData($value)
+    {
+        $ret = null;
+        if (is_string($value)) 
+        {
+            $ret = "'" . addslashes($value) . "'";
+        }
+        else if(is_bool($value))
+        {
+            $ret = $value === true ? 'true' : 'false';
+        }
+        else if ($value === null) 
+        {
+            $ret = "null";
+        }
+        else
+        {
+            $ret = $value;
+        }
+        return $ret;
     }
 }
