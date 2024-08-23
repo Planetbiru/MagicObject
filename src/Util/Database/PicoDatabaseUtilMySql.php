@@ -254,6 +254,111 @@ class PicoDatabaseUtilMySql
     }
     
     /**
+     * Autoconfigure import data
+     *
+     * @param SecretObject $config
+     * @return SecretObject
+     */
+    public static function autoConfigureImportData($config)
+    {
+        $databaseConfigSource = $config->getDatabaseSource();
+        $databaseConfigTarget = $config->getDatabaseTarget();
+        
+        $databaseSource = new PicoDatabase($databaseConfigSource);
+        $databaseTarget = new PicoDatabase($databaseConfigTarget);
+        try
+        {
+            $databaseSource->connect();
+            $databaseTarget->connect();
+            $tables = $config->getTable();
+            
+            
+            $existingTables = array();
+            foreach($tables as $tb)
+            {
+                $existingTables[] = $tb->getTarget();
+            }
+            
+            $sourceTableList = $databaseSource->fetchAll("SHOW TABLES", PDO::FETCH_NUM);
+            $targetTableList = $databaseTarget->fetchAll("SHOW TABLES", PDO::FETCH_NUM);
+
+            
+            $sourceTables = call_user_func_array('array_merge', $sourceTableList);
+            $targetTables = call_user_func_array('array_merge', $targetTableList);
+            
+            foreach($targetTables as $target)
+            {
+                $tables = self::updateConfigTable($databaseSource, $databaseTarget, $tables, $sourceTables, $target, $existingTables);
+            }
+            $config->setTable($tables);
+        }
+        catch(Exception $e)
+        {
+            error_log($e->getMessage());
+        }
+        return $config;
+    }
+    
+    /**
+     * Update config table
+     *
+     * @param SecretObject[] $tables
+     * @param string[] $sourceTables
+     * @param string $target
+     * @param string[] $existingTables
+     * @return SecretObject[]
+     */
+    public static function updateConfigTable($databaseSource, $databaseTarget, $tables, $sourceTables, $target, $existingTables)
+    {
+        if(!in_array($target, $existingTables))
+        {
+            $tableInfo = new SecretObject();
+            if(in_array($target, $sourceTables))
+            {
+                // ada di database sumber
+                $tableInfo->setTarget($target);
+                $tableInfo->setSource($target);
+                $map = self::createMapTemplate($databaseSource, $databaseTarget, $target);
+                if(isset($map) && !empty($map))
+                {
+                    $tableInfo->setMap($map);
+                }
+            }
+            else
+            {
+                // tidak ada di database sumber
+                $tableInfo->setTarget($target);
+                $tableInfo->setSource("???");
+            }
+            $tables[] = $tableInfo;
+        }
+        return $tables;
+    }
+    
+    /**
+     * Create map template
+     *
+     * @param PicoDatabase $databaseSource
+     * @param PicoDatabase $databaseTarget
+     * @param string $target
+     * @return string[]
+     */
+    public static function createMapTemplate($databaseSource, $databaseTarget, $target)
+    {
+        $targetColumns = array_keys(self::showColumns($databaseTarget, $target));
+        $sourceColumns = array_keys(self::showColumns($databaseSource, $target));
+        $map = array();
+        foreach($targetColumns as $column)
+        {
+            if(!in_array($column, $sourceColumns))
+            {
+                $map[] = "$column : ???";
+            }
+        }
+        return $map;
+    }
+    
+    /**
      * Importing data from another database. The destination table and column names can be different from the source table and column names.
      *
      * @param SecretObject $config Database import configuration

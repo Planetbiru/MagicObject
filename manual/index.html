@@ -8378,6 +8378,7 @@ database_source:
   database_name: sipro_ori
   databseSchema: public
   timeZone: Asia/Jakarta
+maximum_record: 100
 table:
   - source: modul
     target: modul
@@ -8386,6 +8387,7 @@ table:
     - 'sort_order : order'
     pre_import_script: 
     - "truncate modul"
+    maximum_record: 2000
   - source: hak_akses
     target: hak_akses
     map:
@@ -8397,8 +8399,14 @@ table:
     - "truncate hak_akses"
     post_import_script: 
     - "update hak_akses set allowed_list = true, allowed_approve = true, allowed_sort_order = true"
-maximum_record: 100</code></pre>
+    maximum_record: 50</code></pre>
 <p><strong>Explanation</strong></p>
+<ul>
+<li><code>database_source</code> is the source database configuration</li>
+<li><code>database_target</code> is the target database configuration</li>
+<li><code>table</code> is an array containing all the tables to be imported. Tables not listed in <code>table</code> will not be imported.</li>
+<li><code>maximum_record</code> is the maximum number of records in a single insert query. Note that MagicObject does not care about the size of the data in bytes. If you need to adjust the maximum records per table, specify <code>maximum_record</code> on the table you want to set.</li>
+</ul>
 <ol>
 <li><code>source</code> (required)</li>
 </ol>
@@ -8408,14 +8416,19 @@ maximum_record: 100</code></pre>
 </ol>
 <p>Table name of the target database</p>
 <ol start="3">
+<li><code>maximum_record</code> (optional)</li>
+</ol>
+<p><code>maximum records</code> on a table is used to reset the number of records per <code>insert</code> query on a table for that table. This setting will override the global setting.</p>
+<p>Table name of the target database</p>
+<ol start="4">
 <li><code>map</code> (optional)</li>
 </ol>
 <p><code>map</code> is an array of text separated by colons. On the left side of the colon are the column names in the target table and database while on the right side of the colon are the column names in the source table and database. </p>
-<ol start="4">
+<ol start="5">
 <li><code>pre_import_script</code> (optional)</li>
 </ol>
 <p><code>pre_import_script</code> is an array of queries that will be executed before the data import begins. <code>pre_import_script</code> is usually used to clear data from a table and reset all sequence or auto increment values ​​from the target table.</p>
-<ol start="5">
+<ol start="6">
 <li><code>post_import_script</code> (optional)</li>
 </ol>
 <p><code>post_import_script</code> is an array of queries that will be executed after the data import is complete. <code>post_import_script</code> can be used for various purposes such as fixing some data on the target table including taking values ​​from other tables. Therefore post_script must be run after all tables have been successfully imported.</p>
@@ -8441,6 +8454,45 @@ $sql = PicoDatabaseUtilMySql::importData($config, function($sql, $source, $targe
 <p><strong>Executing Script</strong></p>
 <pre><code class="language-bash">php import.php</code></pre>
 <p>MagicObject will create a database query that is saved into a file named <code>db.sql</code>. The data is taken from the <code>database_source</code> but the table and column names have been adjusted to the <code>database_target</code>. This query can be run in the <code>database_target</code>. If you want to empty a table before importing data, you can add a pre_import_script to each table. Keep in mind that all pre_import_scripts will be executed before MagicObject starts importing data.</p>
+<p>If the database is too complex, users can use the PicoDatabaseUtilMySql::autoConfigureImportData() method to create a configuration template to avoid missing table and column names. Users simply specify the source database and the target database. MagicObject will check the tables and columns in both databases. If a table exists in the target database but not in the source database, MagicObject will write ??? as its source name. Users can manually change the name of this table. In the same table, if a column exists in the target database but not in the source database, MagicObject will write ??? as its source name. Users can manually change the name of this column.</p>
+<p>Here is an example of how to create a database import configuration template.</p>
+<p><strong>Import Configuration</strong></p>
+<p>File <code>import.yml</code></p>
+<pre><code class="language-yml">database_target:
+  driver: mysql
+  host: server1.planetbiru.com
+  port: 3306
+  username: root
+  password: Cebong2017
+  database_name: sipro
+  databseSchema: public
+  timeZone: Asia/Jakarta
+database_source:
+  driver: mysql
+  host: server1.planetbiru.com
+  port: 3306
+  username: root
+  password: Cebong2017
+  database_name: sipro_ori
+  databseSchema: public
+  timeZone: Asia/Jakarta
+maximum_record: 100</code></pre>
+<p><strong>Import Script</strong></p>
+<p>File <code>configure-import.php</code></p>
+<pre><code class="language-php">&lt;?php
+
+use MagicObject\SecretObject;
+use MagicObject\Util\Database\PicoDatabaseUtilMySql;
+
+require_once dirname(__DIR__) . "/vendor/autoload.php";
+
+$config = new SecretObject();
+$config-&gt;loadYamlFile('import.yml', true, true, true);
+
+PicoDatabaseUtilMySql::autoConfigureImportData($config);
+file_put_contents('import.yml', $config-&gt;dumpYaml(0, 2));</code></pre>
+<p><strong>Executing Script</strong></p>
+<pre><code class="language-bash">php configure-import.php</code></pre>
 </article>
 
 

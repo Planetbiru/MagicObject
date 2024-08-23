@@ -119,3 +119,58 @@ php import.php
 ```
 
 MagicObject will create a database query that is saved into a file named `db.sql`. The data is taken from the `database_source` but the table and column names have been adjusted to the `database_target`. This query can be run in the `database_target`. If you want to empty a table before importing data, you can add a pre_import_script to each table. Keep in mind that all pre_import_scripts will be executed before MagicObject starts importing data.
+
+If the database is too complex, users can use the PicoDatabaseUtilMySql::autoConfigureImportData() method to create a configuration template to avoid missing table and column names. Users simply specify the source database and the target database. MagicObject will check the tables and columns in both databases. If a table exists in the target database but not in the source database, MagicObject will write ??? as its source name. Users can manually change the name of this table. In the same table, if a column exists in the target database but not in the source database, MagicObject will write ??? as its source name. Users can manually change the name of this column.
+
+Here is an example of how to create a database import configuration template.
+
+**Import Configuration**
+
+File `import.yml`
+
+```yml
+database_target:
+  driver: mysql
+  host: server1.planetbiru.com
+  port: 3306
+  username: root
+  password: Cebong2017
+  database_name: sipro
+  databseSchema: public
+  timeZone: Asia/Jakarta
+database_source:
+  driver: mysql
+  host: server1.planetbiru.com
+  port: 3306
+  username: root
+  password: Cebong2017
+  database_name: sipro_ori
+  databseSchema: public
+  timeZone: Asia/Jakarta
+maximum_record: 100
+```
+
+**Import Script**
+
+File `configure-import.php`
+
+```php
+<?php
+
+use MagicObject\SecretObject;
+use MagicObject\Util\Database\PicoDatabaseUtilMySql;
+
+require_once dirname(__DIR__) . "/vendor/autoload.php";
+
+$config = new SecretObject();
+$config->loadYamlFile('import.yml', true, true, true);
+
+PicoDatabaseUtilMySql::autoConfigureImportData($config);
+file_put_contents('import.yml', $config->dumpYaml(0, 2));
+```
+
+**Executing Script**
+
+```bash
+php configure-import.php
+```
