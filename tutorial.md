@@ -9464,7 +9464,7 @@ database_source:
 maximum_record: 100
 ```
 
-**Import Script**
+**Import Template Script**
 
 File `configure-import.php`
 
