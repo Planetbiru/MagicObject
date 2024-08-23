@@ -2,6 +2,10 @@
 
 namespace MagicObject\Database;
 
+/**
+ * Specification filter
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoSpecificationFilter
 {
     /**

@@ -1,6 +1,10 @@
 <?php
 namespace MagicObject\Database;
 
+/**
+ * Data page
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoPage
 {
     /**

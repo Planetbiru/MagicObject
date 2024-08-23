@@ -2,6 +2,10 @@
 
 namespace MagicObject\Request;
 
+/**
+ * Request
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoRequest extends PicoRequestBase
 {
     const ACTION_DETAIL = "detail";

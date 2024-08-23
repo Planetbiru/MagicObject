@@ -6,6 +6,10 @@ use MagicObject\Constants\PicoHttpStatus;
 use MagicObject\Constants\PicoMime;
 use \stdClass;
 
+/**
+ * Response
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoResponse
 {
     /**

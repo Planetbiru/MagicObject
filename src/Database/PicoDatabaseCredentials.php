@@ -7,6 +7,7 @@ use MagicObject\SecretObject;
 /**
  * PicoDatabaseCredentials class
  * The SecretObject will encrypt all attributes to prevent unauthorized user read the database configuration
+ * @link https://github.com/Planetbiru/MagicObject
  */
 class PicoDatabaseCredentials extends SecretObject
 {

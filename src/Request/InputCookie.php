@@ -4,6 +4,10 @@ namespace MagicObject\Request;
 
 use MagicObject\Util\ClassUtil\PicoObjectParser;
 
+/**
+ * Input Cookie
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class  InputCookie extends PicoRequestBase {
     /**
      * Recursive

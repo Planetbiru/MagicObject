@@ -4,6 +4,10 @@ namespace MagicObject\Database;
 
 use stdClass;
 
+/**
+ * Table info
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoTableInfo
 {
     /**

@@ -4,6 +4,10 @@ namespace MagicObject\PicoDataLabel;
 
 use MagicObject\DataLabel\PicoDataLabel;
 
+/**
+ * Data labels
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoDataLabels 
 {
     /**

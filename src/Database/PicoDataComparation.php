@@ -2,6 +2,10 @@
 
 namespace MagicObject\Database;
 
+/**
+ * Data comparation
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoDataComparation
 {
     const EQUALS = "=";

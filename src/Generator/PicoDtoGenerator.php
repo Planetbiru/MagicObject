@@ -5,6 +5,10 @@ namespace MagicObject\Generator;
 use MagicObject\Database\PicoDatabase;
 use MagicObject\Util\PicoStringUtil;
 
+/**
+ * DTO generator
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoDtoGenerator
 {
     /**

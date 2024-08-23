@@ -6,6 +6,10 @@ use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * Yaml utility
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoYamlUtil
 {
     /**

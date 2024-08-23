@@ -5,6 +5,10 @@ namespace MagicObject\File;
 use MagicObject\Exceptions\FileNotFoundException;
 use MagicObject\Exceptions\InvalidParameterException;
 
+/**
+ * Upload file item
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoUploadFileItem
 {
     /**

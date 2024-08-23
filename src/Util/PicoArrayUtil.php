@@ -4,6 +4,10 @@ namespace MagicObject\Util;
 
 use stdClass;
 
+/**
+ * Array util
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoArrayUtil
 {
     /**

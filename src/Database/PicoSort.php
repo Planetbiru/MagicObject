@@ -2,6 +2,10 @@
 
 namespace MagicObject\Database;
 
+/**
+ * Sort
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoSort
 {
     const ORDER_TYPE_ASC = "asc";

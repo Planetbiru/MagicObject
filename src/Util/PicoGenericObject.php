@@ -5,6 +5,10 @@ namespace MagicObject\Util;
 use MagicObject\MagicObject;
 use stdClass;
 
+/**
+ * Generic object
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoGenericObject extends stdClass
 {
     /**

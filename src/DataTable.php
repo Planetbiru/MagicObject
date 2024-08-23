@@ -14,6 +14,10 @@ use MagicObject\Util\PicoTableUtil;
 use ReflectionClass;
 use stdClass;
 
+/**
+ * Data table
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class DataTable extends SetterGetter
 {
     const ANNOTATION_TABLE = "Table";

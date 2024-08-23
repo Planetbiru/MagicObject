@@ -23,6 +23,11 @@ class Rectangle {
      */
     public $b;
 
+    /**
+     * Polygon
+     *
+     * @var Polygon
+     */
     public $polygon;
 
     /**

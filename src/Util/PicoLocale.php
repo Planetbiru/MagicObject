@@ -2,6 +2,10 @@
 
 namespace MagicObject\Util;
 
+/**
+ * Locale
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoLocale
 {
     const EN_IE = "en_IE";

@@ -5,6 +5,10 @@ namespace MagicObject\Database;
 use MagicObject\Request\PicoRequestBase;
 use MagicObject\Util\PicoStringUtil;
 
+/**
+ * Sortable
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoSortable
 {
     /**

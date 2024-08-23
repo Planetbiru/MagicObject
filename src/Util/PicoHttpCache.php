@@ -2,6 +2,10 @@
 
 namespace MagicObject\Util;
 
+/**
+ * Http cache
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoHttpCache
 {
     /**

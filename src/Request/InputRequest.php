@@ -4,6 +4,10 @@ namespace MagicObject\Request;
 
 use MagicObject\Util\ClassUtil\PicoObjectParser;
 
+/**
+ * Input Request
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class  InputRequest extends PicoRequestBase {
     /**
      * Recursive

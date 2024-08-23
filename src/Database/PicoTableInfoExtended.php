@@ -2,6 +2,10 @@
 
 namespace MagicObject\Database;
 
+/**
+ * Table info extended
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoTableInfoExtended extends PicoTableInfo
 {
     const NAME = "name";

@@ -95,13 +95,36 @@ class PicoStringUtil
     /**
      * Convert camel case to title
      *
-     * @param string $input Input
+     * @param string $input Input string
      * @return string
      */
     public static function camelToTitle($input)
     {
         $snake = self::snakeize($input);
         return self::snakeToTitle($snake);
+    }
+    
+    /**
+     * Convert to kebap case
+     *
+     * @param string $input Input string
+     * @return string
+     */
+    public static function kebapize($input)
+    {
+        $snake = self::snakeize($input, '-');
+        return str_replace('_', '-', $snake);
+    }
+    
+    /**
+     * Create constant key
+     *
+     * @param string $input Input string
+     * @return string
+     */
+    public function constantKey($input)
+    {
+        return strtoupper(self::snakeize($input, '-'));
     }
     
     /**
@@ -239,16 +262,16 @@ class PicoStringUtil
     /**
      * Fix cariage return
      *
-     * @param string $str Input string
+     * @param string $input Input string
      * @return string
      */
-    public static function windowsCariageReturn($str)
+    public static function windowsCariageReturn($input)
     {
-        $str = str_replace("\n", "\r\n", $str);
-        $str = str_replace("\r\r\n", "\r\n", $str);
-        $str = str_replace("\r", "\r\n", $str);
-        $str = str_replace("\r\n\n", "\r\n", $str);
-        return $str;
+        $input = str_replace("\n", "\r\n", $input);
+        $input = str_replace("\r\r\n", "\r\n", $input);
+        $input = str_replace("\r", "\r\n", $input);
+        $input = str_replace("\r\n\n", "\r\n", $input);
+        return $input;
     }
     
 }

@@ -8,6 +8,10 @@ use MagicObject\MagicObject;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use stdClass;
 
+/**
+ * Entity label
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoEntityLabel
 {
     const ANNOTATION_TABLE = "Table";

@@ -12,6 +12,10 @@ use MagicObject\MagicObject;
 use MagicObject\Util\Database\PicoDatabaseUtil;
 use MagicObject\Util\Database\PicoDatabaseUtilMySql;
 
+/**
+ * Database dump
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoDatabaseDump
 {
     /**

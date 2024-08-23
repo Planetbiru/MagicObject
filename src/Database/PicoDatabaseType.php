@@ -2,6 +2,10 @@
 
 namespace MagicObject\Database;
 
+/**
+ * Database type
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoDatabaseType
 {
     const DATABASE_TYPE_MYSQL = "mysql";

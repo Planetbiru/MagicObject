@@ -2,6 +2,10 @@
 
 namespace MagicObject\Constants;
 
+/**
+ * MIME Map
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoMimeMap
 {
 

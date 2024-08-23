@@ -2,6 +2,10 @@
 
 namespace MagicObject\Util;
 
+/**
+ * Ini utility
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoIniUtil
 {
     /**

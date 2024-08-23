@@ -12,6 +12,19 @@ class Polygon
      * @var Point[]
      */
     private $points = array();
+    
+    /**
+     * Constructor
+     *
+     * @param Point[] $poins
+     */
+    public function __construct($poins = null)
+    {
+        if(isset($poins) && is_array($poins))
+        {
+            $this->points = $poins;
+        }
+    }
 
     /**
      * Add point
@@ -95,4 +108,14 @@ class Polygon
         }
         return $sum;
     } 
+
+    /**
+     * Get points
+     *
+     * @return Point[]
+     */ 
+    public function getPoints()
+    {
+        return $this->points;
+    }
 }

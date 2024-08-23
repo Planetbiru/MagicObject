@@ -2,6 +2,10 @@
 
 namespace MagicObject\Constants;
 
+/**
+ * MIME
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoMime
 {
     const APPLICATION_STEP = "application/STEP";

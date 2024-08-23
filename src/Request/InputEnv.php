@@ -4,6 +4,10 @@ namespace MagicObject\Request;
 
 use MagicObject\Util\ClassUtil\PicoObjectParser;
 
+/**
+ * Input Env
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class  InputEnv extends PicoRequestBase {
     /**
      * Recursive

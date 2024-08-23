@@ -4,6 +4,10 @@ namespace MagicObject\Util;
 
 use stdClass;
 
+/**
+ * Environment variable
+ * @link https://github.com/Planetbiru/MagicObject
+ */
 class PicoEnvironmentVariable
 {
     /**
