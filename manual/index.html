@@ -5015,11 +5015,11 @@ foreach($result-&gt;getResult() as $row)
 }</code></pre>
 <h3>Find All with Option</h3>
 <ol>
-<li>MagicObject::FIND_OPTION_NO_COUNT_DATA</li>
-<li>MagicObject::FIND_OPTION_NO_FETCH_DATA</li>
+<li><code>MagicObject::FIND_OPTION_NO_COUNT_DATA</code></li>
+<li><code>MagicObject::FIND_OPTION_NO_FETCH_DATA</code></li>
 </ol>
-<p>If the <code>MagicObject::FIND_OPTION_NO_COUNT_DATA</code> option is provided, the MagicObject will not count data even if a PicoPageable is provided. This will reduce data processing time but the user does not know how much data actually is. This option can be selected when dealing with very large data.</p>
-<p>If the <code>MagicObject::FIND_OPTION_NO_FETCH_DATA</code> option is given, MagicObject will not directly fetch data and store it in the object. Users must retrieve data one by one using the fetch method. This option can be selected when handling very large data so that it does not consume much memory.</p>
+<p>If the <code>MagicObject::FIND_OPTION_NO_COUNT_DATA</code> option is provided, the MagicObject will not count data even if a PicoPageable is provided. This will reduce data processing time but the user does not know how much data actually is. This option can be choosed when dealing with very large data.</p>
+<p>If the <code>MagicObject::FIND_OPTION_NO_FETCH_DATA</code> option is given, MagicObject will not directly fetch data and store it in the object. Users must retrieve data one by one using the fetch method. Every time an application receives data from the database, it sends it directly to either a file or an output buffer instead of collecting it in a list in memory. This option can be choosed when handling very large data so that it does not consume much memory. </p>
 <p>Example:</p>
 <pre><code class="language-php">/**
  * @Entity
@@ -8350,6 +8350,97 @@ $rumah-&gt;addClass('table');
 
 $apa = $rumah;
 echo $apa;</code></pre>
+</article>
+
+<article class="article" id="part21">
+<h2>Database Migration</h2>
+<p>MagicObject allows users to import data from a database with different table names and column names between the source database and the destination database. This feature is used by developers who develop applications that are already used in production environments.</p>
+<p>On the one hand, the application requires a new database structure according to what is defined by the developer. On the other hand, users want to use existing data.</p>
+<p>Instead of altering tables from an existing database according to the new data, users can use the data import feature provided by MagicObject. Users can define column mappings and also define queries that will be executed after the database import is performed.</p>
+<p>Users simply create an import data configuration file dan import script as follows:</p>
+<p><strong>Import Configuration</strong></p>
+<p>File <code>import.yml</code></p>
+<pre><code class="language-yml">database_target:
+  driver: mysql
+  host: server1.planetbiru.com
+  port: 3306
+  username: root
+  password: Cebong2017
+  database_name: sipro
+  databseSchema: public
+  timeZone: Asia/Jakarta
+database_source:
+  driver: mysql
+  host: server1.planetbiru.com
+  port: 3306
+  username: root
+  password: Cebong2017
+  database_name: sipro_ori
+  databseSchema: public
+  timeZone: Asia/Jakarta
+table:
+  - source: modul
+    target: modul
+    map: 
+    - 'default_data : default'
+    - 'sort_order : order'
+    pre_import_script: 
+    - "truncate modul"
+  - source: hak_akses
+    target: hak_akses
+    map:
+    - 'allowed_detail : view'
+    - 'allowed_create : insert'
+    - 'allowed_update : update'
+    - 'allowed_delete : delete'
+    pre_import_script: 
+    - "truncate hak_akses"
+    post_import_script: 
+    - "update hak_akses set allowed_list = true, allowed_approve = true, allowed_sort_order = true"
+maximum_record: 100</code></pre>
+<p><strong>Explanation</strong></p>
+<ol>
+<li><code>source</code> (required)</li>
+</ol>
+<p>Table name of the source database</p>
+<ol start="2">
+<li><code>target</code> (required)</li>
+</ol>
+<p>Table name of the target database</p>
+<ol start="3">
+<li><code>map</code> (optional)</li>
+</ol>
+<p><code>map</code> is an array of text separated by colons. On the left side of the colon are the column names in the target table and database while on the right side of the colon are the column names in the source table and database. </p>
+<ol start="4">
+<li><code>pre_import_script</code> (optional)</li>
+</ol>
+<p><code>pre_import_script</code> is an array of queries that will be executed before the data import begins. <code>pre_import_script</code> is usually used to clear data from a table and reset all sequence or auto increment values ​​from the target table.</p>
+<ol start="5">
+<li><code>post_import_script</code> (optional)</li>
+</ol>
+<p><code>post_import_script</code> is an array of queries that will be executed after the data import is complete. <code>post_import_script</code> can be used for various purposes such as fixing some data on the target table including taking values ​​from other tables. Therefore post_script must be run after all tables have been successfully imported.</p>
+<p><strong>Import Script</strong></p>
+<p>File <code>import.php</code></p>
+<pre><code class="language-php">&lt;?php
+
+use MagicObject\SecretObject;
+use MagicObject\Util\Database\PicoDatabaseUtilMySql;
+
+require_once dirname(__DIR__) . "/inc.lib/vendor/autoload.php";
+
+$config = new SecretObject();
+$config-&gt;loadYamlFile('import.yml', true, true, true);
+
+$fp = fopen(__DIR__.'/db.sql', 'w');
+fclose($fp);
+$sql = PicoDatabaseUtilMySql::importData($config, function($sql, $source, $target){
+    $fp = fopen(__DIR__.'/db.sql', 'a');
+    fwrite($fp, $sql.";\r\n\r\n");
+    fclose($fp);
+});</code></pre>
+<p><strong>Executing Script</strong></p>
+<pre><code class="language-bash">php import.php</code></pre>
+<p>MagicObject will create a database query that is saved into a file named <code>db.sql</code>. The data is taken from the <code>database_source</code> but the table and column names have been adjusted to the <code>database_target</code>. This query can be run in the <code>database_target</code>. If you want to empty a table before importing data, you can add a pre_import_script to each table. Keep in mind that all pre_import_scripts will be executed before MagicObject starts importing data.</p>
 </article>
 
 

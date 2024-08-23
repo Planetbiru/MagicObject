@@ -273,6 +273,21 @@ class PicoDatabaseUtilMySql
             $databaseTarget->connect();
             $tables = $config->getTable();
             $maxRecord = $config->getMaximumRecord();
+            
+            // query pre import data
+            foreach($tables as $tableInfo)
+            {
+                $tableNameTarget = $tableInfo->getTarget();
+                $tableNameSource = $tableInfo->getSource();
+                $preImportScript = $tableInfo->getPreImportScript();
+                if(self::isNotEmpty($preImportScript))
+                {
+                    foreach($preImportScript as $sql)
+                    {
+                        call_user_func($callbackFunction, $sql, $tableNameSource, $tableNameTarget);
+                    }
+                }
+            }
 
             // import data
             foreach($tables as $tableInfo)
@@ -288,7 +303,7 @@ class PicoDatabaseUtilMySql
                 $tableNameTarget = $tableInfo->getTarget();
                 $tableNameSource = $tableInfo->getSource();
                 $postImportScript = $tableInfo->getPostImportScript();
-                if($postImportScript != null && is_array($postImportScript) && !empty($postImportScript))
+                if(self::isNotEmpty($postImportScript))
                 {
                     foreach($postImportScript as $sql)
                     {
@@ -300,8 +315,20 @@ class PicoDatabaseUtilMySql
         catch(Exception $e)
         {
             error_log($e->getMessage());
+            return false;
         }
         return true;
+    }
+    
+    /**
+     * Check if array is not empty
+     *
+     * @param array $array
+     * @return boolean
+     */
+    public static function isNotEmpty($array)
+    {
+        return $array != null && is_array($array) && !empty($array);
     }
     
     /**
@@ -313,18 +340,14 @@ class PicoDatabaseUtilMySql
      * @param SecretObject $tableInfo
      * @param integer $maxRecord
      * @param callable $callbackFunction
-     * @return void
+     * @return boolean
      */
     public static function importDataTable($databaseSource, $databaseTarget, $tableNameSource, $tableNameTarget, $tableInfo, $maxRecord, $callbackFunction)
     {
-        if($maxRecord < 1)
-        {
-            $maxRecord = 1;
-        }
+        $maxRecord = self::getMaxRecord($tableInfo, $maxRecord);
         try
         {
             $columns = self::showColumns($databaseTarget, $tableNameTarget);
-
             $queryBuilderSource = new PicoDatabaseQueryBuilder($databaseSource);            
             $sourceTable = $tableInfo->getSource();
             $queryBuilderSource->newQuery()
@@ -359,7 +382,29 @@ class PicoDatabaseUtilMySql
         catch(Exception $e)
         {
             error_log($e->getMessage());
+            return false;
         }
+        return true;
+    }
+    
+    /**
+     * Get maximum record
+     *
+     * @param SecretObject $tableInfo
+     * @param integer $maxRecord
+     * @return integer
+     */
+    public static function getMaxRecord($tableInfo, $maxRecord)
+    {
+        if($tableInfo->getMaximumRecord() != null)
+        {
+            $maxRecord = $tableInfo->getMaximumRecord();
+        }
+        if($maxRecord < 1)
+        {
+            $maxRecord = 1;
+        }
+        return $maxRecord;
     }
     
     /**
@@ -378,10 +423,8 @@ class PicoDatabaseUtilMySql
                 $arr = explode(':', $map, 2);
                 $target = trim($arr[0]);
                 $source = trim($arr[1]);
-                
                 $data[$target] = $data[$source];
-                unset($data[$source]);
-                
+                unset($data[$source]);        
             }
         }
         $data = array_intersect_key($data, array_flip(array_keys($columns)));
@@ -389,14 +432,20 @@ class PicoDatabaseUtilMySql
         return $data;
     }
     
+    /**
+     * Fix import data
+     *
+     * @param mixed[] $data
+     * @param string[] $columns
+     * @return mixed[]
+     */
     public static function fixImportData($data, $columns)
     {
         foreach($data as $name=>$value)
         {
             if(isset($columns[$name]))
             {
-                $type = $columns[$name];
-                
+                $type = $columns[$name];               
                 if(strtolower($type) == 'tinyint(1)' || strtolower($type) == 'boolean' || strtolower($type) == 'bool')
                 {
                     $data = self::fixBooleanData($data, $name, $value);
@@ -414,6 +463,42 @@ class PicoDatabaseUtilMySql
         return $data;
     }
     
+    /**
+     * Fix data
+     *
+     * @param mixed $value
+     * @return string
+     */
+    public static function fixData($value)
+    {
+        $ret = null;
+        if (is_string($value)) 
+        {
+            $ret = "'" . addslashes($value) . "'";
+        }
+        else if(is_bool($value))
+        {
+            $ret = $value === true ? 'true' : 'false';
+        }
+        else if ($value === null) 
+        {
+            $ret = "null";
+        }
+        else
+        {
+            $ret = $value;
+        }
+        return $ret;
+    }
+    
+    /**
+     * Fix boolean data
+     *
+     * @param mixed[] $data
+     * @param string $name
+     * @param mixed $value
+     * @return mixed[]
+     */
     public static function fixBooleanData($data, $name, $value)
     {
         if($value === null || $value === '')
@@ -427,6 +512,14 @@ class PicoDatabaseUtilMySql
         return $data;
     }
     
+    /**
+     * Fix integer data
+     *
+     * @param mixed[] $data
+     * @param string $name
+     * @param mixed $value
+     * @return mixed[]
+     */
     public static function fixIntegerData($data, $name, $value)
     {
         if($value === null || $value === '')
@@ -440,6 +533,14 @@ class PicoDatabaseUtilMySql
         return $data;
     }
     
+    /**
+     * Fix float data
+     *
+     * @param mixed[] $data
+     * @param string $name
+     * @param mixed $value
+     * @return mixed[]
+     */
     public static function fixFloatData($data, $name, $value)
     {
         if($value === null || $value === '')
@@ -494,33 +595,5 @@ class PicoDatabaseUtilMySql
 
         // Ganti tanda tanya dengan elemen array yang telah diformat
         return vsprintf(str_replace('?', '%s', $query), $formattedElements);
-    }
-
-    /**
-     * Fix data
-     *
-     * @param mixed $value
-     * @return string
-     */
-    public static function fixData($value)
-    {
-        $ret = null;
-        if (is_string($value)) 
-        {
-            $ret = "'" . addslashes($value) . "'";
-        }
-        else if(is_bool($value))
-        {
-            $ret = $value === true ? 'true' : 'false';
-        }
-        else if ($value === null) 
-        {
-            $ret = "null";
-        }
-        else
-        {
-            $ret = $value;
-        }
-        return $ret;
     }
 }

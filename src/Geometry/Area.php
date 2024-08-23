@@ -24,6 +24,11 @@ class Area
      */
     public $href;
     
+    /**
+     * Zoom
+     *
+     * @var float
+     */
     public $zoom = 1;
     
     /**
