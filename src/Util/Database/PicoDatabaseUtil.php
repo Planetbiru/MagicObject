@@ -210,15 +210,21 @@ class PicoDatabaseUtil
      */
     public static function trimWhere($where)
     {
-        // DO NOT EDIT THIS CONSTANT
-        if(stripos($where, "(1=1) or ") === 0)
+        $where = trim($where, " \r\n\t ");
+        if($where != "(1=1)")
         {
-            $where = substr($where, 9);
-        }
-        // DO NOT EDIT THIS CONSTANT
-        if(stripos($where, "(1=1) and ") === 0)
-        {
-            $where = substr($where, 10);
+            if(stripos($where, "(1=1)") === 0)
+            {
+                $where = trim(substr($where, 5), " \r\n\t ");
+            }
+            if(stripos($where, "and ") === 0)
+            {
+                $where = substr($where, 4);
+            }
+            if(stripos($where, "or ") === 0)
+            {
+                $where = substr($where, 3);
+            }
         }
         return $where;
     }

@@ -20,6 +20,7 @@ use MagicObject\MagicObject;
 use MagicObject\Util\ClassUtil\ExtendedReflectionClass;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\ClassUtil\PicoEmptyParameter;
+use MagicObject\Util\Database\PicoDatabaseUtil;
 use ReflectionProperty;
 
 /**
@@ -1630,15 +1631,7 @@ class PicoDatabasePersistence // NOSONAR
      */
     private function trimWhere($where)
     {
-        if(stripos($where, "(1=1) or ") === 0)
-        {
-            $where = substr($where, 9);
-        }
-        if(stripos($where, "(1=1) and ") === 0)
-        {
-            $where = substr($where, 10);
-        }
-        return $where;
+        return PicoDatabaseUtil::trimWhere($where);
     }
 
     /**
