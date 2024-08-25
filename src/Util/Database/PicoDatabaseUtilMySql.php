@@ -26,7 +26,7 @@ class PicoDatabaseUtilMySql
     public static function getColumnList($database, $picoTableName)
     {
         $sql = "SHOW COLUMNS FROM $picoTableName";
-        $result = $database->fetchAll($sql);
+        return $database->fetchAll($sql);
     }
 
     /**
@@ -272,7 +272,6 @@ class PicoDatabaseUtilMySql
             $databaseTarget->connect();
             $tables = $config->getTable();
             
-            
             $existingTables = array();
             foreach($tables as $tb)
             {
@@ -281,7 +280,6 @@ class PicoDatabaseUtilMySql
             
             $sourceTableList = $databaseSource->fetchAll("SHOW TABLES", PDO::FETCH_NUM);
             $targetTableList = $databaseTarget->fetchAll("SHOW TABLES", PDO::FETCH_NUM);
-
             
             $sourceTables = call_user_func_array('array_merge', $sourceTableList);
             $targetTables = call_user_func_array('array_merge', $targetTableList);

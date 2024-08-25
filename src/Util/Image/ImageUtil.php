@@ -10,7 +10,7 @@ use MagicObject\Exceptions\InvalidParameterException;
 /**
  * A Wrapper for GD library in PHP. GD must be installed in your system for this to work.
  * Example: $img = new Image('wheel.png');
- *            $img->flip(1)->resize(120, 0)->save('wheel.jpg');
+ *          $img->flip(1)->resize(120, 0)->save('wheel.jpg');
  */
 class ImageUtil
 {
@@ -51,7 +51,18 @@ class ImageUtil
      */
     private $orgImage;
 
+    /**
+     * Image width
+     *
+     * @var integer
+     */
     protected $width;
+    
+    /**
+     * Image height
+     *
+     * @var integer
+     */
     protected $height;
 
     /**
