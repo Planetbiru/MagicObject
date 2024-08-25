@@ -33,8 +33,8 @@ class Rectangle {
     /**
      * Constructor to initialize the Rectangle with two Point objects
      *
-     * @param Point $a
-     * @param Point $b
+     * @param Point $a Point a
+     * @param Point $b Point b
      */
     public function __construct(Point $a, Point $b) {
         
