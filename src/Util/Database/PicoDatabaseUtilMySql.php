@@ -12,7 +12,7 @@ use MagicObject\MagicObject;
 use MagicObject\SecretObject;
 use PDO;
 
-class PicoDatabaseUtilMySql
+class PicoDatabaseUtilMySql //NOSONAR
 {
     const KEY_NAME = "name";
     
