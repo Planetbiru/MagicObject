@@ -8,6 +8,8 @@ use MagicObject\Database\PicoSpecification;
 
 class PicoDatabaseUtil
 {
+    const INLINE_TRIM = " \r\n\t ";
+    
     /**
      * Get specification from parameters
      * @param array $params Parameters
@@ -187,7 +189,6 @@ class PicoDatabaseUtil
 			// force convert to string and escapethe value
 			$ret = "'".self::escapeSQL($value)."'";
 		}
-		
 		return $ret;
 	}
     
@@ -210,12 +211,12 @@ class PicoDatabaseUtil
      */
     public static function trimWhere($where)
     {
-        $where = trim($where, " \r\n\t ");
+        $where = trim($where, self::INLINE_TRIM);
         if($where != "(1=1)")
         {
             if(stripos($where, "(1=1)") === 0)
             {
-                $where = trim(substr($where, 5), " \r\n\t ");
+                $where = trim(substr($where, 5), self::INLINE_TRIM);
             }
             if(stripos($where, "and ") === 0)
             {
@@ -338,7 +339,7 @@ class PicoDatabaseUtil
             $delimiter = $delimiterArray[$line];
             if(stripos($sql, "delimiter ") !== 0)
             {
-                $sql = rtrim($sql, " \r\n\t ");
+                $sql = rtrim($sql, self::INLINE_TRIM);
                 $sql = substr($sql, 0, strlen($sql)-strlen($delimiter));			
                 $result[] = array("query"=> $sql, "delimiter"=>$delimiter);
             }

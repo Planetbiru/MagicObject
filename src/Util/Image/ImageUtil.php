@@ -19,7 +19,6 @@ class ImageUtil
     const FLIP_VERTICAL = 2;
     const FLIP_BOTH = 3;
     
-    
     const STAMP_POSITION_TOPRIGHT = 1;
     const STAMP_POSITION_TOPLEFT = 2;
     const STAMP_POSITION_BOTTOMRIGHT = 3;
@@ -144,21 +143,42 @@ class ImageUtil
         return $img;
     }
 
+    /**
+     * Get width
+     *
+     * @return integer
+     */
     public function getWidth()
     {
         return imagesx($this->image);
     }
 
+    /**
+     * Get width
+     *
+     * @return integer
+     */
     public function getHeight()
     {
         return imagesy($this->image);
     }
 
+    /**
+     * Get file name
+     *
+     * @return string
+     */
     public function getFilename()
     {
         return $this->fileName;
     }
 
+    /**
+     * Retain transparency
+     *
+     * @param GdImage $image
+     * @return void
+     */
     protected function retainTransparency($image = null)
     {
         if (empty($image)) {
@@ -467,7 +487,7 @@ class ImageUtil
      * @param int $textAlignment
      * @throws ImageUtilException
      */
-    public function writeText($text, $point, $size, $angle, $font, $maxwidth = 0, $rgbAr = null, $textAlignment = 1)
+    public function writeText($text, $point, $size, $angle, $font, $maxwidth = 0, $rgbAr = null, $textAlignment = 1) //NOSONAR
     {
         if (!is_readable($font)) {
             throw new ImageUtilException('Error: The specified font not found');
@@ -546,7 +566,6 @@ class ImageUtil
         return $this;
     }
 
-
     /**
      * Discard any changes made to the image and restore the original state
      */
@@ -618,7 +637,6 @@ class ImageUtil
         if (!is_null($this->image)) {
             imagedestroy($this->image);
             imagedestroy($this->orgImage);
-
             unset($this->image);
             unset($this->orgImage);
         }
