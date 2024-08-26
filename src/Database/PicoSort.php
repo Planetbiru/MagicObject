@@ -8,9 +8,9 @@ namespace MagicObject\Database;
  */
 class PicoSort
 {
-    const ORDER_TYPE_ASC = "asc";
+    const ORDER_TYPE_ASC  = "asc";
     const ORDER_TYPE_DESC = "desc";
-    const SORT_BY = "sortBy";
+    const SORT_BY         = "sortBy";
     
     /**
      * Sort by

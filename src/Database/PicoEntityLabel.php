@@ -14,30 +14,28 @@ use stdClass;
  */
 class PicoEntityLabel
 {
-    const ANNOTATION_TABLE = "Table";
-    const ANNOTATION_LABEL = "label";
-    const ANNOTATION_COLUMN = "Column";
-    const ANNOTATION_JOIN_COLUMN = "JoinColumn";
-    const ANNOTATION_VAR = "var";
-    const ANNOTATION_ID = "Id";
-    const ANNOTATION_GENERATED_VALUE = "GeneratedValue";
-    const ANNOTATION_NOT_NULL = "NotNull";
-    const ANNOTATION_DEFAULT_COLUMN = "DefaultColumn";
-    
-    const KEY_NAME = "name";
-    const KEY_NULL = "null";
-    const KEY_NOT_NULL = "notnull";
-    const KEY_NULLABLE = "nullable";
-    const KEY_INSERTABLE = "insertable";
-    const KEY_UPDATABLE = "updatable";
-    const KEY_STRATEGY = "strategy";
-    const KEY_GENERATOR = "generator";
-    const KEY_PROPERTY_TYPE = "propertyType";
-    const KEY_VALUE = "value";
-    const KEY_ENTITY_OBJECT = "entityObject";
-    
-    const VALUE_TRUE = "true";
-    const VALUE_FALSE = "false";
+    const ANNOTATION_TABLE            = "Table";
+    const ANNOTATION_LABEL            = "label";
+    const ANNOTATION_COLUMN           = "Column";
+    const ANNOTATION_JOIN_COLUMN      = "JoinColumn";
+    const ANNOTATION_VAR              = "var";
+    const ANNOTATION_ID               = "Id";
+    const ANNOTATION_GENERATED_VALUE  = "GeneratedValue";
+    const ANNOTATION_NOT_NULL         = "NotNull";
+    const ANNOTATION_DEFAULT_COLUMN   = "DefaultColumn";
+    const KEY_NAME                    = "name";
+    const KEY_NULL                    = "null";
+    const KEY_NOT_NULL                = "notnull";
+    const KEY_NULLABLE                = "nullable";
+    const KEY_INSERTABLE              = "insertable";
+    const KEY_UPDATABLE               = "updatable";
+    const KEY_STRATEGY                = "strategy";
+    const KEY_GENERATOR               = "generator";
+    const KEY_PROPERTY_TYPE           = "propertyType";
+    const KEY_VALUE                   = "value";
+    const KEY_ENTITY_OBJECT           = "entityObject";
+    const VALUE_TRUE                  = "true";
+    const VALUE_FALSE                 = "false";
 
     /**
      * Class name

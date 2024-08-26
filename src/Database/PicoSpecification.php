@@ -12,7 +12,7 @@ use MagicObject\Util\Database\PicoDatabaseUtil;
 class PicoSpecification
 {
     const LOGIC_AND = "and";
-    const LOGIC_OR = "or";
+    const LOGIC_OR  = "or";
 
     /**
      * Parent filter logic

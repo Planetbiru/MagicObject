@@ -11,6 +11,13 @@ use MagicObject\MagicObject;
  */
 class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
 {
+    /**
+     * Magic object to handle undefined methods
+     *
+     * @param string $method
+     * @param mixed[] $params
+     * @return void
+     */
     public function __call($method, $params)
     {
         if (strlen($method) > 3 && strncasecmp($method, "set", 3) === 0 && isset($params) && is_array($params)){

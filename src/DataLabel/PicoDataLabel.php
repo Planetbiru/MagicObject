@@ -14,9 +14,9 @@ use stdClass;
 class PicoDataLabel extends SetterGetter
 {
     const ANNOTATION_PROPERTIES = "Properties";
-    const ANNOTATION_TABLE = "Table";
-    const KEY_NAME = "name";
-    const ANNOTATION_VAR = "var";
+    const ANNOTATION_TABLE      = "Table";
+    const KEY_NAME              = "name";
+    const ANNOTATION_VAR        = "var";
     
     /**
      * Class params
