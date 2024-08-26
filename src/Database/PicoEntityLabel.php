@@ -55,8 +55,8 @@ class PicoEntityLabel
     /**
      * Object
      *
-     * @param MagicObject $object
-     * @param string[] $langs
+     * @param MagicObject $object Entity
+     * @param string[] $langs Languages
      */
     public function __construct($object, $langs)
     {
@@ -67,7 +67,7 @@ class PicoEntityLabel
     /**
      * Get map
      *
-     * @param string|null $lang
+     * @param string|null $lang Language
      * @return array|null
      */
     public function getMap($lang = null)
@@ -110,8 +110,8 @@ class PicoEntityLabel
     /**
      * Filter
      *
-     * @param array $merged
-     * @param string $lang
+     * @param array $merged Merged array
+     * @param string $lang Language
      * @return array|null
      */
     private function filter($merged, $lang)
@@ -145,9 +145,9 @@ class PicoEntityLabel
     /**
      * Parse key value string
      *
-     * @param PicoAnnotationParser $reflexClass
-     * @param string $queryString
-     * @param string $parameter
+     * @param PicoAnnotationParser $reflexClass Reflection class
+     * @param string $queryString Query string
+     * @param string $parameter Parameter
      * @return array
      */
     private function parseKeyValue($reflexClass, $queryString, $parameter)

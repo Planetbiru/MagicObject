@@ -39,6 +39,12 @@ class PicoDatabaseStructure
      * @var string
      */
     private $className = "";
+    
+    /**
+     * Constructor
+     *
+     * @param MagicObject $object
+     */
     public function __construct($object)
     {
         $this->className = get_class($object);
@@ -107,7 +113,7 @@ class PicoDatabaseStructure
     /**
      * Create nullable
      *
-     * @param mixed $nullable
+     * @param mixed $nullable Nullable
      * @return string
      */
     private function nullable($nullable)
@@ -147,7 +153,8 @@ class PicoDatabaseStructure
      *
      * @return PicoTableInfo
      */
-    public function getObjectInfo(){
+    public function getObjectInfo()
+    {
         $reflexClass = new PicoAnnotationParser($this->className);
         $table = $reflexClass->getParameter(self::ANNOTATION_TABLE);
         $values = $this->parseKeyValue($reflexClass, $table, self::ANNOTATION_TABLE);

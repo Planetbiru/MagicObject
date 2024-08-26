@@ -59,27 +59,28 @@ class PicoEntityGenerator
      * Constructor
      *
      * @param PicoDatabase $database
-     * @param string $baseDir
-     * @param string $tableName
-     * @param string $baseNamespace
-     * @param string $entityName
-     * @param boolean $prettify
+     * @param string $baseDir Base directory
+     * @param string $tableName Table name
+     * @param string $baseNamespace Base namespace
+     * @param string $entityName Entity name
+     * @param boolean $prettify Flag to prettify
      */
-    public function __construct($database, $baseDir, $tableName, $baseNamespace, $entityName = null)
+    public function __construct($database, $baseDir, $tableName, $baseNamespace, $entityName = null, $prettify = false)
     {
         $this->database = $database;
         $this->baseDir = $baseDir;
         $this->baseNamespace = $baseNamespace;
         $this->tableName = $tableName;
         $this->entityName = $entityName;
+        $this->prettify = $prettify;
     }
     
     /**
      * Create property
      *
-     * @param array $typeMap
-     * @param string $row
-     * @param string[] $nonupdatables
+     * @param array $typeMap Type map
+     * @param string $row Data row
+     * @param string[] $nonupdatables Nonupdateable columns
      * @return string
      */
     protected function createProperty($typeMap, $row, $nonupdatables = null)
@@ -185,8 +186,8 @@ class PicoEntityGenerator
     /**
      * Get data type
      *
-     * @param array $typeMap
-     * @param string $columnType
+     * @param array $typeMap Type map
+     * @param string $columnType Column type
      * @return string
      */
     protected function getDataType($typeMap, $columnType)
@@ -267,7 +268,7 @@ class PicoEntityGenerator
     /**
      * Generate entity
      *
-     * @param string[] $nonupdatables
+     * @param string[] $nonupdatables Nonupdatetable columns
      * @return string
      */
     public function generate($nonupdatables = null)

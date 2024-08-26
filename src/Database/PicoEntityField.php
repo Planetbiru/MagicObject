@@ -86,8 +86,8 @@ class PicoEntityField
     /**
      * Constructor
      *
-     * @param string $fieldRaw
-     * @param PicoTableInfo|null $info
+     * @param string $fieldRaw Raw field
+     * @param PicoTableInfo|null $info Table info
      */
     public function __construct($fieldRaw, $info = null)
     {
@@ -117,7 +117,7 @@ class PicoEntityField
     /**
      * Extract field from any function
      *
-     * @param string $fieldRaw
+     * @param string $fieldRaw Raw field
      * @return string
      */
     public function extractField($fieldRaw)

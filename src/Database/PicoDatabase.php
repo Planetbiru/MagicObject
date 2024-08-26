@@ -95,7 +95,7 @@ class PicoDatabase //NOSONAR
 	/**
 	 * Connect to database
 	 * 
-	 * @param boolean $withDatabase
+	 * @param boolean $withDatabase Flag to select database when connected
 	 * @return boolean true if success and false if failed
 	 */
 	public function connect($withDatabase = true)
@@ -146,6 +146,7 @@ class PicoDatabase //NOSONAR
 	/**
 	 * Create connection string
 	 *
+	 * @param boolean $withDatabase Flag to select database when connected
 	 * @return string
 	 * @throws InvalidDatabaseConfiguration
 	 */
@@ -187,11 +188,12 @@ class PicoDatabase //NOSONAR
 	/**
 	 * Disconnect from database
 	 *
-	 * @return void
+	 * @return self
 	 */
 	public function disconnect()
 	{
 		$this->databaseConnection = null;
+		return $this;
 	}
 	
 	/**

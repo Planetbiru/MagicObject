@@ -40,7 +40,7 @@ class Circle {
      *
      * @param double $x x coordinate
      * @param double $y y Coordinate 
-     * @param double $r radius
+     * @param double $r Radius
      */
     public function __construct($x, $y, $r) {
         $this->x = $x;

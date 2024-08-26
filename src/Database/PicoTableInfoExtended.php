@@ -213,7 +213,7 @@ class PicoTableInfoExtended extends PicoTableInfo
     /**
      * Unique column
      *
-     * @param array $newList
+     * @param array $newList New list
      * @return self
      */
     public function mergeColumns($newList)
@@ -228,7 +228,7 @@ class PicoTableInfoExtended extends PicoTableInfo
     /**
      * Unique join column
      *
-     * @param array $newList
+     * @param array $newList New list
      * @return self
      */
     public function mergeJoinColumns($newList)
@@ -243,7 +243,7 @@ class PicoTableInfoExtended extends PicoTableInfo
     /**
      * Unique primary key
      *
-     * @param array $newList
+     * @param array $newList New list
      * @return self
      */
     public function mergePrimaryKeys($newList)
@@ -258,7 +258,7 @@ class PicoTableInfoExtended extends PicoTableInfo
     /**
      * Unique auto increment
      *
-     * @param array $newList
+     * @param array $newList New list
      * @return self
      */
     public function mergeAutoIncrementKeys($newList)
@@ -273,7 +273,7 @@ class PicoTableInfoExtended extends PicoTableInfo
     /**
      * Unique default value
      *
-     * @param array $newList
+     * @param array $newList New list
      * @return self
      */
     public function mergeDefaultValue($newList)

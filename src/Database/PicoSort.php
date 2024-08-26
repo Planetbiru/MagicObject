@@ -11,6 +11,7 @@ class PicoSort
     const ORDER_TYPE_ASC = "asc";
     const ORDER_TYPE_DESC = "desc";
     const SORT_BY = "sortBy";
+    
     /**
      * Sort by
      *
@@ -27,8 +28,8 @@ class PicoSort
     
     /**
      * Constructor
-     * @param string $sortBy
-     * @param string $sortType
+     * @param string $sortBy Sort by
+     * @param string $sortType Sort type
      */
     public function __construct($sortBy = null, $sortType = null)
     {

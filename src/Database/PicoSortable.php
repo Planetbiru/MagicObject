@@ -41,9 +41,9 @@ class PicoSortable
     /**
      * Initialize sortable
      *
-     * @param integer $argc
-     * @param array $params
-     * @return void
+     * @param integer $argc Argument count
+     * @param array $params Parameters
+     * @return self
      */
     private function initSortable($argc, $params)
     {
@@ -72,6 +72,8 @@ class PicoSortable
             $lastOrder = $this->createSortable($sortBy, $sortType);
             $this->sortable[count($this->sortable) - 1] = $lastOrder;
         }
+        
+        return $this;
     }
     
     /**
@@ -288,7 +290,7 @@ class PicoSortable
     /**
      * Check if input is array
      *
-     * @param mixed $array
+     * @param mixed $array Array to be checked
      * @return boolean
      */
     public static function isArray($array)

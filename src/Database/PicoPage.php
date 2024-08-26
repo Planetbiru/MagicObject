@@ -24,8 +24,8 @@ class PicoPage
     /**
      * Page
      *
-     * @param integer $pageNumber
-     * @param integer $pageSize
+     * @param integer $pageNumber Page number
+     * @param integer $pageSize Page size
      */
     public function __construct($pageNumber, $pageSize)
     {

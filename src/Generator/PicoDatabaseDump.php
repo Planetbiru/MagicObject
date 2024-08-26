@@ -206,7 +206,7 @@ class PicoDatabaseDump
      * @param PicoDatabase $database Database connection
      * @return string
      */
-    private function getDatabaseType($database)
+    public function getDatabaseType($database)
     {
         if(isset($database))
         {

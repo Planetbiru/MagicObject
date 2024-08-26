@@ -221,7 +221,7 @@ class PicoPageData
 
     /**
      * Generate pagination
-     * @param integer $margin
+     * @param integer $margin Minimum page number before current page and maximum page number after current page
      * @return self
      */
     public function generatePagination($margin = 3)
@@ -346,8 +346,8 @@ class PicoPageData
     /**
      * Get page control
      *
-     * @param string $parameterName
-     * @param string $path
+     * @param string $parameterName Parameter name for page
+     * @param string $path Link path
      * @return PicoPageControl
      */
     public function getPageControl($parameterName = 'page', $path = null)
@@ -421,7 +421,7 @@ class PicoPageData
     /**
      * Apply subquery result
      *
-     * @param array $row
+     * @param array $row Data row
      * @return MagicObject
      */
     public function applySubqueryResult($row)
@@ -469,7 +469,7 @@ class PicoPageData
     /**
      * Set find option
      *
-     * @param integer  $findOption  Find option
+     * @param integer $findOption Find option
      *
      * @return self
      */ 

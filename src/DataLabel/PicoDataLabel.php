@@ -55,7 +55,7 @@ class PicoDataLabel extends SetterGetter
     
     /**
      * Load data to object
-     * @param mixed $data
+     * @param mixed $data Data to be load
      * @return self
      */
     public function loadData($data)
