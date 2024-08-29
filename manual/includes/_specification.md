@@ -514,3 +514,165 @@ $specification = PicoSpecification::getInstance()
     )
 ;
 ```
+
+MagicObject version 1.20 offers the simplest way to create specifications with `AND` logic and `equal` or `in` comparisons.
+
+For example:
+
+```php
+$album = new EntityAlbum(null, $database);
+
+$specs = new PicoSpecification();
+$specs->name = ['Album 1', 'Album 2'];
+$specs->numberOfSong = 11;
+$specs->active = true;
+$specs->asDraft = false;
+$specs->ipCreate = '::1';
+$specs->ipEdit = null;
+
+try
+{
+	$album->findAll($specs);
+}
+catch(Exception $e)
+{
+	error_log($e);
+}
+```
+
+will be:
+
+```sql
+select album.* 
+from album
+where album.name in ('Album 1', 'Album 2') and album.number_of_song = 11
+and album.active = true and album.as_draft = false and album.ip_create = '::1'
+and album.ip_edit is null
+```
+
+Instead of writing very long code to create a specification, users can simply write a few very short lines of code. However, it should be noted that this method only applies to `AND` logic with `equals` and `in` comparisons.
+
+When the user assigns the value of `active` to `true`, then MagicObject will add the predicate `active = true`, likewise when the user assigns the value of `asDraft` to `false`. Since `name` is assigned an array value, the comparison used is `in`. It should be noted that the specification is not an object that stores the given properties as its own properties but rather it will add the predicate each time the predicate is entered.
+
+For example, the code is as follows:
+
+```php
+
+$album = new EntityAlbum(null, $database);
+
+$specs = new PicoSpecification();
+$specs->name = ['Album 1', 'Album 2'];
+$specs->active = true;
+$specs->asDraft = false;
+$specs->ipCreate = '::1';
+$specs->ipCreate = null;
+
+try
+{
+	$album->findAll($specs);
+}
+catch(Exception $e)
+{
+	error_log($e);
+}
+```
+
+You have given the value `$specs->ipCreate = '::1'` and you don't if change that value to `null` for example. So the above code is wrong because it stumbles with the wrong logic i.e. `ip_create = '::1' ,
+album.ip_create is null`.
+
+If you mean `ipCreate = '::1' or ipCreate = null`, then you can use the following way:
+
+```php
+$album = new EntityAlbum(null, $database);
+
+$specs = new PicoSpecification();
+$specs->name = ['Album 1', 'Album 2'];
+$specs->numberOfSong = 11;
+$specs->active = true;
+$specs->asDraft = false;
+$specs->ipCreate = ['::1', null];
+
+try
+{
+	$album->findAll($specs);
+}
+catch(Exception $e)
+{
+	error_log($e);
+}
+```
+
+or
+
+```php
+$album = new EntityAlbum(null, $database);
+
+$specs = new PicoSpecification();
+$specs->name = ['Album 1', 'Album 2'];
+$specs->numberOfSong = 11;
+$specs->active = true;
+$specs->asDraft = false;
+$specs->addAnd(
+	PicoSpecification::getInstance()
+		->addOr(['ipCreate', '::1'])
+		->addOr(['ipCreate', null])
+);
+
+try
+{
+	$album->findAll($specs);
+}
+catch(Exception $e)
+{
+	error_log($e);
+}
+```
+
+What if you want to use full `OR` logic instead of `AND` logic? You can use the following way:
+
+```php
+$album = new EntityAlbum(null, $database);
+
+$specs = new PicoSpecification();
+$specs->setDefaultLogicOr();
+
+$specs->name = ['Album 1', 'Album 2'];
+$specs->numberOfSong = 11;
+$specs->active = true;
+$specs->asDraft = false;
+$specs->setIpCreate(null);
+
+try
+{
+	$album->findAll($specs);
+}
+catch(Exception $e)
+{
+	error_log($e);
+}
+```
+
+When you cuff any predicate and specification, MagicObject will always add the predicate with `OR` logic instead of `AND` logic. Please note that you must call the `setDefaultLogicOr` method before you set a predicate. If you call the `setDefaultLogicOr` method after you set a predicate, you will end up with a logical mess. 
+
+To avoid errors when calling the `setDefaultLogicOr` method, it is recommended to use the following method:
+
+```php
+$album = new EntityAlbum(null, $database);
+
+$specs = PicoSpecification::getInstance()->setDefaultLogicOr();
+
+$specs->name = ['Album 1', 'Album 2'];
+$specs->numberOfSong = 11;
+$specs->active = true;
+$specs->asDraft = false;
+$specs->setIpCreate(null);
+
+try
+{
+	$album->findAll($specs);
+}
+catch(Exception $e)
+{
+	error_log($e);
+}
+```

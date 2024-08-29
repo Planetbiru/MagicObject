@@ -9,7 +9,7 @@ use MagicObject\Util\Database\PicoDatabaseUtil;
  * Specification
  * @link https://github.com/Planetbiru/MagicObject
  */
-class PicoSpecification
+class PicoSpecification //NOSONAR
 {
     const LOGIC_AND = "and";
     const LOGIC_OR  = "or";
@@ -34,6 +34,13 @@ class PicoSpecification
      * @var boolean
      */
     private $requireJoin = false;
+    
+    /**
+     * Default logic
+     *
+     * @var string
+     */
+    private $defaultLogic = self::LOGIC_AND;
     
     /**
      * Return true if require real join table
@@ -346,6 +353,53 @@ class PicoSpecification
     }
     
     /**
+     * Magic method to handle undefined method
+     *
+     * @param string $method
+     * @param array $params
+     * @return self|mixed|null
+     */
+    public function __call($method, $params)
+    {
+        if (strncasecmp($method, "set", 3) === 0 && isset($params)) {
+            $field = lcfirst(substr($method, 3));
+            $value = $params[0];
+            $this->addPredicate($field, $value);
+            return $this;
+        }
+    }
+    
+    /**
+     * Magic object to set value
+     *
+     * @param string $field Field name
+     * @param mixed|mixed[] $value Field value
+     */
+    public function __set($field, $value)
+    {
+        $this->addPredicate($field, $value);
+    }
+    
+    /**
+     * Add predicate
+     *
+     * @param string $field Field name
+     * @param mixed|mixed[] $value Field value
+     * @return self
+     */
+    private function addPredicate($field, $value)
+    {
+        if($this->defaultLogic == self::LOGIC_OR)
+        {
+            $this->addOr(new PicoPredicate($field, $value));
+        }
+        else
+        {
+            $this->addAnd(new PicoPredicate($field, $value));
+        }
+    }
+    
+    /**
      * Magic method to debug object. This method is for debug purpose only.
      *
      * @return string
@@ -429,5 +483,53 @@ class PicoSpecification
     public static function filter($columnName, $dataType)
     {
         return new PicoSpecificationFilter($columnName, $dataType);
+    }
+
+    /**
+     * Get default logic
+     *
+     * @return  string
+     */ 
+    public function getDefaultLogic()
+    {
+        return $this->defaultLogic;
+    }
+
+    /**
+     * Set default logic
+     *
+     * @param  string  $defaultLogic  Default logic
+     *
+     * @return  self
+     */ 
+    public function setDefaultLogic($defaultLogic)
+    {
+        $this->defaultLogic = $defaultLogic;
+
+        return $this;
+    }
+    
+    /**
+     * Set default logic AND
+     *
+     * @return  self
+     */ 
+    public function setDefaultLogicAnd()
+    {
+        $this->defaultLogic = self::LOGIC_AND;
+
+        return $this;
+    }
+    
+    /**
+     * Set default logic OR
+     *
+     * @return  self
+     */ 
+    public function setDefaultLogicOr()
+    {
+        $this->defaultLogic = self::LOGIC_OR;
+
+        return $this;
     }
 }

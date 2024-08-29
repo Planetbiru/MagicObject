@@ -6058,6 +6058,134 @@ $specification-&gt;addOr($specification2)</code></pre>
             -&gt;addAnd(PicoPredicate::getInstance()-&gt;equals('approvalId', null))
     )
 ;</code></pre>
+<p>MagicObject version 1.20 offers the simplest way to create specifications with <code>AND</code> logic and <code>equal</code> or <code>in</code> comparisons.</p>
+<p>For example:</p>
+<pre><code class="language-php">$album = new EntityAlbum(null, $database);
+
+$specs = new PicoSpecification();
+$specs-&gt;name = ['Album 1', 'Album 2'];
+$specs-&gt;numberOfSong = 11;
+$specs-&gt;active = true;
+$specs-&gt;asDraft = false;
+$specs-&gt;ipCreate = '::1';
+$specs-&gt;ipEdit = null;
+
+try
+{
+    $album-&gt;findAll($specs);
+}
+catch(Exception $e)
+{
+    error_log($e);
+}</code></pre>
+<p>will be:</p>
+<pre><code class="language-sql">select album.* 
+from album
+where album.name in ('Album 1', 'Album 2') and album.number_of_song = 11
+and album.active = true and album.as_draft = false and album.ip_create = '::1'
+and album.ip_edit is null</code></pre>
+<p>Instead of writing very long code to create a specification, users can simply write a few very short lines of code. However, it should be noted that this method only applies to <code>AND</code> logic with <code>equals</code> and <code>in</code> comparisons.</p>
+<p>When the user assigns the value of <code>active</code> to <code>true</code>, then MagicObject will add the predicate <code>active = true</code>, likewise when the user assigns the value of <code>asDraft</code> to <code>false</code>. Since <code>name</code> is assigned an array value, the comparison used is <code>in</code>. It should be noted that the specification is not an object that stores the given properties as its own properties but rather it will add the predicate each time the predicate is entered.</p>
+<p>For example, the code is as follows:</p>
+<pre><code class="language-php">
+$album = new EntityAlbum(null, $database);
+
+$specs = new PicoSpecification();
+$specs-&gt;name = ['Album 1', 'Album 2'];
+$specs-&gt;active = true;
+$specs-&gt;asDraft = false;
+$specs-&gt;ipCreate = '::1';
+$specs-&gt;ipCreate = null;
+
+try
+{
+    $album-&gt;findAll($specs);
+}
+catch(Exception $e)
+{
+    error_log($e);
+}</code></pre>
+<p>You have given the value <code>$specs-&gt;ipCreate = '::1'</code> and you don't if change that value to <code>null</code> for example. So the above code is wrong because it stumbles with the wrong logic i.e. <code>ip_create = '::1' , album.ip_create is null</code>.</p>
+<p>If you mean <code>ipCreate = '::1' or ipCreate = null</code>, then you can use the following way:</p>
+<pre><code class="language-php">$album = new EntityAlbum(null, $database);
+
+$specs = new PicoSpecification();
+$specs-&gt;name = ['Album 1', 'Album 2'];
+$specs-&gt;numberOfSong = 11;
+$specs-&gt;active = true;
+$specs-&gt;asDraft = false;
+$specs-&gt;ipCreate = ['::1', null];
+
+try
+{
+    $album-&gt;findAll($specs);
+}
+catch(Exception $e)
+{
+    error_log($e);
+}</code></pre>
+<p>or</p>
+<pre><code class="language-php">$album = new EntityAlbum(null, $database);
+
+$specs = new PicoSpecification();
+$specs-&gt;name = ['Album 1', 'Album 2'];
+$specs-&gt;numberOfSong = 11;
+$specs-&gt;active = true;
+$specs-&gt;asDraft = false;
+$specs-&gt;addAnd(
+    PicoSpecification::getInstance()
+        -&gt;addOr(['ipCreate', '::1'])
+        -&gt;addOr(['ipCreate', null])
+);
+
+try
+{
+    $album-&gt;findAll($specs);
+}
+catch(Exception $e)
+{
+    error_log($e);
+}</code></pre>
+<p>What if you want to use full <code>OR</code> logic instead of <code>AND</code> logic? You can use the following way:</p>
+<pre><code class="language-php">$album = new EntityAlbum(null, $database);
+
+$specs = new PicoSpecification();
+$specs-&gt;setDefaultLogicOr();
+
+$specs-&gt;name = ['Album 1', 'Album 2'];
+$specs-&gt;numberOfSong = 11;
+$specs-&gt;active = true;
+$specs-&gt;asDraft = false;
+$specs-&gt;setIpCreate(null);
+
+try
+{
+    $album-&gt;findAll($specs);
+}
+catch(Exception $e)
+{
+    error_log($e);
+}</code></pre>
+<p>When you cuff any predicate and specification, MagicObject will always add the predicate with <code>OR</code> logic instead of <code>AND</code> logic. Please note that you must call the <code>setDefaultLogicOr</code> method before you set a predicate. If you call the <code>setDefaultLogicOr</code> method after you set a predicate, you will end up with a logical mess. </p>
+<p>To avoid errors when calling the <code>setDefaultLogicOr</code> method, it is recommended to use the following method:</p>
+<pre><code class="language-php">$album = new EntityAlbum(null, $database);
+
+$specs = PicoSpecification::getInstance()-&gt;setDefaultLogicOr();
+
+$specs-&gt;name = ['Album 1', 'Album 2'];
+$specs-&gt;numberOfSong = 11;
+$specs-&gt;active = true;
+$specs-&gt;asDraft = false;
+$specs-&gt;setIpCreate(null);
+
+try
+{
+    $album-&gt;findAll($specs);
+}
+catch(Exception $e)
+{
+    error_log($e);
+}</code></pre>
 </article>
 
 <article class="article" id="part14">

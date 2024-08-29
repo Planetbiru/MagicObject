@@ -86,16 +86,6 @@ class PicoPredicate //NOSONAR
         }
         return $this;
     }
-    
-    /**
-     * Is NULL
-     * @param string $field Field name
-     * @return self
-     */
-    public function isNull($field)
-    {
-        return $this->equals($field, null);
-    }
 
     /**
      * Not equals
@@ -116,6 +106,16 @@ class PicoPredicate //NOSONAR
             $this->comparation = PicoDataComparation::notEquals($value);
         }
         return $this;
+    }
+    
+    /**
+     * Is NULL
+     * @param string $field Field name
+     * @return self
+     */
+    public function isNull($field)
+    {
+        return $this->equals($field, null);
     }
     
     /**
@@ -341,7 +341,7 @@ class PicoPredicate //NOSONAR
     }
 
     /**
-     * Magic method
+     * Magic method to handle undefined method
      *
      * @param string $method
      * @param array $params
@@ -355,6 +355,17 @@ class PicoPredicate //NOSONAR
             $this->equals($field, $value);
             return $this;
         }
+    }
+    
+    /**
+     * Magic object to set value
+     *
+     * @param string $name
+     * @param mixed|mixed[] $value
+     */
+    public function __set($name, $value)
+    {
+        $this->equals($name, $value);
     }
 
     /**
