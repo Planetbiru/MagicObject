@@ -289,6 +289,15 @@ $specification = PicoSpecification::getInstance()
 ;
 ```
 
+As in `addAnd`, if the second parameter is an array, then the comparison logic becomes `in` instead of `equals`.
+
+```php
+$specification = PicoSpecification::getInstance()
+    ->addOr(['producerId', ['asdf', 'qwerty']])
+    ->addOr(['active', true])
+;
+```
+
 For comparisons other than `equals`, we must specify them explicitly. Here are some examples of specifying OR logic.
 
 ```php

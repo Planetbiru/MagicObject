@@ -5901,6 +5901,11 @@ $specification-&gt;addOr($predicate2)</code></pre>
     -&gt;addOr(['producerId', 'asdf'])
     -&gt;addOr(['active', true])
 ;</code></pre>
+<p>As in <code>addAnd</code>, if the second parameter is an array, then the comparison logic becomes <code>in</code> instead of <code>equals</code>.</p>
+<pre><code class="language-php">$specification = PicoSpecification::getInstance()
+    -&gt;addOr(['producerId', ['asdf', 'qwerty']])
+    -&gt;addOr(['active', true])
+;</code></pre>
 <p>For comparisons other than <code>equals</code>, we must specify them explicitly. Here are some examples of specifying OR logic.</p>
 <pre><code class="language-php">$specification = new PicoSpecification();
 $predicate1 = new PicoPredicate();
