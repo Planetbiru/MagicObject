@@ -76,7 +76,14 @@ class PicoPredicate //NOSONAR
     {
         $this->field = $field;
         $this->value = $value;
-        $this->comparation = PicoDataComparation::equals($value);
+        if(is_array($value))
+        {
+            $this->comparation = PicoDataComparation::in($value);
+        }
+        else
+        {
+            $this->comparation = PicoDataComparation::equals($value);
+        }
         return $this;
     }
     
@@ -100,7 +107,14 @@ class PicoPredicate //NOSONAR
     {
         $this->field = $field;
         $this->value = $value;
-        $this->comparation = new PicoDataComparation($value, PicoDataComparation::NOT_EQUALS);
+        if(is_array($value))
+        {
+            $this->comparation = PicoDataComparation::notIn($value);
+        }
+        else
+        {
+            $this->comparation = PicoDataComparation::notEquals($value);
+        }
         return $this;
     }
     
@@ -194,7 +208,7 @@ class PicoPredicate //NOSONAR
     {
         $this->field = $field;
         $this->value = $value;
-        $this->comparation = new PicoDataComparation($value, PicoDataComparation::LESS_THAN);
+        $this->comparation = PicoDataComparation::lessThan($value);
         return $this;
     }
 
@@ -208,7 +222,7 @@ class PicoPredicate //NOSONAR
     {
         $this->field = $field;
         $this->value = $value;
-        $this->comparation = new PicoDataComparation($value, PicoDataComparation::GREATER_THAN);
+        $this->comparation = PicoDataComparation::greaterThan($value);
         return $this;
     }
 
@@ -222,7 +236,7 @@ class PicoPredicate //NOSONAR
     {
         $this->field = $field;
         $this->value = $value;
-        $this->comparation = new PicoDataComparation($value, PicoDataComparation::LESS_THAN_OR_EQUALS);
+        $this->comparation = PicoDataComparation::lessThanOrEquals($value);
         return $this;
     }
 
@@ -236,7 +250,7 @@ class PicoPredicate //NOSONAR
     {
         $this->field = $field;
         $this->value = $value;
-        $this->comparation = new PicoDataComparation($value, PicoDataComparation::GREATER_THAN_OR_EQUALS);
+        $this->comparation = PicoDataComparation::greaterThanOrEquals($value);
         return $this;
     }
 
@@ -283,7 +297,7 @@ class PicoPredicate //NOSONAR
     /**
      * Set filter logic
      *
-     * @param string $filterLogic  Filter logic
+     * @param string $filterLogic Filter logic
      *
      * @return self
      */ 
