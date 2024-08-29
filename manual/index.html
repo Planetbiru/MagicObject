@@ -5763,28 +5763,28 @@ $album-&gt;where($specfification)-&gt;delete();
 <p>If the field is given a value, the constructor will call the <code>equals</code> method with the <code>field</code> and <code>value</code> from the constructor. This will make it easier for users to create specifications in a line of code.</p>
 <p>Methods:</p>
 <ul>
-<li>equals</li>
-<li>isNull</li>
-<li>notEquals</li>
-<li>isNotNull</li>
-<li>like</li>
-<li>notLike</li>
-<li>in</li>
-<li>notIn</li>
-<li>lessThan</li>
-<li>greaterThan</li>
-<li>lessThanOrEquals</li>
-<li>greaterThanOrEquals</li>
+<li>equals(string $fieldName, mixed $value)</li>
+<li>isNull(string $fieldName)</li>
+<li>notEquals(string $fieldName, mixed $value)</li>
+<li>isNotNull(string $fieldName)</li>
+<li>like(string $fieldName, mixed $value)</li>
+<li>notLike(string $fieldName, mixed $value)</li>
+<li>in(string $fieldName, mixed[] $value)</li>
+<li>notIn(string $fieldName, mixed[] $value)</li>
+<li>lessThan(string $fieldName, string|integer|float $value)</li>
+<li>greaterThan(string $fieldName, string|integer|float $value)</li>
+<li>lessThanOrEquals(string $fieldName, string|integer|float $value)</li>
+<li>greaterThanOrEquals(string $fieldName, string|integer|float $value)</li>
 </ul>
 <p>Static Methods:</p>
 <ul>
-<li>getInstance</li>
-<li>generateLikeStarts</li>
-<li>generateLikeEnds</li>
-<li>generateLikeContains</li>
-<li>functionUpper</li>
-<li>functionLower</li>
-<li>functionAndValue</li>
+<li>getInstance()</li>
+<li>generateLikeStarts(string $value)</li>
+<li>generateLikeEnds(string $value)</li>
+<li>generateLikeContains(string $value)</li>
+<li>functionUpper(string $value)</li>
+<li>functionLower(string $value)</li>
+<li>functionAndValue(string $value)</li>
 </ul>
 <p>Example:</p>
 <p>We want to create a query like this:</p>

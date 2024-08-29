@@ -6347,27 +6347,27 @@ If the field is given a value, the constructor will call the `equals` method wit
 
 Methods:
 
-- equals
-- isNull
-- notEquals
-- isNotNull
-- like
-- notLike
-- in
-- notIn
-- lessThan
-- greaterThan
-- lessThanOrEquals
-- greaterThanOrEquals
+- equals(string $fieldName, mixed $value)
+- isNull(string $fieldName)
+- notEquals(string $fieldName, mixed $value)
+- isNotNull(string $fieldName)
+- like(string $fieldName, mixed $value)
+- notLike(string $fieldName, mixed $value)
+- in(string $fieldName, mixed[] $value)
+- notIn(string $fieldName, mixed[] $value)
+- lessThan(string $fieldName, string|integer|float $value)
+- greaterThan(string $fieldName, string|integer|float $value)
+- lessThanOrEquals(string $fieldName, string|integer|float $value)
+- greaterThanOrEquals(string $fieldName, string|integer|float $value)
 
 Static Methods:
-- getInstance
-- generateLikeStarts
-- generateLikeEnds
-- generateLikeContains
-- functionUpper
-- functionLower
-- functionAndValue
+- getInstance()
+- generateLikeStarts(string $value)
+- generateLikeEnds(string $value)
+- generateLikeContains(string $value)
+- functionUpper(string $value)
+- functionLower(string $value)
+- functionAndValue(string $value)
 
 Example:
 
