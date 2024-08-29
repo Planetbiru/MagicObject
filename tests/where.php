@@ -417,17 +417,18 @@ class Producer extends MagicObject
 
 $album = new EntityAlbum(null, $database);
 
-$specs = PicoSpecification::getInstance()->setDefaultLogicOr();
-
+/*
+$specs = new PicoSpecification();
 $specs->name = ['Album 1', 'Album 2'];
 $specs->numberOfSong = 11;
 $specs->active = true;
 $specs->asDraft = false;
-$specs->setIpCreate(null);
+$specs->setIpCreate('::1');
+*/
 
 try
 {
-	$album->findAll($specs);
+	$album->findByNameAndNumberOfSongAndActiveAndDraft(['Album 1', 'Album 2'], 11, true, false);
 }
 catch(Exception $e)
 {
