@@ -6166,7 +6166,7 @@ catch(Exception $e)
 {
     error_log($e);
 }</code></pre>
-<p>When you cuff any predicate and specification, MagicObject will always add the predicate with <code>OR</code> logic instead of <code>AND</code> logic. Please note that you must call the <code>setDefaultLogicOr</code> method before you set a predicate. If you call the <code>setDefaultLogicOr</code> method after you set a predicate, you will end up with a logical mess. </p>
+<p>When you set any predicate to a specification, MagicObject will always add the predicate with <code>OR</code> logic instead of <code>AND</code> logic. Please note that you must call the <code>setDefaultLogicOr</code> method before you set a predicate. If you call the <code>setDefaultLogicOr</code> method after you set a predicate, you will end up with a logical mess. </p>
 <p>To avoid errors when calling the <code>setDefaultLogicOr</code> method, it is recommended to use the following method:</p>
 <pre><code class="language-php">$album = new EntityAlbum(null, $database);
 
