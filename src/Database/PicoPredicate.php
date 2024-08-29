@@ -117,7 +117,7 @@ class PicoPredicate //NOSONAR
     /**
      * In
      * @param string $field Field name
-     * @param mixed $value Value
+     * @param mixed[] $value Value
      * @return self
      */
     public function in($field, $value)
@@ -134,7 +134,7 @@ class PicoPredicate //NOSONAR
     /**
      * Not in
      * @param string $field Field name
-     * @param mixed $value Value
+     * @param mixed[] $value Value
      * @return self
      */
     public function notIn($field, $value)
