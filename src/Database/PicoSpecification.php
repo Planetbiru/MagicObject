@@ -211,6 +211,21 @@ class PicoSpecification //NOSONAR
     {
         return empty($this->specifications);
     }
+    
+    /**
+     * Check if value is empty or not
+     *
+     * @param mixed $value Value to be checked
+     * @return boolean
+     */
+    public static function isValueEmpty($value)
+    {
+        if(is_string($value))
+        {
+            return empty(trim($value));
+        }
+        return empty($value);
+    }
 
     /**
      * Get predicate
@@ -429,9 +444,9 @@ class PicoSpecification //NOSONAR
             foreach($map as $key=>$filter)
             {
                 $filterValue = $request->get($key);
-                if($filterValue != null && trim($filterValue) != "" && $filter instanceof PicoSpecificationFilter)
+                if($filterValue != null && !self::isValueEmpty($filterValue) && $filter instanceof PicoSpecificationFilter)
                 {
-                    if($filter->isNumber() || $filter->isBoolean())
+                    if($filter->isNumber() || $filter->isBoolean() || $filter->isArrayNumber() || $filter->isArrayBoolean() || $filter->isArrayString())
                     {
                         $specification->addAnd(PicoPredicate::getInstance()->equals($filter->getColumnName(), $filter->valueOf($filterValue)));
                     }
