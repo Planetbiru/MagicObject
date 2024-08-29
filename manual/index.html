@@ -4501,7 +4501,7 @@ WHERE album_id = '1234' AND waiting_for = 0;</code></pre>
                 $album-&gt;setAdminAskEdit($currentAction-&gt;getUserId());
                 $album-&gt;setTimeAskEdit($currentAction-&gt;getTime());
                 $album-&gt;setIpAskEdit($currentAction-&gt;getIp());
-                $album-&gt;setWaitingFor(WaitingFor::ACTIVATE)-&gt;update();
+                $album-&gt;setActive(WaitingFor::ACTIVATE)-&gt;update();
             }
             catch(Exception $e)
             {
@@ -4542,7 +4542,7 @@ WHERE album_id = '1234' ;</code></pre>
                 -&gt;setAdminAskEdit($currentAction-&gt;getUserId())
                 -&gt;setTimeAskEdit($currentAction-&gt;getTime())
                 -&gt;setIpAskEdit($currentAction-&gt;getIp())
-                -&gt;setWaitingFor(WaitingFor::ACTIVATE)
+                -&gt;setActive(WaitingFor::ACTIVATE)
                 -&gt;update();
             }
             catch(Exception $e)
@@ -4562,7 +4562,7 @@ WHERE album_id = '1234' ;</code></pre>
 -&gt;setAdminAskEdit($currentAction-&gt;getUserId())
 -&gt;setTimeAskEdit($currentAction-&gt;getTime())
 -&gt;setIpAskEdit($currentAction-&gt;getIp())
--&gt;setWaitingFor(WaitingFor::ACTIVATE)
+-&gt;setActive(WaitingFor::ACTIVATE)
 -&gt;update();</code></pre>
 <p>Note that the object returned by the <code>where</code> method is instance of <code>PicoDatabasePersistenceExtended</code> not instance of <code>MagicObject</code>. Of course, we will no longer be able to use the methods in MagicObject. </p>
 <h3>Filter Delete</h3>
