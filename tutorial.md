@@ -6939,7 +6939,7 @@ catch(Exception $e)
 }
 ```
 
-When you cuff any predicate and specification, MagicObject will always add the predicate with `OR` logic instead of `AND` logic. Please note that you must call the `setDefaultLogicOr` method before you set a predicate. If you call the `setDefaultLogicOr` method after you set a predicate, you will end up with a logical mess. 
+When you set any predicate to a specification, MagicObject will always add the predicate with `OR` logic instead of `AND` logic. Please note that you must call the `setDefaultLogicOr` method before you set a predicate. If you call the `setDefaultLogicOr` method after you set a predicate, you will end up with a logical mess. 
 
 To avoid errors when calling the `setDefaultLogicOr` method, it is recommended to use the following method:
 
