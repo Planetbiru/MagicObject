@@ -117,16 +117,20 @@ class PicoPredicate //NOSONAR
     /**
      * In
      * @param string $field Field name
-     * @param mixed[] $value Value
+     * @param mixed[] $values Value
      * @return self
      */
-    public function in($field, $value)
+    public function in($field, $values)
     {
-        if(!empty($value))
+        if(!empty($values))
         {
+            if(is_scalar($values))
+            {
+                $values = array($values);
+            }
             $this->field = $field;
-            $this->value = $value;
-            $this->comparation = PicoDataComparation::in($value);
+            $this->value = $values;
+            $this->comparation = PicoDataComparation::in($values);
         }
         return $this;
     }
@@ -134,14 +138,21 @@ class PicoPredicate //NOSONAR
     /**
      * Not in
      * @param string $field Field name
-     * @param mixed[] $value Value
+     * @param mixed[] $values Value
      * @return self
      */
-    public function notIn($field, $value)
+    public function notIn($field, $values)
     {
-        $this->field = $field;
-        $this->value = $value;
-        $this->comparation = PicoDataComparation::notIn($value);
+        if(!empty($values))
+        {
+            if(is_scalar($values))
+            {
+                $values = array($values);
+            }
+            $this->field = $field;
+            $this->value = $values;
+            $this->comparation = PicoDataComparation::notIn($values);
+        }
         return $this;
     }
 
