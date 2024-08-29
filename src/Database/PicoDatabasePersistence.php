@@ -1285,6 +1285,10 @@ class PicoDatabasePersistence // NOSONAR
                 {
                     $wheres[] = $column . "is " . $value;
                 }
+                else if(is_array($propertyValues[$i]))
+                {
+                    $wheres[] = $column . "in (" . $value.")";
+                }
                 else
                 {
                     $wheres[] = $column . "= " . $value;
