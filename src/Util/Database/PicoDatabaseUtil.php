@@ -9,7 +9,7 @@ use MagicObject\Database\PicoSpecification;
 class PicoDatabaseUtil
 {
     const INLINE_TRIM = " \r\n\t ";
-    
+
     /**
      * Get specification from parameters
      * @param array $params Parameters
@@ -49,7 +49,7 @@ class PicoDatabaseUtil
         }
         return null;
     }
-    
+
     /**
      * Get sortable from parameters
      * @param array $params Parameters
@@ -91,7 +91,7 @@ class PicoDatabaseUtil
         }
         return $ret;
     }
-    
+
     /**
      * Fix value
      *
@@ -117,12 +117,12 @@ class PicoDatabaseUtil
         {
             return $value + 0;
         }
-        else 
+        else
         {
             return $value;
         }
     }
-    
+
     /**
      * Check if value is null
      *
@@ -134,7 +134,7 @@ class PicoDatabaseUtil
     {
         return $value === null || $value == 'null' && $importFromString;
     }
-    
+
     /**
      * Check if value is numeric
      *
@@ -146,7 +146,7 @@ class PicoDatabaseUtil
     {
         return is_string($value) && is_numeric($value) && $importFromString;
     }
-    
+
     /**
 	 * Escape value
      * @param mixed $value Value
@@ -191,7 +191,7 @@ class PicoDatabaseUtil
 		}
 		return $ret;
 	}
-    
+
     /**
      * Escape SQL
      *
@@ -202,7 +202,7 @@ class PicoDatabaseUtil
     {
         return addslashes($value);
     }
-    
+
     /**
      * Trim WHERE
      *
@@ -267,7 +267,7 @@ class PicoDatabaseUtil
         }
         $arr = $arr2;
         unset($arr2);
-        
+
         $append = 0;
         $skip = 0;
         $start = 1;
@@ -275,12 +275,12 @@ class PicoDatabaseUtil
         $delimiter = ";";
         $queryArray = array();
         $delimiterArray = array();
-        
+
         foreach($arr as $line=>$text)
         {
             if($text == "" && $append == 1)
             {
-                $queryArray[$nquery] .= "\r\n";    
+                $queryArray[$nquery] .= "\r\n";
             }
             if($append == 0)
             {
@@ -340,7 +340,7 @@ class PicoDatabaseUtil
             if(stripos($sql, "delimiter ") !== 0)
             {
                 $sql = rtrim($sql, self::INLINE_TRIM);
-                $sql = substr($sql, 0, strlen($sql)-strlen($delimiter));			
+                $sql = substr($sql, 0, strlen($sql)-strlen($delimiter));
                 $result[] = array("query"=> $sql, "delimiter"=>$delimiter);
             }
         }

@@ -2305,7 +2305,7 @@ class PicoMimeMap
 
     /**
      * Look up all extensions
-     * 
+     *
      * @param string $mimetype
      * @return string[]
      */

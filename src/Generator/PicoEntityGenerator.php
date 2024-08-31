@@ -6,8 +6,8 @@ use MagicObject\Database\PicoDatabase;
 use MagicObject\Util\PicoStringUtil;
 
 /**
- * PicoEntityGenerator is an entity generator for automatically generating PHP code. 
- * This class is optimized on the MariaDB database. 
+ * PicoEntityGenerator is an entity generator for automatically generating PHP code.
+ * This class is optimized on the MariaDB database.
  * Users must provide appropriate parameters so that the entity class can be directly used in the application.
  * @link https://github.com/Planetbiru/MagicObject
  */
@@ -40,21 +40,21 @@ class PicoEntityGenerator
      * @var string
      */
     protected $tableName = "";
-    
+
     /**
      * Entity name
      *
      * @var string
      */
     protected $entityName = null;
-    
+
     /**
      * Prettify
      *
      * @var boolean
      */
     protected $prettify = false;
-    
+
     /**
      * Constructor
      *
@@ -74,7 +74,7 @@ class PicoEntityGenerator
         $this->entityName = $entityName;
         $this->prettify = $prettify;
     }
-    
+
     /**
      * Create property
      *
@@ -117,7 +117,7 @@ class PicoEntityGenerator
         {
             $docs[] = "\t * @GeneratedValue(strategy=GenerationType.IDENTITY)";
         }
-        
+
         if(strcasecmp($columnNull, 'No') == 0)
         {
             $docs[] = "\t * @NotNull";
@@ -155,7 +155,7 @@ class PicoEntityGenerator
         $docs[] = "\t * @Column(".implode(", ", $attrs).")";
         if(!empty($columnDefault))
         {
-            $docs[] = "\t * @DefaultColumn(value=\"".$columnDefault."\")";        
+            $docs[] = "\t * @DefaultColumn(value=\"".$columnDefault."\")";
         }
 
         $docs[] = "\t * @Label(content=\"$description\")";
@@ -222,7 +222,7 @@ class PicoEntityGenerator
             $str2 = "0";
         }
         $length = $str2 * 1;
-        
+
         if(stripos($str, "datetime") !== false || stripos($str, "timestamp") !== false)
         {
             $length += 20;
@@ -233,7 +233,7 @@ class PicoEntityGenerator
         }
         return $length;
     }
-    
+
     /**
      * Get type map
      *
@@ -262,7 +262,7 @@ class PicoEntityGenerator
             "datetime" => "string",
             "date" => "string",
             "time" => "string"
-        );    
+        );
     }
 
     /**
@@ -286,7 +286,7 @@ class PicoEntityGenerator
         $fileName = $this->baseNamespace."/".$className;
         $path = $this->baseDir."/".$fileName.".php";
         $path = str_replace("\\", "/", $path);
-        
+
         $dir = dirname($path);
         if(!file_exists($dir))
         {
@@ -304,7 +304,7 @@ class PicoEntityGenerator
                 $attrs[] = $prop;
             }
         }
-        
+
         $prettify = $this->prettify ? 'true' : 'false';
 
         $uses = array();
@@ -317,9 +317,9 @@ namespace '.$this->baseNamespace.';
 use MagicObject\MagicObject;'.implode("\r\n", $uses).'
 
 /**
- * '.$className.' is entity of table '.$picoTableName.'. You can join this entity to other entity using annotation JoinColumn. 
+ * '.$className.' is entity of table '.$picoTableName.'. You can join this entity to other entity using annotation JoinColumn.
  * Visit https://github.com/Planetbiru/MagicObject/blob/main/tutorial.md#entity
- * 
+ *
  * @Entity
  * @JSON(property-naming-strategy=SNAKE_CASE, prettify='.$prettify.')
  * @Table(name="'.$picoTableName.'")

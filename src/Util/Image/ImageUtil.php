@@ -14,11 +14,11 @@ use MagicObject\Exceptions\InvalidParameterException;
  */
 class ImageUtil
 {
-    
+
     const FLIP_HORIZONTAL = 1;
     const FLIP_VERTICAL = 2;
     const FLIP_BOTH = 3;
-    
+
     const STAMP_POSITION_TOPRIGHT = 1;
     const STAMP_POSITION_TOPLEFT = 2;
     const STAMP_POSITION_BOTTOMRIGHT = 3;
@@ -29,21 +29,21 @@ class ImageUtil
     const STAMP_POSITION_LEFT = 8;
     const STAMP_POSITION_RIGHT = 9;
     const STAMP_POSITION_RANDOM = 999;
-    
+
     const TEXT_ALIGN_LEFT = 1;
     const TEXT_ALIGN_RIGHT = 2;
     const TEXT_ALIGN_CENTER = 3;
-        
+
     private $fileName;
     private $info;
-    
+
     /**
      * Image
      *
      * @var GdImage
      */
     private $image;
-    
+
     /**
      * Image
      *
@@ -57,7 +57,7 @@ class ImageUtil
      * @var integer
      */
     protected $width;
-    
+
     /**
      * Image height
      *

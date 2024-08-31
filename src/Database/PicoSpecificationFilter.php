@@ -63,26 +63,28 @@ class PicoSpecificationFilter
      */
     public function valueOf($stringValue)
     {
+        $result = null;
         if($this->isArrayNumber())
         {
-            return $this->getArrayNumber($stringValue);
+            $result = $this->getArrayNumber($stringValue);
         }
         else if($this->isArrayBoolean())
         {
-            return $this->getArrayBoolean($stringValue);
+            $result = $this->getArrayBoolean($stringValue);
         }
         else if($this->isNumber())
         {
-            return $this->getNumber($stringValue);
+            $result = $this->getNumber($stringValue);
         }
         else if($this->isBoolean())
         {
-            return $this->getBoolean($stringValue);
+            $result = $this->getBoolean($stringValue);
         }
         else
         {
-            return $stringValue;
+            $result = $stringValue;
         }
+        return $result;
     }
 
     /**
