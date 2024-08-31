@@ -72,7 +72,7 @@ class PicoEntityLabel
     {
         $info = $this->getObjectInfo();
         $labels = $info->labels;
-        
+
         $map = array();
 
         // get from join columns
@@ -157,7 +157,7 @@ class PicoEntityLabel
         catch(InvalidQueryInputException $e)
         {
             throw new InvalidAnnotationException("Invalid annotation @".$parameter);
-        } 
+        }
     }
 
     /**
@@ -214,7 +214,7 @@ class PicoEntityLabel
                     }
                 }
             }
-            
+
             // set column type
             foreach($parameters as $param=>$val)
             {
@@ -224,7 +224,7 @@ class PicoEntityLabel
                     $columns[$prop->name][self::KEY_PROPERTY_TYPE] = $type;
                 }
             }
-            
+
             // get join column name of each parameters
             foreach($parameters as $param=>$val)
             {
@@ -246,7 +246,7 @@ class PicoEntityLabel
                     $joinColumns[$prop->name][self::KEY_PROPERTY_TYPE] = $type;
                     $joinColumns[$prop->name][self::KEY_ENTITY_OBJECT] = true;
                 }
-            }          
+            }
 
             // list primary key
             foreach($parameters as $param=>$val)
@@ -270,7 +270,7 @@ class PicoEntityLabel
                     );
                 }
             }
-            
+
             // define default column value
             foreach($parameters as $param=>$val)
             {

@@ -24,21 +24,21 @@ class PicoDataComparation
     const TYPE_BOOLEAN           = "boolean";
     const TYPE_NUMERIC           = "numeric";
     const TYPE_NULL              = "null";
-    
+
     /**
      * Value comparator
      *
      * @var string
      */
     private $comparison = "=";
-    
+
     /**
      * Value
      *
      * @var mixed
      */
     private $value = null;
-    
+
     /**
      * Stype
      *
@@ -63,7 +63,7 @@ class PicoDataComparation
     {
         return new self($value, self::NOT_EQUALS);
     }
-    
+
     /**
      * In
      * @param mixed[] $values Values
@@ -138,7 +138,7 @@ class PicoDataComparation
 
     /**
      * Constructor
-     * 
+     *
      * @param mixed $value
      * @param string $comparison
      */
@@ -189,7 +189,7 @@ class PicoDataComparation
     {
         return self::LESS_THAN;
     }
-    
+
     /**
      * Get greater than operator
      *
@@ -209,7 +209,7 @@ class PicoDataComparation
     {
         return self::LESS_THAN_OR_EQUALS;
     }
-    
+
     /**
      * Get greater than or equals operator
      *
@@ -261,7 +261,7 @@ class PicoDataComparation
 
     /**
      * Get the value of property value
-     */ 
+     */
     public function getValue()
     {
         return $this->value;

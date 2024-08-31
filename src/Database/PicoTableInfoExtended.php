@@ -11,7 +11,7 @@ class PicoTableInfoExtended extends PicoTableInfo
     const NAME      = "name";
     const PREV_NAME = "prevColumnName";
     const ELEMENT   = "element";
-    
+
     /**
      * Get instance
      *
@@ -21,7 +21,7 @@ class PicoTableInfoExtended extends PicoTableInfo
     {
         return new self(null, array(), array(), array(), array(), array(), array());
     }
-    
+
     /**
      * Unique column
      *
@@ -147,7 +147,7 @@ class PicoTableInfoExtended extends PicoTableInfo
         $this->notNullColumns = $tmp;
         return $this;
     }
-    
+
     /**
      * Merge list
      *
@@ -177,7 +177,7 @@ class PicoTableInfoExtended extends PicoTableInfo
             }
             else
             {
-                $tmp2 = array();                
+                $tmp2 = array();
                 foreach($tmp as $prop2=>$elem2)
                 {
                     $tmp2[$prop2] = $elem2;
@@ -188,12 +188,12 @@ class PicoTableInfoExtended extends PicoTableInfo
                     }
                 }
                 // update temporary list
-                $tmp = $tmp2;  
-            }     
+                $tmp = $tmp2;
+            }
         }
         return $tmp;
     }
-    
+
     /**
      * Get oldlist check
      *
@@ -209,7 +209,7 @@ class PicoTableInfoExtended extends PicoTableInfo
         }
         return $oldListCheck;
     }
-    
+
     /**
      * Unique column
      *
