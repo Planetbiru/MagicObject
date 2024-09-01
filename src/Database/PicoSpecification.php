@@ -27,21 +27,21 @@ class PicoSpecification //NOSONAR
      * @var array
      */
     private $specifications = array();
-    
+
     /**
      * Check if require real join table
      *
      * @var boolean
      */
     private $requireJoin = false;
-    
+
     /**
      * Default logic
      *
      * @var string
      */
     private $defaultLogic = self::LOGIC_AND;
-    
+
     /**
      * Return true if require real join table
      *
@@ -63,7 +63,7 @@ class PicoSpecification //NOSONAR
         $this->addAnd($predicate);
         return $this;
     }
-    
+
     /**
      * Add AND specification
      *
@@ -78,12 +78,12 @@ class PicoSpecification //NOSONAR
         }
         else if($predicate instanceof PicoSpecification)
         {
-            $this->addSubfilter($predicate, self::LOGIC_AND);      
+            $this->addSubfilter($predicate, self::LOGIC_AND);
         }
         else if(is_array($predicate) && count($predicate) > 1 && is_string($predicate[0]))
         {
-            $this->addFilter(new PicoPredicate($predicate[0], $predicate[1]), self::LOGIC_AND);      
-        } 
+            $this->addFilter(new PicoPredicate($predicate[0], $predicate[1]), self::LOGIC_AND);
+        }
         return $this;
     }
 
@@ -97,16 +97,16 @@ class PicoSpecification //NOSONAR
     {
         if($predicate instanceof PicoPredicate)
         {
-            $this->addFilter($predicate, self::LOGIC_OR);      
-        }  
+            $this->addFilter($predicate, self::LOGIC_OR);
+        }
         else if($predicate instanceof PicoSpecification)
         {
-            $this->addSubfilter($predicate, self::LOGIC_OR);      
+            $this->addSubfilter($predicate, self::LOGIC_OR);
         }
         else if(is_array($predicate) && count($predicate) > 1 && is_string($predicate[0]))
         {
-            $this->addFilter(new PicoPredicate($predicate[0], $predicate[1]), self::LOGIC_OR);      
-        }   
+            $this->addFilter(new PicoPredicate($predicate[0], $predicate[1]), self::LOGIC_OR);
+        }
         return $this;
     }
 
@@ -145,7 +145,7 @@ class PicoSpecification //NOSONAR
         }
         return $this;
     }
-    
+
     /**
      * Add filter by array
      *
@@ -157,7 +157,7 @@ class PicoSpecification //NOSONAR
     {
         foreach($predicate as $key=>$value)
         {
-            $pred = new PicoPredicate($key, $value);    
+            $pred = new PicoPredicate($key, $value);
             $pred->setFilterLogic($logic);
             $this->specifications[count($this->specifications)] = $pred;
             if($pred->isRequireJoin())
@@ -211,7 +211,7 @@ class PicoSpecification //NOSONAR
     {
         return empty($this->specifications);
     }
-    
+
     /**
      * Check if value is empty or not
      *
@@ -231,7 +231,7 @@ class PicoSpecification //NOSONAR
      * Get predicate
      *
      * @return array
-     */ 
+     */
     public function getSpecifications()
     {
         return $this->specifications;
@@ -241,7 +241,7 @@ class PicoSpecification //NOSONAR
      * Get parent filter logic
      *
      * @return string
-     */ 
+     */
     public function getParentFilterLogic()
     {
         return $this->parentFilterLogic;
@@ -253,13 +253,13 @@ class PicoSpecification //NOSONAR
      * @param string $parentFilterLogic Parent filter logic
      *
      * @return self
-     */ 
+     */
     public function setParentFilterLogic($parentFilterLogic)
     {
         $this->parentFilterLogic = $parentFilterLogic;
         return $this;
     }
-    
+
     /**
      * Create where
      *
@@ -280,8 +280,8 @@ class PicoSpecification //NOSONAR
                 if($spec->getComparation() != null)
                 {
                     $where = $spec->getFilterLogic() . " " . $column . " " . $spec->getComparation()->getComparison() . " " . PicoDatabaseUtil::escapeValue($spec->getValue());
-                    $arr[] = $where; 
-                }               
+                    $arr[] = $where;
+                }
             }
             else if($spec instanceof PicoSpecification)
             {
@@ -291,7 +291,7 @@ class PicoSpecification //NOSONAR
         }
         return $arr;
     }
-    
+
     /**
      * Create WHERE from specification
      *
@@ -306,7 +306,7 @@ class PicoSpecification //NOSONAR
         {
             $specifications = $specification->getSpecifications();
             foreach($specifications as $spec)
-            {                    
+            {
                 if($spec instanceof PicoPredicate)
                 {
                     $entityField = new PicoEntityField($spec->getField());
@@ -316,12 +316,12 @@ class PicoSpecification //NOSONAR
                     $entityName = $entityField->getParentField();
                     $column = ($entityName == null) ? $field : $entityName.".".$field;
                     $columnFinal = $this->formatColumn($column, $functionFormat);
-                    
+
                     if($spec->getComparation() != null)
                     {
-                        $arr[] = $spec->getFilterLogic() . " " . $columnFinal . " " . $spec->getComparation()->getComparison() . " " . PicoDatabaseUtil::escapeValue($spec->getValue()); 
-                    }   
-                }  
+                        $arr[] = $spec->getFilterLogic() . " " . $columnFinal . " " . $spec->getComparation()->getComparison() . " " . PicoDatabaseUtil::escapeValue($spec->getValue());
+                    }
+                }
                 else
                 {
                     $arr[] = $spec->getParentFilterLogic()." (".$this->createWhereFromSpecification($spec).")";
@@ -366,12 +366,12 @@ class PicoSpecification //NOSONAR
     {
         return new self;
     }
-    
+
     /**
      * Magic method to handle undefined method
      *
-     * @param string $method
-     * @param array $params
+     * @param string $method Method called
+     * @param array $params Parameters given
      * @return self|mixed|null
      */
     public function __call($method, $params)
@@ -383,7 +383,7 @@ class PicoSpecification //NOSONAR
             return $this;
         }
     }
-    
+
     /**
      * Magic object to set value
      *
@@ -394,7 +394,7 @@ class PicoSpecification //NOSONAR
     {
         $this->addPredicate($field, $value);
     }
-    
+
     /**
      * Add predicate
      *
@@ -413,7 +413,7 @@ class PicoSpecification //NOSONAR
             $this->addAnd(new PicoPredicate($field, $value));
         }
     }
-    
+
     /**
      * Magic method to debug object. This method is for debug purpose only.
      *
@@ -428,7 +428,7 @@ class PicoSpecification //NOSONAR
         }
         return $specification;
     }
-    
+
     /**
      * Get specification from user input
      *
@@ -504,7 +504,7 @@ class PicoSpecification //NOSONAR
      * Get default logic
      *
      * @return  string
-     */ 
+     */
     public function getDefaultLogic()
     {
         return $this->defaultLogic;
@@ -516,31 +516,31 @@ class PicoSpecification //NOSONAR
      * @param  string  $defaultLogic  Default logic
      *
      * @return  self
-     */ 
+     */
     public function setDefaultLogic($defaultLogic)
     {
         $this->defaultLogic = $defaultLogic;
 
         return $this;
     }
-    
+
     /**
      * Set default logic AND
      *
      * @return  self
-     */ 
+     */
     public function setDefaultLogicAnd()
     {
         $this->defaultLogic = self::LOGIC_AND;
 
         return $this;
     }
-    
+
     /**
      * Set default logic OR
      *
      * @return  self
-     */ 
+     */
     public function setDefaultLogicOr()
     {
         $this->defaultLogic = self::LOGIC_OR;

@@ -55,7 +55,7 @@ class PicoPredicate //NOSONAR
             }
         }
     }
-    
+
     /**
      * Return true if require real join table
      *
@@ -107,7 +107,7 @@ class PicoPredicate //NOSONAR
         }
         return $this;
     }
-    
+
     /**
      * Is NULL
      * @param string $field Field name
@@ -117,7 +117,7 @@ class PicoPredicate //NOSONAR
     {
         return $this->equals($field, null);
     }
-    
+
     /**
      * Is Not NULL
      * @param string $field Field name
@@ -127,7 +127,7 @@ class PicoPredicate //NOSONAR
     {
         return $this->notEquals($field, null);
     }
-    
+
     /**
      * In
      * @param string $field Field name
@@ -258,7 +258,7 @@ class PicoPredicate //NOSONAR
      * Get the value of field
      *
      * @return string
-     */ 
+     */
     public function getField()
     {
         return $this->field;
@@ -268,7 +268,7 @@ class PicoPredicate //NOSONAR
      * Get value
      *
      * @return mixed
-     */ 
+     */
     public function getValue()
     {
         return $this->value;
@@ -278,7 +278,7 @@ class PicoPredicate //NOSONAR
      * Get data comparation
      *
      * @return PicoDataComparation
-     */ 
+     */
     public function getComparation()
     {
         return $this->comparation;
@@ -288,7 +288,7 @@ class PicoPredicate //NOSONAR
      * Get filter logic
      *
      * @return string
-     */ 
+     */
     public function getFilterLogic()
     {
         return $this->filterLogic;
@@ -300,13 +300,13 @@ class PicoPredicate //NOSONAR
      * @param string $filterLogic Filter logic
      *
      * @return self
-     */ 
+     */
     public function setFilterLogic($filterLogic)
     {
         $this->filterLogic = $filterLogic;
         return $this;
     }
-    
+
     /**
      * Generate LIKE STARTS wildcard
      *
@@ -317,7 +317,7 @@ class PicoPredicate //NOSONAR
     {
         return "$value%";
     }
-    
+
     /**
      * Generate LIKE ENDS wildcard
      *
@@ -328,7 +328,7 @@ class PicoPredicate //NOSONAR
     {
         return "%$value";
     }
-    
+
     /**
      * Generate LIKE CONTAINS wildcard
      *
@@ -356,7 +356,7 @@ class PicoPredicate //NOSONAR
             return $this;
         }
     }
-    
+
     /**
      * Magic object to set value
      *
@@ -377,7 +377,7 @@ class PicoPredicate //NOSONAR
     {
         return new self;
     }
-    
+
     /**
      * Function lower
      *
@@ -388,7 +388,7 @@ class PicoPredicate //NOSONAR
     {
         return "lower($value)";
     }
-    
+
     /**
      * Function upper
      *
@@ -399,7 +399,7 @@ class PicoPredicate //NOSONAR
     {
         return "upper($value)";
     }
-    
+
     /**
      * Function lower
      *
@@ -410,7 +410,7 @@ class PicoPredicate //NOSONAR
     {
         return sprintf("%s(%s)", $function, $value);
     }
-    
+
     /**
      * Magic method to debug object
      *

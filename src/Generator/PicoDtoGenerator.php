@@ -37,35 +37,35 @@ class PicoDtoGenerator
      * @var string
      */
     protected $tableName = "";
-    
+
     /**
      * Entity name
      *
      * @var string
      */
     protected $entityName = null;
-    
+
     /**
      * DTO name
      *
      * @var string
      */
     protected $dtoName = null;
-    
+
     /**
      * Base name entity
      *
      * @var string
      */
     protected $baseNamespaceEntity = null;
-    
+
     /**
      * Prettify
      *
      * @var boolean
      */
     protected $prettify = false;
-    
+
     /**
      * Constructor
      *
@@ -89,7 +89,7 @@ class PicoDtoGenerator
         $this->entityName = $entityName;
         $this->prettify = $prettify;
     }
-    
+
     /**
      * Create property
      *
@@ -186,7 +186,7 @@ class PicoDtoGenerator
         {
             $dtoName = ucfirst(PicoStringUtil::camelize($picoTableName))."Dto";
         }
-        
+
         $str = "";
         $str .="    /**\r\n";
         $str .="     * Construct $dtoName"." from $className and not copy other properties\r\n";
@@ -207,7 +207,7 @@ class PicoDtoGenerator
         $str .="    }\r\n";
         return $str;
     }
-    
+
     /**
      * Get type map
      *
@@ -236,7 +236,7 @@ class PicoDtoGenerator
             "datetime" => "string",
             "date" => "string",
             "time" => "string"
-        );    
+        );
     }
 
     /**
@@ -265,9 +265,9 @@ class PicoDtoGenerator
         {
             mkdir($dir, 0755, true);
         }
-        
+
         $rows = PicoColumnGenerator::getColumnList($this->database, $picoTableName);
-        
+
         $attrs = [];
         if(is_array($rows))
         {
@@ -286,9 +286,9 @@ class PicoDtoGenerator
         $prettify = $this->prettify ? 'true' : 'false';
         $entityName = $this->entityName;
         $uses[] = "";
-        
+
         $used = "use ".$this->baseNamespaceEntity."\\".$this->entityName.";";
-        
+
         $classStr = '<?php
 
 namespace '.$this->baseNamespaceDto.';
@@ -299,7 +299,7 @@ use MagicObject\\SetterGetter;
 /**
  * '.$classNameDto.' is Data Transfer Object to be transfer '.$entityName.' via API or to be serializes into file or database.
  * Visit https://github.com/Planetbiru/MagicObject/blob/main/tutorial.md
- * 
+ *
  * @JSON(property-naming-strategy=SNAKE_CASE, prettify='.$prettify.')
  */
 class '.$classNameDto.' extends SetterGetter

@@ -14,8 +14,8 @@ class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
     /**
      * Magic object to handle undefined methods
      *
-     * @param string $method
-     * @param mixed[] $params
+     * @param string $method Method name
+     * @param mixed[] $params Parameters
      * @return void
      */
     public function __call($method, $params)
@@ -26,7 +26,7 @@ class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
             {
                 $params[0] = null;
             }
-            $this->object->set($var, $params[0]);     
+            $this->object->set($var, $params[0]);
             return $this;
         }
     }
@@ -44,7 +44,7 @@ class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
             throw new NoRecordFoundException(parent::MESSAGE_NO_RECORD_FOUND);
         }
         $entity = new $this->className(null, $this->database);
-        $entity->loadData($result); 
+        $entity->loadData($result);
         return $entity;
     }
 
@@ -57,7 +57,7 @@ class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
     {
         $collection = array();
         $result = parent::selectAll();
-        
+
         if($result == null || empty($result))
         {
             throw new NoRecordFoundException(parent::MESSAGE_NO_RECORD_FOUND);
@@ -65,7 +65,7 @@ class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
         foreach($result as $data)
         {
             $entity = new $this->className(null, $this->database);
-            $entity->loadData($data); 
+            $entity->loadData($data);
             $collection[] = $entity;
         }
         return $collection;

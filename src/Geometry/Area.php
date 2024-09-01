@@ -16,21 +16,21 @@ class Area
      * @var float[]
      */
     public $coords = array();
-    
+
     /**
      * Href
      *
      * @var string
      */
     public $href;
-    
+
     /**
      * Zoom
      *
      * @var float
      */
     public $zoom = 1;
-    
+
     /**
      * Constructor
      *
@@ -66,7 +66,7 @@ class Area
             $this->coords = $this->coordsFromCircle($object);
         }
     }
-    
+
     /**
      * Get rectangle coordinates
      *
@@ -76,13 +76,13 @@ class Area
     public function coordsFromRectangle($object)
     {
         return array(
-            $object->a->x, 
-            $object->a->y, 
-            $object->b->x, 
+            $object->a->x,
+            $object->a->y,
+            $object->b->x,
             $object->b->y
         );
     }
-    
+
     /**
      * Get triangle coordinates
      *
@@ -92,15 +92,15 @@ class Area
     public function coordsFromTriangle($object)
     {
         return array(
-            $object->a->x, 
-            $object->a->y, 
-            $object->b->x, 
-            $object->b->y, 
-            $object->c->x, 
+            $object->a->x,
+            $object->a->y,
+            $object->b->x,
+            $object->b->y,
+            $object->c->x,
             $object->c->y
         );
     }
-    
+
     /**
      * Get Polygon coordinates
      *
@@ -118,7 +118,7 @@ class Area
         }
         return $str;
     }
-    
+
     /**
      * Get circle info
      *
@@ -135,7 +135,7 @@ class Area
      *
      * @param float $zoom
      * @return float[]
-     */ 
+     */
     public function getCoords($zoom = 1)
     {
         if($zoom == 1)
@@ -150,7 +150,7 @@ class Area
             return $value * $zoom;
         }, $this->coords);
     }
-    
+
     /**
      * Get HTML
      *
@@ -167,7 +167,7 @@ class Area
         }
         return '<area '.implode(' ', $attrs).' />';
     }
-    
+
     /**
      * To String
      *
@@ -180,7 +180,7 @@ class Area
 
     /**
      * Get the value of zoom
-     */ 
+     */
     public function getZoom()
     {
         return $this->zoom;
@@ -190,7 +190,7 @@ class Area
      * Set the value of zoom
      *
      * @return self
-     */ 
+     */
     public function setZoom($zoom)
     {
         $this->zoom = $zoom;

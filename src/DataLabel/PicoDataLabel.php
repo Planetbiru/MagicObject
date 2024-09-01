@@ -34,7 +34,7 @@ class PicoDataLabel extends SetterGetter
     /**
      * Constructor
      *
-     * @param self|array|object $data
+     * @param self|array|object $data Data
      */
     public function __construct($data)
     {

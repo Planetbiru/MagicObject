@@ -6146,6 +6146,25 @@ catch(Exception $e)
 {
     error_log($e);
 }</code></pre>
+<p>If you want to set a column from a reference table, you can use the <code>set</code> method. Suppose you want to expect MagicObject to make the following query:</p>
+<pre><code class="language-sql">SELECT album.* FROM album
+INNER JOIN producer ON producer.producer_id = album.producer_id
+WHERE album.active = true AND producer.active = true</code></pre>
+<p>So you can write</p>
+<pre><code class="language-php">$album = new EntityAlbum(null, $database);
+
+$specs = new PicoSpecification();
+$specs-&gt;active = true;
+$specs-&gt;set('producer.active', true); // use `set` method instead
+
+try
+{
+    $album-&gt;findAll($specs);
+}
+catch(Exception $e)
+{
+    error_log($e);
+}</code></pre>
 <p>What if you want to use full <code>OR</code> logic instead of <code>AND</code> logic? You can use the following way:</p>
 <pre><code class="language-php">$album = new EntityAlbum(null, $database);
 
@@ -6156,7 +6175,7 @@ $specs-&gt;name = ['Album 1', 'Album 2'];
 $specs-&gt;numberOfSong = 11;
 $specs-&gt;active = true;
 $specs-&gt;asDraft = false;
-$specs-&gt;setIpCreate(null);
+$specs-&gt;ipCreate = null;
 
 try
 {

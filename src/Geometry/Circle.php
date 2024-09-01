@@ -39,7 +39,7 @@ class Circle {
      * Constructor to initialize the Circle with x, y and r
      *
      * @param double $x x coordinate
-     * @param double $y y Coordinate 
+     * @param double $y y Coordinate
      * @param double $r Radius
      */
     public function __construct($x, $y, $r) {
