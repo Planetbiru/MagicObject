@@ -35,13 +35,13 @@ class PicoPageable
     /**
      * Constructor of Pageable
      * Example:
-     * 1. $pageable = new Pageable(array(0, 100), array('userName', 'asc', 'email', 'desc', 'phone', 'asc'));
-     * 2. $pageable = new Pageable(new PicoPage(0, 100), array('userName', 'asc', 'email', 'desc', 'phone', 'asc'));
-     * 3. $pageable = new Pageable(array(0, 100), new PicoSortable('userName', 'asc', 'email', 'desc', 'phone', 'asc'));
-     * 4. $pageable = new Pageable(new PicoPage(0, 100), new PicoSortable('userName', 'asc', 'email', 'desc', 'phone', 'asc'));
+     * 1. $pageable = new Pageable(array(1, 100), array('userName', 'asc', 'email', 'desc', 'phone', 'asc'));
+     * 2. $pageable = new Pageable(new PicoPage(1, 100), array('userName', 'asc', 'email', 'desc', 'phone', 'asc'));
+     * 3. $pageable = new Pageable(array(1, 100), new PicoSortable('userName', 'asc', 'email', 'desc', 'phone', 'asc'));
+     * 4. $pageable = new Pageable(new PicoPage(1, 100), new PicoSortable('userName', 'asc', 'email', 'desc', 'phone', 'asc'));
      *
-     * @param PicoPage|PicoLimit|array|null $page
-     * @param PicoSortable|array|null $sortable
+     * @param PicoPage|PicoLimit|array|null $page Page
+     * @param PicoSortable|array|null $sortable Sortable
      */
     public function __construct($page = null, $sortable = null)
     {
