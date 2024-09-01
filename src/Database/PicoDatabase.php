@@ -211,6 +211,19 @@ class PicoDatabase //NOSONAR
 	}
 
 	/**
+	 * Change database
+	 *
+	 * @param string $databaseName
+	 * @return self
+	 */
+	public function useDatabase($databaseName)
+	{
+		$sql = "USE $databaseName;";
+		$this->execute($sql);
+		return $this;
+	}
+
+	/**
 	 * Set autocommit ON of OFF
 	 * When it set to OFF, user MUST call commit or rollback manualy. Default action is rollback
 	 *
@@ -349,6 +362,7 @@ class PicoDatabase //NOSONAR
 
 	/**
 	 * Execute query without return anything
+	 * 
 	 * @param string $sql Query string to be executed
 	 */
 	public function execute($sql)
@@ -371,6 +385,7 @@ class PicoDatabase //NOSONAR
 
 	/**
 	 * Execute query
+	 * 
 	 * @param string $sql Query string to be executed
 	 * @return PDOStatement|boolean
 	 */
@@ -394,7 +409,8 @@ class PicoDatabase //NOSONAR
 	}
 
 	/**
-	 * Execute query and sync to hub
+	 * Execute query
+	 * 
 	 * @param string $sql Query string to be executed
 	 * @return PDOStatement|boolean
 	 */
@@ -407,6 +423,7 @@ class PicoDatabase //NOSONAR
 
 	/**
 	 * Execute update query
+	 * 
 	 * @param string $sql Query string to be executed
 	 * @return PDOStatement|boolean
 	 */
@@ -419,6 +436,7 @@ class PicoDatabase //NOSONAR
 
 	/**
 	 * Execute delete query
+	 * 
 	 * @param string $sql Query string to be executed
 	 * @return PDOStatement|boolean
 	 */
@@ -431,6 +449,7 @@ class PicoDatabase //NOSONAR
 
 	/**
 	 * Execute transaction query
+	 * 
 	 * @param string $sql Query string to be executed
 	 * @return PDOStatement|boolean
 	 */
@@ -472,6 +491,7 @@ class PicoDatabase //NOSONAR
 
 	/**
 	 * Generate 20 bytes unique ID
+	 * 
 	 * @return string 20 bytes
 	 */
 	public function generateNewId()
@@ -497,6 +517,7 @@ class PicoDatabase //NOSONAR
 
 	/**
 	 * Get the value of databaseCredentials
+	 * 
 	 * @return SecretObject
 	 */
 	public function getDatabaseCredentials()

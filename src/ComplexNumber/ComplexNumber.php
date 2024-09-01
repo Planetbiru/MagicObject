@@ -44,7 +44,7 @@ class ComplexNumber {
     /**
      * Subtract complex number
      *
-     * @param self $self
+     * @param self $self Complex number
      * @return self
      */
     public function subtract($self) {
@@ -57,7 +57,7 @@ class ComplexNumber {
     /**
      * Multiply complex number
      *
-     * @param self $self
+     * @param self $self Complex number
      * @return self
      */
     public function multiply($self) {
@@ -73,7 +73,7 @@ class ComplexNumber {
     /**
      * Divide complex number
      *
-     * @param self $self
+     * @param self $self Complex number
      * @return self
      */
     public function divide($self) {

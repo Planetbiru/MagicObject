@@ -370,8 +370,8 @@ class PicoSpecification //NOSONAR
     /**
      * Magic method to handle undefined method
      *
-     * @param string $method
-     * @param array $params
+     * @param string $method Method called
+     * @param array $params Parameters given
      * @return self|mixed|null
      */
     public function __call($method, $params)
