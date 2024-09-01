@@ -255,9 +255,9 @@ class PicoSortable
     /**
      * Get sortable from user input
      *
-     * @param PicoRequestBase $request
-     * @param string[]|null $map
-     * @param array|null $defaultSortable
+     * @param PicoRequestBase $request Request
+     * @param string[]|null $map Map
+     * @param array|null $defaultSortable Default sortable
      * @return self
      */
     public static function fromUserInput($request, $map = null, $defaultSortable = null)

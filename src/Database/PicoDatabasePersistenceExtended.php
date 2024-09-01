@@ -14,8 +14,8 @@ class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
     /**
      * Magic object to handle undefined methods
      *
-     * @param string $method
-     * @param mixed[] $params
+     * @param string $method Method name
+     * @param mixed[] $params Parameters
      * @return void
      */
     public function __call($method, $params)
