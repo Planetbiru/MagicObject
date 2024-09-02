@@ -116,7 +116,7 @@ class PicoSort
     /**
      * Fix sort type
      *
-     * @param string $type
+     * @param string $type Sort type
      * @return string
      */
     public static function fixSortType($type)
