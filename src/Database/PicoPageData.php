@@ -190,7 +190,7 @@ class PicoPageData
     /**
      * Count data
      *
-     * @param array $result
+     * @param array $result Result
      * @return integer
      */
     private function countData($result)

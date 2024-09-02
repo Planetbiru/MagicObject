@@ -321,7 +321,7 @@ class PicoPredicate //NOSONAR
     /**
      * Generate LIKE ENDS wildcard
      *
-     * @param string $value
+     * @param string $value Value
      * @return string
      */
     public static function generateLikeEnds($value)
@@ -343,8 +343,8 @@ class PicoPredicate //NOSONAR
     /**
      * Magic method to handle undefined method
      *
-     * @param string $method
-     * @param array $params
+     * @param string $method Method name
+     * @param array $params Parameters
      * @return self|mixed|null
      */
     public function __call($method, $params)
@@ -360,8 +360,8 @@ class PicoPredicate //NOSONAR
     /**
      * Magic object to set value
      *
-     * @param string $name
-     * @param mixed|mixed[] $value
+     * @param string $name Column name
+     * @param mixed|mixed[] $value Column value
      */
     public function __set($name, $value)
     {
@@ -381,7 +381,7 @@ class PicoPredicate //NOSONAR
     /**
      * Function lower
      *
-     * @param string $value
+     * @param string $value Function value
      * @return string
      */
     public static function functionLower($value)
@@ -392,7 +392,7 @@ class PicoPredicate //NOSONAR
     /**
      * Function upper
      *
-     * @param string $value
+     * @param string $value Function value
      * @return string
      */
     public static function functionUpper($value)
@@ -403,7 +403,8 @@ class PicoPredicate //NOSONAR
     /**
      * Function lower
      *
-     * @param string $value
+     * @param string $function Function name
+     * @param string $value Function value
      * @return string
      */
     public static function functionAndValue($function, $value)
