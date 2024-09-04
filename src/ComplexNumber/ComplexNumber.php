@@ -31,7 +31,7 @@ class ComplexNumber {
     /**
      * Add complex number
      *
-     * @param self $self
+     * @param self $self Complex number
      * @return self
      */
     public function add($self) {
