@@ -75,7 +75,7 @@ class PicoDataComparation
 
     /**
      * Not in
-     * @param mixed[] $values
+     * @param mixed[] $values Values
      */
     public static function notIn($values)
     {
@@ -84,7 +84,7 @@ class PicoDataComparation
 
     /**
      * Like
-     * @param mixed $value
+     * @param mixed $value Value
      */
     public static function like($value)
     {

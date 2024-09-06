@@ -149,8 +149,8 @@ class PicoSpecification //NOSONAR
     /**
      * Add filter by array
      *
-     * @param array $predicate
-     * @param string $logic
+     * @param array $predicate Filter
+     * @param string $logic Filter logic
      * @return self
      */
     private function addFilterByArray($predicate, $logic)
@@ -319,7 +319,12 @@ class PicoSpecification //NOSONAR
 
                     if($spec->getComparation() != null)
                     {
-                        $arr[] = $spec->getFilterLogic() . " " . $columnFinal . " " . $spec->getComparation()->getComparison() . " " . PicoDatabaseUtil::escapeValue($spec->getValue());
+                        $arr[] = sprintf("%s %s %s %s", 
+                            $spec->getFilterLogic(), 
+                            $columnFinal, 
+                            $spec->getComparation()->getComparison(), 
+                            PicoDatabaseUtil::escapeValue($spec->getValue())
+                        );
                     }
                 }
                 else

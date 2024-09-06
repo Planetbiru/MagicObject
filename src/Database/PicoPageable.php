@@ -93,7 +93,7 @@ class PicoPageable
      *
      * @return self
      */
-    public function setSortable(PicoSortable $sortable)
+    public function setSortable($sortable)
     {
         $this->sortable = $sortable;
 
@@ -152,7 +152,7 @@ class PicoPageable
      *
      * @return self
      */
-    public function setPage(PicoPage $page)
+    public function setPage($page)
     {
         $this->page = $page;
         $offset = ($page->getPageNumber()-1) * $page->getPageSize();
@@ -178,7 +178,7 @@ class PicoPageable
      *
      * @return self
      */
-    public function setOffsetLimit(PicoLimit $offsetLimit)
+    public function setOffsetLimit($offsetLimit)
     {
         $this->offsetLimit = $offsetLimit;
 

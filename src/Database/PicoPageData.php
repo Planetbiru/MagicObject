@@ -202,7 +202,6 @@ class PicoPageData
         return 0;
     }
 
-
     /**
      * Calculate content
      *

@@ -59,6 +59,11 @@ class PicoTableInfo
      */
     protected $notNullColumns = array();
 
+    /**
+     * Column type
+     *
+     * @var string
+     */
     protected $columnType;
 
     /**

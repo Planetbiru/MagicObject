@@ -120,10 +120,10 @@ class PicoJoinMap
     {
         return json_encode(
             array(
-                'propertyName' => $this->propertyName,
-                'columnName' => $this->columnName,
-                'entity' => $this->entity,
-                'joinTable' => $this->joinTable,
+                'propertyName'   => $this->propertyName,
+                'columnName'     => $this->columnName,
+                'entity'         => $this->entity,
+                'joinTable'      => $this->joinTable,
                 'joinTableAlias' => $this->joinTableAlias
                 )
             );

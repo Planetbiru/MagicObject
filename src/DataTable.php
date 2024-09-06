@@ -104,7 +104,7 @@ class DataTable extends SetterGetter
 
     /**
      * Load data to object
-     * @param mixed $data
+     * @param mixed $data Reference
      * @return self
      */
     public function loadData($data)
@@ -141,9 +141,9 @@ class DataTable extends SetterGetter
     /**
      * Add language
      *
-     * @param string $code
-     * @param object|stdClass|array $reference
-     * @param boolean $use
+     * @param string $code Language code
+     * @param object|stdClass|array $reference Reference
+     * @param boolean $use Flag to use language
      * @return self
      */
     public function addLanguage($code, $reference, $use = false)
@@ -159,8 +159,8 @@ class DataTable extends SetterGetter
     /**
      * Remove language
      *
-     * @param string $code
-     * @param stdClass|array $reference
+     * @param string $code Language code
+     * @param stdClass|array $reference Reference
      * @return self
      */
     public function removeLanguage($code)
@@ -221,8 +221,8 @@ class DataTable extends SetterGetter
 
     /**
      * Property list
-     * @var boolean $reflectSelf
-     * @var boolean $asArrayProps
+     * @var boolean $reflectSelf Reflexion
+     * @var boolean $asArrayProps Properties
      * @return array
      */
     protected function propertyList($reflectSelf = false, $asArrayProps = false)
@@ -259,10 +259,10 @@ class DataTable extends SetterGetter
     /**
      * Annotation content
      *
-     * @param PicoAnnotationParser $reflexProp
-     * @param PicoGenericObject $parameters
-     * @param string $key
-     * @param string $defaultLabel
+     * @param PicoAnnotationParser $reflexProp Class reflexion
+     * @param PicoGenericObject $parameters Parameters
+     * @param string $key Key
+     * @param string $defaultLabel Default label
      * @return mixed|null
      */
     private function annotationContent($reflexProp, $parameters, $annotation, $attribute)
@@ -281,10 +281,10 @@ class DataTable extends SetterGetter
     /**
      * Define label
      *
-     * @param PicoAnnotationParser $reflexProp
-     * @param PicoGenericObject $parameters
-     * @param string $key
-     * @param string $defaultLabel
+     * @param PicoAnnotationParser $reflexProp Class reflexion
+     * @param PicoGenericObject $parameters Parameters
+     * @param string $key Key
+     * @param string $defaultLabel Default label
      * @return string
      */
     private function label($reflexProp, $parameters, $key, $defaultLabel)
@@ -316,10 +316,10 @@ class DataTable extends SetterGetter
     /**
      * Append table by properties
      *
-     * @param DOMDocument $doc
-     * @param DOMNode $tbody
-     * @param array $props
-     * @param string $className
+     * @param DOMDocument $doc DOM Document
+     * @param DOMNode $tbody DOM Node
+     * @param array $props Properties
+     * @param string $className Class name
      * @return void
      */
     private function appendByProp($doc, $tbody, $props, $className)
@@ -358,9 +358,9 @@ class DataTable extends SetterGetter
     /**
      * Append table by values
      *
-     * @param DOMDocument $doc
-     * @param DOMNode $tbody
-     * @param stdClass $values
+     * @param DOMDocument $doc DOM Document
+     * @param DOMNode $tbody DOM Node
+     * @param stdClass $values Data
      * @return void
      */
     private function appendByValues($doc, $tbody, $values)
@@ -386,7 +386,7 @@ class DataTable extends SetterGetter
     /**
      * Get label
      *
-     * @param string $propertyName
+     * @param string $propertyName Property name
      * @return string
      */
     private function getLabel($propertyName)
@@ -416,7 +416,7 @@ class DataTable extends SetterGetter
     /**
      * Add class to table
      *
-     * @param string $className
+     * @param string $className Class name
      * @return self
      */
     public function addClass($className)
@@ -433,7 +433,7 @@ class DataTable extends SetterGetter
     /**
      * Remove class from table
      *
-     * @param string $className
+     * @param string $className Class name
      * @return self
      */
     public function removeClass($className)
@@ -456,8 +456,8 @@ class DataTable extends SetterGetter
     /**
      * Replace class of the table
      *
-     * @param string $search
-     * @param string $replace
+     * @param string $search Text to search
+     * @param string $replace Text to replace
      * @return self
      */
     public function replaceClass($search, $replace)
