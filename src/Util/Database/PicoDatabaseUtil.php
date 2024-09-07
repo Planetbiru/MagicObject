@@ -179,7 +179,12 @@ class PicoDatabaseUtil
 			// convert number to string
 			$ret = $value."";
 		}
-		else if(is_array($value) || is_object($value))
+		else if(is_array($value))
+		{
+			// encode to JSON and escapethe value
+			$ret = "(".self::toList($value).")";
+		}
+        else if(is_object($value))
 		{
 			// encode to JSON and escapethe value
 			$ret = "'".self::escapeSQL(json_encode($value))."'";
@@ -191,6 +196,22 @@ class PicoDatabaseUtil
 		}
 		return $ret;
 	}
+
+    /**
+     * Convert array to list
+     *
+     * @param array $array
+     * @return string
+     */
+    public static function toList($array)
+    {
+        foreach($array as $key=>$value)
+        {
+            $type = gettype($value);
+            $array[$key] = self::fixValue($value, $type);
+        }
+        return implode(", ", $array);
+    }
 
     /**
      * Escape SQL
