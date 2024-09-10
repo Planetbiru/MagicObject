@@ -220,11 +220,11 @@ class PicoSpecification //NOSONAR
      */
     public static function isValueEmpty($value)
     {
-        if(is_string($value))
+        if(!isset($value) && is_string($value))
         {
             return empty(trim($value));
         }
-        return empty($value);
+        return false;
     }
 
     /**
