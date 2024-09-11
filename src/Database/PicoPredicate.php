@@ -310,7 +310,7 @@ class PicoPredicate //NOSONAR
     /**
      * Generate LIKE STARTS wildcard
      *
-     * @param string $value
+     * @param string $value Value
      * @return string
      */
     public static function generateLikeStarts($value)
@@ -332,7 +332,7 @@ class PicoPredicate //NOSONAR
     /**
      * Generate LIKE CONTAINS wildcard
      *
-     * @param string $value
+     * @param string $value Value
      * @return string
      */
     public static function generateLikeContains($value)

@@ -213,7 +213,7 @@ class PicoDatabase //NOSONAR
 	/**
 	 * Change database
 	 *
-	 * @param string $databaseName
+	 * @param string $databaseName Database name
 	 * @return self
 	 */
 	public function useDatabase($databaseName)
@@ -227,7 +227,7 @@ class PicoDatabase //NOSONAR
 	 * Set autocommit ON of OFF
 	 * When it set to OFF, user MUST call commit or rollback manualy. Default action is rollback
 	 *
-	 * @param boolean $autocommit
+	 * @param boolean $autocommit Flag autocommit
 	 * @return boolean
 	 */
 	public function setAudoCommit($autocommit)

@@ -44,6 +44,7 @@ class PicoPageData
      * @var integer
      */
     private $totalPage = 0;
+    
     /**
      * Page number
      * @var integer
@@ -201,7 +202,6 @@ class PicoPageData
         }
         return 0;
     }
-
 
     /**
      * Calculate content

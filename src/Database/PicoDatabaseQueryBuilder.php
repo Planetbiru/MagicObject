@@ -471,7 +471,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	 *
 	 * @param string $table Table name
 	 * @param array $data Data to be upadted
-	 * @param array $primaryKey
+	 * @param array $primaryKey Primary keys
 	 * @return string
 	 */
 	public function createUpdateQuery($table, $data, $primaryKey)

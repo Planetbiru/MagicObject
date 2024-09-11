@@ -149,8 +149,8 @@ class PicoSpecification //NOSONAR
     /**
      * Add filter by array
      *
-     * @param array $predicate
-     * @param string $logic
+     * @param array $predicate Filter
+     * @param string $logic Filter logic
      * @return self
      */
     private function addFilterByArray($predicate, $logic)
@@ -220,11 +220,11 @@ class PicoSpecification //NOSONAR
      */
     public static function isValueEmpty($value)
     {
-        if(is_string($value))
+        if(!isset($value) && is_string($value))
         {
             return empty(trim($value));
         }
-        return empty($value);
+        return false;
     }
 
     /**
@@ -319,7 +319,12 @@ class PicoSpecification //NOSONAR
 
                     if($spec->getComparation() != null)
                     {
-                        $arr[] = $spec->getFilterLogic() . " " . $columnFinal . " " . $spec->getComparation()->getComparison() . " " . PicoDatabaseUtil::escapeValue($spec->getValue());
+                        $arr[] = sprintf("%s %s %s %s", 
+                            $spec->getFilterLogic(), 
+                            $columnFinal, 
+                            $spec->getComparation()->getComparison(), 
+                            PicoDatabaseUtil::escapeValue($spec->getValue())
+                        );
                     }
                 }
                 else
@@ -546,5 +551,15 @@ class PicoSpecification //NOSONAR
         $this->defaultLogic = self::LOGIC_OR;
 
         return $this;
+    }
+
+    /**
+     * Get check if require real join table
+     *
+     * @return boolean
+     */ 
+    public function getRequireJoin()
+    {
+        return $this->requireJoin;
     }
 }
