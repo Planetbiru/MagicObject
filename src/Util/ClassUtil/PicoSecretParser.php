@@ -61,7 +61,7 @@ class PicoSecretParser
     /**
      * Check if input is associated array
      *
-     * @param array $array
+     * @param array $array Array
      * @return boolean
      */
     private static function hasStringKeys($array) {
@@ -101,9 +101,9 @@ class PicoSecretParser
     /**
      * Update object
      *
-     * @param SecretObject $obj
-     * @param string $key
-     * @param mixed $val
+     * @param SecretObject $obj Secret object
+     * @param string $key Property name
+     * @param mixed $val Property value
      * @return SecretObject
      */
     private static function updateObject($obj, $key, $val)
@@ -133,7 +133,7 @@ class PicoSecretParser
     /**
      * Check if value is object
      *
-     * @param [type] $value
+     * @param mixed $value Value to be checked
      * @return boolean
      */
     private static function isObject($value)
@@ -147,7 +147,7 @@ class PicoSecretParser
 
     /**
      * Parse recursive
-     * @param array $data
+     * @param array $data Data to be parsed
      */
     public static function parseRecursiveArray($data)
     {

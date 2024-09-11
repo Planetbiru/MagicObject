@@ -552,4 +552,14 @@ class PicoSpecification //NOSONAR
 
         return $this;
     }
+
+    /**
+     * Get check if require real join table
+     *
+     * @return boolean
+     */ 
+    public function getRequireJoin()
+    {
+        return $this->requireJoin;
+    }
 }

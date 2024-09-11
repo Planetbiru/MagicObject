@@ -200,7 +200,7 @@ class PicoDatabaseUtil
     /**
      * Convert array to list
      *
-     * @param array $array
+     * @param array $array Array
      * @return string
      */
     public static function toList($array)
