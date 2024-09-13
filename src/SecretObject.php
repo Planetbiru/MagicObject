@@ -205,6 +205,12 @@ class SecretObject extends stdClass //NOSONAR
             $this->modifyNullProperties($var, $params[0]);
             return $this;
         }
+        else if (strncasecmp($method, "unset", 5) === 0)
+        {
+            $var = lcfirst(substr($method, 5));
+            unset($this->{$var});
+            return $this;
+        }
     }
 
     /**

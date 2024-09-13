@@ -258,7 +258,7 @@ class SetterGetter extends stdClass
         else if (strncasecmp($method, "unset", 5) === 0)
         {
             $var = lcfirst(substr($method, 5));
-            $this->removeValue($var, $params[0]);
+            unset($this->{$var});
             return $this;
         }
     }
