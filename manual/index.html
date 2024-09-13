@@ -7400,6 +7400,48 @@ catch(Exception $e)
 }</code></pre>
 <p>From the example above, it can be seen that an entity can even use two databases interchangeably.</p>
 <p>When constructed, the <code>$album</code> object uses the <code>$database1</code> database connection. The application retrieves data with the primary key <code>123456</code> from <code>$database1</code> and then stores it in <code>$database2</code> without having to change many parameters and lots of code. Please note that to save <code>$album</code> data, you must use the <code>save</code> method instead of <code>insert</code> or <code>update</code> because there is a possibility that data with the same primary key already exists in <code>$database2</code>.</p>
+<pre><code class="language-yml">database_target:
+  driver: mysql
+  host: server1.domain.com
+  port: 3306
+  username: root
+  password: Tantrum2025
+  database_name: sipro
+  databseSchema: public
+  timeZone: Asia/Jakarta
+database_source:
+  driver: mysql
+  host: server1.domain.com
+  port: 3306
+  username: root
+  password: Tantrum2025
+  database_name: sipro_ori
+  databseSchema: public
+  timeZone: Asia/Jakarta
+maximum_record: 100</code></pre>
+<p>$cfg = new ConfigApp(null, true);
+$cfg-&gt;loadYamlFile(dirname(<strong>DIR</strong>).&quot;/.cfg/app.yml&quot;, true, true, true);</p>
+<p>$databaseCredentials = new PicoDatabaseCredentials($cfg-&gt;getDatabase());</p>
+<p>$database = new PicoDatabase($databaseCredentials,
+function($sql, $type) //NOSONAR
+{
+// callback when execute query that modify data
+},
+function($sql) //NOSONAR
+{
+// callback when execute all query
+}
+);</p>
+<p>try
+{
+$database-&gt;connect();
+$shutdownManager = new ShutdownManager($database);
+$shutdownManager-&gt;registerShutdown();
+}
+catch(Exception $e)
+{
+// do nothing
+}</p>
 </article>
 
 <article class="article" id="part17">
@@ -8542,19 +8584,19 @@ echo $apa;</code></pre>
 <p>File <code>import.yml</code></p>
 <pre><code class="language-yml">database_target:
   driver: mysql
-  host: server1.planetbiru.com
+  host: server1.domain.com
   port: 3306
   username: root
-  password: Cebong2017
+  password: Tantrum2025
   database_name: sipro
   databseSchema: public
   timeZone: Asia/Jakarta
 database_source:
   driver: mysql
-  host: server1.planetbiru.com
+  host: server1.domain.com
   port: 3306
   username: root
-  password: Cebong2017
+  password: Tantrum2025
   database_name: sipro_ori
   databseSchema: public
   timeZone: Asia/Jakarta
@@ -8640,19 +8682,19 @@ $sql = PicoDatabaseUtilMySql::importData($config, function($sql, $source, $targe
 <p>File <code>import.yml</code></p>
 <pre><code class="language-yml">database_target:
   driver: mysql
-  host: server1.planetbiru.com
+  host: server1.domain.com
   port: 3306
   username: root
-  password: Cebong2017
+  password: Tantrum2025
   database_name: sipro
   databseSchema: public
   timeZone: Asia/Jakarta
 database_source:
   driver: mysql
-  host: server1.planetbiru.com
+  host: server1.domain.com
   port: 3306
   username: root
-  password: Cebong2017
+  password: Tantrum2025
   database_name: sipro_ori
   databseSchema: public
   timeZone: Asia/Jakarta
