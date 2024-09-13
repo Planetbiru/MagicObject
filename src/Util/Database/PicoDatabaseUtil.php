@@ -10,6 +10,11 @@ class PicoDatabaseUtil
 {
     const INLINE_TRIM = " \r\n\t ";
 
+    private function __construct()
+    {
+        // prevent object construction from outside the class
+    }
+
     /**
      * Get specification from parameters
      * @param array $params Parameters
