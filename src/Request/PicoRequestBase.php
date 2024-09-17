@@ -21,12 +21,20 @@ class PicoRequestBase extends stdClass //NOSONAR
      * @var array
      */
     private $classParams = array();
+
     /**
      * Force input object as scalar
      *
      * @var boolean
      */
     protected $forceScalar = false;
+
+    /**
+     * Recursive
+     *
+     * @var boolean
+     */
+    protected $_recursive = false;
 
     /**
      * Constructor
