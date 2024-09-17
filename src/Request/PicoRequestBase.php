@@ -38,7 +38,7 @@ class PicoRequestBase extends stdClass //NOSONAR
 
     /**
      * Constructor
-     * @param boolean $forceScalar
+     * @param boolean $forceScalar Only accept scalar value
      */
     public function __construct($forceScalar = false)
     {
@@ -79,7 +79,7 @@ class PicoRequestBase extends stdClass //NOSONAR
      * Set property value
      *
      * @param string $propertyName Property name
-     * @param mixed|null
+     * @param mixed|null $propertyValue Property value
      * @return self
      */
     public function set($propertyName, $propertyValue)
@@ -415,19 +415,19 @@ class PicoRequestBase extends stdClass //NOSONAR
     /**
      * Addslahes
      *
-     * @param string $inp
+     * @param string $input Input value
      * @return string
      */
-    public function addslashes($inp)
+    public function addslashes($input)
     {
-        return addslashes($inp);
+        return addslashes($input);
     }
 
     /**
      * Get value from formated number
      *
      * @param stdClass|MagicObject $cfg Configuration
-     * @param mixed $input Input
+     * @param mixed $input Input value
      * @return float
      */
     public function _getValue($cfg, $input)
