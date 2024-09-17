@@ -95,7 +95,7 @@ class PicoUplodFile
     {
         $keys = array_keys($_FILES);
         foreach ($keys as $key) {
-            $camel = PicoStringUtil::camelize($key);
+            $camel = PicoStringUtil::camelize(str_replace("-", "_", $key));
             $this->map[$camel] = $key;
             $this->values[$key] = new PicoUploadFileContainer($_FILES[$key]);
         }
