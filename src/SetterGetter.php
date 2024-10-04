@@ -272,7 +272,7 @@ class SetterGetter extends stdClass
             {
                 $this->$var = array();
             }
-            array_push($this->$var, $params[0]);
+            array_push($this->$var, isset($params) && isset($params[0]) ? $params[0] : null);
             return $this;
         }
         else if (strncasecmp($method, "pop", 3) === 0) {

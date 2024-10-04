@@ -1875,13 +1875,13 @@ class MagicObject extends stdClass // NOSONAR
             $this->removeValue($var, $params[0]);
             return $this;
         }
-        else if (strncasecmp($method, "push", 4) === 0 && isset($params) && isset($params[0]) && !$this->_readonly) {
+        else if (strncasecmp($method, "push", 4) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
             $var = lcfirst(substr($method, 4));
             if(!isset($this->$var) || !is_array($this->$var))
             {
                 $this->$var = array();
             }
-            array_push($this->$var, $params[0]);
+            array_push($this->$var, isset($params) && isset($params[0]) ? $params[0] : null);
             return $this;
         }
         else if (strncasecmp($method, "pop", 3) === 0) {
