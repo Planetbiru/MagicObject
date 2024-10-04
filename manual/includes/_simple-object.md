@@ -106,7 +106,7 @@ Push is present in MagicObject version 1.22. Push is used to add array elements 
 As with the `set` method, users can use the `push` method in two ways:
 
 1. using a subfix in the form of a property name written in camelcase style with one parameter, namely the value of the element to be added.
-2. using two parameters, namely the property name written in camelcase style and the value of the element to be added
+2. using two parameters, namely the property name written in camelcase style and the value of the element to be added.
 
 ```
 <?php
@@ -148,7 +148,11 @@ Pop is present in MagicObject version 1.22. Pop is used to remove the last eleme
 As with the `unset` method, users can use the `pop` method in two ways:
 
 1. using a subfix in the form of a property name written in camelcase style.
-2. using one parameter, namely the property name
+2. using one parameter, namely the property name.
+
+**Warning!**
+
+Be careful using the `push` method. `push` will force a property to be an array. If the property has a value other than an array and the user calls the `push` method on that property, MagicObject will delete the previously stored data and convert the property to an array.
 
 ```
 <?php
