@@ -124,6 +124,8 @@ error_log($someObject);</code></pre>
 <li>using a subfix in the form of a property name written in camelcase style with one parameter, namely the value of the element to be added.</li>
 <li>using two parameters, namely the property name written in camelcase style and the value of the element to be added.</li>
 </ol>
+<p><strong>Warning!</strong></p>
+<p>Be careful using the <code>push</code> method. <code>push</code> will force a property to be an array. If the property has a value other than an array and the user calls the <code>push</code> method on that property, MagicObject will delete the previously stored data and convert the property to an array.</p>
 <pre><code>&lt;?php
 use MagicObject\MagicObject;
 
@@ -157,8 +159,6 @@ echo $someObject;</code></pre>
 <li>using a subfix in the form of a property name written in camelcase style.</li>
 <li>using one parameter, namely the property name.</li>
 </ol>
-<p><strong>Warning!</strong></p>
-<p>Be careful using the <code>push</code> method. <code>push</code> will force a property to be an array. If the property has a value other than an array and the user calls the <code>push</code> method on that property, MagicObject will delete the previously stored data and convert the property to an array.</p>
 <pre><code>&lt;?php
 use MagicObject\MagicObject;
 
