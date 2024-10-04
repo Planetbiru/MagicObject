@@ -782,11 +782,11 @@ class MagicObject extends stdClass // NOSONAR
     public function push($propertyName, $propertyValue)
     {
         $var = PicoStringUtil::camelize($propertyName);
-        if(!isset($this->$var) || !is_array($this->$var))
+        if(!isset($this->$var))
         {
             $this->$var = array();
         }
-        array_push($this->$var, isset($params) && isset($params[0]) ? $params[0] : null);
+        array_push($this->$var, $propertyValue);
         return $this;
     }
 
@@ -1923,11 +1923,14 @@ class MagicObject extends stdClass // NOSONAR
         }
         else if (strncasecmp($method, "push", 4) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
             $var = lcfirst(substr($method, 4));
-            if(!isset($this->$var) || !is_array($this->$var))
+            if(!isset($this->$var))
             {
                 $this->$var = array();
             }
-            array_push($this->$var, isset($params) && isset($params[0]) ? $params[0] : null);
+            if(is_array($this->$var))
+            {
+                array_push($this->$var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+            }
             return $this;
         }
         else if (strncasecmp($method, "pop", 3) === 0) {
