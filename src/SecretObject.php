@@ -213,11 +213,11 @@ class SecretObject extends stdClass //NOSONAR
         }
         else if (strncasecmp($method, "push", 4) === 0 && isset($params) && isset($params[0]) && !$this->_readonly) {
             $var = lcfirst(substr($method, 4));
-            if(!isset($this->$var))
+            if(!isset($this->$var) || !is_array($this->$var))
             {
                 $this->$var = array();
             }
-            $this->$var[] = $params[0];
+            array_push($this->$var, $params[0]);
             return $this;
         }
         else if (strncasecmp($method, "pop", 3) === 0) {
