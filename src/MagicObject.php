@@ -1875,7 +1875,6 @@ class MagicObject extends stdClass // NOSONAR
      * listAllAsc &raquo; search multiple record data from database without filter order by primary keys ascending. Similar to findAllAsc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
      * listAllDesc &raquo; search multiple record data from database without filter order by primary keys descending. Similar to findAllDesc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
      * countBy &raquo; count data from database.
-     * countBy &raquo; count data from database.
      * existsBy &raquo; check data from database. This method require database connection.
      * deleteBy &raquo; delete data from database without read it first. This method require database connection.
      * booleanToTextBy &raquo; convert boolean value to yes/no or true/false depend on parameters given. Example: $result = booleanToTextByActive("Yes", "No"); If $obj->active is true, $result will be "Yes" otherwise "No". This method not require database connection.
@@ -2070,23 +2069,18 @@ class MagicObject extends stdClass // NOSONAR
         }
         else if (strncasecmp($method, "createSelected", 14) === 0) {
             $var = lcfirst(substr($method, 14));
-            if(isset($params) && isset($params[0]))
-            {
+            if(isset($params) && isset($params[0])) {
                 return isset($this->$var) && $this->$var == $params[0] ? self::ATTR_SELECTED : '';
             }
-            else
-            {
+            else {
                 return isset($this->$var) && $this->$var == 1 ? self::ATTR_SELECTED : '';
             }
         }
         else if (strncasecmp($method, "createChecked", 13) === 0) {
             $var = lcfirst(substr($method, 13));
-            if(isset($params) && isset($params[0]))
-            {
+            if(isset($params) && isset($params[0])) {
                 return isset($this->$var) && $this->$var == $params[0] ? self::ATTR_CHECKED : '';
-            }
-            else
-            {
+            } else {
                 return isset($this->$var) && $this->$var == 1 ? self::ATTR_CHECKED : '';
             }
         }
