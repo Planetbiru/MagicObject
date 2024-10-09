@@ -773,7 +773,7 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
-     * Add array element of property at the end position
+     * Adds array elements from a property at the end
      *
      * @param string $propertyName
      * @param mixed $propertyValue
@@ -791,7 +791,7 @@ class MagicObject extends stdClass // NOSONAR
     }
     
     /**
-     * Add array element of property at the end position
+     * Adds array elements from a property at the end
      *
      * @param string $propertyName
      * @param mixed $propertyValue
@@ -803,7 +803,7 @@ class MagicObject extends stdClass // NOSONAR
     }
     
     /**
-     * Add array element of property at the first position
+     * Adds array elements from a property at the beginning
      *
      * @param string $propertyName
      * @param mixed $propertyValue
@@ -821,7 +821,7 @@ class MagicObject extends stdClass // NOSONAR
     }
     
     /**
-     * Add array element of property at the first position
+     * Adds array elements from a property at the beginning
      *
      * @param string $propertyName
      * @param mixed $propertyValue
@@ -833,7 +833,7 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
-     * Remove last array element of property
+     * Remove last array element of property and return it
      *
      * @param string $propertyName
      * @return mixed
@@ -849,7 +849,7 @@ class MagicObject extends stdClass // NOSONAR
     }
     
     /**
-     * Remove first array element of property
+     * Remove first array element of property and return it
      *
      * @param string $propertyName
      * @return mixed
@@ -1908,40 +1908,42 @@ class MagicObject extends stdClass // NOSONAR
 
     /**
      * Magic method called when user call any undefined method. __call method will check the prefix of called method and call appropriated method according to its name and its parameters.
-     * hasValue &raquo; check if property has value. This method not require database connection.
-     * isset &raquo; gcheck if property has value. String will be convert to number first. This method not require database connection.
-     * is &raquo; get property value as boolean. Number will true if it's value is 1. String will be convert to number first. This method not require database connection.
-     * equals &raquo; check if property value is equals to given value. This method not require database connection.
-     * get &raquo; get property value. This method not require database connection.
-     * set &raquo; set property value. This method not require database connection.
-     * unset &raquo; unset property value. This method not require database connection.
-     * push &raquo; add new array element of property at the end position. This method not require database connection.
-     * unshift &raquo; add new array element of property at the first position. This method not require database connection.
-     * pop &raquo; remove last element of property. This method not require database connection.
-     * shift &raquo; remove first element of property. This method not require database connection.
-     * findOneBy &raquo; search data from database and return one record. This method require database connection.
-     * findOneIfExistsBy &raquo; search data from database by any column values and return one record. This method require database connection.
-     * deleteOneBy &raquo; delete data from database by any column values and return one record. This method require database connection.
-     * findFirstBy &raquo; search data from database by any column values and return first record. This method require database connection.
-     * findFirstIfExistsBy &raquo; search data from database by any column values and return first record. This method require database connection.
-     * findLastBy &raquo; search data from database by any column values and return last record. This method require database connection.
-     * findLastIfExistsBy &raquo; search data from database by any column values and return last record. This method require database connection.
-     * findBy &raquo; search multiple record data from database by any column values. This method require database connection.
-     * findAscBy &raquo; search multiple record data from database order by primary keys ascending. This method require database connection.
-     * findDescBy &raquo; search multiple record data from database order by primary keys descending. This method require database connection.
-     * listBy &raquo; search multiple record data from database. Similar to findBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
-     * listAscBy &raquo; search multiple record data from database order by primary keys ascending. Similar to findAscBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
-     * listDescBy &raquo; search multiple record data from database order by primary keys descending. Similar to findDescBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
-     * listAllAsc &raquo; search multiple record data from database without filter order by primary keys ascending. Similar to findAllAsc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
-     * listAllDesc &raquo; search multiple record data from database without filter order by primary keys descending. Similar to findAllDesc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require database connection.
+     * hasValue &raquo; check if property has value. This method does not require a database connection.
+     * isset &raquo; gcheck if property has value. String will be convert to number first. This method does not require a database connection.
+     * is &raquo; get property value as boolean. Number will true if it's value is 1. String will be convert to number first. This method does not require a database connection.
+     * equals &raquo; check if property value is equals to given value. This method does not require a database connection.
+     * get &raquo; get property value. This method does not require a database connection.
+     * set &raquo; set property value. This method does not require a database connection.
+     * unset &raquo; unset property value. This method does not require a database connection.
+     * push &raquo; adds array elements from a property at the end. This method does not require a database connection.
+     * append &raquo; adds array elements from a property at the end. This method does not require a database connection.
+     * unshift &raquo; adds array elements from a property at the beginning. This method does not require a database connection.
+     * prepend &raquo; adds array elements from a property at the beginning. This method does not require a database connection.
+     * pop &raquo; remove last element of property. This method does not require a database connection.
+     * shift &raquo; remove first element of property. This method does not require a database connection.
+     * findOneBy &raquo; search data from database and return one record. This method require a database connection.
+     * findOneIfExistsBy &raquo; search data from database by any column values and return one record. This method require a database connection.
+     * deleteOneBy &raquo; delete data from database by any column values and return one record. This method require a database connection.
+     * findFirstBy &raquo; search data from database by any column values and return first record. This method require a database connection.
+     * findFirstIfExistsBy &raquo; search data from database by any column values and return first record. This method require a database connection.
+     * findLastBy &raquo; search data from database by any column values and return last record. This method require a database connection.
+     * findLastIfExistsBy &raquo; search data from database by any column values and return last record. This method require a database connection.
+     * findBy &raquo; search multiple record data from database by any column values. This method require a database connection.
+     * findAscBy &raquo; search multiple record data from database order by primary keys ascending. This method require a database connection.
+     * findDescBy &raquo; search multiple record data from database order by primary keys descending. This method require a database connection.
+     * listBy &raquo; search multiple record data from database. Similar to findBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require a database connection.
+     * listAscBy &raquo; search multiple record data from database order by primary keys ascending. Similar to findAscBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require a database connection.
+     * listDescBy &raquo; search multiple record data from database order by primary keys descending. Similar to findDescBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require a database connection.
+     * listAllAsc &raquo; search multiple record data from database without filter order by primary keys ascending. Similar to findAllAsc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require a database connection.
+     * listAllDesc &raquo; search multiple record data from database without filter order by primary keys descending. Similar to findAllDesc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require a database connection.
      * countBy &raquo; count data from database.
-     * existsBy &raquo; check data from database. This method require database connection.
-     * deleteBy &raquo; delete data from database without read it first. This method require database connection.
-     * booleanToTextBy &raquo; convert boolean value to yes/no or true/false depend on parameters given. Example: $result = booleanToTextByActive("Yes", "No"); If $obj->active is true, $result will be "Yes" otherwise "No". This method not require database connection.
-     * booleanToSelectedBy &raquo; Create attribute selected="selected" for form. This method not require database connection.
-     * booleanToCheckedBy &raquo; Create attribute checked="checked" for form. This method not require database connection.
-     * startsWith &raquo; Check that value starts with any string. This method not require database connection.
-     * endsWith &raquo; Check that value ends with any string. This method not require database connection.
+     * existsBy &raquo; check data from database. This method require a database connection.
+     * deleteBy &raquo; delete data from database without read it first. This method require a database connection.
+     * booleanToTextBy &raquo; convert boolean value to yes/no or true/false depend on parameters given. Example: $result = booleanToTextByActive("Yes", "No"); If $obj->active is true, $result will be "Yes" otherwise "No". This method does not require a database connection.
+     * booleanToSelectedBy &raquo; Create attribute selected="selected" for form. This method does not require a database connection.
+     * booleanToCheckedBy &raquo; Create attribute checked="checked" for form. This method does not require a database connection.
+     * startsWith &raquo; Check that value starts with any string. This method does not require a database connection.
+     * endsWith &raquo; Check that value ends with any string. This method does not require a database connection.
      *
      * @param string $method Method name
      * @param mixed $params Parameters
