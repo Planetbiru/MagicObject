@@ -773,7 +773,7 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
-     * Add array element of property
+     * Add array element of property at the end position
      *
      * @param string $propertyName
      * @param mixed $propertyValue
@@ -789,6 +789,48 @@ class MagicObject extends stdClass // NOSONAR
         array_push($this->$var, $propertyValue);
         return $this;
     }
+    
+    /**
+     * Add array element of property at the end position
+     *
+     * @param string $propertyName
+     * @param mixed $propertyValue
+     * @return self
+     */
+    public function append($propertyName, $propertyValue)
+    {
+        return $this->push($propertyName, $propertyValue);
+    }
+    
+    /**
+     * Add array element of property at the first position
+     *
+     * @param string $propertyName
+     * @param mixed $propertyValue
+     * @return self
+     */
+    public function unshift($propertyName, $propertyValue)
+    {
+        $var = PicoStringUtil::camelize($propertyName);
+        if(!isset($this->$var))
+        {
+            $this->$var = array();
+        }
+        array_unshift($this->$var, $propertyValue);
+        return $this;
+    }
+    
+    /**
+     * Add array element of property at the first position
+     *
+     * @param string $propertyName
+     * @param mixed $propertyValue
+     * @return self
+     */
+    public function prepend($propertyName, $propertyValue)
+    {
+        return $this->unshift($propertyName, $propertyValue);
+    }
 
     /**
      * Remove last array element of property
@@ -802,6 +844,22 @@ class MagicObject extends stdClass // NOSONAR
         if(isset($this->$var) && is_array($this->$var))
         {
             return array_pop($this->$var);
+        }
+        return null;
+    }
+    
+    /**
+     * Remove first array element of property
+     *
+     * @param string $propertyName
+     * @return mixed
+     */
+    public function shift($propertyName)
+    {
+        $var = PicoStringUtil::camelize($propertyName);
+        if(isset($this->$var) && is_array($this->$var))
+        {
+            return array_shift($this->$var);
         }
         return null;
     }
@@ -1857,8 +1915,10 @@ class MagicObject extends stdClass // NOSONAR
      * get &raquo; get property value. This method not require database connection.
      * set &raquo; set property value. This method not require database connection.
      * unset &raquo; unset property value. This method not require database connection.
-     * push &raquo; add new array element of property. This method not require database connection.
+     * push &raquo; add new array element of property at the end position. This method not require database connection.
+     * unshift &raquo; add new array element of property at the first position. This method not require database connection.
      * pop &raquo; remove last element of property. This method not require database connection.
+     * shift &raquo; remove first element of property. This method not require database connection.
      * findOneBy &raquo; search data from database and return one record. This method require database connection.
      * findOneIfExistsBy &raquo; search data from database by any column values and return one record. This method require database connection.
      * deleteOneBy &raquo; delete data from database by any column values and return one record. This method require database connection.
@@ -1922,23 +1982,27 @@ class MagicObject extends stdClass // NOSONAR
         }
         else if (strncasecmp($method, "push", 4) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
             $var = lcfirst(substr($method, 4));
-            if(!isset($this->$var))
-            {
-                $this->$var = array();
-            }
-            if(is_array($this->$var))
-            {
-                array_push($this->$var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
-            }
-            return $this;
+            return $this->push($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+        }
+        else if (strncasecmp($method, "append", 6) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
+            $var = lcfirst(substr($method, 6));
+            return $this->append($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+        }
+        else if (strncasecmp($method, "unshift", 7) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
+            $var = lcfirst(substr($method, 7));
+            return $this->unshift($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+        }
+        else if (strncasecmp($method, "prepend", 7) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
+            $var = lcfirst(substr($method, 7));
+            return $this->prepend($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
         }
         else if (strncasecmp($method, "pop", 3) === 0) {
             $var = lcfirst(substr($method, 3));
-            if(isset($this->$var) && is_array($this->$var))
-            {
-                return array_pop($this->$var);
-            }
-            return null;
+            return $this->pop($var);
+        }
+        else if (strncasecmp($method, "shift", 5) === 0) {
+            $var = lcfirst(substr($method, 5));
+            return $this->shift($var);
         }
         else if (strncasecmp($method, "findOneBy", 9) === 0) {
             $var = lcfirst(substr($method, 9));
