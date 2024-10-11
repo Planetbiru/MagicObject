@@ -142,7 +142,9 @@ class PicoPageData
     /**
      * Constructor for PicoPageData.
      *
-     * @param MagicObject[] $result Array of MagicObject or null.
+     * Initializes a new instance of the PicoPageData class with the provided parameters.
+     *
+     * @param MagicObject[]|null $result Array of MagicObject or null.
      * @param float $startTime Timestamp when the query was sent.
      * @param integer $totalResult Total result count.
      * @param PicoPageable|null $pageable Pageable object.
@@ -150,12 +152,35 @@ class PicoPageData
      * @param MagicObject|null $entity Entity.
      * @param array|null $subqueryMap Subquery mapping.
      */
-    public function __construct($result, $startTime, $totalResult = 0, $pageable = null, $stmt = null, $entity = null, $subqueryMap = null)
-    {
-        $this->startTime = $startTime;
-        $this->result = $result ?? [];
-        
-        $this->totalResult = $totalResult ?: $this->countData($result);
+    public function __construct(
+        $result = null,
+        $startTime = null,
+        $totalResult = 0,
+        PicoPageable $pageable = null,
+        PDOStatement $stmt = null,
+        MagicObject $entity = null,
+        $subqueryMap = null
+    ) {
+        if(isset($startTime))
+        {
+            $this->startTime = $startTime;
+        }
+        else
+        {
+            $this->startTime = time();
+        }
+        if ($result === null) {
+            $this->result = [];
+        } else {
+            $this->result = $result;
+        }
+
+        if ($totalResult === 0) {
+            $this->totalResult = $this->countData($this->result);
+        } else {
+            $this->totalResult = $totalResult;
+        }
+
         $this->byCountResult = $totalResult === 0;
 
         if ($pageable instanceof PicoPageable) {
@@ -169,9 +194,10 @@ class PicoPageData
         $this->executionTime = $this->endTime - $this->startTime;
         $this->stmt = $stmt;
         $this->entity = $entity;
-        $this->className = $entity ? get_class($entity) : null;
-        $this->subqueryMap = $subqueryMap ?? [];
+        $this->className = ($entity !== null) ? get_class($entity) : null;
+        $this->subqueryMap = ($subqueryMap !== null) ? $subqueryMap : [];
     }
+
 
     /**
      * Count the number of items in the result.
