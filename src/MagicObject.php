@@ -32,10 +32,11 @@ use stdClass;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Class to create magic object.
- * Magic object is an object created from any class so that user can add any property with any name and value, load data from INI file, Yaml file, JSON file and database.
- * User can create entity from a table of database, insert, select, update and delete record from database.
- * User can also create property from other entity with full name of class (namespace + class name)
+ * Class for creating a magic object.
+ * A magic object is an instance created from any class, allowing the user to add any property with any name and value. It can load data from INI files, YAML files, JSON files, and databases.
+ * Users can create entities from database tables and perform insert, select, update, and delete operations on records in the database.
+ * Users can also create properties from other entities using the full name of the class (namespace + class name).
+ * 
  * @link https://github.com/Planetbiru/MagicObject
  */
 class MagicObject extends stdClass // NOSONAR
@@ -745,7 +746,7 @@ class MagicObject extends stdClass // NOSONAR
      * Set property value
      *
      * @param string $propertyName Property name
-     * @param mixed|null
+     * @param mixed|null $propertyValue Property value
      * @param boolean $skipModifyNullProperties Skip modify null properties
      * @return self
      */
@@ -763,8 +764,8 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Adds array elements from a property at the end
      *
-     * @param string $propertyName
-     * @param mixed $propertyValue
+     * @param string $propertyName Property name
+     * @param mixed $propertyValue Property value
      * @return self
      */
     public function push($propertyName, $propertyValue)
@@ -781,8 +782,8 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Adds array elements from a property at the end
      *
-     * @param string $propertyName
-     * @param mixed $propertyValue
+     * @param string $propertyName Property name
+     * @param mixed $propertyValue Property value
      * @return self
      */
     public function append($propertyName, $propertyValue)
@@ -793,8 +794,8 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Adds array elements from a property at the beginning
      *
-     * @param string $propertyName
-     * @param mixed $propertyValue
+     * @param string $propertyName Property name
+     * @param mixed $propertyValue Property value
      * @return self
      */
     public function unshift($propertyName, $propertyValue)
@@ -811,8 +812,8 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Adds array elements from a property at the beginning
      *
-     * @param string $propertyName
-     * @param mixed $propertyValue
+     * @param string $propertyName Property name
+     * @param mixed $propertyValue Property value
      * @return self
      */
     public function prepend($propertyName, $propertyValue)
@@ -823,7 +824,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Remove last array element of property and return it
      *
-     * @param string $propertyName
+     * @param string $propertyName Property name
      * @return mixed
      */
     public function pop($propertyName)
@@ -839,7 +840,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Remove first array element of property and return it
      *
-     * @param string $propertyName
+     * @param string $propertyName Property name
      * @return mixed
      */
     public function shift($propertyName)
@@ -1457,7 +1458,6 @@ class MagicObject extends stdClass // NOSONAR
                     $result = $persist->findSpecificWithSubquery($selected, $specification, $pageable, $sortable, $subqueryMap);
                     $stmt = null;
                 }
-
                 if($pageable != null && $pageable instanceof PicoPageable)
                 {
                     $match = $this->countData($persist, $specification, $pageable, $sortable, $findOption, $result);
@@ -1729,7 +1729,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $method Method
      * @param mixed $params Parameters
-     * @param PicoSortable|string $sortable
+     * @param PicoSortable|string $sortable Sortable
      * @return object
      */
     private function findOneBy($method, $params, $sortable = null)
@@ -1759,7 +1759,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $method Method
      * @param mixed $params Parameters
-     * @param PicoSortable|string $sortable
+     * @param PicoSortable|string $sortable Sortable
      * @return object
      */
     private function findOneIfExistsBy($method, $params, $sortable = null)
@@ -1787,7 +1787,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $method Method
      * @param mixed $params Parameters
-     * @param PicoSortable|string $sortable
+     * @param PicoSortable|string $sortable Sortable
      * @return boolean
      */
     private function deleteOneBy($method, $params)
@@ -1895,43 +1895,51 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
-     * Magic method called when user call any undefined method. __call method will check the prefix of called method and call appropriated method according to its name and its parameters.
-     * hasValue &raquo; check if property has value. This method does not require a database connection.
-     * isset &raquo; gcheck if property has value. String will be convert to number first. This method does not require a database connection.
-     * is &raquo; get property value as boolean. Number will true if it's value is 1. String will be convert to number first. This method does not require a database connection.
-     * equals &raquo; check if property value is equals to given value. This method does not require a database connection.
-     * get &raquo; get property value. This method does not require a database connection.
-     * set &raquo; set property value. This method does not require a database connection.
-     * unset &raquo; unset property value. This method does not require a database connection.
-     * push &raquo; adds array elements from a property at the end. This method does not require a database connection.
-     * append &raquo; adds array elements from a property at the end. This method does not require a database connection.
-     * unshift &raquo; adds array elements from a property at the beginning. This method does not require a database connection.
-     * prepend &raquo; adds array elements from a property at the beginning. This method does not require a database connection.
-     * pop &raquo; remove last element of property. This method does not require a database connection.
-     * shift &raquo; remove first element of property. This method does not require a database connection.
-     * findOneBy &raquo; search data from database and return one record. This method require a database connection.
-     * findOneIfExistsBy &raquo; search data from database by any column values and return one record. This method require a database connection.
-     * deleteOneBy &raquo; delete data from database by any column values and return one record. This method require a database connection.
-     * findFirstBy &raquo; search data from database by any column values and return first record. This method require a database connection.
-     * findFirstIfExistsBy &raquo; search data from database by any column values and return first record. This method require a database connection.
-     * findLastBy &raquo; search data from database by any column values and return last record. This method require a database connection.
-     * findLastIfExistsBy &raquo; search data from database by any column values and return last record. This method require a database connection.
-     * findBy &raquo; search multiple record data from database by any column values. This method require a database connection.
-     * findAscBy &raquo; search multiple record data from database order by primary keys ascending. This method require a database connection.
-     * findDescBy &raquo; search multiple record data from database order by primary keys descending. This method require a database connection.
-     * listBy &raquo; search multiple record data from database. Similar to findBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require a database connection.
-     * listAscBy &raquo; search multiple record data from database order by primary keys ascending. Similar to findAscBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require a database connection.
-     * listDescBy &raquo; search multiple record data from database order by primary keys descending. Similar to findDescBy but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require a database connection.
-     * listAllAsc &raquo; search multiple record data from database without filter order by primary keys ascending. Similar to findAllAsc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require a database connection.
-     * listAllDesc &raquo; search multiple record data from database without filter order by primary keys descending. Similar to findAllDesc but return object does not contain a connection to the database so objects cannot be saved directly to the database. This method require a database connection.
-     * countBy &raquo; count data from database.
-     * existsBy &raquo; check data from database. This method require a database connection.
-     * deleteBy &raquo; delete data from database without read it first. This method require a database connection.
-     * booleanToTextBy &raquo; convert boolean value to yes/no or true/false depend on parameters given. Example: $result = booleanToTextByActive("Yes", "No"); If $obj->active is true, $result will be "Yes" otherwise "No". This method does not require a database connection.
-     * booleanToSelectedBy &raquo; Create attribute selected="selected" for form. This method does not require a database connection.
-     * booleanToCheckedBy &raquo; Create attribute checked="checked" for form. This method does not require a database connection.
-     * startsWith &raquo; Check that value starts with any string. This method does not require a database connection.
-     * endsWith &raquo; Check that value ends with any string. This method does not require a database connection.
+     * Magic method called when a user calls any undefined method. The __call method checks the prefix of the called method and calls the appropriate method according to its name and parameters.
+     * hasValue &raquo; Checks if the property has a value. 
+     * isset &raquo; Checks if the property has a value.
+     * is &raquo; Retrieves the property value as a boolean. A number will return true if its value is 1. The string will be converted to a number first. 
+     * equals &raquo; Checks if the property value is equal to the given value. 
+     * get &raquo; Retrieves the property value. 
+     * set &raquo; Sets the property value. 
+     * unset &raquo; Unsets the property value. 
+     * push &raquo; Adds array elements to a property at the end. 
+     * append &raquo; Appends array elements to a property at the end. 
+     * unshift &raquo; Adds array elements to a property at the beginning. 
+     * prepend &raquo; Prepends array elements to a property at the beginning. 
+     * pop &raquo; Removes the last element from the property. 
+     * shift &raquo; Removes the first element from the property. 
+     * findOneBy &raquo; Searches for data in the database and returns one record. This method requires a database connection.
+     * findOneIfExistsBy &raquo; Searches for data in the database by any column values and returns one record. This method requires a database connection.
+     * deleteOneBy &raquo; Deletes data from the database by any column values and returns one record. This method requires a database connection.
+     * findFirstBy &raquo; Searches for data in the database by any column values and returns the first record. This method requires a database connection.
+     * findFirstIfExistsBy &raquo; Searches for data in the database by any column values and returns the first record. This method requires a database connection.
+     * findLastBy &raquo; Searches for data in the database by any column values and returns the last record. This method requires a database connection.
+     * findLastIfExistsBy &raquo; Searches for data in the database by any column values and returns the last record. This method requires a database connection.
+     * findBy &raquo; Searches for multiple records in the database by any column values. This method requires a database connection.
+     * findAscBy &raquo; Searches for multiple records in the database, ordered by primary keys in ascending order. This method requires a database connection.
+     * findDescBy &raquo; Searches for multiple records in the database, ordered by primary keys in descending order. This method requires a database connection.
+     * listBy &raquo; Searches for multiple records in the database. Similar to findBy, but the returned object does not contain a connection to the database, so objects cannot be saved directly to the database. This method requires a database connection.
+     * listAscBy &raquo; Searches for multiple records in the database, ordered by primary keys in ascending order. Similar to findAscBy, but the returned object does not contain a connection to the database, so objects cannot be saved directly to the database. This method requires a database connection.
+     * listDescBy &raquo; Searches for multiple records in the database, ordered by primary keys in descending order. Similar to findDescBy, but the returned object does not contain a connection to the database, so objects cannot be saved directly to the database. This method requires a database connection.
+     * listAllAsc &raquo; Searches for multiple records in the database without filtering, ordered by primary keys in ascending order. Similar to findAllAsc, but the returned object does not contain a connection to the database, so objects cannot be saved directly to the database. This method requires a database connection.
+     * listAllDesc &raquo; Searches for multiple records in the database without filtering, ordered by primary keys in descending order. Similar to findAllDesc, but the returned object does not contain a connection to the database, so objects cannot be saved directly to the database. This method requires a database connection.
+     * countBy &raquo; Counts data from the database.
+     * existsBy &raquo; Checks for data in the database. This method requires a database connection.
+     * deleteBy &raquo; Deletes data from the database without reading it first. This method requires a database connection.
+     * booleanToTextBy &raquo; Converts a boolean value to yes/no or true/false depending on the parameters given. Example: $result = booleanToTextByActive("Yes", "No"); If $obj->active is true, $result will be "Yes"; otherwise, it will be "No". 
+     * booleanToSelectedBy &raquo; Creates the attribute selected="selected" for a form. 
+     * booleanToCheckedBy &raquo; Creates the attribute checked="checked" for a form. 
+     * startsWith &raquo; Checks if the value starts with a given string. 
+     * endsWith &raquo; Checks if the value ends with a given string. 
+     * createSelected &raquo; Creates the selected="selected" attribute if the property is true.
+     * createChecked &raquo; Creates the checked="checked" attribute if the property is true.
+     * label &raquo; Retrieves the label of a property defined in the Label annotation.
+     * option &raquo; Takes the first parameter if the property is true and the second parameter if the property is false.
+     * notNull &raquo; Returns true if the property is not null.
+     * notEmpty &raquo; Returns true if the property is not empty.
+     * notZero &raquo; Returns true if the property is not zero.
+     * notEquals &raquo; Returns true if the property is not equal to the one given in the parameter.
      *
      * @param string $method Method name
      * @param mixed $params Parameters
@@ -2267,8 +2275,8 @@ class MagicObject extends stdClass // NOSONAR
      * to convert the array into friendly YAML.
      *
      * @param int|null $inline The level where you switch to inline YAML. If $inline set to NULL, MagicObject will use maximum value of array depth
-     * @param int $indent The amount of spaces to use for indentation of nested nodes
-     * @param int $flags  A bit field of DUMP_* constants to customize the dumped YAML string
+     * @param integer $indent The amount of spaces to use for indentation of nested nodes
+     * @param integer $flags  A bit field of DUMP_* constants to customize the dumped YAML string
      *
      * @return string A YAML string representing the original PHP value
      */

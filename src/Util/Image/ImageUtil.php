@@ -215,7 +215,7 @@ class ImageUtil
      * Example: $img = new Image("file.png"); $img->rotate(180); $img->show(); // Turn the image upside down.
      *
      * @param float $angle
-     * @param int $background
+     * @param integer $background
      * @return $this
      */
     public function rotate($angle, $background = 0)
@@ -234,7 +234,7 @@ class ImageUtil
      * Mirrors the given image in the desired way.
      * Example: $img = new Image("file.png"); $img->flip(2); $img->show();
      *
-     * @param int $type Direction of mirroring. This can be 1(Horizondal Flip), 2(Vertical Flip) or 3(Both Horizondal
+     * @param integer $type Direction of mirroring. This can be 1(Horizondal Flip), 2(Vertical Flip) or 3(Both Horizondal
      *     and Vertical Flip)
      * @return ImageUtil
      */
@@ -288,9 +288,9 @@ class ImageUtil
     /**
      * Resize the image to an new size. Size can be specified in the arugments.
      *
-     * @param int $newWidth The width of the desired image. If 0, the function will automatically calculate the width
+     * @param integer $newWidth The width of the desired image. If 0, the function will automatically calculate the width
      *     using the height ratio.
-     * @param int $newHeight The width of the desired image. If 0, the function will automatically calculate the value
+     * @param integer $newHeight The width of the desired image. If 0, the function will automatically calculate the value
      *     using the width ratio.
      * @return ImageUtil
      */
@@ -326,10 +326,10 @@ class ImageUtil
     /**
      * Resize the image in a square format and maintain the aspect ratio. The space are filled the RGB color provided.
      *
-     * @param int $newSize The new size of desired image (width and height are equals)
-     * @param int $fillRed
-     * @param int $fillGreen
-     * @param int $fillBlue
+     * @param integer $newSize The new size of desired image (width and height are equals)
+     * @param integer $fillRed
+     * @param integer $fillGreen
+     * @param integer $fillBlue
      * @return ImageUtil
      * @throws ImageUtilException
      */
@@ -341,11 +341,11 @@ class ImageUtil
     /**
      * Resize the image but the aspect ratio is respected. The spaces left are filled with the RGB color provided.
      *
-     * @param int $newX
-     * @param int $newY
-     * @param int $fillRed
-     * @param int $fillGreen
-     * @param int $fillBlue
+     * @param integer $newX
+     * @param integer $newY
+     * @param integer $fillRed
+     * @param integer $fillGreen
+     * @param integer $fillBlue
      * @return ImageUtil
      * @throws ImageUtilException
      */
@@ -401,9 +401,9 @@ class ImageUtil
      * Stamp an image in the current image.
      *
      * @param ImageUtil|string $srcImage The image path or the image gd resource.
-     * @param int $position
-     * @param int $padding
-     * @param int $oppacity
+     * @param integer $position
+     * @param integer $padding
+     * @param integer $oppacity
      * @return ImageUtil
      * @throws ImageUtilException
      * @throws NotFoundException
@@ -493,9 +493,9 @@ class ImageUtil
      * @param float $size
      * @param float $angle
      * @param string $font
-     * @param int $maxwidth
+     * @param integer $maxwidth
      * @param float[] $rgbAr
-     * @param int $textAlignment
+     * @param integer $textAlignment
      * @throws ImageUtilException
      */
     public function writeText($text, $point, $size, $angle, $font, $maxwidth = 0, $rgbAr = null, $textAlignment = 1) //NOSONAR
@@ -592,9 +592,9 @@ class ImageUtil
     /**
      * Make transparent the image. The transparent color must be provided
      *
-     * @param int $transpRed
-     * @param int $transpGreen
-     * @param int $transpBlue
+     * @param integer $transpRed
+     * @param integer $transpGreen
+     * @param integer $transpBlue
      * @return ImageUtil|GdImage|resource The image util object
      */
     public function makeTransparent(ImageColor $color = null, $image = null)

@@ -260,11 +260,21 @@ class SetterGetter extends stdClass
     }
 
     /**
-     * Magic method called when user call any undefined method
+     * Magic method called when an undefined method is invoked.
      *
-     * @param string $method Called method
-     * @param string $params Parameters given
-     * @return mixed|null
+     * This method handles dynamic method calls for property management based on naming conventions:
+     * - Methods prefixed with "isset" check if the corresponding property is set.
+     * - Methods prefixed with "is" return a boolean indicating if the property is equal to 1.
+     * - Methods prefixed with "get" retrieve the value of the corresponding property.
+     * - Methods prefixed with "set" assign a value to the corresponding property.
+     * - Methods prefixed with "unset" remove the corresponding property.
+     * - Methods prefixed with "push" append a value to an array property.
+     * - Methods prefixed with "pop" remove and return the last value from an array property.
+     *
+     * @param string $method The name of the method being called.
+     * @param array $params The parameters passed to the method.
+     * @return mixed|null The result of the method call, which may include the instance itself,
+     *                    a boolean value, or null, depending on the invoked method.
      */
     public function __call($method, $params) //NOSONAR
     {

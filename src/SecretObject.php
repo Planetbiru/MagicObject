@@ -180,11 +180,21 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Magic method
+     * Magic method called when invoking an undefined method.
+     * This method allows dynamic handling of properties and methods based on naming conventions.
      *
-     * @param string $method
-     * @param mixed $params
-     * @return self|boolean|mixed|null
+     * - Methods prefixed with "isset" check if the corresponding property is set.
+     * - Methods prefixed with "is" return a boolean indicating if the property equals 1.
+     * - Methods prefixed with "get" retrieve the value of the corresponding property.
+     * - Methods prefixed with "set" assign a value to the corresponding property if it's not readonly.
+     * - Methods prefixed with "unset" remove the corresponding property.
+     * - Methods prefixed with "push" append an element to an array property.
+     * - Methods prefixed with "pop" remove and return the last element of an array property.
+     *
+     * @param string $method The name of the method being called.
+     * @param mixed $params An array of parameters passed to the method.
+     * @return self|boolean|mixed|null The result of the method call, which can be the instance itself, 
+     *                                 a boolean value, a mixed type, or null based on the method invoked.
      */
     public function __call($method, $params) // NOSONAR
     {
@@ -1021,8 +1031,8 @@ class SecretObject extends stdClass //NOSONAR
      * to convert the array into friendly YAML.
      *
      * @param int|null   $inline The level where you switch to inline YAML. If $inline set to NULL, MagicObject will use maximum value of array depth
-     * @param int   $indent The amount of spaces to use for indentation of nested nodes
-     * @param int   $flags  A bit field of DUMP_* constants to customize the dumped YAML string
+     * @param integer   $indent The amount of spaces to use for indentation of nested nodes
+     * @param integer   $flags  A bit field of DUMP_* constants to customize the dumped YAML string
      *
      * @return string A YAML string representing the original PHP value
      */

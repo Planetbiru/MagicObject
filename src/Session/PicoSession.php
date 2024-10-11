@@ -208,7 +208,7 @@ class PicoSession
      *
      * @param string $name
      * @param string $value
-     * @param int $expire
+     * @param integer $expire
      * @param string $path
      * @param string $domain
      * @param boolean $secure
