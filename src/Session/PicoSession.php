@@ -60,7 +60,7 @@ class PicoSession
      * The session is automatically initialized if it wasn't.
      *
      * @param string|null $name Session name.
-     * @param integer $maxLifeTime Maximum lifetime of the session.
+     * @param int $maxLifeTime Maximum lifetime of the session.
      * @return self
      */
     public static function getInstance($name = null, $maxLifeTime = 0)
@@ -166,7 +166,7 @@ class PicoSession
     /**
      * Sets cookie parameters for the session.
      *
-     * @param integer $maxlifetime Maximum lifetime of the session cookie.
+     * @param int $maxlifetime Maximum lifetime of the session cookie.
      * @param boolean $secure Indicates if the cookie should only be transmitted over a secure HTTPS connection.
      * @param boolean $httponly Indicates if the cookie is accessible only through the HTTP protocol.
      * @param string $samesite The SameSite attribute of the cookie (Lax, Strict, None).
@@ -194,7 +194,7 @@ class PicoSession
      *
      * @param string $name The name of the cookie.
      * @param string $value The value of the cookie.
-     * @param integer $expire The expiration time of the cookie.
+     * @param int $expire The expiration time of the cookie.
      * @param string $path The path on the server in which the cookie will be available.
      * @param string $domain The domain that the cookie is available to.
      * @param boolean $secure Indicates if the cookie should only be transmitted over a secure HTTPS connection.
@@ -245,7 +245,7 @@ class PicoSession
     /**
      * Sets the maximum lifetime for the session.
      *
-     * @param integer $lifeTime Maximum lifetime for the session.
+     * @param int $lifeTime Maximum lifetime for the session.
      * @return self
      */
     public function setSessionMaxLifeTime($lifeTime)
@@ -259,7 +259,7 @@ class PicoSession
      * Saves the session to Redis.
      *
      * @param string $host Redis host.
-     * @param integer $port Redis port.
+     * @param int $port Redis port.
      * @param string $auth Redis authentication.
      * @return self
      */

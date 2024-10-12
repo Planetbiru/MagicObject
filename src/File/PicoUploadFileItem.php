@@ -103,7 +103,7 @@ class PicoUploadFileItem
     /**
      * Gets the size of the uploaded file.
      *
-     * @return integer The file size in bytes; returns 0 if not set.
+     * @return int The file size in bytes; returns 0 if not set.
      */
     public function getSize()
     {

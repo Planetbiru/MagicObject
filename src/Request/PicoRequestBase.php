@@ -196,9 +196,9 @@ class PicoRequestBase extends stdClass //NOSONAR
     /**
      * Filter input data.
      *
-     * @param integer $type Request type.
+     * @param int $type Request type.
      * @param string $variableName Name of the variable.
-     * @param integer $filter Filter type.
+     * @param int $filter Filter type.
      * @param boolean $escapeSQL Flag to escape SQL.
      * @return mixed
      */
@@ -231,7 +231,7 @@ class PicoRequestBase extends stdClass //NOSONAR
      * Filter a value based on the specified criteria.
      *
      * @param mixed $val The value to be filtered.
-     * @param integer $filter The filter type.
+     * @param int $filter The filter type.
      * @param boolean $escapeSQL Flag to escape SQL.
      * @param boolean $nullIfEmpty Flag to return null if the value is empty.
      * @param boolean $requireScalar Flag to require scalar values only.
@@ -274,7 +274,7 @@ class PicoRequestBase extends stdClass //NOSONAR
      * Filter a single value based on the specified criteria.
      *
      * @param mixed $val The value to be filtered.
-     * @param integer $filter The filter type.
+     * @param int $filter The filter type.
      * @param boolean $escapeSQL Flag to escape SQL.
      * @param boolean $nullIfEmpty Flag to return null if the value is empty.
      * @return mixed

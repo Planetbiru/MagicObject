@@ -42,7 +42,7 @@ class PicoSortable
     /**
      * Initialize sortable criteria.
      *
-     * @param integer $argc Number of arguments passed to the constructor.
+     * @param int $argc Number of arguments passed to the constructor.
      * @param array $params Parameters for sorting.
      * @return self
      */

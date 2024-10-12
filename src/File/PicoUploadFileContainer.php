@@ -46,7 +46,7 @@ class PicoUploadFileContainer
     /**
      * Checks if a specific file exists in the upload.
      *
-     * @param integer $index The index of the uploaded file.
+     * @param int $index The index of the uploaded file.
      * @return boolean True if the file exists; otherwise, false.
      */
     public function isExists($index)
@@ -57,7 +57,7 @@ class PicoUploadFileContainer
     /**
      * Gets the total number of uploaded files.
      *
-     * @return integer The number of files uploaded.
+     * @return int The number of files uploaded.
      */
     public function getFileCount()
     {
@@ -93,7 +93,7 @@ class PicoUploadFileContainer
     /**
      * Gets information about a specific uploaded file.
      *
-     * @param integer $index The index of the uploaded file.
+     * @param int $index The index of the uploaded file.
      * @return array An associative array containing information about the uploaded file.
      */
     public function getItem($index)

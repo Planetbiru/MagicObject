@@ -552,7 +552,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	/**
 	 * Set a limit on the number of results returned.
 	 *
-	 * @param integer $limit The maximum number of results.
+	 * @param int $limit The maximum number of results.
 	 * @return self The current instance for method chaining.
 	 */
 	public function limit($limit)
@@ -565,7 +565,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	/**
 	 * Set an offset for the results returned.
 	 *
-	 * @param integer $offset The offset from the start of the result set.
+	 * @param int $offset The offset from the start of the result set.
 	 * @return self The current instance for method chaining.
 	 */
 	public function offset($offset)
@@ -732,7 +732,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	/**
 	 * Create a NOW statement for the current time with optional precision.
 	 *
-	 * @param integer $precision The decimal precision of seconds (default is 0).
+	 * @param int $precision The decimal precision of seconds (default is 0).
 	 * @return string The NOW statement with the specified precision.
 	 */
 	public function now($precision = 0)

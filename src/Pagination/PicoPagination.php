@@ -50,7 +50,7 @@ class PicoPagination
     /**
      * Constructor for initializing pagination parameters.
      *
-     * @param integer $pageSize Number of items per page (default is 20).
+     * @param int $pageSize Number of items per page (default is 20).
      * @param string $orderby Name of the parameter used to retrieve the ordering value (default is 'orderby').
      * @param string $ordertype Name of the parameter used to retrieve the order type (ASC or DESC, default is 'ordertype').
      */
@@ -71,7 +71,7 @@ class PicoPagination
      * Parse the current page from the request parameters.
      *
      * @param string $parameterName Name of the parameter used for the page (default is 'page').
-     * @return integer Current page number, at least 1.
+     * @return int Current page number, at least 1.
      */
     private function parseCurrentPage($parameterName = 'page')
     {
@@ -154,7 +154,7 @@ class PicoPagination
     /**
      * Get the current page number.
      *
-     * @return integer The current page number
+     * @return int The current page number
      */
     public function getCurrentPage()
     {
@@ -164,7 +164,7 @@ class PicoPagination
     /**
      * Get the page size.
      *
-     * @return integer The number of items per page
+     * @return int The number of items per page
      */
     public function getPageSize()
     {
@@ -174,7 +174,7 @@ class PicoPagination
     /**
      * Get the offset for the current page.
      *
-     * @return integer The offset for pagination
+     * @return int The offset for pagination
      */
     public function getOffset()
     {
@@ -184,7 +184,7 @@ class PicoPagination
     /**
      * Generate a URL for a specific page.
      *
-     * @param integer $page The page number to generate the URL for
+     * @param int $page The page number to generate the URL for
      * @param string $parameterName The name of the parameter for the page number
      * @param string|null $path The base path for the URL
      * @return string The generated URL

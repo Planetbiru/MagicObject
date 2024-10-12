@@ -32,8 +32,8 @@ class ComplexNumber {
     /**
      * Add another complex number to this one.
      *
-     * @param ComplexNumber $self The complex number to add.
-     * @return ComplexNumber The sum of the two complex numbers.
+     * @param self $self The complex number to add.
+     * @return self The sum of the two complex numbers.
      */
     public function add($self) {
         return new self(
@@ -45,8 +45,8 @@ class ComplexNumber {
     /**
      * Subtract another complex number from this one.
      *
-     * @param ComplexNumber $self The complex number to subtract.
-     * @return ComplexNumber The result of the subtraction.
+     * @param self $self The complex number to subtract.
+     * @return self The result of the subtraction.
      */
     public function subtract($self) {
         return new self(
@@ -58,8 +58,8 @@ class ComplexNumber {
     /**
      * Multiply this complex number by another.
      *
-     * @param ComplexNumber $self The complex number to multiply.
-     * @return ComplexNumber The product of the two complex numbers.
+     * @param self $self The complex number to multiply.
+     * @return self The product of the two complex numbers.
      */
     public function multiply($self) {
         $real = $this->real * $self->getReal()
@@ -74,8 +74,8 @@ class ComplexNumber {
     /**
      * Divide this complex number by another.
      *
-     * @param ComplexNumber $self The complex number to divide by.
-     * @return ComplexNumber The result of the division.
+     * @param self $self The complex number to divide by.
+     * @return self The result of the division.
      */
     public function divide($self) {
         $denominator = $self->getReal() ** 2
@@ -104,7 +104,7 @@ class ComplexNumber {
     /**
      * Get the conjugate of the complex number.
      *
-     * @return ComplexNumber The conjugate of the complex number.
+     * @return self The conjugate of the complex number.
      */
     public function conjugate() {
         return new self($this->real, -$this->imaginary);
@@ -132,7 +132,7 @@ class ComplexNumber {
      * Set the real part of the complex number.
      *
      * @param float $real The real part.
-     * @return ComplexNumber The current instance for method chaining.
+     * @return self The current instance for method chaining.
      */
     public function setReal($real) {
         $this->real = $real;
@@ -153,7 +153,7 @@ class ComplexNumber {
      * Set the imaginary part of the complex number.
      *
      * @param float $imaginary The imaginary part.
-     * @return ComplexNumber The current instance for method chaining.
+     * @return self The current instance for method chaining.
      */
     public function setImaginary($imaginary) {
         $this->imaginary = $imaginary;

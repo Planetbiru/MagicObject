@@ -29,8 +29,8 @@ class PicoPage
     /**
      * Constructor.
      *
-     * @param integer $pageNumber Page number.
-     * @param integer $pageSize Page size.
+     * @param int $pageNumber Page number.
+     * @param int $pageSize Page size.
      */
     public function __construct($pageNumber = 1, $pageSize = 1)
     {
@@ -75,7 +75,7 @@ class PicoPage
     /**
      * Set the page number.
      *
-     * @param integer $pageNumber Page number.
+     * @param int $pageNumber Page number.
      * @return self
      */
     public function setPageNumber($pageNumber)
@@ -97,7 +97,7 @@ class PicoPage
     /**
      * Set the page size.
      *
-     * @param integer $pageSize Page size.
+     * @param int $pageSize Page size.
      * @return self
      */
     public function setPageSize($pageSize)

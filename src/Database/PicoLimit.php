@@ -29,8 +29,8 @@ class PicoLimit
     /**
      * Constructor
      *
-     * @param integer $offset Offset
-     * @param integer $limit Limit
+     * @param int $offset Offset
+     * @param int $limit Limit
      */
     public function __construct($offset = 0, $limit = 0)
     {
@@ -73,7 +73,7 @@ class PicoLimit
     /**
      * Set the limit value.
      *
-     * @param integer $limit Limit
+     * @param int $limit Limit
      * @return self
      */
     public function setLimit($limit)
@@ -95,7 +95,7 @@ class PicoLimit
     /**
      * Set the offset value.
      *
-     * @param integer $offset Offset
+     * @param int $offset Offset
      * @return self
      */
     public function setOffset($offset)

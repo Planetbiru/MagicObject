@@ -63,10 +63,10 @@ class PicoWebsocketClient
    * Open websocket
    *
    * @param string $host
-   * @param integer $port
+   * @param int $port
    * @param array $headers
    * @param string $error_string
-   * @param integer $timeout
+   * @param int $timeout
    * @param boolean $ssl
    * @param boolean $persistant
    * @param string $path
@@ -205,7 +205,7 @@ class PicoWebsocketClient
    *     - Reading data while handling/ignoring other kind of packages
    *
    * @param resource $sp
-   * @param integer $error_code
+   * @param int $error_code
    * @param string $error_string
    * @return mixed
    */

@@ -39,8 +39,8 @@ class Dms
     /**
      * Converting DMS ( Degrees / minutes / seconds ) to decimal format
      *
-     * @param integer $deg Degree
-     * @param integer $min Minute
+     * @param int $deg Degree
+     * @param int $min Minute
      * @param float $sec Second
      * @return self
      */

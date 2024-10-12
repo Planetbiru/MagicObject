@@ -178,7 +178,7 @@ class PicoResponse
      *
      * @param array $headers Response headers
      * @param string $contentType Content type
-     * @param integer $contentLength Content length
+     * @param int $contentLength Content length
      * @return array Fixed response headers
      */
     public static function getDefaultHeaders($headers, $contentType, $contentLength = 0)
@@ -197,9 +197,9 @@ class PicoResponse
     /**
      * Send http status
      *
-     * @param integer $code HTTP status code
+     * @param int $code HTTP status code
      * @param string $text HTTP status text
-     * @return integer
+     * @return int
      */
     public static function sendHttpStatus($code = 0, $text = null)
     {
@@ -225,7 +225,7 @@ class PicoResponse
     /**
      * Get HTTP response code
      *
-     * @param integer $code HTTP status code
+     * @param int $code HTTP status code
      * @return string
      */
     public static function getHttpResponseCode($code)

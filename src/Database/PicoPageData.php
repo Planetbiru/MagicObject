@@ -146,7 +146,7 @@ class PicoPageData
      *
      * @param MagicObject[]|null $result Array of MagicObject or null.
      * @param float $startTime Timestamp when the query was sent.
-     * @param integer $totalResult Total result count.
+     * @param int $totalResult Total result count.
      * @param PicoPageable|null $pageable Pageable object.
      * @param PDOStatement|null $stmt PDO statement.
      * @param MagicObject|null $entity Entity.
@@ -228,7 +228,7 @@ class PicoPageData
     /**
      * Initialize default pagination settings.
      *
-     * @param integer $countResult Count of results.
+     * @param int $countResult Count of results.
      */
     private function initializeDefaultPagination($countResult)
     {
@@ -241,7 +241,7 @@ class PicoPageData
     /**
      * Generate pagination details.
      *
-     * @param integer $margin Number of pages to show before and after the current page.
+     * @param int $margin Number of pages to show before and after the current page.
      * @return self
      */
     public function generatePagination($margin = 3)
@@ -469,7 +469,7 @@ class PicoPageData
     /**
      * Set find option flags.
      *
-     * @param integer $findOption Find option.
+     * @param int $findOption Find option.
      * @return self
      */
     public function setFindOption($findOption)

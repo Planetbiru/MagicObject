@@ -196,7 +196,7 @@ class PicoEntityGenerator
      * Get the length of the column based on its definition.
      *
      * @param string $str Column definition containing length
-     * @return integer Length of the column
+     * @return int Length of the column
      */
     protected function getDataLength($str)
     {

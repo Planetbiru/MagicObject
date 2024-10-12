@@ -1278,9 +1278,9 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoSpecification|null $specification The specification for filtering
      * @param PicoPageable|string|null $pageable The pagination information
      * @param PicoSortable|string|null $sortable The sorting criteria
-     * @param integer $findOption The find option
+     * @param int $findOption The find option
      * @param array|null $result The result set
-     * @return integer The count of matching records
+     * @return int The count of matching records
      */
     private function countData($persist, $specification, $pageable, $sortable, $findOption = 0, $result = null)
     {
@@ -1357,7 +1357,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoSortable|string|null $sortable The sorting criteria
      * @param boolean $passive Flag indicating whether the object is passive
      * @param array|null $subqueryMap An optional map of subqueries
-     * @param integer $findOption The find option
+     * @param int $findOption The find option
      * @return PicoPageData The paginated data
      * @throws NoRecordFoundException if no records are found
      * @throws NoDatabaseConnectionException if no database connection is established
@@ -1448,7 +1448,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoSortable|string|null $sortable The sorting criteria
      * @param boolean $passive Flag indicating whether the object is passive
      * @param array|null $subqueryMap An optional map of subqueries
-     * @param integer $findOption The find option
+     * @param int $findOption The find option
      * @return PicoPageData The paginated data
      * @throws NoRecordFoundException if no records are found
      * @throws NoDatabaseConnectionException if no database connection is established
@@ -1509,7 +1509,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoSpecification|null $specification The specification for filtering
      * @param PicoPageable|null $pageable The pagination information
      * @param PicoSortable|null $sortable The sorting criteria
-     * @return integer|false The count of records or false on error
+     * @return int|false The count of records or false on error
      * @throws NoRecordFoundException if no records are found
      * @throws NoDatabaseConnectionException if no database connection is established
      */
@@ -1639,7 +1639,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoSortable|string|null $sortable The sorting criteria
      * @param boolean $passive Flag indicating whether the object is passive
      * @param array|null $subqueryMap An optional map of subqueries
-     * @param integer $findOption The find option
+     * @param int $findOption The find option
      * @return PicoPageData The paginated data
      * @throws NoRecordFoundException if no records are found
      * @throws NoDatabaseConnectionException if no database connection is established
@@ -1681,7 +1681,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $method The method used for finding.
      * @param mixed $params The parameters to use for the count.
-     * @return integer The count of matching records.
+     * @return int The count of matching records.
      * @throws NoDatabaseConnectionException If there is no database connection.
      */
     private function countBy($method, $params)
@@ -1702,7 +1702,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $method The method used for finding.
      * @param mixed $params The parameters to use for the deletion.
-     * @return integer The number of deleted records.
+     * @return int The number of deleted records.
      * @throws NoDatabaseConnectionException If there is no database connection.
      */
     private function deleteBy($method, $params)
@@ -1907,7 +1907,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Get the number of properties of the object.
      *
-     * @return integer The number of properties.
+     * @return int The number of properties.
      */
     public function size()
     {
@@ -2302,8 +2302,8 @@ class MagicObject extends stdClass // NOSONAR
      * The dump method, when supplied with an array, converts it into a friendly YAML format.
      *
      * @param int|null $inline The level at which to switch to inline YAML. If NULL, the maximum depth will be used.
-     * @param integer $indent The number of spaces to use for indentation of nested nodes.
-     * @param integer $flags A bit field of DUMP_* constants to customize the dumped YAML string.
+     * @param int $indent The number of spaces to use for indentation of nested nodes.
+     * @param int $flags A bit field of DUMP_* constants to customize the dumped YAML string.
      *
      * @return string A YAML string representing the original PHP value.
      */

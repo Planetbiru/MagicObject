@@ -441,7 +441,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param PicoDatabase $databaseTarget Target database
      * @param string $tableName Table name
      * @param SecretObject $tableInfo Table information
-     * @param integer $maxRecord Maximum record per query
+     * @param int $maxRecord Maximum record per query
      * @param callable $callbackFunction Callback function
      * @return boolean
      */
@@ -494,8 +494,8 @@ class PicoDatabaseUtilMySql //NOSONAR
      * Get maximum record
      *
      * @param SecretObject $tableInfo Table information
-     * @param integer $maxRecord Maximum record per query
-     * @return integer
+     * @param int $maxRecord Maximum record per query
+     * @return int
      */
     public static function getMaxRecord($tableInfo, $maxRecord)
     {
