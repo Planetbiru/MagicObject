@@ -98,18 +98,6 @@ class SetterGetter extends stdClass
     }
 
     /**
-     * Unset property
-     *
-     * @param string $propertyName
-     * @return self
-     */
-    public function unset($propertyName)
-    {
-        $this->__unset($propertyName);
-        return $this;
-    }
-
-    /**
      * Add array element of property
      *
      * @param string $propertyName
@@ -272,11 +260,21 @@ class SetterGetter extends stdClass
     }
 
     /**
-     * Magic method called when user call any undefined method
+     * Magic method called when an undefined method is invoked.
      *
-     * @param string $method Called method
-     * @param string $params Parameters given
-     * @return mixed|null
+     * This method handles dynamic method calls for property management based on naming conventions:
+     * - Methods prefixed with "isset" check if the corresponding property is set.
+     * - Methods prefixed with "is" return a boolean indicating if the property is equal to 1.
+     * - Methods prefixed with "get" retrieve the value of the corresponding property.
+     * - Methods prefixed with "set" assign a value to the corresponding property.
+     * - Methods prefixed with "unset" remove the corresponding property.
+     * - Methods prefixed with "push" append a value to an array property.
+     * - Methods prefixed with "pop" remove and return the last value from an array property.
+     *
+     * @param string $method The name of the method being called.
+     * @param array $params The parameters passed to the method.
+     * @return mixed|null The result of the method call, which may include the instance itself,
+     *                    a boolean value, or null, depending on the invoked method.
      */
     public function __call($method, $params) //NOSONAR
     {
@@ -330,9 +328,9 @@ class SetterGetter extends stdClass
     }
 
     /**
-     * Check if JSON naming strategy is snake case or not
+     * Check if the JSON naming strategy is snake case.
      *
-     * @return boolean
+     * @return boolean True if the naming strategy is snake case, false otherwise.
      */
     private function isSnake()
     {
@@ -343,9 +341,9 @@ class SetterGetter extends stdClass
     }
 
     /**
-     * Check if JSON naming strategy is camel case or not
+     * Check if the JSON naming strategy is camel case.
      *
-     * @return boolean
+     * @return boolean True if the naming strategy is camel case, false otherwise.
      */
     protected function isCamel()
     {
@@ -353,9 +351,9 @@ class SetterGetter extends stdClass
     }
 
     /**
-     * Check if JSON naming strategy is snake case or not
+     * Check if the JSON should be prettified.
      *
-     * @return boolean
+     * @return boolean True if prettification is enabled, false otherwise.
      */
     private function isPretty()
     {
@@ -366,9 +364,13 @@ class SetterGetter extends stdClass
     }
 
     /**
-     * Magic method to stringify object
+     * Convert the object to a JSON string representation.
      *
-     * @return string
+     * This method serializes the object to JSON format, with options for pretty printing
+     * based on the configuration. It uses the appropriate naming strategy for properties
+     * as specified in the class parameters.
+     *
+     * @return string The JSON string representation of the object.
      */
     public function __toString()
     {

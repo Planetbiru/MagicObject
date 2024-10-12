@@ -18,6 +18,11 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * Secret object
+ * 
+ * This class provides mechanisms for managing properties with encryption 
+ * and decryption capabilities, using annotations to specify which properties
+ * should be secured.
+ * 
  * @link https://github.com/Planetbiru/MagicObject
  */
 class SecretObject extends stdClass //NOSONAR
@@ -35,60 +40,66 @@ class SecretObject extends stdClass //NOSONAR
     const ANNOTATION_DECRYPT_OUT = "DecryptOut";
 
     /**
-     * List of propertis to be encrypted when call SET
+     * List of properties to be encrypted when calling SET.
      *
      * @var string[]
      */
     private $_encryptInProperties = array(); //NOSONAR
 
     /**
-     * Class parameters
+     * Class parameters.
      *
      * @var array
      */
     protected $_classParams = array(); //NOSONAR
 
     /**
-     * NULL properties
+     * NULL properties.
      *
      * @var array
      */
     protected $_nullProperties = array(); //NOSONAR
 
     /**
-     * List of propertis to be decrypted when call GET
+     * List of properties to be decrypted when calling GET.
      *
      * @var string[]
      */
     private $_decryptOutProperties = array(); //NOSONAR
 
     /**
-     * List of propertis to be encrypted when call GET
+     * List of properties to be encrypted when calling GET.
      *
      * @var string[]
      */
     private $_encryptOutProperties = array(); //NOSONAR
 
     /**
-     * List of propertis to be decrypted when call SET
+     * List of properties to be decrypted when calling SET.
      *
      * @var string[]
      */
     private $_decryptInProperties = array(); //NOSONAR
 
     /**
-     * Read only
+     * Indicates if the object is read-only.
      *
      * @var boolean
      */
     private $_readonly = false; //NOSONAR
 
+    /**
+     * Secure function to get encryption key
+     *
+     * @var callable
+     */
     private $_secureFunction = null; //NOSONAR
 
     /**
      * Constructor
      *
-     * @param self|array|object $data
+     * @param self|array|object $data The initial data for the object.
+     * @param callable|null $secureCallback A callback function for secure key generation.
      */
     public function __construct($data = null, $secureCallback = null)
     {
@@ -109,7 +120,10 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Process object information
+     * Process object information.
+     *
+     * This method retrieves and processes class parameters and properties 
+     * to determine which need to be encrypted or decrypted.
      *
      * @return void
      */
@@ -163,9 +177,9 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Secure key
+     * Secure key generation.
      *
-     * @return string
+     * @return string The secure key for encryption/decryption.
      */
     private function secureKey()
     {
@@ -180,11 +194,22 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Magic method
+     * Magic method called when invoking an undefined method.
      *
-     * @param string $method
-     * @param mixed $params
-     * @return self|boolean|mixed|null
+     * This method allows dynamic handling of properties and methods based on naming conventions.
+     *
+     * - Methods prefixed with "isset" check if the corresponding property is set.
+     * - Methods prefixed with "is" return a boolean indicating if the property equals 1.
+     * - Methods prefixed with "get" retrieve the value of the corresponding property.
+     * - Methods prefixed with "set" assign a value to the corresponding property if it's not readonly.
+     * - Methods prefixed with "unset" remove the corresponding property.
+     * - Methods prefixed with "push" append an element to an array property.
+     * - Methods prefixed with "pop" remove and return the last element of an array property.
+     *
+     * @param string $method The name of the method being called.
+     * @param array $params An array of parameters passed to the method.
+     * @return self|boolean|mixed|null The result of the method call, which can be the instance itself, 
+     *                                 a boolean value, a mixed type, or null based on the method invoked.
      */
     public function __call($method, $params) // NOSONAR
     {
@@ -234,10 +259,13 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Set value
+     * Set a value for the specified property.
      *
-     * @param string $var
-     * @param mixed $value
+     * This method sets the value of a property and applies encryption or decryption
+     * if necessary based on the defined property rules.
+     *
+     * @param string $var The name of the property.
+     * @param mixed $value The value to set.
      * @return self
      */
     private function _set($var, $value)
@@ -255,10 +283,13 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Get value
+     * Get the value of the specified property.
      *
-     * @param string $var
-     * @return mixed
+     * This method retrieves the value of a property and applies encryption or decryption
+     * if necessary based on the defined property rules.
+     *
+     * @param string $var The name of the property.
+     * @return mixed The value of the property.
      */
     private function _get($var)
     {
@@ -275,10 +306,12 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Get value
+     * Get the raw value of the specified property.
      *
-     * @param string $var
-     * @return mixed
+     * This method retrieves the raw value of a property without any encryption or decryption.
+     *
+     * @param string $var The name of the property.
+     * @return mixed The raw value of the property, or null if not set.
      */
     private function _getValue($var)
     {
@@ -286,10 +319,10 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Check data if instaceof MagicObject or instanceof PicoGenericObject
+     * Check if the given data is an instance of MagicObject or PicoGenericObject.
      *
-     * @param mixed $data
-     * @return boolean
+     * @param mixed $data The data to check.
+     * @return boolean True if the data is an instance, otherwise false.
      */
     private function typeObject($data)
     {
@@ -301,10 +334,10 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Check data if instanceof self or instanceof stdClass
+     * Check if the given data is an instance of self or stdClass.
      *
-     * @param mixed $data Tada to be tested
-     * @return boolean
+     * @param mixed $data The data to check.
+     * @return boolean True if the data is an instance, otherwise false.
      */
     private function typeStdClass($data)
     {
@@ -316,11 +349,11 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Encrypt data recursive
+     * Encrypt data recursively.
      *
-     * @param MagicObject|PicoGenericObject|self|array|stdClass|string|number $data Data
-     * @param string $hexKey Key in hexadecimal format
-     * @return mixed
+     * @param MagicObject|PicoGenericObject|self|array|stdClass|string|number $data The data to encrypt, which can be an object, array, or scalar value.
+     * @param string|null $hexKey The encryption key in hexadecimal format. If null, a secure key will be generated.
+     * @return mixed The encrypted data.
      */
     public function encryptValue($data, $hexKey = null)
     {
@@ -359,11 +392,11 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Encrypt string
+     * Encrypt a string
      *
-     * @param string $plaintext Plain text
-     * @param string $hexKey Key in hexadecimal format
-     * @return string
+     * @param string $plaintext The plain text to be encrypted.
+     * @param string|null $hexKey The key in hexadecimal format. If null, a secure key will be generated.
+     * @return string The encrypted string in base64 format.
      */
     public function encryptString($plaintext, $hexKey = null)
     {
@@ -382,9 +415,9 @@ class SecretObject extends stdClass //NOSONAR
     /**
      * Decrypt data recursive
      *
-     * @param MagicObject|PicoGenericObject|self|array|stdClass|string $data Data
-     * @param string $hexKey Key in hexadecimal format
-     * @return mixed
+     * @param MagicObject|PicoGenericObject|self|array|stdClass|string $data The ciphertext to decrypt.
+     * @param string|null $hexKey The key in hexadecimal format. If null, a secure key will be generated.
+     * @return string|null The decrypted string or null if decryption fails.
      */
     public function decryptValue($data, $hexKey = null)
     {
@@ -712,18 +745,6 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Unset property
-     *
-     * @param string $propertyName
-     * @return self
-     */
-    public function unset($propertyName)
-    {
-        $this->__unset($propertyName);
-        return $this;
-    }
-
-    /**
      * Add array element of property
      *
      * @param string $propertyName
@@ -973,10 +994,12 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Modify null properties
+     * Modify null properties.
      *
-     * @param string $propertyName Property name
-     * @param mixed $propertyValue Property value
+     * This method keeps track of properties that have been set to null.
+     *
+     * @param string $propertyName The name of the property.
+     * @param mixed $propertyValue The value of the property.
      * @return void
      */
     private function modifyNullProperties($propertyName, $propertyValue)
@@ -992,9 +1015,9 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Get encrypted value
+     * Get the encrypted value of the object.
      *
-     * @return array
+     * @return array An array representation of the encrypted values.
      */
     public function encryptedValue()
     {
@@ -1005,10 +1028,13 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Encrypt value recursively
+     * Encrypt values recursively.
      *
-     * @param array $array Value to be encrypted in array
-     * @return array
+     * This method encrypts each string value in the provided array. 
+     * Nested arrays are also processed.
+     *
+     * @param array $array The array of values to be encrypted.
+     * @return array The array with encrypted values.
      */
     private function encryptValueRecursive($array)
     {
@@ -1029,14 +1055,14 @@ class SecretObject extends stdClass //NOSONAR
     /**
      * Dumps a PHP value to a YAML string.
      *
-     * The dump method, when supplied with an array, will do its best
-     * to convert the array into friendly YAML.
+     * This method attempts to convert an array into a friendly YAML format.
      *
-     * @param int|null   $inline The level where you switch to inline YAML. If $inline set to NULL, MagicObject will use maximum value of array depth
-     * @param int   $indent The amount of spaces to use for indentation of nested nodes
-     * @param int   $flags  A bit field of DUMP_* constants to customize the dumped YAML string
+     * @param int|null $inline The level where to switch to inline YAML. If set to NULL, 
+     *                         MagicObject will use the maximum value of array depth.
+     * @param int $indent The number of spaces to use for indentation of nested nodes.
+     * @param int $flags A bit field of DUMP_* constants to customize the dumped YAML string.
      *
-     * @return string A YAML string representing the original PHP value
+     * @return string A YAML string representing the original PHP value.
      */
     public function dumpYaml($inline = null, $indent = 4, $flags = 0)
     {
@@ -1046,9 +1072,11 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Magic method to stringify object
+     * Magic method to convert the object to a string.
      *
-     * @return string
+     * This method returns a JSON representation of the object.
+     *
+     * @return string A JSON representation of the object.
      */
     public function __toString()
     {

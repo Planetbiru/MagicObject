@@ -712,7 +712,7 @@ class PicoDatabasePersistence // NOSONAR
     private function getNullCols($info)
     {
         $nullCols = array();
-        $nullList = $this->object->nullPropertiyList();
+        $nullList = $this->object->nullPropertyList();
         if($this->isArray($nullList))
         {
             foreach($nullList as $key=>$val)
