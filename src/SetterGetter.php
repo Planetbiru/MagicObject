@@ -328,9 +328,9 @@ class SetterGetter extends stdClass
     }
 
     /**
-     * Check if JSON naming strategy is snake case or not
+     * Check if the JSON naming strategy is snake case.
      *
-     * @return boolean
+     * @return boolean True if the naming strategy is snake case, false otherwise.
      */
     private function isSnake()
     {
@@ -341,9 +341,9 @@ class SetterGetter extends stdClass
     }
 
     /**
-     * Check if JSON naming strategy is camel case or not
+     * Check if the JSON naming strategy is camel case.
      *
-     * @return boolean
+     * @return boolean True if the naming strategy is camel case, false otherwise.
      */
     protected function isCamel()
     {
@@ -351,9 +351,9 @@ class SetterGetter extends stdClass
     }
 
     /**
-     * Check if JSON naming strategy is snake case or not
+     * Check if the JSON should be prettified.
      *
-     * @return boolean
+     * @return boolean True if prettification is enabled, false otherwise.
      */
     private function isPretty()
     {
@@ -364,9 +364,13 @@ class SetterGetter extends stdClass
     }
 
     /**
-     * Magic method to convert the object to a string.
+     * Convert the object to a JSON string representation.
      *
-     * @return string A JSON representation of the object.
+     * This method serializes the object to JSON format, with options for pretty printing
+     * based on the configuration. It uses the appropriate naming strategy for properties
+     * as specified in the class parameters.
+     *
+     * @return string The JSON string representation of the object.
      */
     public function __toString()
     {

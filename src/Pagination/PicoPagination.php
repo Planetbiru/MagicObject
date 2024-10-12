@@ -50,9 +50,9 @@ class PicoPagination
     /**
      * Constructor for initializing pagination parameters.
      *
-     * @param integer $pageSize Number of items per page
-     * @param string $orderby Column name to order by
-     * @param string $ordertype Type of order (ASC or DESC)
+     * @param integer $pageSize Number of items per page (default is 20).
+     * @param string $orderby Name of the parameter used to retrieve the ordering value (default is 'orderby').
+     * @param string $ordertype Name of the parameter used to retrieve the order type (ASC or DESC, default is 'ordertype').
      */
     public function __construct($pageSize = 20, $orderby = 'orderby', $ordertype = 'ordertype')
     {
@@ -70,8 +70,8 @@ class PicoPagination
     /**
      * Parse the current page from the request parameters.
      *
-     * @param string $parameterName Name of the parameter for the page
-     * @return integer Current page number
+     * @param string $parameterName Name of the parameter used for the page (default is 'page').
+     * @return integer Current page number, at least 1.
      */
     private function parseCurrentPage($parameterName = 'page')
     {
