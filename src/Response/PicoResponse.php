@@ -26,7 +26,7 @@ class PicoResponse
     public static function sendJSON($data, $prettify = false, $headers = null, $httpStatusCode = PicoHttpStatus::HTTP_OK)
     {
         $body = null;
-        if ($data != null) {
+        if ($data !== null) {
             if (is_string($data)) {
                 $body = $data;
             } else {
@@ -141,25 +141,34 @@ class PicoResponse
             if (function_exists('ignore_user_abort')) {
                 ignore_user_abort(true);
             }
-            ob_start();
-
-            if ($body != null) {
-                echo $body;
-            }
+            ob_start(); // Mulai output buffering
         }
+
+        // Jika body tidak null, kirimkan
+        if ($body !== null) {
+            echo $body; // Tampilkan body
+        }
+
+        // Mengatur header koneksi
         header("Connection: close");
 
+        // Jika dalam mode asinkron, lakukan flush
         if ($async) {
-            ob_end_flush();
-            ob_flush();
-            flush();
+            ob_end_flush(); // Selesaikan buffer
+            header("Content-Length: " . strlen($body)); // Tentukan panjang konten
+            flush(); // Kirim output ke klien
             if (function_exists('fastcgi_finish_request')) {
-                fastcgi_finish_request();
+                fastcgi_finish_request(); // Selesaikan permintaan FastCGI
             }
-        } else if ($body != null) {
-            echo $body;
+        } else {
+            // Jika tidak asinkron, atur Content-Length
+            if ($body !== null) {
+                header("Content-Length: " . strlen($body)); // Tentukan panjang konten
+                echo $body; // Tampilkan body
+            }
         }
     }
+
 
     /**
      * Get default content type based on the provided content type.
@@ -244,7 +253,7 @@ class PicoResponse
      *
      * @return void
      */
-    public function redirectToItself()
+    public static function redirectToItself()
     {
         header("Location: ".$_SERVER['REQUEST_URI']);
         exit(); // Ensures no further code execution after redirection
