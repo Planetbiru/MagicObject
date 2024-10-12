@@ -303,11 +303,24 @@ class PicoPredicate //NOSONAR
     }
 
     /**
-     * Magic method to handle dynamic method calls.
+     * Magic method to handle dynamic method calls for setting values.
      *
-     * @param string $method The method name being called.
-     * @param array $params The parameters passed to the method.
-     * @return mixed The result of the equality condition or null.
+     * This method intercepts calls to methods that are not explicitly defined in the class.
+     * It specifically looks for methods that start with "set" and performs an equality check
+     * between the property corresponding to the method and the provided value.
+     *
+     * Supported dynamic method:
+     *
+     * - `set<PropertyName>(value)`: Checks if the property value equals the provided value.
+     *   - For example, calling `$obj->setFoo($value)` checks if the property `foo`
+     *     is equal to `$value` using the `equals` method.
+     * 
+     * If the method name does not start with "set" or if no value is provided,
+     * the method returns null.
+     *
+     * @param string $method The method name being called, expected to start with "set".
+     * @param array $params The parameters passed to the method, expected to contain the value.
+     * @return mixed The result of the equality check (true or false) or null if the method call is not handled.
      */
     public function __call($method, $params)
     {

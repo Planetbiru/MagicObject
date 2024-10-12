@@ -40,9 +40,26 @@ class PicoUploadFile
     /**
      * Magic method to handle dynamic getter calls.
      *
-     * @param string $method The name of the method being called.
-     * @param array $arguments The arguments passed to the method.
-     * @return mixed The value of the requested property or an empty container.
+     * This method enables the retrieval of property values through dynamically named getter methods.
+     * It specifically handles methods that start with the prefix "get". When a getter method is called,
+     * the method extracts the property name from the method name, converts it to camel case, and 
+     * retrieves the corresponding value from an internal storage.
+     * 
+     * If the requested property exists, its value is returned. If it does not exist,
+     * an instance of `PicoUploadFileContainer` is returned as an empty container.
+     *
+     * Supported dynamic getter:
+     *
+     * - `get<FieldName>`:
+     *   Retrieves the value associated with the specified field.
+     *   For example, calling `$obj->getFile()` would:
+     *   - Extract the field name `file` from the method name.
+     *   - Look up the camel-cased key in the internal storage.
+     *   - Return the associated value or a new `PicoUploadFileContainer` if the value is not found.
+     *
+     * @param string $method The name of the method being called, expected to start with "get".
+     * @param array $arguments The arguments passed to the method; typically unused in getter methods.
+     * @return mixed The value of the requested property if it exists; otherwise, an instance of `PicoUploadFileContainer`.
      */
     public function __call($method, $arguments) //NOSONAR
     {

@@ -524,25 +524,81 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Magic method called when the user calls any undefined method.
+     * Magic method to handle dynamic method calls.
      *
-     * This method provides dynamic method handling for various actions related to properties.
-     * It allows for checking existence, getting, setting, and filtering properties,
-     * as well as creating selected or checked attributes for form elements.
+     * This method is invoked when an undefined method is called on the object.
+     * It supports various dynamic operations based on method names, allowing for 
+     * flexible interaction with object properties.
      *
-     * The following methods can be called dynamically:
+     * Supported method patterns:
+     * 
+     * 1. **Countable Check**: 
+     *    - `countable<propertyName>()`: Checks if the specified property is set and is an array.
+     *      ```php
+     *      $instance->countableItems(); // Returns true if $items is an array.
+     *      ```
+     * 
+     * 2. **Existence Check**: 
+     *    - `isset<propertyName>()`: Checks if the specified property is set.
+     *      ```php
+     *      $instance->issetUsername(); // Returns true if $username is set.
+     *      ```
+     * 
+     * 3. **Boolean Check**: 
+     *    - `is<propertyName>()`: Returns true if the specified property is set and evaluates to true (1 or 'true').
+     *      ```php
+     *      $instance->isActive(); // Returns true if $active is true or 1.
+     *      ```
+     * 
+     * 4. **Getter Method**: 
+     *    - `get<propertyName>()`: Retrieves the value of the specified property using the `get()` method.
+     *      ```php
+     *      $value = $instance->getAge(); // Returns the value of $age.
+     *      ```
+     * 
+     * 5. **Setter Method**: 
+     *    - `set<propertyName>($value)`: Sets the specified property to the provided value.
+     *      ```php
+     *      $instance->setUsername('newUsername'); // Sets $username to 'newUsername'.
+     *      ```
+     * 
+     * 6. **Equality Check**: 
+     *    - `equals<propertyName>($value)`: Compares the specified value with the property and returns true if they are equal.
+     *      ```php
+     *      $isEqual = $instance->equalsUsername('newUsername'); // Returns true if $username is 'newUsername'.
+     *      ```
+     * 
+     * 7. **Checkbox Handling**: 
+     *    - `checkbox<propertyName>($value)`: Sets the property to the provided value if it is not already set.
+     *      ```php
+     *      $instance->checkboxTermsAccepted(true); // Sets $termsAccepted to true if it wasn't already.
+     *      ```
+     * 
+     * 8. **Filter Application**: 
+     *    - `filter<propertyName>($filter)`: Applies a filter to the specified property value if it is set.
+     *      ```php
+     *      $instance->filterEmail('sanitize'); // Applies 'sanitize' filter to $email if set.
+     *      ```
+     * 
+     * 9. **Selected Attribute Creation**: 
+     *    - `createSelected<propertyName>($value)`: Returns ' selected="selected"' if the property value matches the provided value.
+     *      ```php
+     *      $selected = $instance->createSelectedCountry('US'); // Returns ' selected="selected"' if $country is 'US'.
+     *      ```
+     * 
+     * 10. **Checked Attribute Creation**: 
+     *    - `createChecked<propertyName>($value)`: Returns ' checked="checked"' if the property value matches the provided value.
+     *      ```php
+     *      $checked = $instance->createCheckedNewsletter(true); // Returns ' checked="checked"' if $newsletter is true.
+     *      ```
+     * 
+     * 11. **Unset Method**: 
+     *    - `unset<propertyName>()`: Unsets specified property value.
+     *      ```php
+     *      $instance->unsetTags(); // Unsets the property 'tags'.
+     *      ```
      *
-     * - countable{Property}: Checks if the property is an array and set.
-     * - isset{Property}: Checks if the property is set.
-     * - is{Property}: Returns true if the property is set and equals 1 or 'true'.
-     * - get{Property}: Retrieves the value of the specified property.
-     * - set{Property}: Sets the value of the specified property.
-     * - equals{Property}: Compares the property with the provided value and returns true if they are equal.
-     * - checkbox{Property}: Sets the property to the provided value if it is not already set.
-     * - filter{Property}: Applies a filter to the property value using the provided filter parameter.
-     * - createSelected{Property}: Generates a 'selected' attribute for use in form elements based on the property's value.
-     * - createChecked{Property}: Generates a 'checked' attribute for use in form elements based on the property's value.
-     * - unset{Property}: Removes the specified property value.
+     * If the method does not match any of the patterns above, the method will return null.
      *
      * @param string $method Name of the method being called.
      * @param array $params Parameters passed to the method.
@@ -610,7 +666,7 @@ class PicoRequestBase extends stdClass //NOSONAR
         }
         else if (strncasecmp($method, "unset", 5) === 0) {
             $var = lcfirst(substr($method, 5));
-            $this->removeValue($var, $params[0]);
+            unset($this->$var);
             return $this;
         }
     }

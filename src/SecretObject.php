@@ -194,22 +194,36 @@ class SecretObject extends stdClass //NOSONAR
     }
 
     /**
-     * Magic method called when invoking an undefined method.
+     * Magic method called when invoking undefined methods.
      *
-     * This method allows dynamic handling of properties and methods based on naming conventions.
+     * This method handles dynamic method calls for property management.
      *
-     * - Methods prefixed with "isset" check if the corresponding property is set.
-     * - Methods prefixed with "is" return a boolean indicating if the property equals 1.
-     * - Methods prefixed with "get" retrieve the value of the corresponding property.
-     * - Methods prefixed with "set" assign a value to the corresponding property if it's not readonly.
-     * - Methods prefixed with "unset" remove the corresponding property.
-     * - Methods prefixed with "push" append an element to an array property.
-     * - Methods prefixed with "pop" remove and return the last element of an array property.
+     * Supported methods:
      *
-     * @param string $method The name of the method being called.
-     * @param array $params An array of parameters passed to the method.
-     * @return self|boolean|mixed|null The result of the method call, which can be the instance itself, 
-     *                                 a boolean value, a mixed type, or null based on the method invoked.
+     * - `isset<PropertyName>`: Checks if the property is set.
+     *   - Example: `$obj->issetFoo()` returns true if property `foo` is set.
+     *
+     * - `is<PropertyName>`: Checks if the property is set and equals 1 (truthy).
+     *   - Example: `$obj->isFoo()` returns true if property `foo` is set and is equal to 1.
+     *
+     * - `get<PropertyName>`: Retrieves the value of the property.
+     *   - Example: `$value = $obj->getFoo()` gets the value of property `foo`.
+     *
+     * - `set<PropertyName>`: Sets the value of the property.
+     *   - Example: `$obj->setFoo($value)` sets the property `foo` to `$value`.
+     *
+     * - `unset<PropertyName>`: Unsets the property.
+     *   - Example: `$obj->unsetFoo()` removes the property `foo`.
+     *
+     * - `push<PropertyName>`: Pushes a value onto an array property.
+     *   - Example: `$obj->pushFoo($value)` adds `$value` to the array property `foo`.
+     *
+     * - `pop<PropertyName>`: Pops a value from an array property.
+     *   - Example: `$value = $obj->popFoo()` removes and returns the last value from the array property `foo`.
+     *
+     * @param string $method Method name.
+     * @param array $params Parameters for the method.
+     * @return mixed|null The result of the method call or null if not applicable.
      */
     public function __call($method, $params) // NOSONAR
     {

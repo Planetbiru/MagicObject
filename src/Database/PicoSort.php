@@ -89,18 +89,31 @@ class PicoSort
     }
 
     /**
-     * Magic method for dynamic method calls.
+     * Magic method for dynamic method calls related to sorting criteria.
      *
-     * This method allows the setting of sorting criteria through
-     * dynamically named methods.
+     * This method enables the dynamic setting of sorting criteria by allowing
+     * the invocation of methods prefixed with "sortBy". When such a method is called,
+     * it extracts the sorting field from the method name and assigns a sorting type
+     * based on the provided parameters.
      *
-     * @param string $method The method name.
-     * @param array $params The parameters passed to the method.
-     * @return self|null
+     * Supported dynamic method:
+     *
+     * - `sortBy<FieldName>(sortType)`: 
+     *   Sets the field to sort by and the type of sorting.
+     *   - For example, calling `$obj->sortByName('asc')` would:
+     *     - Set the sorting field to `name`.
+     *     - Set the sorting type to `asc`.
+     *
+     * If the method name does not start with "sortBy" or if no parameters are provided,
+     * the method returns null.
+     *
+     * @param string $method The name of the method being called, expected to start with "sortBy".
+     * @param array $params The parameters passed to the method; expected to contain the sorting type.
+     * @return self|null Returns the current instance for method chaining or null if the method call is not handled.
      */
     public function __call($method, $params)
     {
-        if (strncasecmp($method, self::SORT_BY, 6) === 0 && isset($params[0])) {
+        if (strncasecmp($method, 'sortBy', 6) === 0 && isset($params[0])) {
             $field = lcfirst(substr($method, 6));
             $value = $params[0];
             $this->setSortBy($field);

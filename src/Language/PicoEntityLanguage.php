@@ -288,9 +288,23 @@ class PicoEntityLanguage
     /**
      * Magic method to handle undefined methods.
      *
-     * @param string $method Name of the method being called.
-     * @param array $args Arguments passed to the method.
-     * @return mixed|null
+     * This method allows for the dynamic handling of method calls that are not explicitly defined
+     * in the class. Specifically, it processes calls to getter methods that start with the prefix "get".
+     * 
+     * When a method starting with "get" is invoked, this method extracts the property name
+     * from the method name and calls the `get` method to retrieve the corresponding value.
+     * 
+     * Supported dynamic getter methods:
+     * - `get<PropertyName>`: 
+     *   This will call the `get` method with the property name derived from the method call.
+     *   For example, calling `$obj->getAge()` would result in a call to `$this->get('age')`.
+     * 
+     * If the method name does not start with "get" or does not correspond to a valid property,
+     * this method will return `null`.
+     *
+     * @param string $method Name of the method being called, expected to start with "get".
+     * @param array $args Arguments passed to the method; typically unused in this context.
+     * @return mixed|null The value of the requested property if it exists; otherwise, null.
      */
     public function __call($method, $args) //NOSONAR
     {

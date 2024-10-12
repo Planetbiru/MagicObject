@@ -327,9 +327,25 @@ class PicoSpecification //NOSONAR
     /**
      * Magic method to handle undefined method calls dynamically.
      *
-     * @param string $method The name of the method called.
-     * @param array $params The parameters passed to the method.
-     * @return self|null The current instance if the method is valid, null otherwise.
+     * This method allows for dynamic handling of method calls that are not explicitly defined in the class.
+     * Specifically, it enables the setting of properties through methods prefixed with "set".
+     * When such a method is called, the method extracts the property name from the method name,
+     * and then it calls the `addPredicate` method to set the corresponding value.
+     *
+     * Supported dynamic method:
+     *
+     * - `set<FieldName>(value)`: 
+     *   Sets a predicate for the specified field.
+     *   For example, calling `$obj->setAge(30)` would:
+     *   - Extract the field name `age` from the method name.
+     *   - Call `addPredicate('age', 30)` to set the value.
+     *
+     * If the method name does not start with "set" or if the parameters are not provided,
+     * the method returns null.
+     *
+     * @param string $method The name of the method being called, expected to start with "set".
+     * @param array $params The parameters passed to the method; expected to contain the value to set.
+     * @return self|null Returns the current instance for method chaining if the method is valid, or null otherwise.
      */
     public function __call($method, $params)
     {

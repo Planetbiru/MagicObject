@@ -122,9 +122,24 @@ class PicoLanguage
     /**
      * Magic method called when an undefined method is invoked.
      *
-     * @param string $method Name of the method being called.
-     * @param array $params Parameters passed to the method.
-     * @return mixed|null The return value of the method or null.
+     * This method provides dynamic handling for method calls that are not explicitly defined in the class.
+     * It specifically supports two types of method calls:
+     * 
+     * 1. **Getter Methods**:
+     *    - When a method name starts with "get", it retrieves the corresponding property value.
+     *    - For example, calling `$obj->getAge()` will invoke this method and call `$this->get('age')`.
+     * 
+     * 2. **Equality Check Methods**:
+     *    - When a method name starts with "equals", it checks if the provided parameter is equal to
+     *      the corresponding property value.
+     *    - For example, calling `$obj->equalsAge($someValue)` will check if `$someValue` is equal to
+     *      the value of the `age` property.
+     *
+     * If the method does not start with "get" or "equals", this method will return null.
+     *
+     * @param string $method Name of the method being called. It should start with "get" or "equals".
+     * @param array $params Parameters passed to the method; for equality checks, it typically contains the value to compare.
+     * @return mixed|null The return value of the getter method or the result of the equality check (true or false), or null if the method is not recognized.
      */
     public function __call($method, $params) // NOSONAR
     {
