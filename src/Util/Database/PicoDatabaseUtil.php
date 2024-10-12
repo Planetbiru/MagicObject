@@ -395,7 +395,7 @@ class PicoDatabaseUtil
      * @param string $className Class name
      * @return object|null
      */
-    public static function findInstanceInArray(array $params, string $className): ?object
+    public static function findInstanceInArray($params, $className): ?object
     {
         foreach ($params as $param) {
             if ($param instanceof $className) {
