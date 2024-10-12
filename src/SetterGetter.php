@@ -364,9 +364,9 @@ class SetterGetter extends stdClass
     }
 
     /**
-     * Magic method to stringify object
+     * Magic method to convert the object to a string.
      *
-     * @return string
+     * @return string A JSON representation of the object.
      */
     public function __toString()
     {

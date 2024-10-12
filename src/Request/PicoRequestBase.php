@@ -10,27 +10,28 @@ use ReflectionClass;
 use stdClass;
 
 /**
- * Request base
+ * Base class for handling requests.
+ *
  * @link https://github.com/Planetbiru/MagicObject
  */
 class PicoRequestBase extends stdClass //NOSONAR
 {
     /**
-     * Class parameter
+     * Class parameters.
      *
      * @var array
      */
     private $classParams = array();
 
     /**
-     * Force input object as scalar
+     * Flag to force input object as scalar.
      *
      * @var boolean
      */
     protected $forceScalar = false;
 
     /**
-     * Recursive
+     * Flag for recursive processing.
      *
      * @var boolean
      */
@@ -38,7 +39,8 @@ class PicoRequestBase extends stdClass //NOSONAR
 
     /**
      * Constructor
-     * @param boolean $forceScalar Only accept scalar value
+     *
+     * @param boolean $forceScalar Indicates whether to only accept scalar values.
      */
     public function __construct($forceScalar = false)
     {
@@ -57,9 +59,10 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Load data to object
-     * @param mixed $data Data to be loaded
-     * @param boolean $tolower Flag to transform key to be lowercase
+     * Load data into the object.
+     *
+     * @param mixed $data Data to be loaded.
+     * @param boolean $tolower Flag to transform keys to lowercase.
      */
     public function loadData($data, $tolower = false)
     {
@@ -76,10 +79,10 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Set property value
+     * Set the value of a property.
      *
-     * @param string $propertyName Property name
-     * @param mixed|null $propertyValue Property value
+     * @param string $propertyName Name of the property.
+     * @param mixed|null $propertyValue Value of the property.
      * @return self
      */
     public function set($propertyName, $propertyValue)
@@ -90,10 +93,10 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Get property value
+     * Get the value of a property.
      *
-     * @param string $propertyName Property name
-     * @param array $params Parameters
+     * @param string $propertyName Name of the property.
+     * @param array|null $params Parameters for filtering.
      * @return mixed|null
      */
     public function get($propertyName, $params = null)
@@ -124,9 +127,10 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Get value
+     * Get the value of the object.
      *
-     * @var boolean $snakeCase Flag to define naming strategy
+     * @param boolean $snakeCase Flag to define naming strategy.
+     * @return stdClass
      */
     public function value($snakeCase = false)
     {
@@ -153,10 +157,10 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Property list
+     * Get a list of properties.
      *
-     * @var boolean $reflectSelf Class reflection
-     * @var boolean $asArrayProps As array
+     * @param boolean $reflectSelf Flag to indicate if class reflection should be used.
+     * @param boolean $asArrayProps Flag to return properties as an array.
      * @return array
      */
     protected function propertyList($reflectSelf = false, $asArrayProps = false)
@@ -190,12 +194,12 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Filter input
+     * Filter input data.
      *
-     * @param integer $type Request type
-     * @param string $variableName Variable name
-     * @param integer $filter Filter
-     * @param boolean $escapeSQL Flag to escape SQL
+     * @param integer $type Request type.
+     * @param string $variableName Name of the variable.
+     * @param integer $filter Filter type.
+     * @param boolean $escapeSQL Flag to escape SQL.
      * @return mixed
      */
     public function filterInput($type, $variableName, $filter = PicoFilterConstant::FILTER_DEFAULT, $escapeSQL=false) // NOSONAR
@@ -224,13 +228,13 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Filter value
+     * Filter a value based on the specified criteria.
      *
-     * @param mixed $val Value
-     * @param integer $filter Filter type
-     * @param boolean $escapeSQL Flag to escape SQL
-     * @param boolean $nullIfEmpty Flag to set to null if empty
-     * @param boolean $requireScalar Flag to accept scalar only
+     * @param mixed $val The value to be filtered.
+     * @param integer $filter The filter type.
+     * @param boolean $escapeSQL Flag to escape SQL.
+     * @param boolean $nullIfEmpty Flag to return null if the value is empty.
+     * @param boolean $requireScalar Flag to require scalar values only.
      * @return mixed|null
      */
     public function filterValue($val, $filter = PicoFilterConstant::FILTER_DEFAULT, $escapeSQL = false, $nullIfEmpty = false, $requireScalar = false)
@@ -267,12 +271,12 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Filter single value
+     * Filter a single value based on the specified criteria.
      *
-     * @param mixed $val Value
-     * @param integer $filter Filter type
-     * @param boolean $escapeSQL Flag to escape SQL
-     * @param boolean $nullIfEmpty Flag to set to null if empty
+     * @param mixed $val The value to be filtered.
+     * @param integer $filter The filter type.
+     * @param boolean $escapeSQL Flag to escape SQL.
+     * @param boolean $nullIfEmpty Flag to return null if the value is empty.
      * @return mixed
      */
     public function filterValueSingle($val, $filter = PicoFilterConstant::FILTER_DEFAULT, $escapeSQL = false, $nullIfEmpty = false) //NOSONAR
@@ -413,9 +417,9 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Addslahes
+     * Add slashes to a string.
      *
-     * @param string $input Input value
+     * @param string $input The input value.
      * @return string
      */
     public function addslashes($input)
@@ -424,10 +428,10 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Get value from formated number
+     * Get the value from a formatted number.
      *
-     * @param stdClass|MagicObject $cfg Configuration
-     * @param mixed $input Input value
+     * @param stdClass|MagicObject $cfg Configuration object.
+     * @param mixed $input Input value.
      * @return float
      */
     public function _getValue($cfg, $input)
@@ -460,11 +464,89 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Magic method called when user call any undefined method
+     * Check if the request is a GET request.
      *
-     * @param string $method Method
-     * @param array $params Parameters
-     * @return mixed|null
+     * @return boolean
+     */
+    public function isGet()
+    {
+        return $_SERVER['REQUEST_METHOD'] == 'GET';
+    }
+
+    /**
+     * Check if the request is a POST request.
+     *
+     * @return boolean
+     */
+    public function isPost()
+    {
+        return $_SERVER['REQUEST_METHOD'] == 'POST';
+    }
+
+    /**
+     * Check if the request is an AJAX request.
+     *
+     * @return boolean
+     */
+    public function isAjax()
+    {
+        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    }
+
+    /**
+     * Retrieve the HTTP method used for the request.
+     *
+     * @return string
+     */
+    public function getHttpMethod()
+    {
+        return $_SERVER['REQUEST_METHOD'];
+    }
+
+    /**
+     * Retrieve the user agent of the request.
+     *
+     * @return string
+     */
+    public function getUserAgent()
+    {
+        return $_SERVER['HTTP_USER_AGENT'];
+    }
+
+    /**
+     * Retrieve the client IP address.
+     *
+     * @return string
+     */
+    public function getClientIp()
+    {
+        return $_SERVER['REMOTE_ADDR'];
+    }
+
+    /**
+     * Magic method called when the user calls any undefined method.
+     *
+     * This method provides dynamic method handling for various actions related to properties.
+     * It allows for checking existence, getting, setting, and filtering properties,
+     * as well as creating selected or checked attributes for form elements.
+     *
+     * The following methods can be called dynamically:
+     *
+     * - countable{Property}: Checks if the property is an array and set.
+     * - isset{Property}: Checks if the property is set.
+     * - is{Property}: Returns true if the property is set and equals 1 or 'true'.
+     * - get{Property}: Retrieves the value of the specified property.
+     * - set{Property}: Sets the value of the specified property.
+     * - equals{Property}: Compares the property with the provided value and returns true if they are equal.
+     * - checkbox{Property}: Sets the property to the provided value if it is not already set.
+     * - filter{Property}: Applies a filter to the property value using the provided filter parameter.
+     * - createSelected{Property}: Generates a 'selected' attribute for use in form elements based on the property's value.
+     * - createChecked{Property}: Generates a 'checked' attribute for use in form elements based on the property's value.
+     * - unset{Property}: Removes the specified property value.
+     *
+     * @param string $method Name of the method being called.
+     * @param array $params Parameters passed to the method.
+     * @return mixed|null The result of the method call, or null if the method is not recognized.
      */
     public function __call($method, $params) //NOSONAR
     {
@@ -534,11 +616,16 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Apply filter
+     * Apply a filter to the given value based on the specified filter type.
      *
-     * @param string $value Value
-     * @param string $filterType Fiter type
-     * @return string|null
+     * This method sanitizes the input value according to the filter type.
+     * If the filter type is `FILTER_SANITIZE_SPECIAL_CHARS`, it converts special characters
+     * to HTML entities. If the filter type is `FILTER_SANITIZE_BOOL`, it evaluates the
+     * value as a boolean. Otherwise, it returns the value unchanged.
+     *
+     * @param string|null $value The value to be filtered.
+     * @param string $filterType The type of filter to apply.
+     * @return string|boolean|null The filtered value, a boolean for FILTER_SANITIZE_BOOL, or null if the value is not set.
      */
     private function applyFilter($value, $filterType)
     {
@@ -562,9 +649,12 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Check if JSON naming strategy is snake case or not
+     * Check if the JSON naming strategy is set to snake case.
      *
-     * @return boolean
+     * This method determines if the property naming strategy for JSON serialization
+     * is using snake case by checking the relevant configuration in class parameters.
+     *
+     * @return boolean True if the naming strategy is snake case, false otherwise.
      */
     private function isSnake()
     {
@@ -575,9 +665,12 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Check if JSON naming strategy is camel case or not
+     * Check if the JSON naming strategy is set to camel case.
      *
-     * @return boolean
+     * This method returns true if the JSON naming strategy is not snake case,
+     * indicating that camel case is used instead.
+     *
+     * @return boolean True if the naming strategy is camel case, false otherwise.
      */
     protected function isCamel()
     {
@@ -585,9 +678,12 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Check if JSON naming strategy is snake case or not
+     * Check if the JSON output should be prettified.
      *
-     * @return boolean
+     * This method determines if the prettification option is enabled in the JSON configuration,
+     * indicating whether the output should be formatted for readability.
+     *
+     * @return boolean True if the prettify option is enabled, false otherwise.
      */
     private function isPretty()
     {
@@ -598,9 +694,12 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * Check if request is empty
+     * Check if the request is empty.
      *
-     * @return boolean
+     * This method checks whether the current request has no values set,
+     * indicating that it is considered empty.
+     *
+     * @return boolean True if the request is empty, false otherwise.
      */
     public function isEmpty()
     {
@@ -608,9 +707,13 @@ class PicoRequestBase extends stdClass //NOSONAR
     }
 
     /**
-     * toString
+     * Convert the object to a JSON string representation.
      *
-     * @return string
+     * This method serializes the object to JSON format, with options for pretty printing
+     * based on the configuration. It uses the appropriate naming strategy for properties
+     * as specified in the class parameters.
+     *
+     * @return string The JSON string representation of the object.
      */
     public function __toString()
     {
