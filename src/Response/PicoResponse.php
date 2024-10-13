@@ -3,7 +3,6 @@
 namespace MagicObject\Response;
 
 use MagicObject\Constants\PicoHttpStatus;
-use MagicObject\Constants\PicoMime;
 use \stdClass;
 
 /**
@@ -14,6 +13,8 @@ use \stdClass;
  */
 class PicoResponse
 {
+    const APPLICATION_JSON = "application/json";
+
     /**
      * Send a JSON response to the client.
      *
@@ -37,7 +38,7 @@ class PicoResponse
                 }
             }
         }
-        self::sendResponse($body, PicoMime::APPLICATION_JSON, $headers, $httpStatusCode);
+        self::sendResponse($body, self::APPLICATION_JSON, $headers, $httpStatusCode);
     }
 
     /**
@@ -103,7 +104,7 @@ class PicoResponse
                 $bodyToSent = null;
             }
         }
-        $contentType = PicoMime::APPLICATION_JSON;
+        $contentType = self::APPLICATION_JSON;
         $contentLength = $bodyToSent == null ? 0 : strlen($bodyToSent);
         $headers = self::getDefaultHeaders($headers, $contentType, $contentLength);
         if ($httpStatusCode != 200) {
@@ -169,7 +170,6 @@ class PicoResponse
         }
     }
 
-
     /**
      * Get default content type based on the provided content type.
      *
@@ -182,7 +182,7 @@ class PicoResponse
             return 'text/html';
         }
         if (stripos($contentType, 'json') !== false) {
-            return PicoMime::APPLICATION_JSON;
+            return self::APPLICATION_JSON;
         }
         return $contentType;
     }
@@ -206,7 +206,6 @@ class PicoResponse
         }
         return $headers;
     }
-
 
     /**
      * Send http status
