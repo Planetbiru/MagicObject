@@ -15,11 +15,6 @@ $database->connect();
 
 class Supervisor extends MagicObject
 {
-
-}
-
-class ChildClass extends MagicObject
-{
     /**
      * Caller method to find custom data based on parameters.
      *
@@ -28,7 +23,7 @@ class ChildClass extends MagicObject
      *
      * @param int $supervisorId The ID of the table to search for.
      * @param bool $aktif The active status to filter results.
-     * @return PDOStatement
+     * @return self
      * @query("
       SELECT supervisor.* 
       FROM supervisor 
@@ -43,7 +38,7 @@ class ChildClass extends MagicObject
     }
 }
 
-$obj = new ChildClass(null, $database);
+$obj = new Supervisor(null, $database);
 $results = $obj->findCustom(1, true); // Mengambil data berdasarkan kriteria yang diberikan
 
-print_r($results->fetch(PDO::FETCH_ASSOC));
+echo $results->nama;
