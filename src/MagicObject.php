@@ -1923,56 +1923,128 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
-     * Magic method called when a user calls any undefined method. The __call method checks the prefix of the called method and calls the appropriate method according to its name and parameters.
-     * hasValue &raquo; Checks if the property has a value. 
-     * isset &raquo; Checks if the property has a value.
-     * is &raquo; Retrieves the property value as a boolean. A number will return true if its value is 1. The string will be converted to a number first. 
-     * equals &raquo; Checks if the property value is equal to the given value. 
-     * get &raquo; Retrieves the property value. 
-     * set &raquo; Sets the property value. 
-     * unset &raquo; Unsets the property value. 
-     * push &raquo; Adds array elements to a property at the end. 
-     * append &raquo; Appends array elements to a property at the end. 
-     * unshift &raquo; Adds array elements to a property at the beginning. 
-     * prepend &raquo; Prepends array elements to a property at the beginning. 
-     * pop &raquo; Removes the last element from the property. 
-     * shift &raquo; Removes the first element from the property. 
-     * findOneBy &raquo; Searches for data in the database and returns one record. This method requires a database connection.
-     * findOneIfExistsBy &raquo; Searches for data in the database by any column values and returns one record. This method requires a database connection.
-     * deleteOneBy &raquo; Deletes data from the database by any column values and returns one record. This method requires a database connection.
-     * findFirstBy &raquo; Searches for data in the database by any column values and returns the first record. This method requires a database connection.
-     * findFirstIfExistsBy &raquo; Searches for data in the database by any column values and returns the first record. This method requires a database connection.
-     * findLastBy &raquo; Searches for data in the database by any column values and returns the last record. This method requires a database connection.
-     * findLastIfExistsBy &raquo; Searches for data in the database by any column values and returns the last record. This method requires a database connection.
-     * findBy &raquo; Searches for multiple records in the database by any column values. This method requires a database connection.
-     * findAscBy &raquo; Searches for multiple records in the database, ordered by primary keys in ascending order. This method requires a database connection.
-     * findDescBy &raquo; Searches for multiple records in the database, ordered by primary keys in descending order. This method requires a database connection.
-     * listBy &raquo; Searches for multiple records in the database. Similar to findBy, but the returned object does not contain a connection to the database, so objects cannot be saved directly to the database. This method requires a database connection.
-     * listAscBy &raquo; Searches for multiple records in the database, ordered by primary keys in ascending order. Similar to findAscBy, but the returned object does not contain a connection to the database, so objects cannot be saved directly to the database. This method requires a database connection.
-     * listDescBy &raquo; Searches for multiple records in the database, ordered by primary keys in descending order. Similar to findDescBy, but the returned object does not contain a connection to the database, so objects cannot be saved directly to the database. This method requires a database connection.
-     * listAllAsc &raquo; Searches for multiple records in the database without filtering, ordered by primary keys in ascending order. Similar to findAllAsc, but the returned object does not contain a connection to the database, so objects cannot be saved directly to the database. This method requires a database connection.
-     * listAllDesc &raquo; Searches for multiple records in the database without filtering, ordered by primary keys in descending order. Similar to findAllDesc, but the returned object does not contain a connection to the database, so objects cannot be saved directly to the database. This method requires a database connection.
-     * countBy &raquo; Counts data from the database.
-     * existsBy &raquo; Checks for data in the database. This method requires a database connection.
-     * deleteBy &raquo; Deletes data from the database without reading it first. This method requires a database connection.
-     * booleanToTextBy &raquo; Converts a boolean value to yes/no or true/false depending on the parameters given. Example: $result = booleanToTextByActive("Yes", "No"); If $obj->active is true, $result will be "Yes"; otherwise, it will be "No". 
-     * booleanToSelectedBy &raquo; Creates the attribute selected="selected" for a form. 
-     * booleanToCheckedBy &raquo; Creates the attribute checked="checked" for a form. 
-     * startsWith &raquo; Checks if the value starts with a given string. 
-     * endsWith &raquo; Checks if the value ends with a given string. 
-     * createSelected &raquo; Creates the selected="selected" attribute if the property is true.
-     * createChecked &raquo; Creates the checked="checked" attribute if the property is true.
-     * label &raquo; Retrieves the label of a property defined in the Label annotation.
-     * option &raquo; Takes the first parameter if the property is true and the second parameter if the property is false.
-     * notNull &raquo; Returns true if the property is not null.
-     * notEmpty &raquo; Returns true if the property is not empty.
-     * notZero &raquo; Returns true if the property is not zero.
-     * notEquals &raquo; Returns true if the property is not equal to the one given in the parameter.
+     * Magic method called when a user calls any undefined method. 
+     * The __call method checks the prefix of the called method and 
+     * invokes the appropriate method according to its name and parameters.
+     *
+     * Method Descriptions:
+     *
+     * - **hasValue**: Checks if the property has a value.
+     *   - Example: `$object->hasValuePropertyName();`
+     *
+     * - **isset**: Checks if the property is set.
+     *   - Example: `$object->issetPropertyName();`
+     *
+     * - **is**: Retrieves the property value as a boolean.
+     *   - Example: `$isActive = $object->isActive();`
+     *
+     * - **equals**: Checks if the property value equals the given value.
+     *   - Example: `$isEqual = $object->equalsPropertyName($value);`
+     *
+     * - **get**: Retrieves the property value.
+     *   - Example: `$value = $object->getPropertyName();`
+     *
+     * - **set**: Sets the property value.
+     *   - Example: `$object->setPropertyName($value);`
+     *
+     * - **unset**: Unsets the property value.
+     *   - Example: `$object->unsetPropertyName();`
+     *
+     * - **push**: Adds array elements to a property at the end.
+     *   - Example: `$object->pushPropertyName($newElement);`
+     *
+     * - **append**: Appends array elements to a property at the end.
+     *   - Example: `$object->appendPropertyName($newElement);`
+     *
+     * - **unshift**: Adds array elements to a property at the beginning.
+     *   - Example: `$object->unshiftPropertyName($newElement);`
+     *
+     * - **prepend**: Prepends array elements to a property at the beginning.
+     *   - Example: `$object->prependPropertyName($newElement);`
+     *
+     * - **pop**: Removes the last element from the property.
+     *   - Example: `$removedElement = $object->popPropertyName();`
+     *
+     * - **shift**: Removes the first element from the property.
+     *   - Example: `$removedElement = $object->shiftPropertyName();`
+     *
+     * - **findOneBy**: Searches for data in the database and returns one record.
+     *   - Example: `$record = $object->findOneByPropertyName($value);`
+     *   - *Requires a database connection.*
+     *
+     * - **findOneIfExistsBy**: Searches for data in the database by any column values and returns one record.
+     *   - Example: `$record = $object->findOneIfExistsByPropertyName($value, $sortable);`
+     *   - *Requires a database connection.*
+     *
+     * - **deleteOneBy**: Deletes data from the database by any column values and returns one record.
+     *   - Example: `$deletedRecord = $object->deleteOneByPropertyName($value, $sortable);`
+     *   - *Requires a database connection.*
+     *
+     * - **findFirstBy**: Searches for data in the database by any column values and returns the first record.
+     *   - Example: `$firstRecord = $object->findFirstByColumnName($value);`
+     *   - *Requires a database connection.*
+     *
+     * - **findFirstIfExistsBy**: Similar to `findFirstBy`, but returns the first record if it exists.
+     *   - Example: `$firstRecord = $object->findFirstIfExistsByPropertyName($value, $sortable);`
+     *   - *Requires a database connection.*
+     *
+     * - **findLastBy**: Searches for data in the database by any column values and returns the last record.
+     *   - Example: `$lastRecord = $object->findLastByColumnName($value);`
+     *   - *Requires a database connection.*
+     *
+     * - **findLastIfExistsBy**: Similar to `findLastBy`, but returns the last record if it exists.
+     *   - Example: `$lastRecord = $object->findLastIfExistsByPropertyName($value, $sortable);`
+     *   - *Requires a database connection.*
+     *
+     * - **findBy**: Searches for multiple records in the database by any column values.
+     *   - Example: `$records = $object->findByColumnName($value);`
+     *   - *Requires a database connection.*
+     *
+     * - **countBy**: Counts data from the database.
+     *   - Example: `$count = $object->countByColumnName();`
+     *
+     * - **existsBy**: Checks for data in the database.
+     *   - Example: `$exists = $object->existsByColumn($column);`
+     *   - *Requires a database connection.*
+     *
+     * - **deleteBy**: Deletes data from the database without reading it first.
+     *   - Example: `$object->deleteByPropertyName($value);`
+     *   - *Requires a database connection.*
+     *
+     * - **booleanToTextBy**: Converts a boolean value to "yes/no" or "true/false" based on given parameters.
+     *   - Example: `$result = $object->booleanToTextByActive("Yes", "No");`
+     *   - *If $obj->active is true, $result will be "Yes"; otherwise, it will be "No".*
+     *
+     * - **startsWith**: Checks if the value starts with a given string.
+     *   - Example: `$startsWith = $object->startsWithPropertyName("prefix");`
+     *
+     * - **endsWith**: Checks if the value ends with a given string.
+     *   - Example: `$endsWith = $object->endsWithPropertyName("suffix");`
+     *
+     * - **label**: Retrieves the label associated with the given property.
+     *   - If the label is not set, it attempts to fetch it from annotations.
+     *   - Example: `$label = $object->labelPropertyName();`
+     *
+     * - **option**: Returns the first parameter if the property is set to `true` or equals `1`; otherwise returns the second parameter.
+     *   - Example: `$option = $object->optionPropertyName("Yes", "No");`
+     *
+     * - **notNull**: Checks if the specified property is set (not null).
+     *   - Example: `$isNotNull = $object->notNullPropertyName();`
+     *
+     * - **notEmpty**: Checks if the specified property is set and not empty.
+     *   - Example: `$isNotEmpty = $object->notEmptyPropertyName();`
+     *
+     * - **notZero**: Checks if the specified property is set and not equal to zero.
+     *   - Example: `$isNotZero = $object->notZeroPropertyName();`
+     *
+     * - **notEquals**: Checks if the specified property is set and does not equal the given value.
+     *   - Example: `$isNotEqual = $object->notEqualsPropertyName($value);`
      *
      * @param string $method Method name
-     * @param mixed $params Parameters
-     * @return mixed|null
+     * @param mixed $params Parameters for the method
+     * @return mixed|null The result of the called method, or null if not applicable
      */
+
     public function __call($method, $params) // NOSONAR
     {
         if (strncasecmp($method, "hasValue", 8) === 0) {
