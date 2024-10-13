@@ -1121,7 +1121,10 @@ class PicoDatabasePersistence // NOSONAR
         {
             foreach($info->getAutoIncrementKeys() as $name=>$col)
             {
-                if(strcasecmp($col[self::KEY_STRATEGY], "GenerationType.UUID") == 0 && !$this->generatedValue)
+                if(strcasecmp($col[self::KEY_STRATEGY], "GenerationType.UUID") == 0 
+                && ($this->object->isset($name) || $this->object->get($name) == "" || $this->object->get($name) == 0) 
+                && !$this->generatedValue
+                )
                 {
                     $value = $this->database->generateNewId();
                     $values[$col[self::KEY_NAME]] = $value;
