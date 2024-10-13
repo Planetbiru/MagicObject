@@ -8465,7 +8465,11 @@ require_once "inc/footer.php";
 
 ## Native Query
 
-MagicObject version 2 introduced native queries as an option in interacting with the database. Native queries can perform several tasks such as:
+MagicObject version 2 introduced native queries as an option in interacting with the database. 
+
+Native queries will provide tremendous efficiency when dealing with large amounts of data because users can write the most efficient queries yet can meet all user needs.
+
+Native queries can perform several tasks such as:
 1. performing INSERT operations
 2. performing SELECT operations with complex queries such as JOIN, UNION, IF-ELSE, CASE, and others
 3. counting the number of rows without reading the data in detail
