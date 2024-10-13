@@ -27,7 +27,9 @@ use MagicObject\Util\PicoArrayUtil;
 use MagicObject\Util\PicoEnvironmentVariable;
 use MagicObject\Util\PicoStringUtil;
 use MagicObject\Util\PicoYamlUtil;
+use PDO;
 use ReflectionClass;
+use ReflectionMethod;
 use stdClass;
 use Symfony\Component\Yaml\Yaml;
 
@@ -599,6 +601,93 @@ class MagicObject extends stdClass // NOSONAR
             throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
         }
     }
+
+    /**
+     * Executes a database query based on the parameters and annotations from the caller function.
+     *
+     * This method uses reflection to retrieve the query string from the caller's docblock,
+     * binds the parameters, and executes the query against the database.
+     *
+     * @return array|null Returns an associative array of results on success or null on failure.
+     */
+    protected function executeNativeQuery()
+    {
+        // Retrieve caller trace information
+        $trace = debug_backtrace();
+
+        // Get parameters from the caller function
+        $callerParamValues = isset($trace[1]['args']) ? $trace[1]['args'] : [];
+        
+        // Get the name of the caller function and class
+        $callerFunctionName = $trace[1]['function'];
+        $callerClassName = $trace[1]['class'];
+
+        // Use reflection to get annotations from the caller function
+        $reflection = new ReflectionMethod($callerClassName, $callerFunctionName);
+        $docComment = $reflection->getDocComment();
+
+        // Get the query from the @query annotation
+        preg_match('/@query\s*\("([^"]+)"\)/', $docComment, $matches);
+        $queryString = $matches ? $matches[1] : '';
+
+        // Get parameter information from the caller function
+        $callerParams = $reflection->getParameters();
+
+        // Get return type from the caller function
+        $returnType = $reflection->getReturnType();
+        
+        try {
+            // Get database connection
+            $pdo = $this->database->getDatabaseConnection();
+            $stmt = $pdo->prepare($queryString);
+
+            // Automatically bind each parameter
+            foreach ($callerParamValues as $index => $paramValue) {
+                if (isset($callerParams[$index])) {
+                    // Format parameter name according to the query
+                    $paramName = ':' . $callerParams[$index]->getName();
+                    $paramType = $this->mapToPdoParamType($paramValue);
+                    $stmt->bindValue($paramName, $paramValue, $paramType);
+                }
+            }
+
+            // Execute the query
+            $stmt->execute();
+
+            // Fetch all results as an associative array
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            // Handle database errors with logging
+            error_log('Database error: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+
+    /**
+     * Maps PHP types to PDO parameter types.
+     *
+     * @param mixed $value The value to determine the type for.
+     * @return int The corresponding PDO parameter type.
+     */
+    private function mapToPdoParamType($value)
+    {
+        if (is_null($value)) {
+            return PDO::PARAM_NULL;
+        } elseif (is_bool($value)) {
+            return PDO::PARAM_BOOL;
+        } elseif (is_int($value)) {
+            return PDO::PARAM_INT;
+        } elseif (is_float($value)) {
+            return PDO::PARAM_STR; // PDO does not have a specific PARAM_FLOAT
+        } elseif (is_string($value)) {
+            return PDO::PARAM_STR;
+        } else {
+            return PDO::PARAM_STR; // Default to string if type is unknown
+        }
+    }
+
 
     /**
      * Insert into the database.
