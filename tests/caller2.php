@@ -133,7 +133,6 @@ class ChildClass extends ParentClass
 }
 
 // Contoh pemanggilan
-$database = new PicoDatabase(); // Pastikan Anda membuat objek PicoDatabase sesuai implementasi Anda
-$obj = new ChildClass($database);
+$obj = new ChildClass(null, $database);
 $results = $obj->findCustom(1, "budi", true); // Mengambil data berdasarkan kriteria yang diberikan
 print_r($results); // Menampilkan hasil query

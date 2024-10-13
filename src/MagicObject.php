@@ -608,7 +608,26 @@ class MagicObject extends stdClass // NOSONAR
      * This method uses reflection to retrieve the query string from the caller's docblock,
      * binds the parameters, and executes the query against the database.
      *
-     * @return array|null Returns an associative array of results on success or null on failure.
+     * It analyzes the caller function's parameters and return type, enabling dynamic query
+     * execution tailored to the specified return type. Supported return types include:
+     * - `void`: Returns null.
+     * - `int` or `integer`: Returns the number of affected rows.
+     * - `object`: Returns a single result as an object.
+     * - `array`: Returns all results as an associative array.
+     * - `string`: Returns the JSON-encoded results.
+     * - `PDOStatement`: Returns the prepared statement for further operations if needed.
+     * - `MagicObject` and its derived classes: If the return type is a class name or an array of class names,
+     *   instances of the class will be created for each row fetched.
+     *
+     * @return mixed Returns the result based on the return type of the caller function:
+     *               - null if the return type is void.
+     *               - integer for the number of affected rows if the return type is int.
+     *               - object for a single result if the return type is object.
+     *               - array of associative arrays for multiple results if the return type is array.
+     *               - JSON string if the return type is string.
+     *               - Instances of a specified class if the return type matches a class name.
+     * 
+     * @throws PDOException If there is an error executing the database query.
      */
     protected function executeNativeQuery()
     {
@@ -634,11 +653,21 @@ class MagicObject extends stdClass // NOSONAR
         $callerParams = $reflection->getParameters();
 
         // Get return type from the caller function
-        $returnType = $reflection->getReturnType();
+        $returnTypeObj = $reflection->getReturnType();
+
+        if($returnTypeObj == null)
+        {
+            preg_match('/@return\s+([^\s]+)/', $docComment, $matches);
+            $returnType = $matches ? $matches[1] : '';
+        }
+        else
+        {
+            $returnType = $returnTypeObj."";
+        }
         
         try {
             // Get database connection
-            $pdo = $this->database->getDatabaseConnection();
+            $pdo = $this->_database->getDatabaseConnection();
             $stmt = $pdo->prepare($queryString);
 
             // Automatically bind each parameter
@@ -654,16 +683,72 @@ class MagicObject extends stdClass // NOSONAR
             // Execute the query
             $stmt->execute();
 
-            // Fetch all results as an associative array
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        } catch (PDOException $e) {
+            if($returnType == "void")
+            {
+                return null;
+            }
+            if($returnType == "PDOStatement")
+            {
+                return $stmt;
+            }
+            else if($returnType == "int" || $returnType == "integer")
+            {
+                return $stmt->rowCount();
+            }
+            else if($returnType == "object")
+            {
+                return $stmt->fetch(PDO::FETCH_OBJ);
+            }
+            else if($returnType == "array")
+            {
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }
+            else if($returnType == "string")
+            {
+                return json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+            }
+            else
+            {
+                try
+                {
+                    if(stripos($returnType, "[") !== false)
+                    {
+                        $className = trim(explode("[", $returnType)[0]);
+                        if(class_exists($className))
+                        {
+                            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                            $ret = [];
+                            foreach($result as $row)
+                            {
+                                $ret[] = new $className($row);
+                            }
+                            return $ret;
+                        }
+                    }
+                    else
+                    {
+                        $className = trim($returnType);
+                        if(class_exists($className))
+                        {
+                            $row = $stmt->fetch(PDO::FETCH_OBJ);
+                            return new $className($row);
+                        }
+                    }
+                }
+                catch(Exception $e)
+                {
+                    error_log('Class not found: ' . $e->getMessage());
+                    return null;
+                }
+            }
+        } 
+        catch (PDOException $e) 
+        {
             // Handle database errors with logging
             error_log('Database error: ' . $e->getMessage());
             return null;
         }
     }
-
 
     /**
      * Maps PHP types to PDO parameter types.

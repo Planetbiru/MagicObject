@@ -1,43 +1,49 @@
 <?php
 
-class ParentClass
+use MagicObject\Database\PicoDatabase;
+use MagicObject\MagicObject;
+use MagicObject\SecretObject;
+
+require_once dirname(__DIR__) . "/vendor/autoload.php";
+
+
+
+$databaseCredential = new SecretObject();
+$databaseCredential->loadYamlFile(dirname(dirname(__DIR__))."/test.yml.txt", false, true, true);
+$database = new PicoDatabase($databaseCredential->getDatabase());
+$database->connect();
+
+class Supervisor extends MagicObject
 {
-    protected function native()
-    {
-        $trace = debug_backtrace();
 
-        // Mengambil parameter dari fungsi pemanggil
-        if (isset($trace[1]['args'])) {
-            $callerParams = $trace[1]['args'];
-        }
-
-        // Mendapatkan nama fungsi pemanggil
-        $callerFunctionName = $trace[1]['function'];
-
-        // Menggunakan refleksi untuk mendapatkan anotasi
-        // Gunakan ReflectionMethod, bukan ReflectionFunction
-        $reflection = new ReflectionMethod($trace[1]['class'], $callerFunctionName);
-        $docComment = $reflection->getDocComment();
-
-    }
 }
 
-class ChildClass extends ParentClass
+class ChildClass extends MagicObject
 {
     /**
-     * Caller
+     * Caller method to find custom data based on parameters.
      *
-     * @param int $tableId
-     * @param string $customerName
-     * @param bool $active
-     * @return void
-     * @query(SELECT * FROM table WHERE table_id.tableId = :tableId AND table.name = :customerName AND table.active = :active)
+     * This method serves as an interface to the native method in the parent class
+     * which executes a database query based on the provided parameters.
+     *
+     * @param int $supervisorId The ID of the table to search for.
+     * @param bool $aktif The active status to filter results.
+     * @return PDOStatement
+     * @query("
+      SELECT supervisor.* 
+      FROM supervisor 
+      WHERE supervisor.supervisor_id = :supervisorId 
+      AND supervisor.aktif = :aktif
+     ")
      */
-    public function caller($tableId, $customerName, $active)
+    public function findCustom($supervisorId, $aktif)
     {
-        return parent::native();
+        // Memanggil metode parent untuk mengeksekusi query
+        return parent::executeNativeQuery();
     }
 }
 
-$obj = new ChildClass();
-$obj->caller(1, "budi", true);
+$obj = new ChildClass(null, $database);
+$results = $obj->findCustom(1, true); // Mengambil data berdasarkan kriteria yang diberikan
+
+print_r($results->fetch(PDO::FETCH_ASSOC));
