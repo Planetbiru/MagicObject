@@ -982,14 +982,18 @@ class PicoDatabasePersistence // NOSONAR
     {
         if(strcasecmp($strategy, "GenerationType.UUID") == 0)
         {
-            $generatedValue = $this->database->generateNewId();
-            $this->object->set($prop, $generatedValue);
             if($firstCall)
             {
-                $this->generatedValue = true;
+                if(($this->object->get($prop) == null || $this->object->get($prop) == "") 
+                && !$this->generatedValue)
+                {
+                    $generatedValue = $this->database->generateNewId();
+                    $this->object->set($prop, $generatedValue);
+                    $this->generatedValue = true;
+                }
             }
         }
-        if(strcasecmp($strategy, "GenerationType.IDENTITY") == 0)
+        else if(strcasecmp($strategy, "GenerationType.IDENTITY") == 0)
         {
             if($firstCall)
             {
@@ -1119,13 +1123,17 @@ class PicoDatabasePersistence // NOSONAR
         
         if($info->getAutoIncrementKeys() != null)
         {
-            foreach($info->getAutoIncrementKeys() as $name=>$col)
+            foreach($info->getAutoIncrementKeys() as $prop=>$col)
             {
-                if(strcasecmp($col[self::KEY_STRATEGY], "GenerationType.UUID") == 0 && !$this->generatedValue)
+                $strategy = $col[self::KEY_STRATEGY];
+                if(strcasecmp($strategy, "GenerationType.UUID") == 0 
+                && ($this->object->get($prop) == null || $this->object->get($prop) == "") 
+                && !$this->generatedValue)
                 {
                     $value = $this->database->generateNewId();
                     $values[$col[self::KEY_NAME]] = $value;
-                    $this->object->set($name, $value);
+                    $this->object->set($prop, $value);
+                    $this->generatedValue = true;
                 }
             }
         }        
