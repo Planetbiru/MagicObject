@@ -7588,6 +7588,7 @@ of the specified class will be created for each row fetched.</li>
 <li>Instances of a specified class for class name matches.</li>
 </ul>
 <p>If there is an error executing the database query, a <strong>PDOException</strong> will be thrown.</p>
+<p>Native query must be a function of a class that extends from the MagicObject class. In its definition, this method must call <code>$this-&gt;executeNativeQuery()</code>. <code>MagicObject::executeNativeQuery()</code> will analyze the docblock, parameters, and return type to process the given query.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-php">&lt;?php
 

@@ -42,6 +42,8 @@ The method returns a mixed type result, which varies based on the caller functio
 
 If there is an error executing the database query, a **PDOException** will be thrown.
 
+Native query must be a function of a class that extends from the MagicObject class. In its definition, this method must call `$this->executeNativeQuery()`. `MagicObject::executeNativeQuery()` will analyze the docblock, parameters, and return type to process the given query.
+
 **Example:**
 
 ```php
