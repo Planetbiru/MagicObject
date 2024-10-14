@@ -775,7 +775,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param mixed $value The value to determine the type for.
      * @return int The corresponding PDO parameter type.
      */
-    private function mapToPdoParamType($value)
+    private function mapToPdoParamType($value) //NOSONAR
     {
         if (is_null($value)) {
             return PDO::PARAM_NULL;
