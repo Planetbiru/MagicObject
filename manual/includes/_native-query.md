@@ -30,7 +30,7 @@ that are tailored to the specified return type. The supported return types inclu
 - **MagicObject** and its derived classes: If the return type is a class name or an array of class names, instances
   of the specified class will be created for each row fetched.
 
-Magic Object also supports return types `self` and `self[]` which will represent the respective class.
+MagicObject also supports return types `self` and `self[]` which will represent the respective class.
 
 The method returns a mixed type result, which varies based on the caller function's return type:
 - It will return `null` for void types.
