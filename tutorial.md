@@ -8812,7 +8812,233 @@ echo "Alamat: ".$native10->getTelepon()."\r\n";
 echo "Alamat: ".$native11[0]->getTelepon()."\r\n";
 ```
 
+For the purpose of exporting large amounts of data, use the PDOStatement return type. PDOStatement allows users to read one by one and process it immediately, allowing PHP to release memory from the previous process. PHP does not need to store very large data in a variable.
 
+**Example 1**
+
+Using MagicObject
+
+```php
+class SupervisorExport extends MagicObject
+{
+    /**
+     * Export active supervisor
+     *
+     * @param bool $aktif The active status to filter results.
+     * @return PDOStatement
+     * @query("
+      SELECT supervisor.* 
+      FROM supervisor 
+      WHERE supervisor.aktif = :aktif
+      ORDER BY supervisor.waktu_buat ASC
+     ")
+     */
+    public function exportActive($aktif)
+    {
+        // Call parent method to execute the query
+        return $this->executeNativeQuery();
+    }
+}
+
+function generateHeader($fp, $map)
+{
+    $fields = [];
+    $fields[] = "No";
+    foreach($map as $column)
+    {
+        $fields[] = PicoStringUtil::snakeToTitle($column);
+    }
+    fputcsv($fp, $fields);
+}
+function generateHeader($fp, $map, $data, $iteration)
+{
+    $fields = [];
+    $fields[] = $iteration;
+    foreach($map as $column)
+    {
+        $fields[] = $data->get($column);
+    }
+    fputcsv($fp, $fields);
+}
+
+$map = [
+    "supervisor_id",
+    "nama",
+    "tanggal_lahir",
+    "telepon",
+    "email"
+];
+
+$path = "/var/www/export.csv";
+$fp = fopen($path, "w");
+
+$exporter = new SupervisorExport(null, $database);
+
+$stmt = $exporter->exportActive(true);
+
+$iteration = 0;
+while($row = $stmt->fetch(PDO::FETCH_OBJ))
+{
+    $data = new SupervisorExport($row);
+    if($iteration == 0)
+    {
+        generateHeader($fp, $map);
+    }
+    $iteration++;
+    generateData($fp, $map, $data, $iteration);
+}
+fclose($fp);
+```
+
+**Example 2**
+
+Using stdClass
+
+```php
+class SupervisorExport extends MagicObject
+{
+    /**
+     * Export active supervisor
+     *
+     * @param bool $aktif The active status to filter results.
+     * @return PDOStatement
+     * @query("
+      SELECT supervisor.* 
+      FROM supervisor 
+      WHERE supervisor.aktif = :aktif
+      ORDER BY supervisor.waktu_buat ASC
+     ")
+     */
+    public function exportActive($aktif)
+    {
+        // Call parent method to execute the query
+        return $this->executeNativeQuery();
+    }
+}
+
+function generateHeader($fp, $map)
+{
+    $fields = [];
+    $fields[] = "No";
+    foreach($map as $column)
+    {
+        $fields[] = PicoStringUtil::snakeToTitle($column);
+    }
+    fputcsv($fp, $fields);
+}
+function generateHeader($fp, $map, $data, $iteration)
+{
+    $fields = [];
+    $fields[] = $iteration;
+    foreach($map as $column)
+    {
+        $fields[] = $data->{$column};
+    }
+    fputcsv($fp, $fields);
+}
+
+$map = [
+    "supervisor_id",
+    "nama",
+    "tanggal_lahir",
+    "telepon",
+    "email"
+];
+
+$path = "/var/www/export.csv";
+$fp = fopen($path, "w");
+
+$exporter = new SupervisorExport(null, $database);
+
+$stmt = $exporter->exportActive(true);
+
+$iteration = 0;
+while($row = $stmt->fetch(PDO::FETCH_OBJ))
+{
+    if($iteration == 0)
+    {
+        generateHeader($fp, $map);
+    }
+    $iteration++;
+    generateData($fp, $map, $row, $iteration);
+}
+fclose($fp);
+```
+
+**Example 3**
+
+Using associated array
+
+```php
+class SupervisorExport extends MagicObject
+{
+    /**
+     * Export active supervisor
+     *
+     * @param bool $aktif The active status to filter results.
+     * @return PDOStatement
+     * @query("
+      SELECT supervisor.* 
+      FROM supervisor 
+      WHERE supervisor.aktif = :aktif
+      ORDER BY supervisor.waktu_buat ASC
+     ")
+     */
+    public function exportActive($aktif)
+    {
+        // Call parent method to execute the query
+        return $this->executeNativeQuery();
+    }
+}
+
+function generateHeader($fp, $map)
+{
+    $fields = [];
+    $fields[] = "No";
+    foreach($map as $column)
+    {
+        $fields[] = PicoStringUtil::snakeToTitle($column);
+    }
+    fputcsv($fp, $fields);
+}
+function generateHeader($fp, $map, $data, $iteration)
+{
+    $fields = [];
+    $fields[] = $iteration;
+    foreach($map as $column)
+    {
+        $fields[] = $data[$column];
+    }
+    fputcsv($fp, $fields);
+}
+
+$map = [
+    "supervisor_id",
+    "nama",
+    "tanggal_lahir",
+    "telepon",
+    "email"
+];
+
+$path = "/var/www/export.csv";
+$fp = fopen($path, "w");
+
+$exporter = new SupervisorExport(null, $database);
+
+$stmt = $exporter->exportActive(true);
+
+$iteration = 0;
+while($row = $stmt->fetch(PDO::FETCH_ASSOC))
+{
+    if($iteration == 0)
+    {
+        generateHeader($fp, $map);
+    }
+    $iteration++;
+    generateData($fp, $map, $row, $iteration);
+}
+fclose($fp);
+```
 ## Dump Database
 
 We can dump database to another database type. We do not need any database converter. Just define the target database type when we dump the database.
