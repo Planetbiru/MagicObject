@@ -630,8 +630,7 @@ class MagicObject extends stdClass // NOSONAR
      * 
      * @throws PDOException If there is an error executing the database query.
      */
-
-    protected function executeNativeQuery()
+    protected function executeNativeQuery() //NOSONAR
     {
         // Retrieve caller trace information
         $trace = debug_backtrace();
@@ -716,7 +715,7 @@ class MagicObject extends stdClass // NOSONAR
             }
             else if($returnType == "string")
             {
-                return json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+                return json_encode($stmt->fetchAll(PDO::FETCH_OBJ));
             }
             else
             {
@@ -734,8 +733,7 @@ class MagicObject extends stdClass // NOSONAR
                             }
                             else
                             {
-                                $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                                
+                                $result = $stmt->fetchAll(PDO::FETCH_OBJ);                             
                                 foreach($result as $row)
                                 {
                                     $ret[] = new $className($row);
@@ -765,8 +763,8 @@ class MagicObject extends stdClass // NOSONAR
         {
             // Handle database errors with logging
             error_log('Database error: ' . $e->getMessage());
-            return null;
         }
+        return null;
     }
 
     /**
