@@ -7,7 +7,8 @@ use MagicObject\SecretObject;
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 $databaseCredential = new SecretObject();
-$databaseCredential->loadYamlFile(dirname(dirname(__DIR__))."/test.yml.txt", false, true, true);
+$databaseCredential->loadYamlFile(dirname(dirname(__DIR__)) . "/test.yml", false, true, true);
+$databaseCredential->getDatabase()->setDatabaseName("sipro");
 $database = new PicoDatabase($databaseCredential->getDatabase());
 $database->connect();
 
@@ -271,7 +272,7 @@ print_r($native6);
 
 $native7 = $obj->native7(1, true);
 echo "\r\nnative7:\r\n";
-print_r($native7);
+print_r($native7->fetchAll(PDO::FETCH_ASSOC));
 
 $native8 = $obj->native8(1, true);
 echo "\r\nnative8:\r\n";
@@ -291,8 +292,7 @@ print_r($native11);
 
 // For the MagicObject return type, users can utilize the features of the MagicObject except for interacting with the database again because native queries are designed for a different purpose.
 
-echo "Alamat: ".$native8->getTelepon()."\r\n";
-echo "Alamat: ".$native9[0]->getTelepon()."\r\n";
-echo "Alamat: ".$native10->getTelepon()."\r\n";
-echo "Alamat: ".$native11[0]->getTelepon()."\r\n";
-
+echo "Alamat: " . $native8->getTelepon() . "\r\n";
+echo "Alamat: " . $native9[0]->getTelepon() . "\r\n";
+echo "Alamat: " . $native10->getTelepon() . "\r\n";
+echo "Alamat: " . $native11[0]->getTelepon() . "\r\n";

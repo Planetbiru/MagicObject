@@ -629,6 +629,7 @@ class MagicObject extends stdClass // NOSONAR
      *               - instances of a specified class if the return type matches a class name.
      * 
      * @throws PDOException If there is an error executing the database query.
+     * @throws InvalidQueryInputException If there is no query to be executed on the database query.
      */
     protected function executeNativeQuery() //NOSONAR
     {
@@ -649,6 +650,12 @@ class MagicObject extends stdClass // NOSONAR
         // Get the query from the @query annotation
         preg_match('/@query\s*\("([^"]+)"\)/', $docComment, $matches);
         $queryString = $matches ? $matches[1] : '';
+        
+        $queryString = trim($queryString, " \r\n\t ");
+        if(empty($queryString))
+        {
+            throw new InvalidQueryInputException("No query found.\r\n".$docComment);
+        }
 
         // Get parameter information from the caller function
         $callerParams = $reflection->getParameters();
@@ -665,7 +672,7 @@ class MagicObject extends stdClass // NOSONAR
         {
             $returnType = $returnTypeObj."";
         }
-
+        $returnType = trim($returnType);
         if($returnType == "self[]")
         {
             $returnType = $callerClassName."[]";
@@ -762,7 +769,7 @@ class MagicObject extends stdClass // NOSONAR
         catch (PDOException $e) 
         {
             // Handle database errors with logging
-            error_log('Database error: ' . $e->getMessage());
+            throw new PDOException($e->getMessage(), $e->getCode(), $e);
         }
         return null;
     }
