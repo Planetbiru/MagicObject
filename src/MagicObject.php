@@ -665,14 +665,20 @@ class MagicObject extends stdClass // NOSONAR
 
         if($returnTypeObj == null)
         {
+            // PHP 5
             preg_match('/@return\s+([^\s]+)/', $docComment, $matches);
             $returnType = $matches ? $matches[1] : '';
         }
         else
         {
+            // PHP 7 or above
             $returnType = $returnTypeObj."";
         }
+        
+        // Trim return type
         $returnType = trim($returnType);
+        
+        // Change self to callerClassName
         if($returnType == "self[]")
         {
             $returnType = $callerClassName."[]";
