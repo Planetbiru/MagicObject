@@ -13,19 +13,20 @@ MagicObject is a powerful library for creating applications in PHP with ease. It
 3. **Multi-Level Objects**: Support for nested objects.
 4. **Entity Access**: Streamline interactions with entities.
 5. **Filtering and Pagination**: Built-in methods for managing data display.
-6. **Database Dumping**: Export database contents efficiently.
-7. **Serialization/Deserialization**: Handle JSON and YAML formats seamlessly.
-8. **Data Importing**: Import data even if source and destination schemas differ.
-9. **File Reading**: Read INI, YAML, and JSON configuration files.
-10. **Environment Variable Access**: Easily fetch environment variable values.
-11. **Configuration Encryption**: Secure application settings.
-12. **HTTP Data Handling**: Create objects from global request variables (POST, GET, etc.).
-13. **Session Management**: Integrate with PHP sessions.
-14. **Object Labeling**: Enhance object identification.
-15. **Multi-Language Support**: Facilitate localization.
-16. **File Uploads**: Handle file uploads efficiently.
-17. **Annotations**: Add metadata to objects for better structure.
-18. **Debugging**: Tools to debug and inspect objects.
+6. **Native Query**: Defining native queries for a function will increase flexibility and resource efficiency in accessing the database.
+7. **Database Dumping**: Export database contents efficiently.
+8. **Serialization/Deserialization**: Handle JSON and YAML formats seamlessly.
+9. **Data Importing**: Import data even if source and destination schemas differ.
+10. **File Reading**: Read INI, YAML, and JSON configuration files.
+11. **Environment Variable Access**: Easily fetch environment variable values.
+12. **Configuration Encryption**: Secure application settings.
+13. **HTTP Data Handling**: Create objects from global request variables (POST, GET, etc.).
+14. **Session Management**: Integrate with PHP sessions.
+15. **Object Labeling**: Enhance object identification.
+16. **Multi-Language Support**: Facilitate localization.
+17. **File Uploads**: Handle file uploads efficiently.
+18. **Annotations**: Add metadata to objects for better structure.
+19. **Debugging**: Tools to debug and inspect objects.
 
 This library provides a versatile toolkit for building robust PHP applications!
 
