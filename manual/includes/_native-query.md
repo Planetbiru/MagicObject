@@ -17,8 +17,7 @@ This method executes a database query using the parameters and annotations defin
 It leverages reflection to access the query string specified in the caller's docblock, binds the relevant parameters,
 and then runs the query against the database.
 
-By analyzing the parameters and return type of the calling function, this method enables dynamic execution of queries
-that are tailored to the specified return type. The supported return types include:
+By analyzing the parameters and return type of the calling function, this method enables dynamic query execution tailored to the parameters and return type specified in the @return annotation. Supported return types include:
 
 - **void**: The method will return `null`.
 - **int** or **integer**: It will return the number of affected rows.

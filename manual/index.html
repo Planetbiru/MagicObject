@@ -7564,8 +7564,7 @@ require_once "inc/footer.php";
 <p>This method executes a database query using the parameters and annotations defined in the caller function.
 It leverages reflection to access the query string specified in the caller's docblock, binds the relevant parameters,
 and then runs the query against the database.</p>
-<p>By analyzing the parameters and return type of the calling function, this method enables dynamic execution of queries
-that are tailored to the specified return type. The supported return types include:</p>
+<p>By analyzing the parameters and return type of the calling function, this method enables dynamic query execution tailored to the parameters and return type specified in the @return annotation. Supported return types include:</p>
 <ul>
 <li><strong>void</strong>: The method will return <code>null</code>.</li>
 <li><strong>int</strong> or <strong>integer</strong>: It will return the number of affected rows.</li>
