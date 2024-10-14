@@ -342,6 +342,5 @@ echo "Alamat: ".$native8->getTelepon()."\r\n";
 echo "Alamat: ".$native9[0]->getTelepon()."\r\n";
 echo "Alamat: ".$native10->getTelepon()."\r\n";
 echo "Alamat: ".$native11[0]->getTelepon()."\r\n";
-
 ```
 
