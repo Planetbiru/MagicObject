@@ -8507,7 +8507,7 @@ The method returns a mixed type result, which varies based on the caller functio
 
 If there is an error executing the database query, a **PDOException** will be thrown.
 
-Native query must be a function of a class that extends from the MagicObject class. In its definition, this method must call `$this->executeNativeQuery()`. `MagicObject::executeNativeQuery()` will analyze the docblock, parameters, and return type to process the given query.
+Native query must be a function of a class that extends from the MagicObject class. In its definition, this method must call `$this->executeNativeQuery()`. `MagicObject::executeNativeQuery()` will analyze the docblock, parameters, and return type to process the given query. For ease and flexibility in writing code, the `MagicObject::executeNativeQuery()` function call does not pass parameters. Instead, the `MagicObject::executeNativeQuery()` function takes parameters from the calling function. Thus, changes to the parameters of the calling function do not require changes to the function definition.
 
 **Example:**
 
@@ -8522,7 +8522,6 @@ require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 $databaseCredential = new SecretObject();
 $databaseCredential->loadYamlFile(dirname(dirname(__DIR__)) . "/test.yml", false, true, true);
-$databaseCredential->getDatabase()->setDatabaseName("sipro");
 $database = new PicoDatabase($databaseCredential->getDatabase());
 $database->connect();
 
