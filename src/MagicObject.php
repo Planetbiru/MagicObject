@@ -786,23 +786,18 @@ class MagicObject extends stdClass // NOSONAR
      * @param mixed $value The value to determine the type for.
      * @return int The corresponding PDO parameter type.
      */
-    private function mapToPdoParamType($value) //NOSONAR
+    private function mapToPdoParamType($value)
     {
+        $type = PDO::PARAM_STR;
         if (is_null($value)) {
-            return PDO::PARAM_NULL;
-        } elseif (is_bool($value)) {
-            return PDO::PARAM_BOOL;
-        } elseif (is_int($value)) {
-            return PDO::PARAM_INT;
-        } elseif (is_float($value)) {
-            return PDO::PARAM_STR; // PDO does not have a specific PARAM_FLOAT
-        } elseif (is_string($value)) {
-            return PDO::PARAM_STR;
-        } else {
-            return PDO::PARAM_STR; // Default to string if type is unknown
+            $type = PDO::PARAM_NULL;
+        } else if (is_bool($value)) {
+            $type = PDO::PARAM_BOOL;
+        } else if (is_int($value)) {
+            $type = PDO::PARAM_INT;
         }
+        return $type;
     }
-
 
     /**
      * Insert into the database.
