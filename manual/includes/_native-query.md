@@ -336,7 +336,8 @@ $native11 = $obj->native11(1, true);
 echo "\r\nnative11:\r\n";
 print_r($native11);
 
-// For the MagicObject return type, users can utilize the features of the MagicObject except for interacting with the database again because native queries are designed for a different purpose.
+// For the MagicObject return type, users can utilize the features of the MagicObject except for 
+// interacting with the database again because native queries are designed for a different purpose.
 
 echo "Alamat: ".$native8->getTelepon()."\r\n";
 echo "Alamat: ".$native9[0]->getTelepon()."\r\n";
