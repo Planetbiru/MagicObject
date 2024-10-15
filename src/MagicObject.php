@@ -121,7 +121,6 @@ class MagicObject extends stdClass // NOSONAR
         return $this->_nullProperties;
     }
 
-
     /**
      * Constructor
      *
