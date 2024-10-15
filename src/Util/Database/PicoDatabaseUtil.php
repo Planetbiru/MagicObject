@@ -2,6 +2,7 @@
 
 namespace MagicObject\Util\Database;
 
+use DateTime;
 use MagicObject\Database\PicoPageable;
 use MagicObject\Database\PicoSortable;
 use MagicObject\Database\PicoSpecification;
@@ -220,7 +221,11 @@ class PicoDatabaseUtil
         foreach($array as $key=>$value)
         {
             $type = gettype($value);
-            if(is_string($value))
+            if($value instanceof DateTime)
+            {
+                $array[$key] = "'".$value->format('Y-m-d H:i:s')."'";
+            }
+            else if(is_string($value))
             {
                 if($escape)
                 {
