@@ -38,7 +38,7 @@ class FileNotFoundException extends Exception
      *
      * @return Throwable|null
      */
-    public function getPreviousException(): ?Throwable
+    public function getPreviousException()
     {
         return $this->previous;
     }
