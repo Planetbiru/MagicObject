@@ -5,6 +5,7 @@ namespace MagicObject\Util\Database;
 use MagicObject\Database\PicoPageable;
 use MagicObject\Database\PicoSortable;
 use MagicObject\Database\PicoSpecification;
+use PDOStatement;
 
 class PicoDatabaseUtil
 {
@@ -404,4 +405,23 @@ class PicoDatabaseUtil
         }
         return null;
     }
+    
+    /**
+     * Retrieves the final query to be executed by the PDOStatement.
+     *
+     * This function replaces the placeholders in the query with the bound parameter values.
+     *
+     * @param PDOStatement $stmt The PDOStatement containing the original query.
+     * @param array $params An array of parameter values to replace the placeholders.
+     * @return string The final query with parameter values substituted.
+     */
+    public static function getFinalQuery($stmt, $params) {
+        $query = $stmt->queryString; // Get the original query
+        foreach ($params as $key => $value) {
+            // Replace placeholder with parameter value
+            $query = str_replace(":$key", self::escapeValue($value), $query);
+        }
+        return $query;
+    }
+
 }
