@@ -7561,6 +7561,7 @@ require_once "inc/footer.php";
 <li>calling functions</li>
 <li>calling procedures and stored procedures</li>
 </ol>
+<h3>Return Type</h3>
 <p>This method executes a database query using the parameters and annotations defined in the caller function.
 It leverages reflection to access the query string specified in the caller's docblock, binds the relevant parameters,
 and then runs the query against the database.</p>
@@ -7589,6 +7590,18 @@ of the specified class will be created for each row fetched.</li>
 <p>If there is an error executing the database query, a <strong>PDOException</strong> will be thrown.</p>
 <p>Native query must be a function of a class that extends from the MagicObject class. In its definition, this method must call <code>$this-&gt;executeNativeQuery()</code>. <code>MagicObject::executeNativeQuery()</code> will analyze the docblock, parameters, and return type to process the given query. For ease and flexibility in writing code, the <code>MagicObject::executeNativeQuery()</code> function call does not pass parameters. Instead, the <code>MagicObject::executeNativeQuery()</code> function takes parameters from the calling function. Thus, changes to the parameters of the calling function do not require changes to the function definition.</p>
 <p>Native queries can be created on entities used by the application. If in the previous version the entity only contained properties, then in version 2.0, the entity can also contain functions for native queries. However, entities in versions 1 and 2 both support functions but functions with native queries are only supported in version 2.0.</p>
+<h3>Parameters</h3>
+<p>The parameters accepted by the native query function are as follows:</p>
+<ol>
+<li>string</li>
+<li>int or integer</li>
+<li>float</li>
+<li>bool or boolean</li>
+<li>null</li>
+<li>array of string, int, float, bool</li>
+<li>DateTime</li>
+</ol>
+<p>For columns with data type <code>DATETIME</code> and <code>TIMESTAMP</code>, users can use either <code>string</code> or <code>DateTime</code> parameters. <code>DateTime</code> will be first converted to 'Y-md H:i:s' format automatically by MagicObject.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-php">&lt;?php
 

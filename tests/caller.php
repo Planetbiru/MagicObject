@@ -246,10 +246,32 @@ class Supervisor extends MagicObject
         // Call parent method to execute the query
         return $this->executeNativeQuery();
     }
+    
+    /**
+     * Native query 13
+     *
+     * This method will return an array of Supervisor object.
+     *
+     * @param int $supervisorId The ID of the table to search for.
+     * @param DateTime $timeCreate The date and time when data is created
+     * @return self[]
+     * @query("
+      SELECT supervisor.* 
+      FROM supervisor 
+      WHERE supervisor.waktu_buat <= :timeCreate 
+      AND supervisor.aktif = :aktif
+     ")
+     */
+    public function native13($timeCreate, $aktif)
+    {
+        // Call parent method to execute the query
+        return $this->executeNativeQuery();
+    }
 }
 
 $obj = new Supervisor(null, $database);
 
+/*
 $native1 = $obj->native1(1, true);
 
 $native2 = $obj->native2(1, true);
@@ -292,10 +314,14 @@ $native11 = $obj->native11(1, true);
 echo "\r\nnative11:\r\n";
 print_r($native11);
 
+
 // For the MagicObject return type, users can utilize the features of the MagicObject except for interacting with the database again because native queries are designed for a different purpose.
 
 echo "Alamat: " . $native8->getTelepon() . "\r\n";
 echo "Alamat: " . $native9[0]->getTelepon() . "\r\n";
 echo "Alamat: " . $native10->getTelepon() . "\r\n";
 echo "Alamat: " . $native11[0]->getTelepon() . "\r\n";
-
+*/
+$native13 = $obj->native13(new DateTime(), true);
+echo "\r\nnative13:\r\n";
+print_r($native13);

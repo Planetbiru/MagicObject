@@ -2,6 +2,7 @@
 
 namespace MagicObject;
 
+use DateTime;
 use Exception;
 use PDOException;
 use PDOStatement;
@@ -714,7 +715,9 @@ class MagicObject extends stdClass // NOSONAR
                     $paramName = $callerParams[$index]->getName();
                     if(!is_array($paramValue))
                     {
-                        $paramType = $this->mapToPdoParamType($paramValue);
+                        $maped = $this->mapToPdoParamType($paramValue);
+                        $paramType = $maped->type;
+                        $paramValue = $maped->value;
                         $params[$paramName] = $paramValue;
                         $stmt->bindValue(":".$paramName, $paramValue, $paramType);
                     }
@@ -808,21 +811,37 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Maps PHP types to PDO parameter types.
      *
+     * This function determines the appropriate PDO parameter type based on the given value.
+     *
      * @param mixed $value The value to determine the type for.
-     * @return int The corresponding PDO parameter type.
+     * @return stdClass An object containing the PDO parameter type and the corresponding value.
      */
     private function mapToPdoParamType($value)
     {
-        $type = PDO::PARAM_STR;
-        if (is_null($value)) {
-            $type = PDO::PARAM_NULL;
+        $type = PDO::PARAM_STR; // Default type is string
+        $finalValue = $value; // Initialize final value to the original value
+
+        if ($value instanceof DateTime) {
+            $type = PDO::PARAM_STR; // DateTime should be treated as a string
+            $finalValue = $value->format("Y-m-d H:i");
+        } else if (is_null($value)) {
+            $type = PDO::PARAM_NULL; // NULL type
+            $finalValue = null; // Set final value to null
         } else if (is_bool($value)) {
-            $type = PDO::PARAM_BOOL;
+            $type = PDO::PARAM_BOOL; // Boolean type
+            $finalValue = $value; // Keep the boolean value
         } else if (is_int($value)) {
-            $type = PDO::PARAM_INT;
+            $type = PDO::PARAM_INT; // Integer type
+            $finalValue = $value; // Keep the integer value
         }
-        return $type;
+
+        // Create and return an object with the type and value
+        $result = new stdClass();
+        $result->type = $type;
+        $result->value = $finalValue;
+        return $result;
     }
+
 
     /**
      * Insert into the database.
