@@ -46,24 +46,24 @@ class SphericalGeometry
      *
      * Reference: http://www.movable-type.co.uk/scripts/latlong-db.html
      *
-     * @param LatLng $LatLng The center point as a LatLng object.
+     * @param LatLng $latLng The center point as a LatLng object.
      * @param int|float $radius The radius in meters.
      * @return LatLngBounds The computed bounding rectangle.
      */
-    public static function computeBounds($LatLng, $radius)
+    public static function computeBounds($latLng, $radius)
     {
         $latRadiansDistance = $radius / self::EARTH_RADIUS;
         $latDegreesDistance = rad2deg($latRadiansDistance);
-        $lngDegreesDistance = rad2deg($latRadiansDistance / cos(deg2rad($LatLng->getLat())));
+        $lngDegreesDistance = rad2deg($latRadiansDistance / cos(deg2rad($latLng->getLat())));
 
         // SW point
-        $swLat = $LatLng->getLat() - $latDegreesDistance;
-        $swLng = $LatLng->getLng() - $lngDegreesDistance;
+        $swLat = $latLng->getLat() - $latDegreesDistance;
+        $swLng = $latLng->getLng() - $lngDegreesDistance;
         $sw = new LatLng($swLat, $swLng);
         
         // NE point
-        $neLat = $LatLng->getLat() + $latDegreesDistance;
-        $neLng = $LatLng->getLng() + $lngDegreesDistance;
+        $neLat = $latLng->getLat() + $latDegreesDistance;
+        $neLng = $latLng->getLng() + $lngDegreesDistance;
         $ne = new LatLng($neLat, $neLng);
 
         return new LatLngBounds($sw, $ne);
@@ -180,27 +180,27 @@ class SphericalGeometry
     /**
      * Computes the distance between two LatLng points.
      *
-     * @param LatLng $LatLng1 The first LatLng point.
-     * @param LatLng $LatLng2 The second LatLng point.
+     * @param LatLng $latLng1 The first LatLng point.
+     * @param LatLng $latLng2 The second LatLng point.
      * @return float The distance in yards.
      */
-    public static function computeDistanceBetween($LatLng1, $LatLng2)
+    public static function computeDistanceBetween($latLng1, $latLng2)
     {
-        return self::_computeDistanceInRadiansBetween($LatLng1, $LatLng2) * self::EARTH_RADIUS * 1.09361;
+        return self::_computeDistanceInRadiansBetween($latLng1, $latLng2) * self::EARTH_RADIUS * 1.09361;
     }
 
     /**
      * Computes the total length of a series of LatLng points.
      *
-     * @param LatLng[] $LatLngsArray An array of LatLng points.
+     * @param LatLng[] $latLngsArray An array of LatLng points.
      * @return float The total length in yards.
      */
-    public static function computeLength($LatLngsArray) 
+    public static function computeLength($latLngsArray) 
     {
         $length = 0;
         
-        for ($i = 0, $l = count($LatLngsArray) - 1; $i < $l; ++$i) {
-            $length += self::computeDistanceBetween($LatLngsArray[$i], $LatLngsArray[$i + 1]);
+        for ($i = 0, $l = count($latLngsArray) - 1; $i < $l; ++$i) {
+            $length += self::computeDistanceBetween($latLngsArray[$i], $latLngsArray[$i + 1]);
         }    
         
         return $length;
@@ -209,30 +209,30 @@ class SphericalGeometry
     /**
      * Computes the area of a polygon defined by a series of LatLng points.
      *
-     * @param LatLng[] $LatLngsArray An array of LatLng points defining the polygon.
+     * @param LatLng[] $latLngsArray An array of LatLng points defining the polygon.
      * @return float The area in square meters.
      */
-    public static function computeArea($LatLngsArray)
+    public static function computeArea($latLngsArray)
     {
-        return abs(self::computeSignedArea($LatLngsArray, false));
+        return abs(self::computeSignedArea($latLngsArray, false));
     }
 
     /**
      * Computes the signed area of a polygon defined by a series of LatLng points.
      *
-     * @param LatLng[] $LatLngsArray An array of LatLng points defining the polygon.
+     * @param LatLng[] $latLngsArray An array of LatLng points defining the polygon.
      * @param bool $signed Whether to return a signed area.
      * @return float The signed area in square meters.
      */
-    public static function computeSignedArea($LatLngsArray, $signed = true)
+    public static function computeSignedArea($latLngsArray, $signed = true)
     {
-        if (empty($LatLngsArray) || count($LatLngsArray) < 3) return 0;
+        if (empty($latLngsArray) || count($latLngsArray) < 3) return 0;
         
         $e = 0;
         $r2 = pow(self::EARTH_RADIUS, 2);
         
-        for ($i = 1, $l = count($LatLngsArray) - 1; $i < $l; ++$i) {
-            $e += self::_computeSphericalExcess($LatLngsArray[0], $LatLngsArray[$i], $LatLngsArray[$i + 1], $signed);
+        for ($i = 1, $l = count($latLngsArray) - 1; $i < $l; ++$i) {
+            $e += self::_computeSphericalExcess($latLngsArray[0], $latLngsArray[$i], $latLngsArray[$i + 1], $signed);
         }
            
         return $e * $r2;
@@ -264,16 +264,16 @@ class SphericalGeometry
      * Computes the great circle distance (in radians) between two points.
      * Uses the Haversine formula.
      *
-     * @param LatLng $LatLng1 The first LatLng point.
-     * @param LatLng $LatLng2 The second LatLng point.
+     * @param LatLng $latLng1 The first LatLng point.
+     * @param LatLng $latLng2 The second LatLng point.
      * @return float The distance in radians.
      */
-    protected static function _computeDistanceInRadiansBetween($LatLng1, $LatLng2)
+    protected static function _computeDistanceInRadiansBetween($latLng1, $latLng2)
     {
-        $p1RadLat = deg2rad($LatLng1->getLat());
-        $p1RadLng = deg2rad($LatLng1->getLng());
-        $p2RadLat = deg2rad($LatLng2->getLat());
-        $p2RadLng = deg2rad($LatLng2->getLng());
+        $p1RadLat = deg2rad($latLng1->getLat());
+        $p1RadLng = deg2rad($latLng1->getLng());
+        $p2RadLat = deg2rad($latLng2->getLat());
+        $p2RadLng = deg2rad($latLng2->getLng());
         return 2 * asin(sqrt(pow(sin(($p1RadLat - $p2RadLat) / 2), 2) + cos($p1RadLat) 
             * cos($p2RadLat) * pow(sin(($p1RadLng - $p2RadLng) / 2), 2)));
     }
@@ -281,15 +281,15 @@ class SphericalGeometry
     /**
      * Computes the spherical excess using L'Huilier's Theorem.
      *
-     * @param LatLng $LatLng1 The first vertex of the triangle.
-     * @param LatLng $LatLng2 The second vertex of the triangle.
-     * @param LatLng $LatLng3 The third vertex of the triangle.
+     * @param LatLng $latLng1 The first vertex of the triangle.
+     * @param LatLng $latLng2 The second vertex of the triangle.
+     * @param LatLng $latLng3 The third vertex of the triangle.
      * @param bool $signed Whether to return a signed value.
      * @return float The spherical excess.
      */
-    protected static function _computeSphericalExcess($LatLng1, $LatLng2, $LatLng3, $signed)
+    protected static function _computeSphericalExcess($latLng1, $latLng2, $latLng3, $signed)
     {
-        $latLngsArray = array($LatLng1, $LatLng2, $LatLng3, $LatLng1);
+        $latLngsArray = array($latLng1, $latLng2, $latLng3, $latLng1);
         $distances = array();
         $sumOfDistances = 0;
         
@@ -317,9 +317,9 @@ class SphericalGeometry
         $v = array();
         
         for ($i = 0; $i < 3; ++$i) { 
-            $LatLng = $latLngsArray[$i];
-            $lat = deg2rad($LatLng->getLat());
-            $lng = deg2rad($LatLng->getLng());
+            $latLng = $latLngsArray[$i];
+            $lat = deg2rad($latLng->getLat());
+            $lng = deg2rad($latLng->getLng());
             
             $v[$i] = array();
             $v[$i][0] = cos($lat) * cos($lng);
