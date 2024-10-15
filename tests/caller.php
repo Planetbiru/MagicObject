@@ -271,7 +271,7 @@ class Supervisor extends MagicObject
 
 $obj = new Supervisor(null, $database);
 
-/*
+
 $native1 = $obj->native1(1, true);
 
 $native2 = $obj->native2(1, true);
@@ -321,7 +321,7 @@ echo "Alamat: " . $native8->getTelepon() . "\r\n";
 echo "Alamat: " . $native9[0]->getTelepon() . "\r\n";
 echo "Alamat: " . $native10->getTelepon() . "\r\n";
 echo "Alamat: " . $native11[0]->getTelepon() . "\r\n";
-*/
+
 $native13 = $obj->native13([new DateTime('2023-03-27 15:23:47', new DateTimeZone($databaseCredential->getDatabase()->getTimeZone()))], true);
 echo "\r\nnative13:\r\n";
 print_r($native13);

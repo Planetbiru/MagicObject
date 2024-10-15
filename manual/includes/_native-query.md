@@ -61,6 +61,10 @@ Native query must be a function of a class that extends from the MagicObject cla
 
 Native queries can be created on entities used by the application. If in the previous version the entity only contained properties, then in version 2.0, the entity can also contain functions for native queries. However, entities in versions 1 and 2 both support functions but functions with native queries are only supported in version 2.0.
 
+### Debug Query
+
+MagicObject checks if the database connection has a debugging function for queries. If available, it sends the executed query along with the parameter values to this function, aiding users in identifying errors during query definition and execution.
+
 **Example:**
 
 ```php
@@ -74,7 +78,9 @@ require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 $databaseCredential = new SecretObject();
 $databaseCredential->loadYamlFile(dirname(dirname(__DIR__)) . "/test.yml", false, true, true);
-$database = new PicoDatabase($databaseCredential->getDatabase());
+$database = new PicoDatabase($databaseCredential->getDatabase(), null, function($sql){
+    error_log($sql); // Debug query here
+});
 $database->connect();
 
 class Supervisor extends MagicObject
