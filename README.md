@@ -2,11 +2,9 @@
 
 # Introduction
 
-# MagicObject Library for PHP
-
 MagicObject is a powerful library for creating applications in PHP with ease. It allows for the derivation of classes with various intended uses. Below are some of its key features:
 
-## Features
+# Features
 
 1. **Dynamic Object Creation**: Easily create objects at runtime.
 2. **Setters and Getters**: Simplify property management with automatic methods.
