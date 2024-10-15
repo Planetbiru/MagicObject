@@ -130,7 +130,7 @@ class ConfigApp extends MagicObject
      * Constructor
      *
      * @param mixed $data Initial data
-     * @param boolean $readonly Readonly flag
+     * @param bool $readonly Readonly flag
      */
     public function __construct($data = null, $readonly = false)
     {

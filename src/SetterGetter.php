@@ -176,7 +176,7 @@ class SetterGetter extends stdClass
      * Check if property has been set or not or has null value
      *
      * @param string $name Property name
-     * @return boolean
+     * @return bool
      */
     public function __isset($name)
     {
@@ -352,7 +352,7 @@ class SetterGetter extends stdClass
     /**
      * Check if the JSON naming strategy is snake case.
      *
-     * @return boolean True if the naming strategy is snake case, false otherwise.
+     * @return bool True if the naming strategy is snake case, false otherwise.
      */
     private function isSnake()
     {
@@ -365,7 +365,7 @@ class SetterGetter extends stdClass
     /**
      * Check if the JSON naming strategy is camel case.
      *
-     * @return boolean True if the naming strategy is camel case, false otherwise.
+     * @return bool True if the naming strategy is camel case, false otherwise.
      */
     protected function isCamel()
     {
@@ -375,7 +375,7 @@ class SetterGetter extends stdClass
     /**
      * Check if the JSON should be prettified.
      *
-     * @return boolean True if prettification is enabled, false otherwise.
+     * @return bool True if prettification is enabled, false otherwise.
      */
     private function isPretty()
     {

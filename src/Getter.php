@@ -72,7 +72,7 @@ class Getter extends stdClass
 
     /**
      * Get value
-     * @param boolean $snakeCase Flag to snake case property
+     * @param bool $snakeCase Flag to snake case property
      */
     public function value($snakeCase = false)
     {
@@ -153,7 +153,7 @@ class Getter extends stdClass
     /**
      * Check if JSON naming strategy is snake case or not
      *
-     * @return boolean
+     * @return bool
      */
     private function isSnake()
     {
@@ -166,7 +166,7 @@ class Getter extends stdClass
     /**
      * Check if JSON naming strategy is snake case or not
      *
-     * @return boolean
+     * @return bool
      */
     private function isPretty()
     {

@@ -137,8 +137,8 @@ class PicoStringUtil
      *
      * @param string $haystack Haystack
      * @param string $value Value
-     * @param boolean $caseSensitive Flag that comparation is case sensitive
-     * @return boolean
+     * @param bool $caseSensitive Flag that comparation is case sensitive
+     * @return bool
      */
     public static function startsWith($haystack, $value, $caseSensitive = false)
     {
@@ -157,8 +157,8 @@ class PicoStringUtil
      *
      * @param string $haystack Haystack
      * @param string $value Value
-     * @param boolean $caseSensitive Flag that comparation is case sensitive
-     * @return boolean
+     * @param bool $caseSensitive Flag that comparation is case sensitive
+     * @return bool
      */
     public static function endsWith($haystack, $value, $caseSensitive = false)
     {
@@ -234,7 +234,7 @@ class PicoStringUtil
      * Check if string is not null and not empty
      *
      * @param string $value Value
-     * @return boolean
+     * @return bool
      */
     public static function isNotNullAndNotEmpty($value)
     {
@@ -245,7 +245,7 @@ class PicoStringUtil
      * Check if string is null or empty
      *
      * @param string $value Value
-     * @return boolean
+     * @return bool
      */
     public static function isNullOrEmpty($value)
     {

@@ -271,7 +271,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Set flag to skip null column
      *
-     * @param boolean $skip Skip null
+     * @param bool $skip Skip null
      * @return self
      */
     public function includeNull($skip)
@@ -577,7 +577,7 @@ class PicoDatabasePersistence // NOSONAR
      * Get match row
      *
      * @param PDOStatement $stmt PDO statement
-     * @return boolean
+     * @return bool
      */
     public function matchRow($stmt)
     {
@@ -592,7 +592,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Save data to database
      *
-     * @param boolean $includeNull Flag include NULL
+     * @param bool $includeNull Flag include NULL
      * @return PDOStatement|EntityException
      */
     public function save($includeNull = false)
@@ -637,7 +637,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Query of save data
      *
-     * @param boolean $includeNull Flag include NULL
+     * @param bool $includeNull Flag include NULL
      * @return PicoDatabaseQueryBuilder
      * @throws EntityException
      */
@@ -915,7 +915,7 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param string $columnName Column name
      * @param array $primaryKeys Primary keys
-     * @return boolean
+     * @return bool
      */
     public function isPrimaryKeys($columnName, $primaryKeys)
     {
@@ -949,7 +949,7 @@ class PicoDatabasePersistence // NOSONAR
      * Add generated value
      *
      * @param PicoTableInfo $info Table information
-     * @param boolean $firstCall First call
+     * @param bool $firstCall First call
      * @return void
      */
     private function addGeneratedValue($info, $firstCall)
@@ -1007,7 +1007,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Insert data
      *
-     * @param boolean $includeNull Flag include NULL
+     * @param bool $includeNull Flag include NULL
      * @return PDOStatement|EntityException
      */
     public function insert($includeNull = false)
@@ -1021,7 +1021,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Query of insert data
      *
-     * @param boolean $includeNull Flag include NULL
+     * @param bool $includeNull Flag include NULL
      * @return PicoDatabaseQueryBuilder|EntityException
      */
     public function insertQuery($includeNull = false)
@@ -1142,7 +1142,7 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param string $strategy
      * @param string $propertyName
-     * @return boolean
+     * @return bool
      */
     private function isRequireGenerateValue($strategy, $propertyName)
     {
@@ -1805,7 +1805,7 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param string[] $primaryKeys Primary keys
      * @param array $propertyValues Property values
-     * @return boolean
+     * @return bool
      */
     private function isValidPrimaryKeyValues($primaryKeys, $propertyValues)
     {
@@ -2086,7 +2086,7 @@ class PicoDatabasePersistence // NOSONAR
      * @param PicoPageable|null $pageable Pageable
      * @param PicoSortable|string|null $sortable Sortable
      * @param PicoTableInfo $info Table information
-     * @return boolean
+     * @return bool
      */
     protected function isRequireJoin($specification, $pageable, $sortable, $info)
     {
@@ -2107,7 +2107,7 @@ class PicoDatabasePersistence // NOSONAR
      * @param PicoPageable|null $pageable Pageable
      * @param PicoSortable|string|null $sortable Sortable
      * @param PicoTableInfo $info Table information
-     * @return boolean
+     * @return bool
      */
     private function isRequireJoinFromPageableAndSortable($pageable, $sortable, $info)
     {
@@ -2138,7 +2138,7 @@ class PicoDatabasePersistence // NOSONAR
      * Require join from specification
      *
      * @param PicoSpecification $specification Specification
-     * @return boolean
+     * @return bool
      */
     private function isRequireJoinFromSpecification($specification)
     {
@@ -2576,7 +2576,7 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param string $propertyName Property name
      * @param mixed $propertyValue Property value
-     * @return boolean
+     * @return bool
      */
     public function existsBy($propertyName, $propertyValue)
     {
@@ -2959,7 +2959,7 @@ class PicoDatabasePersistence // NOSONAR
      * Check if filter is valid or not
      *
      * @param string $filter Filter
-     * @return boolean
+     * @return bool
      */
     private function isValidFilter($filter)
     {
@@ -2970,7 +2970,7 @@ class PicoDatabasePersistence // NOSONAR
      * Check if data is not null and not empty and not a space
      *
      * @param string $value Value to be checked
-     * @return boolean
+     * @return bool
      */
     private function notNullAndNotEmptyAndNotSpace($value)
     {
@@ -3066,7 +3066,7 @@ class PicoDatabasePersistence // NOSONAR
      * Boolean value
      *
      * @param mixed $value Input value
-     * @return boolean
+     * @return bool
      */
     private function boolval($value)
     {
@@ -3137,7 +3137,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Check if date time is NULL
      * @param string $value Value to be checked
-     * @return boolean
+     * @return bool
      */
     private function isDateTimeNull($value)
     {
@@ -3379,7 +3379,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Update data
      *
-     * @param boolean $includeNull Flag include NULL
+     * @param bool $includeNull Flag include NULL
      * @return PDOStatement
      * @throws EntityException
      */
@@ -3395,7 +3395,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Query of update data
      *
-     * @param boolean $includeNull Flag include NULL
+     * @param bool $includeNull Flag include NULL
      * @return PicoDatabaseQueryBuilder
      * @throws EntityException
      */
@@ -3569,7 +3569,7 @@ class PicoDatabasePersistence // NOSONAR
      * Check if parameter is array
      *
      * @param mixed $value Value to be checked
-     * @return boolean
+     * @return bool
      */
     public function isArray($value)
     {

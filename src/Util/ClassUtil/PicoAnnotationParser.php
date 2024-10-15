@@ -110,7 +110,7 @@ class PicoAnnotationParser
      * Check if value is null or empty
      *
      * @param string $value
-     * @return boolean
+     * @return bool
      */
     private function isNullOrEmpty($value)
     {
@@ -434,7 +434,7 @@ class PicoAnnotationParser
      *
      * @param array $keys Keys
      * @param string $val Value
-     * @return boolean
+     * @return bool
      */
     private function matchArgs($keys, $val)
     {

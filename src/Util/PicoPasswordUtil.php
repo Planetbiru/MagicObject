@@ -129,8 +129,8 @@ class PicoPasswordUtil{
      * Get password hash
      *
      * @param string $password Plain text
-     * @param boolean $binary Flag that result is binary
-     * @param boolean $validate Flag to validate password
+     * @param bool $binary Flag that result is binary
+     * @param bool $validate Flag to validate password
      * @return string
      */
     public function getHash($password, $binary = false, $validate = true)

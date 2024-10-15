@@ -1244,7 +1244,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Get default values for properties
      *
-     * @param boolean $snakeCase Flag indicating whether to convert property names to snake case
+     * @param bool $snakeCase Flag indicating whether to convert property names to snake case
      * @return stdClass An object containing default values
      */
     public function defaultValue($snakeCase = false)
@@ -1276,7 +1276,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Get the object values
      *
-     * @param boolean $snakeCase Flag indicating whether to convert property names to snake case
+     * @param bool $snakeCase Flag indicating whether to convert property names to snake case
      * @return stdClass An object containing the values of the properties
      */
     public function value($snakeCase = false)
@@ -1340,7 +1340,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Get the object value as an associative array
      *
-     * @param boolean $snakeCase Flag indicating whether to convert property names to snake case
+     * @param bool $snakeCase Flag indicating whether to convert property names to snake case
      * @return array An associative array representing the object values
      */
     public function valueArray($snakeCase = false)
@@ -1373,7 +1373,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Check if the JSON naming strategy is snake case
      *
-     * @return boolean True if the naming strategy is snake case; otherwise, false
+     * @return bool True if the naming strategy is snake case; otherwise, false
      */
     protected function _snakeJson()
     {
@@ -1386,7 +1386,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Check if the YAML naming strategy is snake case
      *
-     * @return boolean True if the naming strategy is snake case; otherwise, false
+     * @return bool True if the naming strategy is snake case; otherwise, false
      */
     protected function _snakeYaml()
     {
@@ -1399,7 +1399,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Check if the JSON naming strategy is upper camel case
      *
-     * @return boolean True if the naming strategy is upper camel case; otherwise, false
+     * @return bool True if the naming strategy is upper camel case; otherwise, false
      */
     protected function isUpperCamel()
     {
@@ -1412,7 +1412,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Check if the JSON naming strategy is camel case
      *
-     * @return boolean True if the naming strategy is camel case; otherwise, false
+     * @return bool True if the naming strategy is camel case; otherwise, false
      */
     protected function _camel()
     {
@@ -1422,7 +1422,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Check if the JSON output should be prettified
      *
-     * @return boolean True if JSON output is set to be prettified; otherwise, false
+     * @return bool True if JSON output is set to be prettified; otherwise, false
      */
     protected function _pretty()
     {
@@ -1436,7 +1436,7 @@ class MagicObject extends stdClass // NOSONAR
      * Check if a value is not null and not empty
      *
      * @param mixed $value The value to check
-     * @return boolean True if the value is not null and not empty; otherwise, false
+     * @return bool True if the value is not null and not empty; otherwise, false
      */
     private function _notNullAndNotEmpty($value)
     {
@@ -1446,8 +1446,8 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Get a list of properties
      *
-     * @param boolean $reflectSelf Flag indicating whether to reflect properties of the current class
-     * @param boolean $asArrayProps Flag indicating whether to return properties as an array
+     * @param bool $reflectSelf Flag indicating whether to reflect properties of the current class
+     * @param bool $asArrayProps Flag indicating whether to return properties as an array
      * @return array An array of property names or ReflectionProperty objects
      */
     protected function propertyList($reflectSelf = false, $asArrayProps = false)
@@ -1487,7 +1487,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoSpecification|null $specification The specification for filtering
      * @param PicoPageable|string|null $pageable The pagination information
      * @param PicoSortable|string|null $sortable The sorting criteria
-     * @param boolean $passive Flag indicating whether the object is passive
+     * @param bool $passive Flag indicating whether the object is passive
      * @param array|null $subqueryMap An optional map of subqueries
      * @return PicoPageData The paginated data
      * @throws NoRecordFoundException if no records are found
@@ -1501,7 +1501,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Check if database is connected or not
      *
-     * @return boolean
+     * @return bool
      */
     private function _databaseConnected()
     {
@@ -1592,7 +1592,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoSpecification|null $specification The specification for filtering
      * @param PicoPageable|string|null $pageable The pagination information
      * @param PicoSortable|string|null $sortable The sorting criteria
-     * @param boolean $passive Flag indicating whether the object is passive
+     * @param bool $passive Flag indicating whether the object is passive
      * @param array|null $subqueryMap An optional map of subqueries
      * @param int $findOption The find option
      * @return PicoPageData The paginated data
@@ -1683,7 +1683,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoSpecification|null $specification The specification for filtering
      * @param PicoPageable|string|null $pageable The pagination information
      * @param PicoSortable|string|null $sortable The sorting criteria
-     * @param boolean $passive Flag indicating whether the object is passive
+     * @param bool $passive Flag indicating whether the object is passive
      * @param array|null $subqueryMap An optional map of subqueries
      * @param int $findOption The find option
      * @return PicoPageData The paginated data
@@ -1874,7 +1874,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param PicoSpecification|null $specification The specification for filtering
      * @param PicoPageable|string|null $pageable The pagination information
      * @param PicoSortable|string|null $sortable The sorting criteria
-     * @param boolean $passive Flag indicating whether the object is passive
+     * @param bool $passive Flag indicating whether the object is passive
      * @param array|null $subqueryMap An optional map of subqueries
      * @param int $findOption The find option
      * @return PicoPageData The paginated data
@@ -2052,7 +2052,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $method The method used for finding.
      * @param mixed $params The parameters to use for the deletion.
-     * @return boolean True on success; otherwise, false.
+     * @return bool True on success; otherwise, false.
      * @throws NoDatabaseConnectionException If there is no database connection.
      */
     private function deleteOneBy($method, $params)
@@ -2081,7 +2081,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $method The method used for finding.
      * @param mixed $params The parameters to use for the search.
-     * @return boolean True if the record exists; otherwise, false.
+     * @return bool True if the record exists; otherwise, false.
      * @throws NoDatabaseConnectionException If there is no database connection.
      */
     private function existsBy($method, $params)
@@ -2122,7 +2122,7 @@ class MagicObject extends stdClass // NOSONAR
      * Convert the result to an array of objects.
      *
      * @param array $result The result set to convert.
-     * @param boolean $passive Flag indicating whether the objects are passive.
+     * @param bool $passive Flag indicating whether the objects are passive.
      * @return array An array of objects.
      */
     private function toArrayObject($result, $passive = false)
@@ -2576,7 +2576,7 @@ class MagicObject extends stdClass // NOSONAR
      * Recursively stringify an object or array of objects.
      *
      * @param self $value The object to stringify.
-     * @param boolean $snake Flag to indicate whether to convert property names to snake_case.
+     * @param bool $snake Flag to indicate whether to convert property names to snake_case.
      * @return mixed The stringified object or array.
      */
     private function stringifyObject($value, $snake)

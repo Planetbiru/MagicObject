@@ -18,7 +18,7 @@ class PicoIniUtil
      *
      * @param array $array Array
      * @param string $path File path
-     * @return boolean
+     * @return bool
      */
     public static function writeIniFile($array, $path)
     {
@@ -181,7 +181,7 @@ class PicoIniUtil
      * Check if line is invalid
      *
      * @param string $line Line
-     * @return boolean
+     * @return bool
      */
     public static function invalidLine($line)
     {

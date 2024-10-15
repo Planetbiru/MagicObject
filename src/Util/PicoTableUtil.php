@@ -99,7 +99,7 @@ class PicoTableUtil
      * Validate class name of DOMElement
      *
      * @param string $className Class name
-     * @return boolean
+     * @return bool
      */
     public static function isValidClassName($className)
     {
