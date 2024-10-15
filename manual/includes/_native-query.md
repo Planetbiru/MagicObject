@@ -460,7 +460,7 @@ function generateHeader($fp, $map)
     }
     fputcsv($fp, $fields);
 }
-function generateHeader($fp, $map, $data, $iteration)
+function generateData($fp, $map, $data, $iteration)
 {
     $fields = [];
     $fields[] = $iteration;
