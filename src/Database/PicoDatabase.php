@@ -542,4 +542,24 @@ class PicoDatabase //NOSONAR
         $val->connected = $this->connected;
         return json_encode($val);
     }
+
+    /**
+     * Get callback function when executing any query.
+     *
+     * @return  callable|null
+     */ 
+    public function getCallbackDebugQuery()
+    {
+        return $this->callbackDebugQuery;
+    }
+
+    /**
+     * Get callback function when executing queries that modify data.
+     *
+     * @return  callable|null
+     */ 
+    public function getCallbackExecuteQuery()
+    {
+        return $this->callbackExecuteQuery;
+    }
 }

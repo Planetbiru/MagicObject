@@ -249,7 +249,7 @@ class Supervisor extends MagicObject
 $obj = new Supervisor(null, $database);
 
 $native1 = $obj->native1(1, true);
-
+/*
 $native2 = $obj->native2(1, true);
 echo "\r\nnative2:\r\n";
 print_r($native2);
@@ -296,3 +296,5 @@ echo "Alamat: " . $native8->getTelepon() . "\r\n";
 echo "Alamat: " . $native9[0]->getTelepon() . "\r\n";
 echo "Alamat: " . $native10->getTelepon() . "\r\n";
 echo "Alamat: " . $native11[0]->getTelepon() . "\r\n";
+
+*/

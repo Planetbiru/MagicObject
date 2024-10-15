@@ -601,6 +601,15 @@ class MagicObject extends stdClass // NOSONAR
             throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
         }
     }
+    
+    private function getFinalQuery($stmt, $params) {
+        $query = $stmt->queryString; // Ambil query asli
+        foreach ($params as $key => $value) {
+            // Ganti placeholder dengan nilai parameter
+            $query = str_replace(":$key", $stmt->quote($value), $query);
+        }
+        return $query;
+    }
 
     /**
      * Executes a database query based on the parameters and annotations from the caller function.
@@ -687,7 +696,7 @@ class MagicObject extends stdClass // NOSONAR
         {
             $returnType = $callerClassName;
         }
-        
+        $params = [];
         try {
             // Get database connection
             $pdo = $this->_database->getDatabaseConnection();
@@ -697,10 +706,19 @@ class MagicObject extends stdClass // NOSONAR
             foreach ($callerParamValues as $index => $paramValue) {
                 if (isset($callerParams[$index])) {
                     // Format parameter name according to the query
-                    $paramName = ':' . $callerParams[$index]->getName();
+                    $paramName = $callerParams[$index]->getName();
                     $paramType = $this->mapToPdoParamType($paramValue);
-                    $stmt->bindValue($paramName, $paramValue, $paramType);
+                    $params[$paramName] = $paramValue;
+                    $stmt->bindValue(":".$paramName, $paramValue, $paramType);
                 }
+            }
+            
+            $debugFunction = $this->_database->getCallbackDebugQuery();
+            var_dump($debugFunction);
+            if(isset($debugFunction) && is_callable($debugFunction))
+            {
+                echo "AAAAAA";
+                call_user_func($debugFunction, $this->getFinalQuery($stmt, $params));
             }
 
             // Execute the query
