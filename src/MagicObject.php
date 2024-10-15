@@ -823,7 +823,7 @@ class MagicObject extends stdClass // NOSONAR
 
         if ($value instanceof DateTime) {
             $type = PDO::PARAM_STR; // DateTime should be treated as a string
-            $finalValue = $value->format("Y-m-d H:i");
+            $finalValue = $value->format("Y-m-d H:i:s");
         } else if (is_null($value)) {
             $type = PDO::PARAM_NULL; // NULL type
             $finalValue = null; // Set final value to null

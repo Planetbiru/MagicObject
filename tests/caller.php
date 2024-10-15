@@ -258,7 +258,7 @@ class Supervisor extends MagicObject
      * @query("
       SELECT supervisor.* 
       FROM supervisor 
-      WHERE supervisor.waktu_buat <= :timeCreate 
+      WHERE supervisor.waktu_buat = :timeCreate 
       AND supervisor.aktif = :aktif
      ")
      */
@@ -322,6 +322,6 @@ echo "Alamat: " . $native9[0]->getTelepon() . "\r\n";
 echo "Alamat: " . $native10->getTelepon() . "\r\n";
 echo "Alamat: " . $native11[0]->getTelepon() . "\r\n";
 */
-$native13 = $obj->native13(new DateTime(), true);
+$native13 = $obj->native13(new DateTime('2023-03-27 15:23:47', new DateTimeZone($databaseCredential->getDatabase()->getTimeZone())), true);
 echo "\r\nnative13:\r\n";
 print_r($native13);
