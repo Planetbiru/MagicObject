@@ -688,7 +688,9 @@ class MagicObject extends stdClass // NOSONAR
         {
             $returnType = $callerClassName;
         }
+
         $params = [];
+
         try {
             // Get database connection
             $pdo = $this->_database->getDatabaseConnection();
@@ -733,71 +735,58 @@ class MagicObject extends stdClass // NOSONAR
             // Execute the query
             $stmt->execute();
 
-            if($returnType == "void")
-            {
+            if ($returnType == "void") {
+                // Return null if the return type is void
                 return null;
             }
-            if($returnType == "PDOStatement")
-            {
+            if ($returnType == "PDOStatement") {
+                // Return the PDOStatement object
                 return $stmt;
-            }
-            else if($returnType == "int" || $returnType == "integer")
-            {
+            } else if ($returnType == "int" || $returnType == "integer") {
+                // Return the affected row count
                 return $stmt->rowCount();
-            }
-            else if($returnType == "object" || $returnType == "stdClass")
-            {
+            } else if ($returnType == "object" || $returnType == "stdClass") {
+                // Return one row as an object
                 return $stmt->fetch(PDO::FETCH_OBJ);
-            }
-            else if($returnType == "array")
-            {
+            } else if ($returnType == "array") {
+                // Return all rows as an associative array
                 return $stmt->fetchAll(PDO::FETCH_ASSOC);
-            }
-            else if($returnType == "string")
-            {
+            } else if ($returnType == "string") {
+                // Return the result as a JSON string
                 return json_encode($stmt->fetchAll(PDO::FETCH_OBJ));
-            }
-            else
-            {
-                try
-                {
-                    if(stripos($returnType, "[") !== false)
-                    {
+            } else {
+                try {
+                    // Check for array-type hinting in the return type
+                    if (stripos($returnType, "[") !== false) {
                         $className = trim(explode("[", $returnType)[0]);
-                        if(class_exists($className))
-                        {
+                        if (class_exists($className)) {
                             $ret = [];
-                            if($className == "stdClass")
-                            {
+                            if ($className == "stdClass") {
+                                // Return all rows as stdClass objects
                                 return $stmt->fetchAll(PDO::FETCH_OBJ);
-                            }
-                            else
-                            {
-                                $result = $stmt->fetchAll(PDO::FETCH_OBJ);                             
-                                foreach($result as $row)
-                                {
+                            } else {
+                                // Map result rows to the specified class
+                                $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+                                foreach ($result as $row) {
                                     $ret[] = new $className($row);
                                 }
                                 return $ret;
                             }
                         }
-                    }
-                    else
-                    {
+                    } else {
+                        // Return a single object of the specified class
                         $className = trim($returnType);
-                        if(class_exists($className))
-                        {
+                        if (class_exists($className)) {
                             $row = $stmt->fetch(PDO::FETCH_OBJ);
                             return new $className($row);
                         }
                     }
-                }
-                catch(Exception $e)
-                {
+                } catch (Exception $e) {
+                    // Log the exception if the class is not found
                     error_log('Class not found: ' . $e->getMessage());
                     return null;
                 }
-            }
+            }            
         } 
         catch (PDOException $e) 
         {
