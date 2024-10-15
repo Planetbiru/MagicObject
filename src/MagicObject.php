@@ -812,9 +812,15 @@ class MagicObject extends stdClass // NOSONAR
      * Maps PHP types to PDO parameter types.
      *
      * This function determines the appropriate PDO parameter type based on the given value.
+     * It handles various PHP data types and converts them to the corresponding PDO parameter types
+     * required for executing prepared statements in PDO.
      *
-     * @param mixed $value The value to determine the type for.
-     * @return stdClass An object containing the PDO parameter type and the corresponding value.
+     * @param mixed $value The value to determine the type for. This can be of any type, including
+     *                     null, boolean, integer, string, DateTime, or other types.
+     * @return stdClass An object containing:
+     *                  - type: The PDO parameter type (PDO::PARAM_STR, PDO::PARAM_NULL, 
+     *                          PDO::PARAM_BOOL, PDO::PARAM_INT).
+     *                  - value: The corresponding value formatted as needed for the PDO parameter.
      */
     private function mapToPdoParamType($value)
     {
