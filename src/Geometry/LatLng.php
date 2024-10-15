@@ -6,6 +6,8 @@ namespace MagicObject\Geometry;
  * Class LatLng
  *
  * Represents a geographical point defined by latitude and longitude values.
+ * This class provides methods to manage and manipulate geographic coordinates,
+ * including equality checks and string representations.
  *
  * @package MagicObject\Geometry
  */
@@ -97,7 +99,7 @@ class LatLng
     /**
      * Convert the LatLng object to a URL-friendly string value.
      *
-     * @param int $precision The number of decimal places to round to.
+     * @param int $precision The number of decimal places to round to (default: 6).
      * @return string The latitude and longitude values as a string.
      */
     public function toUrlValue($precision = 6)

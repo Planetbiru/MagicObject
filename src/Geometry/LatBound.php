@@ -5,7 +5,9 @@ namespace MagicObject\Geometry;
 /**
  * Class LatBounds
  *
- * Represents a latitude bounding box defined by southwest and northeast latitude values.
+ * Represents a latitude bounding box defined by southwestern and northeastern latitude values.
+ * This class provides functionality to manage and calculate properties of latitude bounds,
+ * including checking for containment, intersections, and equality with other latitude bounds.
  *
  * @package MagicObject\Geometry
  */
@@ -64,7 +66,7 @@ class LatBounds
     }
 
     /**
-     * Check if the latitude bounds are empty.
+     * Check if the latitude bounds are empty (i.e., invalid).
      *
      * @return bool True if the bounds are empty, false otherwise.
      */
@@ -114,6 +116,10 @@ class LatBounds
 
     /**
      * Extend the bounds to include a new latitude.
+     *
+     * If the bounds are empty, the latitude becomes both the southwestern and northeastern bounds.
+     * If the latitude is less than the southwestern bound, it updates the southwestern bound.
+     * If the latitude is greater than the northeastern bound, it updates the northeastern bound.
      *
      * @param float $lat The latitude to extend the bounds with.
      */
