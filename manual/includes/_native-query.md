@@ -291,6 +291,27 @@ class Supervisor extends MagicObject
         // Call parent method to execute the query
         return $this->executeNativeQuery();
     }
+    
+    /**
+     * Native query 12
+     *
+     * This method will return a prepared statement for further operations if necessary.
+     *
+     * @param int[] $supervisorId The ID of the table to search for.
+     * @param bool $aktif The active status to filter results.
+     * @return PDOStatement
+     * @query("
+      SELECT supervisor.* 
+      FROM supervisor 
+      WHERE supervisor.supervisor_id in :supervisorId 
+      AND supervisor.aktif = :aktif
+     ")
+     */
+    public function native7($supervisorId, $aktif)
+    {
+        // Call parent method to execute the query
+        return $this->executeNativeQuery();
+    }
 }
 
 $obj = new Supervisor(null, $database);
@@ -347,6 +368,42 @@ echo "Alamat: " . $native11[0]->getTelepon() . "\r\n";
 ```
 
 For the purpose of exporting large amounts of data, use the PDOStatement return type. PDOStatement allows users to read one by one and process it immediately, allowing PHP to release memory from the previous process. PHP does not need to store very large data in a variable.
+
+Example 12 shows how to use array parameters.
+
+For example:
+
+```sql
+SELECT supervisor.*
+FROM supervisor
+WHERE supervisor.supervisor_id in (1, 2, 3, 4)
+AND supervisor.aktif = true;
+```
+
+So the method is:
+
+```php
+    /**
+     * Native query 12
+     *
+     * This method will return a prepared statement for further operations if necessary.
+     *
+     * @param int[] $supervisorId The ID of the table to search for.
+     * @param bool $aktif The active status to filter results.
+     * @return PDOStatement
+     * @query("
+      SELECT supervisor.* 
+      FROM supervisor 
+      WHERE supervisor.supervisor_id in :supervisorId 
+      AND supervisor.aktif = :aktif
+     ")
+     */
+    public function native7($supervisorId, $aktif)
+    {
+        // Call parent method to execute the query
+        return $this->executeNativeQuery();
+    }
+```
 
 **Example 1**
 

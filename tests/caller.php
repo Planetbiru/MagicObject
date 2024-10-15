@@ -10,7 +10,7 @@ $databaseCredential = new SecretObject();
 $databaseCredential->loadYamlFile(dirname(dirname(__DIR__)) . "/test.yml", false, true, true);
 $databaseCredential->getDatabase()->setDatabaseName("sipro");
 $database = new PicoDatabase($databaseCredential->getDatabase(), null, function($sql){
-    //echo $sql.";\r\n\r\n";
+    echo $sql.";\r\n\r\n";
 });
 $database->connect();
 
@@ -23,11 +23,11 @@ class Supervisor extends MagicObject
      *
      * @param string[] $supervisorId The ID of the table to search for.
      * @param bool $aktif The active status to filter results.
-     * @return string
+     * @return void
      * @query("
       SELECT supervisor.* 
       FROM supervisor 
-      WHERE supervisor.supervisor_id in :supervisorId 
+      WHERE supervisor.supervisor_id = :supervisorId 
       AND supervisor.aktif = :aktif
      ")
      */
@@ -147,13 +147,13 @@ class Supervisor extends MagicObject
      *
      * This method will return a prepared statement for further operations if necessary.
      *
-     * @param int $supervisorId The ID of the table to search for.
+     * @param int[] $supervisorId The ID of the table to search for.
      * @param bool $aktif The active status to filter results.
      * @return PDOStatement
      * @query("
       SELECT supervisor.* 
       FROM supervisor 
-      WHERE supervisor.supervisor_id = :supervisorId 
+      WHERE supervisor.supervisor_id in :supervisorId 
       AND supervisor.aktif = :aktif
      ")
      */
@@ -250,9 +250,8 @@ class Supervisor extends MagicObject
 
 $obj = new Supervisor(null, $database);
 
-$native1 = $obj->native1(["'4", "2", "9'1", "11'", 19, 1], true);
-var_dump($native1);
-/*
+$native1 = $obj->native1(1, true);
+
 $native2 = $obj->native2(1, true);
 echo "\r\nnative2:\r\n";
 print_r($native2);
@@ -273,7 +272,7 @@ $native6 = $obj->native6(1, true);
 echo "\r\nnative6:\r\n";
 print_r($native6);
 
-$native7 = $obj->native7(1, true);
+$native7 = $obj->native7([1, 2, 3, 4], true);
 echo "\r\nnative7:\r\n";
 print_r($native7->fetchAll(PDO::FETCH_ASSOC));
 
@@ -300,4 +299,3 @@ echo "Alamat: " . $native9[0]->getTelepon() . "\r\n";
 echo "Alamat: " . $native10->getTelepon() . "\r\n";
 echo "Alamat: " . $native11[0]->getTelepon() . "\r\n";
 
-*/
