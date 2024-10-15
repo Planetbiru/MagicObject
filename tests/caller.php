@@ -9,7 +9,9 @@ require_once dirname(__DIR__) . "/vendor/autoload.php";
 $databaseCredential = new SecretObject();
 $databaseCredential->loadYamlFile(dirname(dirname(__DIR__)) . "/test.yml", false, true, true);
 $databaseCredential->getDatabase()->setDatabaseName("sipro");
-$database = new PicoDatabase($databaseCredential->getDatabase(), null, function($sql){echo $sql;});
+$database = new PicoDatabase($databaseCredential->getDatabase(), null, function($sql){
+    //echo $sql.";\r\n\r\n";
+});
 $database->connect();
 
 class Supervisor extends MagicObject
@@ -19,9 +21,9 @@ class Supervisor extends MagicObject
      *
      * This method will return null.
      *
-     * @param int[] $supervisorId The ID of the table to search for.
+     * @param string[] $supervisorId The ID of the table to search for.
      * @param bool $aktif The active status to filter results.
-     * @return void
+     * @return string
      * @query("
       SELECT supervisor.* 
       FROM supervisor 
@@ -248,7 +250,8 @@ class Supervisor extends MagicObject
 
 $obj = new Supervisor(null, $database);
 
-$native1 = $obj->native1([1, 2,9], true);
+$native1 = $obj->native1(["'4", "2", "9'1", "11'", 19, 1], true);
+var_dump($native1);
 /*
 $native2 = $obj->native2(1, true);
 echo "\r\nnative2:\r\n";

@@ -693,13 +693,14 @@ class MagicObject extends stdClass // NOSONAR
             // Get database connection
             $pdo = $this->_database->getDatabaseConnection();
             
+            // Replace array
             foreach ($callerParamValues as $index => $paramValue) {
                 if (isset($callerParams[$index])) {
                     // Format parameter name according to the query
                     $paramName = $callerParams[$index]->getName();
                     if(is_array($paramValue))
                     {
-                        $queryString = str_replace(":".$paramName, "(".PicoDatabaseUtil::toList($paramValue).")", $queryString);
+                        $queryString = str_replace(":".$paramName, PicoDatabaseUtil::toList($paramValue, true, true), $queryString);
                     }
                 }
             }
@@ -720,6 +721,7 @@ class MagicObject extends stdClass // NOSONAR
                 }
             }
             
+            // Send query to logger
             $debugFunction = $this->_database->getCallbackDebugQuery();
             if(isset($debugFunction) && is_callable($debugFunction))
             {
