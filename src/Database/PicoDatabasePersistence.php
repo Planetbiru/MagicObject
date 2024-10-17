@@ -2882,19 +2882,24 @@ class PicoDatabasePersistence // NOSONAR
      * and retrieves the data using the specified join key.
      *
      * @param string $classNameJoin The name of the class to join with.
-     * @param string $referenceColumName The name of the column used as the join key.
+     * @param string $referenceColumnName The name of the column used as the join key.
      * @param mixed $joinKeyValue The value of the join key to search for.
      * @return MagicObject|null Returns the retrieved MagicObject if found, or null if not found.
      */
     private function getJoinData($classNameJoin, $referenceColumName, $joinKeyValue)
     {
-        if(!isset($this->joinCache[$classNameJoin]) || !isset($this->joinCache[$classNameJoin][$joinKeyValue]))
+        $persist = new self(null, new $classNameJoin());
+        $info = $persist->getTableInfo();
+        $noCache = isset($info) ? $info->getNoCache() : false;
+        
+        // Check if caching is disabled or if the data is not already cached
+        if($noCache || !isset($this->joinCache[$classNameJoin]) || !isset($this->joinCache[$classNameJoin][$joinKeyValue]))
         {      
             $className = $this->getRealClassName($classNameJoin);
             $obj = new $className(null);      
             
             $dbEnt = $this->object->databaseEntity();
-            // Check if object has multiple database connections
+            // Determine the database connection to use
             if($dbEnt != null)
             {
                 // Using multiple database connection
@@ -2906,10 +2911,16 @@ class PicoDatabasePersistence // NOSONAR
                 // Using master database connection
                 $obj->currentDatabase($this->object->currentDatabase());
             }
-                        
+            
+            // Dynamically call the method to find the object by the join key
             $method = 'findOneBy' . ucfirst($referenceColumName);
-            $obj->{$method}($joinKeyValue);           
-            $this->joinCache[$classNameJoin][$joinKeyValue] = $obj;
+            $obj->{$method}($joinKeyValue);   
+            
+            // Cache the result for future retrievals if caching is enabled
+            if(!$noCache)        
+            {
+                $this->joinCache[$classNameJoin][$joinKeyValue] = $obj;
+            }
             return $obj;
         }
         else if(isset($this->joinCache[$classNameJoin]) && isset($this->joinCache[$classNameJoin][$joinKeyValue]))
@@ -2918,7 +2929,7 @@ class PicoDatabasePersistence // NOSONAR
         }
         else
         {
-            return null;
+            return null; // Return null if no data is found
         }
     }
     
