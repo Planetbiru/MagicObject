@@ -241,8 +241,7 @@ class PicoEntityLabel
                         self::KEY_STRATEGY => isset($vals[self::KEY_STRATEGY]) ? $vals[self::KEY_STRATEGY] : null,
                         self::KEY_GENERATOR => isset($vals[self::KEY_GENERATOR]) ? $vals[self::KEY_GENERATOR] : null,
                     );
-                }
-                
+                }  
             } 
 
             // Define default column values
