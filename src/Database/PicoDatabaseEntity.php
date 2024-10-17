@@ -17,6 +17,13 @@ class PicoDatabaseEntity
     private $databases = [];
     
     /**
+     * Default database connection
+     *
+     * @var PicoDatabase
+     */
+    private $defaultDatabase;
+    
+    /**
      * Adds an entity to the database.
      *
      * @param MagicObject $entity The entity to add.
@@ -51,6 +58,30 @@ class PicoDatabaseEntity
         if (isset($this->databases[$className])) {
             return $this->databases[$className];
         }
-        return null;
+        return $this->defaultDatabase;
+    }
+
+    /**
+     * Get default database connection
+     *
+     * @return  PicoDatabase
+     */ 
+    public function getDefaultDatabase()
+    {
+        return $this->defaultDatabase;
+    }
+
+    /**
+     * Set default database connection
+     *
+     * @param  PicoDatabase $defaultDatabase Default database connection
+     *
+     * @return  self
+     */ 
+    public function setDefaultDatabase($defaultDatabase)
+    {
+        $this->defaultDatabase = $defaultDatabase;
+
+        return $this;
     }
 }
