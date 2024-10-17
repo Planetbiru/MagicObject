@@ -75,6 +75,37 @@ For large applications, users can scale the database and storage. So that a user
 
 Stable version of MagicObject is `1.17.2` or above. Please don't install versions bellow it.
 
+
+# MagicObject Version 2
+
+## What is New
+
+1.  **Native Query**
+    
+    -   Introduced support for native SQL queries, allowing users to execute raw SQL statements directly within the framework. This feature enhances flexibility and provides greater control over complex queries that may not be easily constructed using the ORM layer.
+2.  **Multiple Database Connection**
+    
+    -   Added the ability to configure and manage multiple database connections. This allows developers to connect to different databases within the same application seamlessly, facilitating multi-database architectures and more complex application requirements.
+3.  **Enable or Disable Entity Cache on Join**
+    
+    -   Introduced a feature to enable or disable entity caching specifically for join operations. This gives developers fine-tuned control over caching strategies, improving performance while also allowing for fresh data retrieval when necessary.
+4.  **Enhanced Documentation**
+    
+    -   Comprehensive updates to the documentation for classes, properties, functions, and annotations. This includes clearer explanations, examples, and usage guidelines, making it easier for developers to understand and utilize the framework effectively.
+5.  **Bug Fixes on Previous Version**
+    
+    -   Addressed various bugs and issues reported in earlier versions. This includes performance improvements, stability enhancements, and corrections of minor errors that could affect the functionality of the framework.
+
+## Additional Features
+
+-   **Improved Error Handling**: Enhanced mechanisms for error detection and handling, providing more informative messages to assist developers in troubleshooting.
+-   **Performance Optimizations**: Various internal optimizations that improve the overall performance of the framework, particularly in database interactions.
+-   **Backward Compatibility**: Ensured backward compatibility with version 1, allowing for a smooth transition for existing users to upgrade without significant changes to their codebase.
+
+## Migration Notes
+
+-   When upgrading from version 1 to version 2, please review the migration notes for any breaking changes or required adjustments to your codebase. Detailed guidelines are provided to facilitate a smooth upgrade process.
+
 # Tutorial
 
 Tutorial is provided here https://github.com/Planetbiru/MagicObject/blob/main/tutorial.md
