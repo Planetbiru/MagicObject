@@ -13,7 +13,7 @@ Native queries can perform several tasks such as:
 6. calling functions
 7. calling procedures and stored procedures
 
-Native queries do not support multiple database connections.
+Native queries do not support multiple database connections. This means that all operations performed using native queries must be executed within a single, active database connection. This design choice ensures data consistency and integrity by preventing potential conflicts that may arise from attempting to manage multiple connections simultaneously. Users should ensure that their application logic accommodates this limitation, potentially leveraging connection pooling or other techniques to optimize database interaction when needed.
 
 ### Parameters
 
