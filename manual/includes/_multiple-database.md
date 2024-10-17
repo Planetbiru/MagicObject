@@ -178,7 +178,7 @@ $databaseEntity->add($artist); // Automatically uses $database2 for $artist
 $song->databaseEntity($databaseEntity);
 ```
 
-Since `$album` and `$producer` are stored in the same database as `$song`. User can skip to set `DatabaseEntity` for `$album` and `$producer`. MagicObject will use `$database1` as the default database connection. Thus, we can write a shorter code as follows:
+Since `$album` and `$producer` are stored in the same database as `$song`, user can skip to set `DatabaseEntity` for `$album` and `$producer`. MagicObject will use `$database1` as the default database connection. Thus, we can write a shorter code as follows:
 
 ```php
 $song = new Song(null, $database1);

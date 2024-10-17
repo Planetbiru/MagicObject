@@ -8359,7 +8359,7 @@ $databaseEntity-&gt;add($album); // Automatically uses $database1 for $album
 $databaseEntity-&gt;add($producer); // Automatically uses $database1 for $producer
 $databaseEntity-&gt;add($artist); // Automatically uses $database2 for $artist
 $song-&gt;databaseEntity($databaseEntity);</code></pre>
-<p>Since <code>$album</code> and <code>$producer</code> are stored in the same database as <code>$song</code>. User can skip to set <code>DatabaseEntity</code> for <code>$album</code> and <code>$producer</code>. MagicObject will use <code>$database1</code> as the default database connection. Thus, we can write a shorter code as follows:</p>
+<p>Since <code>$album</code> and <code>$producer</code> are stored in the same database as <code>$song</code>, user can skip to set <code>DatabaseEntity</code> for <code>$album</code> and <code>$producer</code>. MagicObject will use <code>$database1</code> as the default database connection. Thus, we can write a shorter code as follows:</p>
 <pre><code class="language-php">$song = new Song(null, $database1);
 $artist = new Artist(null, $database2);</code></pre>
 <p><strong>Method 1: Chaining Method Calls</strong></p>
