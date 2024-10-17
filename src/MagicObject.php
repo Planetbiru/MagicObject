@@ -2162,7 +2162,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param bool $passive Flag indicating whether the objects are passive.
      * @return array An array of objects.
      */
-    private function toArrayObject($result, $passive = false)
+    private function toArrayObject($result, $passive = false) // NOSONAR
     {
         $instance = array();
         $index = 0;
@@ -2171,7 +2171,23 @@ class MagicObject extends stdClass // NOSONAR
             foreach($result as $value)
             {
                 $className = get_class($this);
-                $instance[$index] = new $className($value, $passive ? null : $this->_database);
+                $obj = new $className($value);
+                if(!$passive)
+                {
+                    $dbEnt = $this->databaseEntity();
+                    $db = null;
+                    if(isset($dbEnt))
+                    {
+                        $db = $dbEnt->getDatabase(get_class($obj));
+                    }
+                    if(!isset($db) || !$db->isConnected())
+                    {
+                        $db = $this->_database;
+                    }
+                    $obj->currentDatabase($db);                  
+                    $obj->databaseEntity($dbEnt);              
+                }
+                $instance[$index] = $obj;
                 $index++;
             }
         }
