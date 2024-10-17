@@ -206,7 +206,7 @@ class PicoPasswordUtil{
      * Set a new regular expression format for password validation.
      *
      * @param string $regex New regular expression format.
-     * @return self The current instance for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function setRegex($regex)
     {
@@ -229,7 +229,7 @@ class PicoPasswordUtil{
      * Set a new minimum length requirement for passwords.
      *
      * @param int $minLength New minimum length for passwords.
-     * @return self The current instance for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function setMinLength($minLength)
     {
@@ -252,7 +252,7 @@ class PicoPasswordUtil{
      * Set a new hash algorithm to be used for password hashing.
      *
      * @param string $hashAlgorithm New hashing algorithm.
-     * @return self The current instance for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function setHashAlgorithm($hashAlgorithm)
     {
