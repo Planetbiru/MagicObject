@@ -13,6 +13,8 @@ Native queries can perform several tasks such as:
 6. calling functions
 7. calling procedures and stored procedures
 
+Native queries do not support multiple database connections.
+
 ### Parameters
 
 The parameters accepted by the native query function are as follows:
