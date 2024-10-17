@@ -836,7 +836,6 @@ class MagicObject extends stdClass // NOSONAR
         return $result;
     }
 
-
     /**
      * Insert into the database.
      *
