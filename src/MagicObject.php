@@ -225,7 +225,7 @@ class MagicObject extends stdClass // NOSONAR
     public function loadIniFile($path, $systemEnv = false)
     {
         // Parse without sections
-        $data = parse_ini_file($path);
+        $data = PicoIniUtil::parseIniFile($path);
         $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
         if($systemEnv)
         {

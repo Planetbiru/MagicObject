@@ -183,10 +183,12 @@ class PicoIniUtil
     }
 
     /**
-     * Check if line is invalid
+     * Check if a line is invalid.
      *
-     * @param string $line Line
-     * @return bool
+     * A line is considered invalid if it is empty or starts with a comment character (# or ;).
+     *
+     * @param string $line The line to check.
+     * @return bool True if the line is invalid, false otherwise.
      */
     public static function invalidLine($line)
     {
@@ -194,10 +196,13 @@ class PicoIniUtil
     }
 
     /**
-     * Fix value
+     * Remove surrounding quotes from a value.
      *
-     * @param string $value Value
-     * @return string
+     * This method checks if the value is surrounded by double or single quotes 
+     * and removes them if present.
+     *
+     * @param string $value The value to fix.
+     * @return string The cleaned value without surrounding quotes.
      */
     public static function fixValue1($value)
     {
@@ -211,10 +216,13 @@ class PicoIniUtil
     }
 
     /**
-     * Fix value
+     * Remove surrounding quotes from a value using regex.
      *
-     * @param string $value Value
-     * @return string
+     * This method checks if the value matches the pattern of being surrounded by 
+     * double or single quotes and removes them if so.
+     *
+     * @param string $value The value to fix.
+     * @return string The cleaned value without surrounding quotes.
      */
     public static function fixValue2($value)
     {
@@ -225,14 +233,17 @@ class PicoIniUtil
     }
 
     /**
-     * Fix value
+     * Fix and organize the value in the parsed result.
      *
-     * @param array $ret Return value from previous process
-     * @param string $inside_section Inside section
-     * @param string $arr_name Array name
-     * @param array $matches Matches
-     * @param mixed $value Value
-     * @return array
+     * This method ensures that the given array is correctly formatted 
+     * based on the provided parameters, handling nested structures.
+     *
+     * @param array $ret The parsed result array to update.
+     * @param string $inside_section The current section name.
+     * @param string $arr_name The name of the array key.
+     * @param array $matches Matches found during parsing.
+     * @param mixed $value The value to assign.
+     * @return array The updated parsed result array.
      */
     public static function fixValue3($ret, $inside_section, $arr_name, $matches, $value)
     {
