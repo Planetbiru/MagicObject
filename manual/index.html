@@ -340,6 +340,7 @@ class MyObject extends MagicObject
 
 <article class="article" id="part5">
 <h2>Multilevel Object</h2>
+<p>In the first code snippet, you are creating a multilevel object structure to represent a car with its components, specifically the tire and body.</p>
 <pre><code class="language-php">&lt;?php
 use MagicObject\MagicObject;
 
@@ -370,7 +371,16 @@ echo $car;
 
 echo $car-&gt;getBody()-&gt;getColor();
 </code></pre>
+<p><strong>Explanation</strong></p>
+<ol>
+<li><strong>Creating Objects</strong>: Instances of <code>MagicObject</code> are created for the car, tire, and body.</li>
+<li><strong>Setting Properties</strong>: You set properties on the tire (diameter and pressure) and the body (length, width, height, and color) using the <code>set</code> methods.</li>
+<li><strong>Nested Objects</strong>: The tire and body are associated with the car using <code>setTire()</code> and <code>setBody()</code>.</li>
+<li><strong>JSON Output</strong>: When you output <code>$car</code>, it returns a JSON representation of the object structure.</li>
+<li><strong>Accessing Properties</strong>: You can retrieve the color of the car's body through the method chaining <code>getBody()-&gt;getColor()</code>.</li>
+</ol>
 <h3>Parse Yaml</h3>
+<p>The second code snippet demonstrates how to load and manipulate structured data from a YAML string.</p>
 <pre><code class="language-php">
 $song = new MagicObject();
 $song-&gt;loadYamlString(
@@ -420,6 +430,15 @@ foreach($song-&gt;getVocalist()-&gt;getAgency()-&gt;getCompany()-&gt;getPic() as
     echo $pic;
     echo "\r\n----\r\n";
 }</code></pre>
+<p><strong>Explanation</strong></p>
+<ol>
+<li><strong>Loading YAML</strong>: The <code>loadYamlString()</code> method is used to load a YAML string into the <code>MagicObject</code>. This creates a structured object based on the YAML data.</li>
+<li><strong>Accessing Nested Data</strong>: You can navigate through the object hierarchy to retrieve values, like getting the company name with <code>getVocalist()-&gt;getAgency()-&gt;getCompany()-&gt;getName()</code>.</li>
+<li><strong>Adding Properties</strong>: You can also set additional properties, like the company address.</li>
+<li><strong>Iterating Over Arrays</strong>: The <code>pic</code> property is an array of objects, so you can loop through it to access individual picture details.</li>
+</ol>
+<h3>Conclusion</h3>
+<p>Both examples demonstrate how MagicObject allows you to create complex object structures and manage nested data efficiently. The use of YAML for configuration or data storage makes it easier to define complex structures in a human-readable format. The ability to set and get properties through method chaining enhances the flexibility and readability of your code.</p>
 </article>
 
 <article class="article" id="part6">
@@ -1205,7 +1224,9 @@ catch(Exception $e)
 
 <article class="article" id="part10">
 <h2>Input POST/GET/COOKIE/REQUEST/SERVER</h2>
+<p>In PHP, handling user input can be done through various superglobals, such as $_POST, $_GET, $_COOKIE, $_REQUEST, and $_SERVER. Each of these superglobals serves a specific purpose for gathering data from different types of requests.</p>
 <h3>Input POST</h3>
+<p>The <code>$_POST</code> superglobal is used to collect data sent via HTTP POST requests. In the provided code snippet:</p>
 <pre><code class="language-php">
 use MagicObject\Request\InputPost;
 
@@ -1217,7 +1238,9 @@ $name = $inputPost-&gt;getRealName();
 // equivalen to 
 $name = $_POST['real_name'];
 </code></pre>
+<p>This snippet utilizes a class called <code>InputPost</code> to retrieve the value associated with the key <code>'real_name'</code> from the <code>POST</code> request.</p>
 <h3>Input GET</h3>
+<p>The <code>$_GET</code> superglobal retrieves data sent via URL parameters in a GET request. The corresponding code is:</p>
 <pre><code class="language-php">
 use MagicObject\Request\InputGet;
 
@@ -1229,7 +1252,9 @@ $name = $inputGet-&gt;getRealName();
 // equivalen to 
 $name = $_GET['real_name'];
 </code></pre>
+<p>Here, the <code>InputGet</code> class is used similarly to fetch the <code>'real_name'</code> from the <code>GET</code> request.</p>
 <h3>Input COOKIE</h3>
+<p>The <code>$_COOKIE</code> superglobal accesses cookies sent by the client. The code example is:</p>
 <pre><code class="language-php">
 use MagicObject\Request\InputCookie;
 
@@ -1242,6 +1267,7 @@ $name = $inputCookie-&gt;getRealName();
 $name = $_COOKIE['real_name'];
 </code></pre>
 <h3>Input REQUEST</h3>
+<p>The <code>$_REQUEST</code> superglobal can collect data from both POST and GET requests, as well as cookies. The example is:</p>
 <pre><code class="language-php">
 use MagicObject\Request\InputRequest;
 
@@ -1253,6 +1279,7 @@ $name = $inputRequest-&gt;getRealName();
 // equivalen to 
 $name = $_REQUEST['real_name'];
 </code></pre>
+<p>This allows for a unified approach to retrieve the <code>'real_name'</code> regardless of its source.</p>
 <h3>Input SERVER</h3>
 <pre><code class="language-php">
 use MagicObject\Request\InputServer;
@@ -1265,8 +1292,9 @@ $remoteAddress = $inputServer-&gt;getRemoteAddr();
 // equivalen to 
 $remoteAddress = $_SERVER_['REMOTE_ADDR'];
 </code></pre>
+<p>This retrieves the remote address of the client making the request.</p>
 <h3>Filter Input</h3>
-<p>Filter input from InputGet, InputPost, InputRequest and InputCookie</p>
+<p>Filtering user input is crucial for security, as it helps prevent malicious data from affecting your application. The code snippet for filtering input looks like this:</p>
 <pre><code class="language-php">
 use MagicObject\Request\InputGet;
 use MagicObject\Request\PicoFilterConstant;
@@ -1290,31 +1318,35 @@ $inputGet-&gt;filterRealName(PicoFilterConstant::FILTER_SANITIZE_SPECIAL_CHARS);
 // so you can use it later
 $name = $inputGet-&gt;getRealName();
 </code></pre>
+<p>In this example, the getRealName method can take a filtering constant to sanitize the input value. The filter <code>FILTER_SANITIZE_SPECIAL_CHARS</code> is used to escape special characters, preventing XSS (Cross-Site Scripting) attacks.</p>
 <p>List of filter</p>
-<pre><code>FILTER_SANITIZE_NO_DOUBLE_SPACE = 512;
-FILTER_SANITIZE_PASSWORD = 511;
-FILTER_SANITIZE_ALPHA = 510;
-FILTER_SANITIZE_ALPHANUMERIC = 509;
-FILTER_SANITIZE_ALPHANUMERICPUNC = 506;
-FILTER_SANITIZE_NUMBER_UINT = 508;
-FILTER_SANITIZE_NUMBER_INT = 519;
-FILTER_SANITIZE_URL = 518;
-FILTER_SANITIZE_NUMBER_FLOAT = 520;
-FILTER_SANITIZE_STRING_NEW = 513;
-FILTER_SANITIZE_ENCODED = 514;
-FILTER_SANITIZE_STRING_INLINE = 507;
-FILTER_SANITIZE_STRING_BASE64 = 505;
-FILTER_SANITIZE_IP = 504;
-FILTER_SANITIZE_NUMBER_OCTAL = 503;
-FILTER_SANITIZE_NUMBER_HEXADECIMAL = 502;
-FILTER_SANITIZE_COLOR = 501;
-FILTER_SANITIZE_POINT = 500;
-FILTER_SANITIZE_BOOL = 600;
-FILTER_VALIDATE_URL = 273;
-FILTER_VALIDATE_EMAIL = 274;
-FILTER_SANITIZE_EMAIL = 517;
-FILTER_SANITIZE_SPECIAL_CHARS = 515;
-FILTER_SANITIZE_ASCII = 601;</code></pre>
+<pre><code>PicoFilterConstant::FILTER_DEFAULT                      = 516;
+PicoFilterConstant::FILTER_SANITIZE_NO_DOUBLE_SPACE     = 512;
+PicoFilterConstant::FILTER_SANITIZE_PASSWORD            = 511;
+PicoFilterConstant::FILTER_SANITIZE_ALPHA               = 510;
+PicoFilterConstant::FILTER_SANITIZE_ALPHANUMERIC        = 509;
+PicoFilterConstant::FILTER_SANITIZE_ALPHANUMERICPUNC    = 506;
+PicoFilterConstant::FILTER_SANITIZE_NUMBER_UINT         = 508;
+PicoFilterConstant::FILTER_SANITIZE_NUMBER_INT          = 519;
+PicoFilterConstant::FILTER_SANITIZE_URL                 = 518;
+PicoFilterConstant::FILTER_SANITIZE_NUMBER_FLOAT        = 520;
+PicoFilterConstant::FILTER_SANITIZE_STRING_NEW          = 513;
+PicoFilterConstant::FILTER_SANITIZE_ENCODED             = 514;
+PicoFilterConstant::FILTER_SANITIZE_STRING_INLINE       = 507;
+PicoFilterConstant::FILTER_SANITIZE_STRING_BASE64       = 505;
+PicoFilterConstant::FILTER_SANITIZE_IP                  = 504;
+PicoFilterConstant::FILTER_SANITIZE_NUMBER_OCTAL        = 503;
+PicoFilterConstant::FILTER_SANITIZE_NUMBER_HEXADECIMAL  = 502;
+PicoFilterConstant::FILTER_SANITIZE_COLOR               = 501;
+PicoFilterConstant::FILTER_SANITIZE_POINT               = 500;
+PicoFilterConstant::FILTER_SANITIZE_BOOL                = 600;
+PicoFilterConstant::FILTER_VALIDATE_URL                 = 273;
+PicoFilterConstant::FILTER_VALIDATE_EMAIL               = 274;
+PicoFilterConstant::FILTER_SANITIZE_EMAIL               = 517;
+PicoFilterConstant::FILTER_SANITIZE_SPECIAL_CHARS       = 515;
+PicoFilterConstant::FILTER_SANITIZE_ASCII               = 601;</code></pre>
+<h3>Conclusion</h3>
+<p>In summary, handling input in PHP through superglobals is straightforward but requires careful filtering to ensure security. Using classes like <code>InputPost</code>, <code>InputGet</code>, <code>InputCookie</code>, <code>InputRequest</code>, and <code>InputServer</code> can abstract the underlying superglobal accesses, making the code cleaner and potentially more secure by enforcing consistent input handling and sanitization practices.</p>
 </article>
 
 <article class="article" id="part11">
@@ -1327,6 +1359,12 @@ FILTER_SANITIZE_ASCII = 601;</code></pre>
   max_life_time: 86400
   save_handler: files
   save_path: /tmp/sessions</code></pre>
+<ul>
+<li><code>name</code>: Name of the session.</li>
+<li><code>max_life_time</code>: Maximum lifetime of the session in seconds (e.g., 86400 seconds = 24 hours).</li>
+<li><code>save_handler</code>: Specifies the session storage mechanism (in this case, files).</li>
+<li><code>save_path</code>: Directory where session files are stored.</li>
+</ul>
 <p><strong>PHP Script</strong></p>
 <pre><code class="language-php">&lt;?php
 
@@ -1407,6 +1445,9 @@ $sessConf = new SessionSecureConfig($cfg-&gt;getSession());
 $sessions = new PicoSession($sessConf);
 
 $sessions-&gt;startSession();</code></pre>
+<p>This setup ensures that the session save path is securely managed and decrypted at runtime.</p>
+<h3>Conclusion</h3>
+<p>This implementation provides a robust framework for session management in a PHP application, allowing flexibility in storage options (files or Redis) while emphasizing security through encryption. The use of YAML for configuration keeps the setup clean and easily adjustable. By encapsulating session configuration in dedicated classes, you enhance maintainability and security.</p>
 </article>
 
 <article class="article" id="part12">
@@ -8165,11 +8206,26 @@ while($row = $stmt-&gt;fetch(PDO::FETCH_ASSOC))
     generateData($fp, $map, $row, $iteration);
 }
 fclose($fp);</code></pre>
+<h3>Best Practices</h3>
+<ol>
+<li><strong>Utilize Prepared Statements</strong>: Always prefer using prepared statements for security against SQL injection.</li>
+<li><strong>Error Handling</strong>: Wrap database calls in try-catch blocks to handle exceptions gracefully.</li>
+<li><strong>Efficient Data Retrieval</strong>: Use PDOStatement for large datasets to process rows one by one.</li>
+<li><strong>Debugging</strong>: Implement logging for SQL queries to troubleshoot issues more effectively.</li>
+<li><strong>Keep Queries Simple</strong>: Break down complex queries into simpler components if possible, making them easier to maintain and debug.</li>
+</ol>
+<p>By leveraging the native query feature in MagicObject, you can create efficient and maintainable database interactions, enhancing your application's performance and security.</p>
 </article>
 
 <article class="article" id="part17">
 <h2>Dump Database</h2>
 <p>We can dump database to another database type. We do not need any database converter. Just define the target database type when we dump the database.</p>
+<h3>Database Dump Overview</h3>
+<ol>
+<li>Dumping Database Structure</li>
+</ol>
+<p>You can dump the structure of a database without needing to connect to a real database. Specify the target database type when calling the dump method.</p>
+<p><strong>Code Example:</strong></p>
 <pre><code class="language-php">&lt;?php
 
 use MagicObject\Database\PicoDatabaseType;
@@ -8634,6 +8690,12 @@ echo $dumpForSong-&gt;dumpStructure($song, PicoDatabaseType::DATABASE_TYPE_MYSQL
 $pageData = $song-&gt;findAll();
 $dumpForSong = new PicoDatabaseDump();
 echo $dumpForSong-&gt;dumpData($pageData, PicoDatabaseType::DATABASE_TYPE_MYSQL);</code></pre>
+<h3>Summary</h3>
+<ul>
+<li><strong>Structure Dumping</strong>: Use <code>dumpStructure</code> to get the schema of the database without a real connection.</li>
+<li><strong>Data Dumping</strong>: Use <code>dumpData</code> to extract data from an actual database connection.</li>
+</ul>
+<p>This approach allows developers to quickly switch between database types and manage their database schemas and data efficiently. The use of dedicated instances of PicoDatabaseDump for multiple tables ensures clarity and organization in your database operations.</p>
 </article>
 
 <article class="article" id="part18">
@@ -9042,6 +9104,10 @@ where song.active = true
      &lt;input name="myupload[]" type="file" webkitdirectory multiple /&gt;
      &lt;input type="submit" /&gt;
 &lt;/form&gt;</code></pre>
+<ul>
+<li>For single uploads, the input field is named <code>myupload</code>.</li>
+<li>For multiple uploads, the input field name is <code>myupload[]</code>, which allows multiple files to be uploaded at once.</li>
+</ul>
 <pre><code class="language-php">&lt;?php
 
 use MagicObject\File\PicoUplodFile;
@@ -9065,6 +9131,11 @@ foreach($file1-&gt;getAll() as $fileItem)
     move_uploaded_file($temporaryName, $targetDir."/".$name);
 }
 </code></pre>
+<ul>
+<li>The <code>PicoUplodFile</code> class simplifies file handling. The developer can retrieve the uploaded files easily using the get method.</li>
+<li>The <code>getAll</code> method retrieves all files, regardless of whether they were uploaded via single or multiple file forms.</li>
+</ul>
+<h3>Checking Upload Type</h3>
 <p>Developers simply retrieve data using the <code>getAll</code> method and developers will get all files uploaded by users either via single file or multiple file forms. If necessary, the developer can check whether the file was uploaded using a single file or multiple file form with the <code>isMultiple()</code> method</p>
 <pre><code class="language-php">
 if($file1-&gt;isMultiple())
@@ -9075,6 +9146,8 @@ else
 {
     // do something here
 }</code></pre>
+<h3>Summary</h3>
+<p>This implementation offers a straightforward way to manage file uploads in PHP, abstracting complexities for developers. By using methods like getAll() and isMultiple(), developers can seamlessly handle both types of uploads without needing to write separate logic for each scenario. This approach not only improves code maintainability but also enhances the developer experience.</p>
 </article>
 
 <article class="article" id="part21">
