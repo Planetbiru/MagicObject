@@ -9197,7 +9197,7 @@ MagicObject version 2 introduces support for multiple database connections, enab
 
 In this example, we will illustrate how to manage entities stored in different databases:
 
-- **Album** and **Song** entities are stored in **Database 1**.
+- **Album**, **Producer** and **Song** entities are stored in **Database 1**.
 - **Artist** entity is stored in **Database 2**.
 
 ### Entity Definitions
@@ -9248,6 +9248,28 @@ class Artist
 }
 ```
 
+**Producer Class**
+
+```php
+class Producer
+{
+    /**
+     * @Id
+     * @Column(name="producer_id")
+     * @var string
+     */
+    private $producerId;
+    
+    /**
+     * @Column(name="name")
+     * @var string
+     */
+    private $name;
+
+    // add property and annotation here
+}
+```
+
 **Song Class**
 
 ```php
@@ -9279,6 +9301,18 @@ class Song
     private $album;
     
     /**
+     * @Column(name="producer_id")
+     * @var string
+     */
+    private $producerId;
+    
+    /**
+     * @JoinColumn(name="producer_id")
+     * @var Producer
+     */
+    private $producer;
+    
+    /**
      * @Column(name="artist_id")
      * @var string
      */
@@ -9301,6 +9335,7 @@ To demonstrate how to create instances of these entities and associate them with
 ```php
 $song = new Song(null, $database1);
 $album = new Album(null, $database1);
+$producer = new Producer(null, $database1);
 $artist = new Artist(null, $database2);
 ```
 
@@ -9311,7 +9346,7 @@ You can set the database entities for Album and Artist associated with a Song in
 **Method 1: Chaining Method Calls**
 
 ```php
-$song->databaseEntity($album)->databaseEntity($artist);
+$song->databaseEntity($album)->->databaseEntity($producer)->databaseEntity($artist);
 ```
 
 **Method 2: Using a DatabaseEntity Instance**
@@ -9319,6 +9354,7 @@ $song->databaseEntity($album)->databaseEntity($artist);
 ```php
 $databaseEntity = new DatabaseEntity();
 $databaseEntity->add($album, $database1);
+$databaseEntity->add($producer, $database1);
 $databaseEntity->add($artist, $database2);
 $song->databaseEntity($databaseEntity);
 ```
@@ -9328,6 +9364,36 @@ $song->databaseEntity($databaseEntity);
 ```php
 $databaseEntity = new DatabaseEntity();
 $databaseEntity->add($album); // Automatically uses $database1 for $album
+$databaseEntity->add($producer); // Automatically uses $database1 for $producer
+$databaseEntity->add($artist); // Automatically uses $database2 for $artist
+$song->databaseEntity($databaseEntity);
+```
+
+Since `$album` and `$producer` are stored in the same database as `$song`. User can skip to set `DatabaseEntity` for `$album` and `$producer`. MagicObject will use `$database1` as the default database connection. Thus, we can write a shorter code as follows:
+
+```php
+$song = new Song(null, $database1);
+$artist = new Artist(null, $database2);
+```
+
+**Method 1: Chaining Method Calls**
+
+```php
+$song->databaseEntity($artist);
+```
+
+**Method 2: Using a DatabaseEntity Instance**
+
+```php
+$databaseEntity = new DatabaseEntity();
+$databaseEntity->add($artist, $database2);
+$song->databaseEntity($databaseEntity);
+```
+
+**Method 3: Automatic Database Association**
+
+```php
+$databaseEntity = new DatabaseEntity();
 $databaseEntity->add($artist); // Automatically uses $database2 for $artist
 $song->databaseEntity($databaseEntity);
 ```
