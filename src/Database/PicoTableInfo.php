@@ -178,7 +178,7 @@ class PicoTableInfo // NOSONAR
      *
      * @param string $tableName The name of the table.
      *
-     * @return self The current instance for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function setTableName($tableName)
     {
@@ -201,7 +201,7 @@ class PicoTableInfo // NOSONAR
      *
      * @param array $columns The columns to set.
      *
-     * @return self The current instance for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function setColumns($columns)
     {
@@ -224,7 +224,7 @@ class PicoTableInfo // NOSONAR
      *
      * @param array $joinColumns The join columns to set.
      *
-     * @return self The current instance for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function setJoinColumns($joinColumns)
     {
@@ -247,7 +247,7 @@ class PicoTableInfo // NOSONAR
      *
      * @param array $primaryKeys The primary keys to set.
      *
-     * @return self The current instance for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function setPrimaryKeys($primaryKeys)
     {
@@ -270,7 +270,7 @@ class PicoTableInfo // NOSONAR
      *
      * @param array $autoIncrementKeys The auto-increment keys to set.
      *
-     * @return self The current instance for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function setAutoIncrementKeys($autoIncrementKeys)
     {
@@ -293,7 +293,7 @@ class PicoTableInfo // NOSONAR
      *
      * @param array $defaultValue The default value keys to set.
      *
-     * @return self The current instance for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function setDefaultValue($defaultValue)
     {
@@ -316,7 +316,7 @@ class PicoTableInfo // NOSONAR
      *
      * @param array $notNullColumns The not-null columns to set.
      *
-     * @return self The current instance for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function setNotNullColumns($notNullColumns)
     {
