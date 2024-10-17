@@ -1473,6 +1473,7 @@ use MagicObject\MagicObject;
  * @Entity
  * @JSON(property-naming-strategy=SNAKE_CASE, prettify=true)
  * @Table(name="album")
+ * @Cache(enable="true")
  */
 class Album extends MagicObject
 {
@@ -1646,6 +1647,7 @@ class Album extends MagicObject
 <li>@Entity</li>
 <li>@JSON(property-naming-strategy=SNAKE_CASE)</li>
 <li>@Table(name=&quot;album&quot;)</li>
+<li>@Cache(enable=&quot;true&quot;)</li>
 </ul>
 <h3>Class Parameters</h3>
 <p><strong>@Entity</strong></p>
@@ -1662,7 +1664,7 @@ class Album extends MagicObject
 <li><code>CAMEL_CASE</code> all properties will be camel case when <code>__toString()</code> method called.</li>
 <li><code>UPPER_CAMEL_CASE</code> all properties will be camel case with capitalize first character when <code>__toString()</code> method called.</li>
 </ul>
-<p>Default value: <code>CAMEL_CASE</code></p>
+<p>Default: <code>CAMEL_CASE</code></p>
 <ol start="2">
 <li><code>prettify</code></li>
 </ol>
@@ -1671,12 +1673,23 @@ class Album extends MagicObject
 <li><code>true</code> JSON string will be prettified</li>
 <li><code>false</code> JSON string will not be prettified</li>
 </ul>
-<p>Default value: <code>false</code></p>
+<p>Default: <code>false</code></p>
 <p><strong>@Table</strong></p>
 <p><code>@Table</code> is parameter contains table information.</p>
 <p>Attributes:
 <code>name</code></p>
 <p><code>name</code> is the table name of the entity.</p>
+<p><strong>@Cache</strong></p>
+<p><code>@Cache</code> is parameter contains cache information.</p>
+<p>Attributes:
+<code>enable</code></p>
+<p><code>enable</code> is option to enable or disable cache.</p>
+<p>Allowed value:</p>
+<ul>
+<li><code>true</code> Cache is enabled</li>
+<li><code>false</code> Cache is disabled</li>
+</ul>
+<p>Default: <code>false</code></p>
 <h3>Property Parameters</h3>
 <ul>
 <li>@Id</li>

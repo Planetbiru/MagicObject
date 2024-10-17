@@ -1695,6 +1695,7 @@ use MagicObject\MagicObject;
  * @Entity
  * @JSON(property-naming-strategy=SNAKE_CASE, prettify=true)
  * @Table(name="album")
+ * @Cache(enable="true")
  */
 class Album extends MagicObject
 {
@@ -1869,6 +1870,7 @@ class Album extends MagicObject
  * @Entity
  * @JSON(property-naming-strategy=SNAKE_CASE)
  * @Table(name="album")
+ * @Cache(enable="true")
 
 ### Class Parameters
 
@@ -1889,7 +1891,7 @@ Allowed value:
 - `CAMEL_CASE` all properties will be camel case when `__toString()` method called.
 - `UPPER_CAMEL_CASE` all properties will be camel case with capitalize first character when `__toString()` method called.
 
-Default value: `CAMEL_CASE`
+Default: `CAMEL_CASE`
 
 2. `prettify`
 
@@ -1898,7 +1900,7 @@ Allowed value:
 - `true` JSON string will be prettified
 - `false` JSON string will not be prettified
 
-Default value: `false`
+Default: `false`
 
 **@Table**
 
@@ -1908,6 +1910,22 @@ Attributes:
 `name`
 
 `name` is the table name of the entity.
+
+**@Cache**
+
+`@Cache` is parameter contains cache information.
+
+Attributes:
+`enable`
+
+`enable` is option to enable or disable cache.
+
+Allowed value:
+
+- `true` Cache is enabled
+- `false` Cache is disabled
+
+Default: `false`
 
 ### Property Parameters
 
