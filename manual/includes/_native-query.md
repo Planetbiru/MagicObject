@@ -654,3 +654,13 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 }
 fclose($fp);
 ```
+
+### Best Practices
+
+1. **Utilize Prepared Statements**: Always prefer using prepared statements for security against SQL injection.
+2. **Error Handling**: Wrap database calls in try-catch blocks to handle exceptions gracefully.
+3. **Efficient Data Retrieval**: Use PDOStatement for large datasets to process rows one by one.
+4. **Debugging**: Implement logging for SQL queries to troubleshoot issues more effectively.
+5. **Keep Queries Simple**: Break down complex queries into simpler components if possible, making them easier to maintain and debug.
+
+By leveraging the native query feature in MagicObject, you can create efficient and maintainable database interactions, enhancing your application's performance and security.
