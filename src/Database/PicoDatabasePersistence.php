@@ -30,6 +30,7 @@ use ReflectionProperty;
 class PicoDatabasePersistence // NOSONAR
 {
     const ANNOTATION_TABLE = "Table";
+    const ANNOTATION_CACHE = "Cache";
     const ANNOTATION_COLUMN = "Column";
     const ANNOTATION_JOIN_COLUMN = "JoinColumn";
     const ANNOTATION_VAR = "var";
@@ -51,6 +52,7 @@ class PicoDatabasePersistence // NOSONAR
     const KEY_GENERATOR = "generator";
     const KEY_PROPERTY_TYPE = "propertyType";
     const KEY_VALUE = "value";
+    const KEY_ENABLE = "enable";
     const KEY_ENTITY_OBJECT = "entityObject";
     
     const VALUE_TRUE = "true";
@@ -511,11 +513,18 @@ class PicoDatabasePersistence // NOSONAR
     {
         if(!isset($this->tableInfoProp))
         {
+            $noCache = false;
             $reflexClass = new PicoAnnotationParser($this->className);
             $table = $reflexClass->getParameter(self::ANNOTATION_TABLE);
+            $cache = $reflexClass->getParameter(self::ANNOTATION_CACHE);
             if(!isset($table))
             {
                 throw new EntityException($this->className . " is not valid entity");
+            }
+            
+            if(isset($cache))
+            {
+                $noCache = self::VALUE_FALSE == strtolower($cache[self::KEY_ENABLE]);
             }
 
             $values = $this->parseKeyValue($reflexClass, $table, self::ANNOTATION_TABLE);
@@ -568,7 +577,7 @@ class PicoDatabasePersistence // NOSONAR
                 
             }
             // bring it together
-            $this->tableInfoProp = new PicoTableInfo($picoTableName, $columns, $joinColumns, $primaryKeys, $autoIncrementKeys, $defaultValue, $notNullColumns);
+            $this->tableInfoProp = new PicoTableInfo($picoTableName, $columns, $joinColumns, $primaryKeys, $autoIncrementKeys, $defaultValue, $notNullColumns, $noCache);
         }
         return $this->tableInfoProp;
     }

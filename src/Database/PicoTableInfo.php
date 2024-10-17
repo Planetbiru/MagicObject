@@ -13,7 +13,7 @@ use stdClass;
  * 
  * @link https://github.com/Planetbiru/MagicObject
  */
-class PicoTableInfo
+class PicoTableInfo // NOSONAR
 {
     /**
      * The name of the table.
@@ -70,6 +70,13 @@ class PicoTableInfo
      * @var string
      */
     protected $columnType;
+    
+    /**
+     * Flag to disable cache when any entities join with this entity
+     *
+     * @var boolean
+     */
+    protected $noCache = false;
 
     /**
      * Gets an instance of PicoTableInfo.
@@ -93,8 +100,9 @@ class PicoTableInfo
      * @param array $autoIncrementKeys The auto-increment keys of the table.
      * @param array $defaultValue The columns with default values.
      * @param array $notNullColumns The columns that cannot be null.
+     * @param bool $noCache Flag to disable cache when any entities join with this entity
      */
-    public function __construct($tableName, $columns, $joinColumns, $primaryKeys, $autoIncrementKeys, $defaultValue, $notNullColumns)
+    public function __construct($tableName, $columns, $joinColumns, $primaryKeys, $autoIncrementKeys, $defaultValue, $notNullColumns, $noCache = false) // NOSONAR
     {
         $this->tableName = $tableName;
         $this->columns = $columns;
@@ -103,6 +111,7 @@ class PicoTableInfo
         $this->autoIncrementKeys = $autoIncrementKeys;
         $this->defaultValue = $defaultValue;
         $this->notNullColumns = $notNullColumns;
+        $this->noCache = $noCache;
     }
 
     /**
@@ -312,6 +321,30 @@ class PicoTableInfo
     public function setNotNullColumns($notNullColumns)
     {
         $this->notNullColumns = $notNullColumns;
+        return $this;
+    }
+
+    /**
+     * Get flag to disable cache when any entities join with this entity
+     *
+     * @return  boolean
+     */ 
+    public function getNoCache()
+    {
+        return $this->noCache;
+    }
+
+    /**
+     * Set flag to disable cache when any entities join with this entity
+     *
+     * @param  boolean  $noCache  Flag to disable cache when any entities join with this entity
+     *
+     * @return  self
+     */ 
+    public function setNoCache($noCache)
+    {
+        $this->noCache = $noCache;
+
         return $this;
     }
 }
