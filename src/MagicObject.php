@@ -7,6 +7,7 @@ use Exception;
 use PDOException;
 use PDOStatement;
 use MagicObject\Database\PicoDatabase;
+use MagicObject\Database\PicoDatabaseEntity;
 use MagicObject\Database\PicoDatabasePersistence;
 use MagicObject\Database\PicoDatabasePersistenceExtended;
 use MagicObject\Database\PicoDatabaseQueryBuilder;
@@ -75,6 +76,13 @@ class MagicObject extends stdClass // NOSONAR
      * @var PicoDatabase
      */
     private $_database; // NOSONAR
+    
+    /**
+     * Class containing a database entity
+     *
+     * @var PicoDatabaseEntity|null
+     */
+    private $_databaseEntity; // NOSONAR
 
     /**
      * Class parameters.
@@ -454,6 +462,36 @@ class MagicObject extends stdClass // NOSONAR
             return null;
         }
         return $this->_database;
+    }
+    
+    /**
+     * Set or get the database entity.
+     *
+     * If a database entity is provided, it will be set; otherwise, the current database entity will be returned.
+     *
+     * @param MagicObject|PicoDatabaseEntity|null $databaseEntity The database entity to set or null to get the current entity.
+     * @return self|PicoDatabaseEntity Returns the current instance for method chaining, or the current database entity if no parameter is provided.
+     */
+    public function databaseEntity($databaseEntity = null)
+    {
+        if ($databaseEntity !== null) {
+            if ($databaseEntity instanceof PicoDatabaseEntity) {
+                $this->_databaseEntity = $databaseEntity;
+            } elseif ($databaseEntity instanceof MagicObject) {
+                $db = $databaseEntity->currentDatabase();
+                if (isset($db) && $db->isConnected()) {
+                    if (!isset($this->_databaseEntity)) {
+                        $this->_databaseEntity = new PicoDatabaseEntity();
+                        // Set default database connection
+                        $this->_databaseEntity->setDefaultDatabase($this->_database);
+                    }
+                    $this->_databaseEntity->add($databaseEntity, $db);
+                }
+            }
+            return $this; // Returning self for method chaining
+        } else {
+            return $this->_databaseEntity; // Returning the current database entity
+        }
     }
 
     /**
@@ -835,7 +873,6 @@ class MagicObject extends stdClass // NOSONAR
         $result->value = $finalValue;
         return $result;
     }
-
 
     /**
      * Insert into the database.

@@ -7602,6 +7602,7 @@ require_once "inc/footer.php";
 <li>calling functions</li>
 <li>calling procedures and stored procedures</li>
 </ol>
+<p>Native queries do not support multiple database connections.</p>
 <h3>Parameters</h3>
 <p>The parameters accepted by the native query function are as follows:</p>
 <ol>
@@ -7611,7 +7612,7 @@ require_once "inc/footer.php";
 <li>bool or boolean</li>
 <li>null</li>
 <li>DateTime</li>
-<li>array of string, int, float, bool and DateTime</li>
+<li>array of string, int, bool and DateTime</li>
 </ol>
 <p>For columns with data type <code>DATETIME</code> and <code>TIMESTAMP</code>, users can use either <code>string</code> or <code>DateTime</code> parameters. <code>DateTime</code> will be first converted to 'Y-md H:i:s' format automatically by MagicObject. Don't forget to define DateTimeZone for DateTime object. Also note the time resolution for the <code>in</code> and <code>=</code> criteria.</p>
 <h3>Return Type</h3>
@@ -8218,6 +8219,125 @@ fclose($fp);</code></pre>
 </article>
 
 <article class="article" id="part17">
+<h2>Multiple Database Connections</h2>
+<p>MagicObject version 2 introduces support for multiple database connections, enabling users to manage entities stored across different databases seamlessly. When performing operations such as JOINs with entities from multiple databases, it is essential to define a database connection for each entity involved.</p>
+<h3>Example Scenario</h3>
+<p>In this example, we will illustrate how to manage entities stored in different databases:</p>
+<ul>
+<li><strong>Album</strong> and <strong>Song</strong> entities are stored in <strong>Database 1</strong>.</li>
+<li><strong>Artist</strong> entity is stored in <strong>Database 2</strong>.</li>
+</ul>
+<h3>Entity Definitions</h3>
+<p>Here are the definitions for the Album, Artist, and Song classes:</p>
+<p><strong>Album Class</strong></p>
+<pre><code class="language-php">class Album
+{
+    /**
+     * @Id
+     * @Column(name="album_id")
+     * @var string
+     */
+    private $albumId;
+
+    /**
+     * @Column(name="name")
+     * @var string
+     */
+    private $name;
+
+    // add property and annotation here
+}</code></pre>
+<p><strong>Artist Class</strong></p>
+<pre><code class="language-php">class Artist
+{
+    /**
+     * @Id
+     * @Column(name="artist_id")
+     * @var string
+     */
+    private $artistId;
+
+    /**
+     * @Column(name="name")
+     * @var string
+     */
+    private $name;
+
+    // add property and annotation here
+}</code></pre>
+<p><strong>Song Class</strong></p>
+<pre><code class="language-php">class Song
+{
+    /**
+     * @Id
+     * @Column(name="song_id")
+     * @var string
+     */
+    private $songId;
+
+    /**
+     * @Column(name="name")
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @Column(name="album_id")
+     * @var string
+     */
+    private $albumId;
+
+    /**
+     * @JoinColumn(name="album_id")
+     * @var Album
+     */
+    private $album;
+
+    /**
+     * @Column(name="artist_id")
+     * @var string
+     */
+    private $artistId;
+
+    /**
+     * @JoinColumn(name="album_id")
+     * @var Artist
+     */
+    private $artist;
+
+    // add property and annotation here
+}</code></pre>
+<h3>Creating Instances</h3>
+<p>To demonstrate how to create instances of these entities and associate them with their respective databases:</p>
+<pre><code class="language-php">$song = new Song(null, $database1);
+$album = new Album(null, $database1);
+$artist = new Artist(null, $database2);</code></pre>
+<h3>Setting Database Entities</h3>
+<p>You can set the database entities for Album and Artist associated with a Song instance in several ways:</p>
+<p><strong>Method 1: Chaining Method Calls</strong></p>
+<pre><code class="language-php">$song-&gt;databaseEntity($album)-&gt;databaseEntity($artist);</code></pre>
+<p><strong>Method 2: Using a DatabaseEntity Instance</strong></p>
+<pre><code class="language-php">$databaseEntity = new DatabaseEntity();
+$databaseEntity-&gt;add($album, $database1);
+$databaseEntity-&gt;add($artist, $database2);
+$song-&gt;databaseEntity($databaseEntity);</code></pre>
+<p><strong>Method 3: Automatic Database Association</strong></p>
+<pre><code class="language-php">$databaseEntity = new DatabaseEntity();
+$databaseEntity-&gt;add($album); // Automatically uses $database1 for $album
+$databaseEntity-&gt;add($artist); // Automatically uses $database2 for $artist
+$song-&gt;databaseEntity($databaseEntity);</code></pre>
+<h3>Using the Song Object</h3>
+<p>Once the entities are set up, you can perform operations on the Song object. For example, to retrieve all songs:</p>
+<pre><code class="language-php">try {
+    $pageData = $song-&gt;findAll();
+} catch (Exception $e) {
+    // Handle exception here (e.g., logging or displaying an error message)
+}</code></pre>
+<h3>Conclusion</h3>
+<p>With MagicObject version 2, managing entities across multiple database connections is straightforward. By defining the correct associations and utilizing the provided methods, users can effectively work with complex data structures that span multiple databases. Make sure to handle exceptions properly to ensure robustness in your application.</p>
+</article>
+
+<article class="article" id="part18">
 <h2>Dump Database</h2>
 <p>We can dump database to another database type. We do not need any database converter. Just define the target database type when we dump the database.</p>
 <h3>Database Dump Overview</h3>
@@ -8698,7 +8818,7 @@ echo $dumpForSong-&gt;dumpData($pageData, PicoDatabaseType::DATABASE_TYPE_MYSQL)
 <p>This approach allows developers to quickly switch between database types and manage their database schemas and data efficiently. The use of dedicated instances of PicoDatabaseDump for multiple tables ensures clarity and organization in your database operations.</p>
 </article>
 
-<article class="article" id="part18">
+<article class="article" id="part19">
 <h2>Object Label</h2>
 <pre><code>&lt;?php
 
@@ -8823,7 +8943,7 @@ echo $userType-&gt;labelAdminCreate();
 // it will print "Admin Create"</code></pre>
 </article>
 
-<article class="article" id="part19">
+<article class="article" id="part20">
 <h2>Database Query Builder</h2>
 <p>Database Query Builder is a feature for creating object-based database queries. The output of the Database Query Builder is a query that can be directly executed by the database used.</p>
 <p>Database Query Builder is actually designed for all relational databases but is currently only available in two languages, namely MySQL and PostgreSQL. MagicObject internally uses the Database Query Builder to create queries based on given methods and parameters.</p>
@@ -9090,7 +9210,7 @@ where song.active = true
 <p>This way, <code>$active</code> will be escaped before being executed by the database. You don't need to escape it first.</p>
 </article>
 
-<article class="article" id="part20">
+<article class="article" id="part21">
 <h2>Upload File</h2>
 <p>Uploading lots of files with arrays is difficult for some developers, especially novice developers. There is a significant difference between uploading a single file and multiple files.</p>
 <p>When the developer decides to change the form from single file to multiple files or vice versa, the backend developer must change the code to handle the uploaded files.</p>
@@ -9150,7 +9270,7 @@ else
 <p>This implementation offers a straightforward way to manage file uploads in PHP, abstracting complexities for developers. By using methods like getAll() and isMultiple(), developers can seamlessly handle both types of uploads without needing to write separate logic for each scenario. This approach not only improves code maintainability but also enhances the developer experience.</p>
 </article>
 
-<article class="article" id="part21">
+<article class="article" id="part22">
 <h2>Language</h2>
 <p>MagicObject supports multilingual applications. MagicObject allows developers to create entities that support a wide variety of languages that users can choose from. At the same time, different users can use different languages.</p>
 <p>To create table with multiple language, create new class from <code>DataTable</code> object. We can copy data from aother object to <code>DataTable</code> easly.</p>
@@ -9370,7 +9490,7 @@ $apa = $rumah;
 echo $apa;</code></pre>
 </article>
 
-<article class="article" id="part22">
+<article class="article" id="part23">
 <h2>Database Migration</h2>
 <p>MagicObject allows users to import data from a database with different table names and column names between the source database and the destination database. This feature is used by developers who develop applications that are already used in production environments.</p>
 <p>On the one hand, the application requires a new database structure according to what is defined by the developer. On the other hand, users want to use existing data.</p>

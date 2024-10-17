@@ -82,7 +82,7 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Object
      *
-     * @var mixed
+     * @var MagicObject
      */
     protected $object;
 
@@ -2866,20 +2866,39 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get join data
+     * Retrieves joined data based on the specified class name and key value.
      *
-     * @param string $classNameJoin Join class name
-     * @param string $referenceColumName Join key
-     * @param mixed $joinKeyValue Join key
-     * @return MagicObject|null
+     * This method checks the join cache for previously retrieved data. If the data is not found in the cache,
+     * it creates a new instance of the specified class, sets the appropriate database connection,
+     * and retrieves the data using the specified join key.
+     *
+     * @param string $classNameJoin The name of the class to join with.
+     * @param string $referenceColumName The name of the column used as the join key.
+     * @param mixed $joinKeyValue The value of the join key to search for.
+     * @return MagicObject|null Returns the retrieved MagicObject if found, or null if not found.
      */
     private function getJoinData($classNameJoin, $referenceColumName, $joinKeyValue)
     {
         if(!isset($this->joinCache[$classNameJoin]) || !isset($this->joinCache[$classNameJoin][$joinKeyValue]))
         {      
             $className = $this->getRealClassName($classNameJoin);
-            $obj = new $className(null, $this->database);
-            $method = 'findOneBy'.ucfirst($referenceColumName);
+            $obj = new $className(null);      
+            
+            $dbEnt = $this->object->databaseEntity();
+            // Check if object has multiple database connections
+            if($dbEnt != null)
+            {
+                // Using multiple database connection
+                $obj->databaseEntity($dbEnt);
+                $obj->currentDatabase($dbEnt->getDatabase($obj));
+            }
+            else
+            {
+                // Using master database connection
+                $obj->currentDatabase($this->object->currentDatabase());
+            }
+                        
+            $method = 'findOneBy' . ucfirst($referenceColumName);
             $obj->{$method}($joinKeyValue);           
             $this->joinCache[$classNameJoin][$joinKeyValue] = $obj;
             return $obj;

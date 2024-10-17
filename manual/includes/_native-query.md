@@ -13,6 +13,8 @@ Native queries can perform several tasks such as:
 6. calling functions
 7. calling procedures and stored procedures
 
+Native queries do not support multiple database connections.
+
 ### Parameters
 
 The parameters accepted by the native query function are as follows:
@@ -23,7 +25,7 @@ The parameters accepted by the native query function are as follows:
 4. bool or boolean
 5. null
 6. DateTime
-7. array of string, int, float, bool and DateTime
+7. array of string, int, bool and DateTime
 
 For columns with data type `DATETIME` and `TIMESTAMP`, users can use either `string` or `DateTime` parameters. `DateTime` will be first converted to 'Y-md H:i:s' format automatically by MagicObject. Don't forget to define DateTimeZone for DateTime object. Also note the time resolution for the `in` and `=` criteria.
 
