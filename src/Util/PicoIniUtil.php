@@ -3,7 +3,11 @@
 namespace MagicObject\Util;
 
 /**
- * Ini utility
+ * Utility class for handling INI file operations.
+ *
+ * This class provides methods for reading from and writing to INI files, 
+ * as well as parsing INI strings into arrays and vice versa.
+ *
  * @link https://github.com/Planetbiru/MagicObject
  */
 class PicoIniUtil
@@ -14,17 +18,17 @@ class PicoIniUtil
     }
     
     /**
-     * Write INI file
+     * Write an array to an INI file.
      *
-     * @param array $array Array
-     * @param string $path File path
-     * @return bool
+     * @param array $array The array to write to the INI file.
+     * @param string $path The file path where the INI file will be saved.
+     * @return bool True on success, false on failure.
      */
     public static function writeIniFile($array, $path)
     {
         $arrayMulti = false;
 
-        # See if the array input is multidimensional.
+        // Check if the input array is multidimensional.
         foreach ($array as $arrayTest) {
             if (is_array($arrayTest)) {
                 $arrayMulti = true;
@@ -46,11 +50,11 @@ class PicoIniUtil
     }
 
     /**
-     * Get INI content
+     * Generate INI content from a simple array.
      *
-     * @param string $content Content
-     * @param array $array Array
-     * @return string
+     * @param string $content The existing content (usually empty).
+     * @param array $array The array to convert to INI format.
+     * @return string The formatted INI content.
      */
     private static function getContent($content, $array)
     {
@@ -69,11 +73,11 @@ class PicoIniUtil
     }
 
     /**
-     * Get INI content from multiple
+     * Generate INI content from a multidimensional array.
      *
-     * @param string $content Content
-     * @param array $array Array
-     * @return string
+     * @param string $content The existing content (usually empty).
+     * @param array $array The multidimensional array to convert to INI format.
+     * @return string The formatted INI content.
      */
     private static function getContentMulti($content, $array)
     {
@@ -95,10 +99,10 @@ class PicoIniUtil
     }
 
     /**
-     * Parse ini file
+     * Parse an INI file from the specified path.
      *
-     * @param string $path File path
-     * @return array|false
+     * @param string $path The file path of the INI file to parse.
+     * @return array|false The parsed INI data as an array, or false on failure.
      */
     public static function parseIniFile($path)
     {
@@ -114,10 +118,10 @@ class PicoIniUtil
     }
 
     /**
-     * Parse INI string
+     * Parse an INI string into an array.
      *
-     * @param string $str String to be parsed
-     * @return array|false
+     * @param string $str The INI string to parse.
+     * @return array|false The parsed INI data as an array, or false on failure.
      */
     public static function parseIniString($str)
     {
@@ -168,9 +172,10 @@ class PicoIniUtil
     }
 
     /**
-     * check if match
-     * @param array $matches Mathes
-     * @return bool
+     * Check if the line is invalid (empty or a comment).
+     *
+     * @param string $line The line to check.
+     * @return bool True if the line is invalid, false otherwise.
      */
     public static function matchValue($matches)
     {
