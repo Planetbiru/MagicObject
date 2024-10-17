@@ -123,7 +123,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Retrieves the list of null properties.
      *
-     * @return array The list of null properties.
+     * @return array The list of properties that are currently null.
      */
     public function nullPropertyList()
     {
@@ -131,10 +131,12 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param self|array|stdClass|object $data Initial data
-     * @param PicoDatabase $database Database connection
+     * Initializes the object with provided data and database connection.
+     *
+     * @param self|array|stdClass|object|null $data Initial data to populate the object.
+     * @param PicoDatabase|null $database Database connection instance.
      */
     public function __construct($data = null, $database = null)
     {
@@ -167,10 +169,10 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
-     * Load data into the object.
+     * Loads data into the object.
      *
-     * @param mixed $data Data to load
-     * @return self
+     * @param mixed $data Data to load, which can be another MagicObject, an array, or an object.
+     * @return self Returns the current instance for method chaining.
      */
     public function loadData($data)
     {
