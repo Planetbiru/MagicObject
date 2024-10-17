@@ -7602,7 +7602,7 @@ require_once "inc/footer.php";
 <li>calling functions</li>
 <li>calling procedures and stored procedures</li>
 </ol>
-<p>Native queries do not support multiple database connections.</p>
+<p>Native queries do not support multiple database connections. This means that all operations performed using native queries must be executed within a single, active database connection. This design choice ensures data consistency and integrity by preventing potential conflicts that may arise from attempting to manage multiple connections simultaneously. Users should ensure that their application logic accommodates this limitation, potentially leveraging connection pooling or other techniques to optimize database interaction when needed.</p>
 <h3>Parameters</h3>
 <p>The parameters accepted by the native query function are as follows:</p>
 <ol>
