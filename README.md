@@ -171,3 +171,7 @@ Applications that uses **MagicObjects** are :
 # Credit
 
 1. Kamshory - https://github.com/kamshory/
+
+# Contributors
+
+1. Kamshory - https://github.com/kamshory/
