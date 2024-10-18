@@ -21,6 +21,7 @@ use MagicObject\DataLabel\PicoDataLabel;
 use MagicObject\Exceptions\FindOptionException;
 use MagicObject\Exceptions\InvalidAnnotationException;
 use MagicObject\Exceptions\InvalidQueryInputException;
+use MagicObject\Exceptions\InvalidReturnTypeException;
 use MagicObject\Exceptions\NoDatabaseConnectionException;
 use MagicObject\Exceptions\NoRecordFoundException;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
@@ -671,7 +672,8 @@ class MagicObject extends stdClass // NOSONAR
      *               - instances of a specified class if the return type matches a class name.
      * 
      * @throws PDOException If there is an error executing the database query.
-     * @throws InvalidQueryInputException If there is no query to be executed on the database query.
+     * @throws InvalidQueryInputException If there is no query to be executed.
+     * @throws InvalidReturnTypeException If the return type specified is invalid.
      */
     protected function executeNativeQuery() //NOSONAR
     {
@@ -807,25 +809,35 @@ class MagicObject extends stdClass // NOSONAR
                                 return $stmt->fetchAll(PDO::FETCH_OBJ);
                             } else {
                                 // Map result rows to the specified class
-                                $result = $stmt->fetchAll(PDO::FETCH_OBJ);
-                                foreach ($result as $row) {
-                                    $ret[] = new $className($row);
+                                $obj = new $className();
+                                if($obj instanceof MagicObject)
+                                {
+                                    $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+                                    foreach ($result as $row) {
+                                        $ret[] = new $className($row);
+                                    }
+                                    return $ret;
                                 }
-                                return $ret;
+                                throw new InvalidReturnTypeException("Invalid return type for $className");
                             }
                         }
                     } else {
                         // Return a single object of the specified class
                         $className = trim($returnType);
                         if (class_exists($className)) {
-                            $row = $stmt->fetch(PDO::FETCH_OBJ);
-                            return new $className($row);
+                            $obj = new $className();
+                            if($obj instanceof MagicObject)
+                            {
+                                $row = $stmt->fetch(PDO::FETCH_OBJ);
+                                return $obj->loadData($row);
+                            }
                         }
+                        throw new InvalidReturnTypeException("Invalid return type for $className");
                     }
                 } catch (Exception $e) {
                     // Log the exception if the class is not found
                     error_log('Class not found: ' . $e->getMessage());
-                    return null;
+                    throw new InvalidReturnTypeException("Invalid return type for $className");
                 }
             }            
         } 
