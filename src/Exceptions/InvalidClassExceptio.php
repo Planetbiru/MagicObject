@@ -11,6 +11,9 @@ use Throwable;
  * This exception can be thrown when a class cannot be instantiated or when
  * a class is found to be improperly defined, potentially during reflection or
  * dynamic class loading operations.
+ * 
+ * @package MagicObject\Exceptions
+ * @link https://github.com/Planetbiru/MagicObject
  */
 class InvalidClassException extends Exception
 {

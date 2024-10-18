@@ -10,6 +10,9 @@ use Throwable;
  * Custom exception class for handling errors related to invalid database configurations.
  * This exception can be thrown when there are issues with database connection settings,
  * such as incorrect credentials, missing parameters, or invalid configuration values.
+ * 
+ * @package MagicObject\Exceptions
+ * @link https://github.com/Planetbiru/MagicObject
  */
 class InvalidDatabaseConfiguration extends Exception
 {

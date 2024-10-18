@@ -7,7 +7,9 @@ namespace MagicObject\Util;
  *
  * This class provides methods for reading from and writing to INI files, 
  * as well as parsing INI strings into arrays and vice versa.
- *
+ * 
+ * @author Kamshory
+ * @package MagicObject\Util
  * @link https://github.com/Planetbiru/MagicObject
  */
 class PicoIniUtil

@@ -8,7 +8,9 @@ use stdClass;
  * Class PicoArrayUtil
  *
  * Utility class for array operations, including key transformations between camelCase and snake_case.
- *
+ * 
+ * @author Kamshory
+ * @package MagicObject\Util
  * @link https://github.com/Planetbiru/MagicObject
  */
 class PicoArrayUtil

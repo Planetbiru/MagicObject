@@ -2,7 +2,7 @@
 
 namespace MagicObject\Util\ClassUtil;
 
-use MagicObject\Exceptions\InvalidClassExceptio;
+use MagicObject\Exceptions\InvalidClassException;
 use ReflectionClass;
 
 /**
@@ -57,7 +57,7 @@ class ExtendedReflectionClass extends ReflectionClass {
 		}
 
 		if (!$this->isUserDefined()) {
-			throw new InvalidClassExceptio('Must parse use statements from user defined classes.');
+			throw new InvalidClassException('Must parse use statements from user defined classes.');
 		}
 
 		$source = $this->readFileSource();

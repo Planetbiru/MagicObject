@@ -12,6 +12,9 @@ use Throwable;
  * structured, or does not meet expected format criteria. It is useful in 
  * scenarios such as form submissions, data processing, or API requests 
  * where specific input formats are required.
+ * 
+ * @package MagicObject\Exceptions
+ * @link https://github.com/Planetbiru/MagicObject
  */
 class InvalidInputFormatException extends Exception
 {

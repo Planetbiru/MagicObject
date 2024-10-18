@@ -6,7 +6,9 @@ namespace MagicObject\Util;
  * Class Dms
  *
  * This class provides methods to convert between Decimal Degrees and Degrees/Minutes/Seconds (DMS) formats.
- *
+ * 
+ * @author Kamshory
+ * @package MagicObject\Database
  * @link https://github.com/Planetbiru/MagicObject
  */
 class Dms

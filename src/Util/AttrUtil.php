@@ -4,6 +4,9 @@ namespace MagicObject\Util;
 
 /**
  * Attribute utility
+ * 
+ * @author Kamshory
+ * @package MagicObject\Util
  * @link https://github.com/Planetbiru/MagicObject
  */
 class AttrUtil

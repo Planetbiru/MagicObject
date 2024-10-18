@@ -9,7 +9,9 @@ use stdClass;
  * Class PicoGenericObject
  *
  * A generic object that allows dynamic property management.
- *
+ * 
+ * @author Kamshory
+ * @package MagicObject\Util
  * @link https://github.com/Planetbiru/MagicObject
  */
 class PicoGenericObject extends stdClass

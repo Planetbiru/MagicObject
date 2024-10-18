@@ -9,6 +9,9 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * Object parser
+ * 
+ * @author Kamshory
+ * @package MagicObject\Util\ClassUtil
  * @link https://github.com/Planetbiru/MagicObject
  */
 class PicoObjectParser

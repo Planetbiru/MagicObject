@@ -12,6 +12,9 @@ use Throwable;
  * do not conform to expected formats or constraints, such as invalid data types, 
  * missing required parameters, or malformed query structures. It is useful 
  * in scenarios involving database interactions or data retrieval processes.
+ * 
+ * @package MagicObject\Exceptions
+ * @link https://github.com/Planetbiru/MagicObject
  */
 class InvalidQueryInputException extends Exception
 {

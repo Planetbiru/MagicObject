@@ -10,6 +10,9 @@ use Throwable;
  * Custom exception class for handling errors related to entity operations.
  * This can include issues such as validation failures, database errors, or
  * other exceptions that occur during entity processing.
+ * 
+ * @package MagicObject\Exceptions
+ * @link https://github.com/Planetbiru/MagicObject
  */
 class EntityException extends Exception
 {

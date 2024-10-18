@@ -12,6 +12,9 @@ use Throwable;
  * format criteria, such as incorrect file extensions, corrupted files, or 
  * improper file structures. It is useful in file upload processes or data 
  * import functionalities.
+ * 
+ * @package MagicObject\Exceptions
+ * @link https://github.com/Planetbiru/MagicObject
  */
 class InvalidFileFormatException extends Exception
 {

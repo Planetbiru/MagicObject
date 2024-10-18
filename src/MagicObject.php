@@ -43,6 +43,8 @@ use Symfony\Component\Yaml\Yaml;
  * Users can create entities from database tables and perform insert, select, update, and delete operations on records in the database.
  * Users can also create properties from other entities using the full name of the class (namespace + class name).
  * 
+ * @author Kamshory
+ * @package MagicObject
  * @link https://github.com/Planetbiru/MagicObject
  */
 class MagicObject extends stdClass // NOSONAR

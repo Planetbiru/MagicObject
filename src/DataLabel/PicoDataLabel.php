@@ -12,6 +12,7 @@ use stdClass;
  *
  * This class uses annotations to define properties and their metadata.
  *
+ * @package MagicObject\DataLabel
  * @link https://github.com/Planetbiru/MagicObject
  */
 class PicoDataLabel extends SetterGetter

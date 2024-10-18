@@ -4,6 +4,9 @@ namespace MagicObject\Util;
 
 /**
  * Http cache
+ * 
+ * @author Kamshory
+ * @package MagicObject\Util
  * @link https://github.com/Planetbiru/MagicObject
  */
 class PicoHttpCache
