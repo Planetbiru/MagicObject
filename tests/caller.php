@@ -254,13 +254,12 @@ class Supervisor extends MagicObject
      *
      * @param int $supervisorId The ID of the table to search for.
      * @param DateTime[] $timeCreate The date and time when data is created
-     * @return MagicObject[]
+     * @return MagicObject
      * @query("
       SELECT supervisor.*
       FROM supervisor 
       WHERE supervisor.waktu_buat in :timeCreate 
       AND supervisor.aktif = :aktif
-      AND supervisor.nama like '\"test\"'
      ")
      */
     public function native13($timeCreate, $aktif)
@@ -326,9 +325,9 @@ echo "Alamat: " . $native11[0]->getTelepon() . "\r\n";
 
 try
 {
-$native13 = $obj->native13([new DateTime('2023-03-27 15:23:47', new DateTimeZone($databaseCredential->getDatabase()->getTimeZone()))], true);
+$native13 = $obj->native13([new DateTime('2025-03-27 15:23:47', new DateTimeZone($databaseCredential->getDatabase()->getTimeZone()))], true);
 echo "\r\nnative13:\r\n";
-print_r($native13);
+echo ($native13);
 }
 catch(Exception $e)
 {
