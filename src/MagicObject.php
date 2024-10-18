@@ -710,19 +710,8 @@ class MagicObject extends stdClass // NOSONAR
         $callerParams = $reflection->getParameters();
 
         // Get return type from the caller function
-        $returnTypeObj = $reflection->getReturnType();
-
-        if($returnTypeObj == null)
-        {
-            // PHP 5
-            preg_match('/@return\s+([^\s]+)/', $docComment, $matches);
-            $returnType = $matches ? $matches[1] : '';
-        }
-        else
-        {
-            // PHP 7 or above
-            $returnType = $returnTypeObj."";
-        }
+        preg_match('/@return\s+([^\s]+)/', $docComment, $matches);
+        $returnType = $matches ? $matches[1] : 'void';
         
         // Trim return type
         $returnType = trim($returnType);
