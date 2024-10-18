@@ -697,7 +697,13 @@ class MagicObject extends stdClass // NOSONAR
         $queryString = trim($queryString, " \r\n\t ");
         if(empty($queryString))
         {
-            throw new InvalidQueryInputException("No query found.\r\n".$docComment);
+            // Try reading the query in another way
+            preg_match('/@query\s*\(\s*"(.*?)"\s*\)/s', $docComment, $matches);
+            $queryString = $matches ? $matches[1] : '';
+            if(empty($queryString))
+            {
+                throw new InvalidQueryInputException("No query found.\r\n".$docComment);
+            }
         }
 
         // Get parameter information from the caller function

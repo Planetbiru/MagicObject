@@ -256,10 +256,11 @@ class Supervisor extends MagicObject
      * @param DateTime[] $timeCreate The date and time when data is created
      * @return MagicObject[]
      * @query("
-      SELECT supervisor.* 
+      SELECT supervisor.*
       FROM supervisor 
       WHERE supervisor.waktu_buat in :timeCreate 
       AND supervisor.aktif = :aktif
+      AND supervisor.nama like '\"test\"'
      ")
      */
     public function native13($timeCreate, $aktif)
