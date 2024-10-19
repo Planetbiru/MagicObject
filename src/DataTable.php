@@ -25,6 +25,8 @@ use stdClass;
  * on the provided data, with support for property annotations to manage 
  * labels and attributes.
  *
+ * @author Kamshory
+ * @package MagicObject
  * @link https://github.com/Planetbiru/MagicObject
  */
 class DataTable extends SetterGetter
