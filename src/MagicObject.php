@@ -49,19 +49,28 @@ use Symfony\Component\Yaml\Yaml;
  */
 class MagicObject extends stdClass // NOSONAR
 {
+    // Message constants
     const MESSAGE_NO_DATABASE_CONNECTION = "No database connection provided";
     const MESSAGE_NO_RECORD_FOUND = "No record found";
+    
+    // Property naming strategy
     const PROPERTY_NAMING_STRATEGY = "property-naming-strategy";
+    
+    // Key constants
     const KEY_PROPERTY_TYPE = "propertyType";
     const KEY_DEFAULT_VALUE = "default_value";
     const KEY_NAME = "name";
     const KEY_VALUE = "value";
+
+    // Format constants
     const JSON = 'JSON';
     const YAML = 'Yaml';
 
+    // Attribute constants
     const ATTR_CHECKED = ' checked="checked"';
     const ATTR_SELECTED = ' selected="selected"';
 
+    // Find option constants
     const FIND_OPTION_DEFAULT = 0;
     const FIND_OPTION_NO_COUNT_DATA = 1;
     const FIND_OPTION_NO_FETCH_DATA = 2;
