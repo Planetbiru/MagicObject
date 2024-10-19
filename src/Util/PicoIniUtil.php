@@ -22,6 +22,8 @@ class PicoIniUtil
     /**
      * Write an array to an INI file.
      *
+     * This method converts an array into an INI format and saves it to the specified file path.
+     *
      * @param array $array The array to write to the INI file.
      * @param string $path The file path where the INI file will be saved.
      * @return bool True on success, false on failure.
