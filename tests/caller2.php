@@ -526,7 +526,7 @@ CREATE TABLE user_profile (
   user_profile_id varchar(40) NOT NULL,
   user_id varchar(40) DEFAULT NULL,
   profile_name varchar(100) DEFAULT NULL,
-  profile_value text,
+  profile_value text comment 'profile value',
   time_edit timestamp NULL DEFAULT NULL,
   PRIMARY KEY (user_profile_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -569,7 +569,8 @@ CREATE TABLE user_type (
 
 ";
 
-$parser = new PicoSqlParser($sqlDump);
-$tables = $parser->parse();
+$parser = new PicoSqlParser();
+$parser->init();
+$tables = $parser->parseAll($sqlDump);
 
 print_r($tables);
