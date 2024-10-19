@@ -14,7 +14,7 @@ namespace MagicObject\Util\Database;
  * 
  * @property array $typeList List of valid data types.
  * @property array $tableInfo Information about the parsed table.
- * @link https://github.com/Planetbiru/ERD-Maker/tree/main
+ * @link https://github.com/Planetbiru/ERD-Maker
  */
 class PicoSqlParser
 {
