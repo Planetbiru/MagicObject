@@ -13,6 +13,7 @@ use Throwable;
  * missing required parameters, or malformed query structures. It is useful 
  * in scenarios involving database interactions or data retrieval processes.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */

@@ -12,6 +12,7 @@ use Throwable;
  * an expected option is not found, whether in configuration settings,
  * database queries, or other operational contexts.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */

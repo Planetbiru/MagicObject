@@ -14,6 +14,7 @@ use Throwable;
  * available columns in the database. It is particularly useful in 
  * data mapping or ORM frameworks where column mappings are critical.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */

@@ -15,6 +15,7 @@ use Throwable;
  * from improper data handling or validation before attempting to 
  * store records in the database.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */

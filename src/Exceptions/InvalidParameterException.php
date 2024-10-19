@@ -12,6 +12,7 @@ use Throwable;
  * that do not meet the expected criteria, such as invalid types, missing 
  * required values, or parameters that fall outside of acceptable ranges.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */

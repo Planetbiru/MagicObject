@@ -11,6 +11,7 @@ use Throwable;
  * This can include issues such as validation failures, database errors, or
  * other exceptions that occur during entity processing.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */

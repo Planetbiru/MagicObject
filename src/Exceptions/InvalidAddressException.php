@@ -13,6 +13,7 @@ use Throwable;
  * address processing in applications that require user input for locations,
  * shipping, or billing addresses.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */

@@ -15,6 +15,7 @@ use Throwable;
  * useful in data retrieval operations, ensuring that the calling 
  * code can handle the absence of records appropriately.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */

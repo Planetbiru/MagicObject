@@ -13,6 +13,7 @@ use Throwable;
  * scenarios such as form submissions, data processing, or API requests 
  * where specific input formats are required.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */

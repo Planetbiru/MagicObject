@@ -13,6 +13,7 @@ use Throwable;
  * invalid geometric configurations. It is useful in applications involving 
  * geometric computations, shape processing, or graphical representations.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */

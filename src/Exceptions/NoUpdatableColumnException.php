@@ -15,6 +15,7 @@ use Throwable;
  * that update operations are valid and that the integrity of the 
  * database is maintained.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */

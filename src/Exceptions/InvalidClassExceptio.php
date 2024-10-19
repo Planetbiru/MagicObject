@@ -12,6 +12,7 @@ use Throwable;
  * a class is found to be improperly defined, potentially during reflection or
  * dynamic class loading operations.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */

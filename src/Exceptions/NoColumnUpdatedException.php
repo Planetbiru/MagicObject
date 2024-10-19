@@ -14,6 +14,7 @@ use Throwable;
  * existing entries. It is particularly useful in scenarios where 
  * data integrity and confirmation of changes are critical.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */

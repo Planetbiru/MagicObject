@@ -15,6 +15,7 @@ use Throwable;
  * in function calls, ensuring that methods are invoked correctly 
  * with the necessary parameters.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */

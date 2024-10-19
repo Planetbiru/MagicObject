@@ -15,6 +15,7 @@ use Throwable;
  * constraints on the database schema. It is essential for ensuring 
  * that data integrity is maintained during insert operations.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */

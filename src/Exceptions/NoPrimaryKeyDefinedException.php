@@ -14,6 +14,7 @@ use Throwable;
  * and consistency within database operations, especially in ORM frameworks 
  * where primary keys are essential for object mapping.
  * 
+ * @author Kamshory
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */
