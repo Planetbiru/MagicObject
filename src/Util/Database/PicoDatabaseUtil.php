@@ -11,7 +11,7 @@ use PDOStatement;
 /**
  * Class PicoDatabaseUtil
  *
- * A utility class for handling database operations and specifications within the Pico framework.
+ * A utility class for handling database operations and specifications within the framework.
  * This class provides methods to retrieve specifications, handle SQL query formatting,
  * and manage data types, ensuring safe and efficient interactions with the database.
  *

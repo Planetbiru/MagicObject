@@ -15,7 +15,7 @@ use PDO;
 /**
  * Class PicoDatabaseUtilPostgreSql
  *
- * Utility class for managing PostgreSQL database operations in the Pico framework.
+ * Utility class for managing PostgreSQL database operations in the framework.
  * This class provides methods for retrieving table structures, generating SQL
  * statements for creating tables, dumping data into SQL insert statements,
  * and importing data from one database to another.
