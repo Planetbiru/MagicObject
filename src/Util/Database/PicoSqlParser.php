@@ -111,6 +111,10 @@ class PicoSqlParser
                 $columnName = trim($rg_fld2_result['fname']);
 
                 if (!$this->inArray($columnList, $columnName)) {
+                    if(isset($def) && is_array($def))
+                    {
+                        $def = null;
+                    }
                     $fld_list[] = [
                         'Column Name' => $columnName,
                         'Type' => trim($rg_fld2_result['ftype']),
@@ -201,6 +205,7 @@ class PicoSqlParser
      * Parses all CREATE TABLE statements in the SQL text.
      * 
      * @param string $sql SQL statement to be parsed.
+     * @return array
      */
     public function parseAll($sql)
     {
@@ -215,6 +220,7 @@ class PicoSqlParser
         }
         
         $this->tableInfo = $inf;
+        return $this->tableInfo;
     }
 
     /**
