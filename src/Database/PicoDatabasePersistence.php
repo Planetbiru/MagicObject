@@ -2891,14 +2891,14 @@ class PicoDatabasePersistence // NOSONAR
      */
     private function getJoinData($classNameJoin, $referenceColumName, $joinKeyValue)
     {
-        $persist = new self(null, new $classNameJoin());
+        $className = $this->getRealClassName($classNameJoin);
+        $persist = new self(null, new $className());
         $info = $persist->getTableInfo();
         $noCache = isset($info) ? $info->getNoCache() : false;
         
         // Check if caching is disabled or if the data is not already cached
         if($noCache || !isset($this->joinCache[$classNameJoin]) || !isset($this->joinCache[$classNameJoin][$joinKeyValue]))
-        {      
-            $className = $this->getRealClassName($classNameJoin);
+        {       
             $obj = new $className(null);      
             
             $dbEnt = $this->object->databaseEntity();
