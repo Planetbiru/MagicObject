@@ -106,6 +106,13 @@ Stable version of MagicObject is `1.17.2` or above. Please don't install version
 
 -   When upgrading from version 1 to version 2, please review the migration notes for any breaking changes or required adjustments to your codebase. Detailed guidelines are provided to facilitate a smooth upgrade process.
 
+
+MagicObject 2.1 introduces package annotations for entities, enhancing the process of joining them. These annotations are essential, as the namespace is required to properly join entities. The join class should be referenced by its base name only, without the namespace; otherwise, MagicObject may fail to recognize the class.
+
+PHP does not provide a native method to retrieve a class's namespace. Earlier versions of MagicObject attempted to obtain this information by reading the PHP script, a method that proved both unsafe and inefficient.
+
+With the addition of package annotations to each entity, MagicObject now offers a safer and more efficient way to join entities. However, if a package annotation is not available on an entity, version 2.1 will still revert to the old method.
+
 # Tutorial
 
 Tutorial is provided here https://github.com/Planetbiru/MagicObject/blob/main/tutorial.md
