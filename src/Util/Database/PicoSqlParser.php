@@ -12,8 +12,9 @@ namespace MagicObject\Util\Database;
  * $parser = new PicoSqlParser($sql);
  * $result = $parser->getResult();
  * 
- * @property array $typeList List of valid data types.
- * @property array $tableInfo Information about the parsed table.
+ * @property array $typeList List of valid SQL data types supported for parsing.
+ * @property array $tableInfo Information about the parsed tables, including 
+ * columns and primary keys.
  * @link https://github.com/Planetbiru/ERD-Maker
  */
 class PicoSqlParser
@@ -34,7 +35,9 @@ class PicoSqlParser
 
     /**
      * PicoSqlParser constructor.
-     * 
+     *
+     * Initializes the parser and optionally parses the provided SQL statement.
+     *
      * @param string|null $sql SQL statement to be parsed (optional).
      */
     public function __construct($sql = null)
@@ -58,10 +61,11 @@ class PicoSqlParser
     }
 
     /**
-     * Parses the CREATE TABLE statement to extract table information.
-     * 
+     * Parses a CREATE TABLE statement to extract table information.
+     *
      * @param string $sql SQL statement to be parsed.
      * @return array Information about the table, columns, and primary key.
+     * @throws InvalidArgumentException if the SQL statement is not a valid CREATE TABLE statement.
      */
     public function parseTable($sql)
     {
@@ -224,20 +228,20 @@ class PicoSqlParser
     }
 
     /**
-     * Get type list
+     * Gets the list of valid data types.
      *
-     * @return  array
-     */ 
+     * @return array An array of valid SQL data types.
+     */
     public function getTypeList()
     {
         return $this->typeList;
     }
 
     /**
-     * Get table info
+     * Gets information about the parsed tables.
      *
-     * @return  array
-     */ 
+     * @return array An array containing information about all parsed tables.
+     */
     public function getTableInfo()
     {
         return $this->tableInfo;
