@@ -32,9 +32,9 @@ class SecretObject extends stdClass //NOSONAR
 {
     const JSON = 'JSON';
     const YAML = 'Yaml';
+    const PROPERTY_NAMING_STRATEGY = "property-naming-strategy";
     const KEY_NAME = "name";
     const KEY_VALUE = "value";
-    const PROPERTY_NAMING_STRATEGY = "property-naming-strategy";
     const KEY_PROPERTY_TYPE = "propertyType";
     const KEY_DEFAULT_VALUE = "default_value";
     const ANNOTATION_ENCRYPT_IN = "EncryptIn";
