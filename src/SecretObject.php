@@ -10,6 +10,7 @@ use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\ClassUtil\PicoSecretParser;
 use MagicObject\Util\PicoArrayUtil;
 use MagicObject\Util\PicoGenericObject;
+use MagicObject\Util\PicoIniUtil;
 use MagicObject\Util\PicoStringUtil;
 use MagicObject\Util\PicoYamlUtil;
 use ReflectionClass;
@@ -614,14 +615,17 @@ class SecretObject extends stdClass //NOSONAR
     public function loadIniString($rawData, $systemEnv = false)
     {
         // Parse without sections
-        $data = parse_ini_string($rawData);
-        $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
-        if($systemEnv)
+        $data = PicoIniUtil::parseIniString($rawData);
+        if(isset($data) && !empty($data))
         {
-            $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
+            $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
+            if($systemEnv)
+            {
+                $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
+            }
+            $data = PicoArrayUtil::camelize($data);
+            $this->loadData($data);
         }
-        $data = PicoArrayUtil::camelize($data);
-        $this->loadData($data);
         return $this;
     }
 
@@ -637,14 +641,17 @@ class SecretObject extends stdClass //NOSONAR
     public function loadIniFile($path, $systemEnv = false)
     {
         // Parse without sections
-        $data = parse_ini_file($path);
-        $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
-        if($systemEnv)
+        $data = PicoIniUtil::parseIniFile($path);
+        if(isset($data) && !empty($data))
         {
-            $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
+            $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
+            if($systemEnv)
+            {
+                $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
+            }
+            $data = PicoArrayUtil::camelize($data);
+            $this->loadData($data);
         }
-        $data = PicoArrayUtil::camelize($data);
-        $this->loadData($data);
         return $this;
     }
 
@@ -662,22 +669,24 @@ class SecretObject extends stdClass //NOSONAR
     public function loadYamlString($rawData, $systemEnv = false, $asObject = false, $recursive = false)
     {
         $data = Yaml::parse($rawData);
-        $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
-        if($systemEnv)
+        if(isset($data) && !empty($data))
         {
-            $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
-        }
-        $data = PicoArrayUtil::camelize($data);
+            $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
+            if($systemEnv)
+            {
+                $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
+            }
+            $data = PicoArrayUtil::camelize($data);
 
-        if($recursive)
-        {
-            $this->loadData(PicoSecretParser::parseRecursiveObject($data));
+            if($recursive)
+            {
+                $this->loadData(PicoSecretParser::parseRecursiveObject($data));
+            }
+            else
+            {
+                $this->loadData($data);
+            }
         }
-        else
-        {
-            $this->loadData($data);
-        }
-
         return $this;
     }
 
@@ -695,22 +704,24 @@ class SecretObject extends stdClass //NOSONAR
     public function loadYamlFile($path, $systemEnv = false, $asObject = false, $recursive = false)
     {
         $data = Yaml::parseFile($path);
-        $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
-        if($systemEnv)
+        if(isset($data) && !empty($data))
         {
-            $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
-        }
-        $data = PicoArrayUtil::camelize($data);
+            $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
+            if($systemEnv)
+            {
+                $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
+            }
+            $data = PicoArrayUtil::camelize($data);
 
-        if($recursive)
-        {
-            $this->loadData(PicoSecretParser::parseRecursiveObject($data));
+            if($recursive)
+            {
+                $this->loadData(PicoSecretParser::parseRecursiveObject($data));
+            }
+            else
+            {
+                $this->loadData($data);
+            }
         }
-        else
-        {
-            $this->loadData($data);
-        }
-
         return $this;
     }
 
@@ -727,20 +738,23 @@ class SecretObject extends stdClass //NOSONAR
     public function loadJsonString($rawData, $systemEnv = false, $asObject = false, $recursive = false)
     {
         $data = json_decode($rawData);
-        $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
-        if($systemEnv)
+        if(isset($data) && !empty($data))
         {
-            $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
-        }
-        $data = PicoArrayUtil::camelize($data);
+            $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
+            if($systemEnv)
+            {
+                $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
+            }
+            $data = PicoArrayUtil::camelize($data);
 
-        if($recursive)
-        {
-            $this->loadData(PicoSecretParser::parseRecursiveObject($data));
-        }
-        else
-        {
-            $this->loadData($data);
+            if($recursive)
+            {
+                $this->loadData(PicoSecretParser::parseRecursiveObject($data));
+            }
+            else
+            {
+                $this->loadData($data);
+            }
         }
 
         return $this;
@@ -759,22 +773,24 @@ class SecretObject extends stdClass //NOSONAR
     public function loadJsonFile($path, $systemEnv = false, $asObject = false, $recursive = false)
     {
         $data = json_decode(file_get_contents($path));
-        $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
-        if($systemEnv)
+        if(isset($data) && !empty($data))
         {
-            $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
-        }
-        $data = PicoArrayUtil::camelize($data);
+            $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
+            if($systemEnv)
+            {
+                $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
+            }
+            $data = PicoArrayUtil::camelize($data);
 
-        if($recursive)
-        {
-            $this->loadData(PicoSecretParser::parseRecursiveObject($data));
+            if($recursive)
+            {
+                $this->loadData(PicoSecretParser::parseRecursiveObject($data));
+            }
+            else
+            {
+                $this->loadData($data);
+            }
         }
-        else
-        {
-            $this->loadData($data);
-        }
-
         return $this;
     }
 
