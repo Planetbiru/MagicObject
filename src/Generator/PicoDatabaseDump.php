@@ -461,37 +461,38 @@ class PicoDatabaseDump
     }
 
     /**
-     * Dump data to SQL format.
-     * WARNING!!! Use different instance to dump different entity.
+     * Dumps data into SQL format.
      *
-     * @param MagicObject|PicoPageData $data Data to be dumped
-     * @param string $databaseType Target database type
-     * @return string SQL dump
+     * This method processes the provided data and converts it into SQL format suitable for the specified 
+     * database type. It requires a model instance to retrieve table information if not already set.
+     *
+     * WARNING: Use a different instance to dump different entities to avoid conflicts.
+     *
+     * @param MagicObject|PicoPageData $data Data to be dumped into SQL format.
+     * @param string $databaseType Target database type (e.g., MySQL, MariaDB).
+     * @param MagicObject|null $entity Optional model instance used to retrieve table information 
+     *                                   if it is not already set.
+     * @param int $maxRecord Maximum number of records to process in a single query (default is 100).
+     * @param callable|null $callbackFunction Optional callback function to process the generated SQL 
+     *                                         statements. The function should accept a single string parameter 
+     *                                         representing the SQL statement.
+     * @return string SQL dump as a string; returns an empty string for unsupported database types.
      */
-    public function dumpData($data, $databaseType)
+    public function dumpData($data, $databaseType, $entity = null, $maxRecord = 100, $callbackFunction = null)
     {
+        // Initialize table information if it hasn't been set yet
         if (!isset($this->tableInfo)) {
-            $entity = null;
-            if ($data instanceof PicoPageData && isset($data->getResult()[0])) {
-                $entity = $data->getResult()[0];
-            } else if ($data instanceof MagicObject) {
-                $entity = $data;
-            } else if (is_array($data) && isset($data[0]) && $data[0] instanceof MagicObject) {
-                $entity = $data[0];
-            }
-            if ($entity == null) {
-                return "";
-            }
-
             $databasePersist = new PicoDatabasePersistence(null, $entity);
             $this->tableInfo = $databasePersist->getTableInfo();
             $this->picoTableName = $this->tableInfo->getTableName();
             $this->columns = $this->tableInfo->getColumns();
         }
 
+        // Check the database type and call the appropriate utility for dumping data
         if ($databaseType == PicoDatabaseType::DATABASE_TYPE_MARIADB || $databaseType == PicoDatabaseType::DATABASE_TYPE_MYSQL) {
-            return PicoDatabaseUtilMySql::dumpData($this->columns, $this->picoTableName, $data);
+            return PicoDatabaseUtilMySql::dumpData($this->columns, $this->picoTableName, $data, $maxRecord, $callbackFunction);
         } else {
+            // Return an empty string if the database type is unsupported
             return "";
         }
     }
