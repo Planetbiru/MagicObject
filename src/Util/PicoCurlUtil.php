@@ -20,13 +20,19 @@ class PicoCurlUtil {
      */
     private $curl;
 
-    /** @var array $responseHeaders Header respons dari permintaan terakhir */
+    /** 
+     * @var array $responseHeaders Header respons dari permintaan terakhir 
+     */
     private $responseHeaders = [];
 
-    /** @var string $responseBody Body respons dari permintaan terakhir */
+    /** 
+     * @var string $responseBody Body respons dari permintaan terakhir 
+     */
     private $responseBody = '';
 
-    /** @var int $httpCode Kode status HTTP dari permintaan terakhir */
+    /** 
+     * @var int $httpCode Kode status HTTP dari permintaan terakhir 
+     */
     private $httpCode = 0;
 
     /**
