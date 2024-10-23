@@ -43,7 +43,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param string $picoTableName Table name.
      * @return array An array of column details.
      */
-    public static function getColumnList($database, $picoTableName)
+    public function getColumnList($database, $picoTableName)
     {
         $sql = "SHOW COLUMNS FROM $picoTableName";
         return $database->fetchAll($sql);
@@ -55,7 +55,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param PicoTableInfo $tableInfo Table information.
      * @return array An array of auto-increment key names.
      */
-    public static function getAutoIncrementKey($tableInfo)
+    public function getAutoIncrementKey($tableInfo)
     {
         $autoIncrement = $tableInfo->getAutoIncrementKeys();
         $autoIncrementKeys = array();
@@ -83,7 +83,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param string $charset Character set (default is 'utf8mb4').
      * @return string SQL statement to create the table.
      */
-    public static function dumpStructure($tableInfo, $picoTableName, $createIfNotExists = false, $dropIfExists = false, $engine = 'InnoDB', $charset = 'utf8mb4')
+    public function dumpStructure($tableInfo, $picoTableName, $createIfNotExists = false, $dropIfExists = false, $engine = 'InnoDB', $charset = 'utf8mb4')
     {
         $query = array();
         $columns = array();
@@ -100,13 +100,13 @@ class PicoDatabaseUtilMySql //NOSONAR
             $createStatement .= " IF NOT EXISTS";
         }
 
-        $autoIncrementKeys = self::getAutoIncrementKey($tableInfo);
+        $autoIncrementKeys = $this->getAutoIncrementKey($tableInfo);
 
         $query[] = "$createStatement `$picoTableName` (";
 
         foreach($tableInfo->getColumns() as $column)
         {
-            $columns[] = self::createColumn($column);
+            $columns[] = $this->createColumn($column);
         }
         $query[] = implode(",\r\n", $columns);
         $query[] = ") ENGINE=$engine DEFAULT CHARSET=$charset;";
@@ -128,7 +128,7 @@ class PicoDatabaseUtilMySql //NOSONAR
             if(isset($autoIncrementKeys) && is_array($autoIncrementKeys) && in_array($column[self::KEY_NAME], $autoIncrementKeys))
             {
                 $query[] = "";
-                $query[] = "ALTER TABLE `$picoTableName` \r\n\tMODIFY ".trim(self::createColumn($column), " \r\n\t ")." AUTO_INCREMENT";
+                $query[] = "ALTER TABLE `$picoTableName` \r\n\tMODIFY ".trim($this->createColumn($column), " \r\n\t ")." AUTO_INCREMENT";
                 $query[] = ";";
             }
         }
@@ -142,7 +142,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param array $column Column details.
      * @return string SQL column definition.
      */
-    public static function createColumn($column)
+    public function createColumn($column)
     {
         $col = array();
         $col[] = "\t";
@@ -159,7 +159,7 @@ class PicoDatabaseUtilMySql //NOSONAR
         if(isset($column['default_value']))
         {
             $defaultValue = $column['default_value'];
-            $defaultValue = self::fixDefaultValue($defaultValue, $column['type']);
+            $defaultValue = $this->fixDefaultValue($defaultValue, $column['type']);
             $col[] = "DEFAULT $defaultValue";
         }
         return implode(" ", $col);
@@ -172,7 +172,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param string $type Data type of the column.
      * @return string Fixed default value.
      */
-    public static function fixDefaultValue($defaultValue, $type)
+    public function fixDefaultValue($defaultValue, $type)
     {
         if(strtolower($defaultValue) == 'true' || strtolower($defaultValue) == 'false' || strtolower($defaultValue) == 'null')
         {
@@ -202,7 +202,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      *                                         representing the SQL statement.
      * @return string|null SQL INSERT statements or null if no data was processed.
      */
-    public static function dumpData($columns, $picoTableName, $data, $maxRecord = 100, $callbackFunction = null) //NOSONAR
+    public function dumpData($columns, $picoTableName, $data, $maxRecord = 100, $callbackFunction = null) //NOSONAR
     {
         // Check if $data is an instance of PicoPageData
         if($data instanceof PicoPageData)
@@ -216,7 +216,7 @@ class PicoDatabaseUtilMySql //NOSONAR
                 while($data = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT))
                 {
                     // Ensure data has all required columns
-                    $data = self::processDataMapping($data, $columns);
+                    $data = $this->processDataMapping($data, $columns);
                     if(count($records) < $maxRecord)
                     {
                         $records[] = $data;
@@ -226,7 +226,7 @@ class PicoDatabaseUtilMySql //NOSONAR
                         if(isset($callbackFunction) && is_callable($callbackFunction))
                         {
                             // Call the callback function with the generated SQL
-                            $sql = self::insert($picoTableName, $records);
+                            $sql = $this->insert($picoTableName, $records);
                             call_user_func($callbackFunction, $sql);
                         }
                         // Reset the records buffer
@@ -236,25 +236,25 @@ class PicoDatabaseUtilMySql //NOSONAR
                 // Handle any remaining records
                 if(!empty($records) && isset($callbackFunction) && is_callable($callbackFunction))
                 {
-                    $sql = self::insert($picoTableName, $records);
+                    $sql = $this->insert($picoTableName, $records);
                     call_user_func($callbackFunction, $sql);
                 }
             }
             else if(isset($data->getResult()[0]))
             {
                 // If data is available, dump records directly
-                return self::dumpRecords($columns, $picoTableName, $data->getResult());
+                return $this->dumpRecords($columns, $picoTableName, $data->getResult());
             }
         }
         else if($data instanceof MagicObject)
         {
             // Handle a single MagicObject instance
-            return self::dumpRecords($columns, $picoTableName, array($data));
+            return $this->dumpRecords($columns, $picoTableName, array($data));
         }
         else if(is_array($data) && isset($data[0]) && $data[0] instanceof MagicObject)
         {
             // Handle an array of MagicObject instances
-            return self::dumpRecords($columns, $picoTableName, $data);
+            return $this->dumpRecords($columns, $picoTableName, $data);
         }
         return null; // Return null if no valid data was processed
     }
@@ -270,12 +270,12 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param MagicObject $record The data record to be dumped into the SQL statement.
      * @return string The generated SQL INSERT statement.
      */
-    public static function dumpRecords($columns, $picoTableName, $data)
+    public function dumpRecords($columns, $picoTableName, $data)
     {
         $result = "";
         foreach($data as $record)
         {
-            $result .= self::dumpRecord($columns, $picoTableName, $record).";\r\n";
+            $result .= $this->dumpRecord($columns, $picoTableName, $record).";\r\n";
         }
         return $result;
     }
@@ -288,7 +288,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param MagicObject $record Data record.
      * @return string SQL insert statement.
      */
-    public static function dumpRecord($columns, $picoTableName, $record)
+    public function dumpRecord($columns, $picoTableName, $record)
     {
         $value = $record->valueArray();
         $rec = array();
@@ -320,7 +320,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @return array An associative array mapping column names to their types.
      * @throws Exception If the query fails or the table does not exist.
      */
-    public static function showColumns($database, $tableName)
+    public function showColumns($database, $tableName)
     {
         $sql = "SHOW COLUMNS FROM $tableName";
         $result = $database->fetchAll($sql, PDO::FETCH_ASSOC);
@@ -343,7 +343,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param SecretObject $config The configuration object containing database and table information.
      * @return SecretObject The updated configuration object with modified table settings.
      */
-    public static function autoConfigureImportData($config)
+    public function autoConfigureImportData($config)
     {
         $databaseConfigSource = $config->getDatabaseSource();
         $databaseConfigTarget = $config->getDatabaseTarget();
@@ -370,7 +370,7 @@ class PicoDatabaseUtilMySql //NOSONAR
 
             foreach($targetTables as $target)
             {
-                $tables = self::updateConfigTable($databaseSource, $databaseTarget, $tables, $sourceTables, $target, $existingTables);
+                $tables = $this->updateConfigTable($databaseSource, $databaseTarget, $tables, $sourceTables, $target, $existingTables);
             }
             $config->setTable($tables);
         }
@@ -396,7 +396,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param array $existingTables List of existing tables in the target database.
      * @return array Updated array of table configurations with the new table info added if applicable.
      */
-    public static function updateConfigTable($databaseSource, $databaseTarget, $tables, $sourceTables, $target, $existingTables)
+    public function updateConfigTable($databaseSource, $databaseTarget, $tables, $sourceTables, $target, $existingTables)
     {
         if(!in_array($target, $existingTables))
         {
@@ -406,7 +406,7 @@ class PicoDatabaseUtilMySql //NOSONAR
                 // ada di database sumber
                 $tableInfo->setTarget($target);
                 $tableInfo->setSource($target);
-                $map = self::createMapTemplate($databaseSource, $databaseTarget, $target);
+                $map = $this->createMapTemplate($databaseSource, $databaseTarget, $target);
                 if(isset($map) && !empty($map))
                 {
                     $tableInfo->setMap($map);
@@ -435,10 +435,10 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param string $target The name of the target table.
      * @return string[] An array of mapping strings indicating missing columns in the source.
      */
-    public static function createMapTemplate($databaseSource, $databaseTarget, $target)
+    public function createMapTemplate($databaseSource, $databaseTarget, $target)
     {
-        $targetColumns = array_keys(self::showColumns($databaseTarget, $target));
-        $sourceColumns = array_keys(self::showColumns($databaseSource, $target));
+        $targetColumns = array_keys($this->showColumns($databaseTarget, $target));
+        $sourceColumns = array_keys($this->showColumns($databaseSource, $target));
         $map = array();
         foreach($targetColumns as $column)
         {
@@ -460,7 +460,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param callable $callbackFunction Callback function to execute SQL scripts.
      * @return bool Returns true on successful import, false on failure.
      */
-    public static function importData($config, $callbackFunction)
+    public function importData($config, $callbackFunction)
     {
         $databaseConfigSource = $config->getDatabaseSource();
         $databaseConfigTarget = $config->getDatabaseTarget();
@@ -480,7 +480,7 @@ class PicoDatabaseUtilMySql //NOSONAR
                 $tableNameTarget = $tableInfo->getTarget();
                 $tableNameSource = $tableInfo->getSource();
                 $preImportScript = $tableInfo->getPreImportScript();
-                if(self::isNotEmpty($preImportScript))
+                if($this->isNotEmpty($preImportScript))
                 {
                     foreach($preImportScript as $sql)
                     {
@@ -494,7 +494,7 @@ class PicoDatabaseUtilMySql //NOSONAR
             {
                 $tableNameTarget = $tableInfo->getTarget();
                 $tableNameSource = $tableInfo->getSource();
-                self::importDataTable($databaseSource, $databaseTarget, $tableNameSource, $tableNameTarget, $tableInfo, $maxRecord, $callbackFunction);
+                $this->importDataTable($databaseSource, $databaseTarget, $tableNameSource, $tableNameTarget, $tableInfo, $maxRecord, $callbackFunction);
             }
 
             // query post import data
@@ -503,7 +503,7 @@ class PicoDatabaseUtilMySql //NOSONAR
                 $tableNameTarget = $tableInfo->getTarget();
                 $tableNameSource = $tableInfo->getSource();
                 $postImportScript = $tableInfo->getPostImportScript();
-                if(self::isNotEmpty($postImportScript))
+                if($this->isNotEmpty($postImportScript))
                 {
                     foreach($postImportScript as $sql)
                     {
@@ -528,7 +528,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param array $array The array to be checked.
      * @return bool True if the array is not empty; otherwise, false.
      */
-    public static function isNotEmpty($array)
+    public function isNotEmpty($array)
     {
         return $array != null && is_array($array) && !empty($array);
     }
@@ -550,12 +550,12 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param callable $callbackFunction A callback function to handle the generated SQL statements.
      * @return bool True on success, false on failure.
      */
-    public static function importDataTable($databaseSource, $databaseTarget, $tableNameSource, $tableNameTarget, $tableInfo, $maxRecord, $callbackFunction)
+    public function importDataTable($databaseSource, $databaseTarget, $tableNameSource, $tableNameTarget, $tableInfo, $maxRecord, $callbackFunction)
     {
-        $maxRecord = self::getMaxRecord($tableInfo, $maxRecord);
+        $maxRecord = $this->getMaxRecord($tableInfo, $maxRecord);
         try
         {
-            $columns = self::showColumns($databaseTarget, $tableNameTarget);
+            $columns = $this->showColumns($databaseTarget, $tableNameTarget);
             $queryBuilderSource = new PicoDatabaseQueryBuilder($databaseSource);
             $sourceTable = $tableInfo->getSource();
             $queryBuilderSource->newQuery()
@@ -565,7 +565,7 @@ class PicoDatabaseUtilMySql //NOSONAR
             $records = array();
             while($data = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT))
             {
-                $data = self::processDataMapping($data, $columns, $tableInfo->getMap());
+                $data = $this->processDataMapping($data, $columns, $tableInfo->getMap());
                 if(count($records) < $maxRecord)
                 {
                     $records[] = $data;
@@ -574,7 +574,7 @@ class PicoDatabaseUtilMySql //NOSONAR
                 {
                     if(isset($callbackFunction) && is_callable($callbackFunction))
                     {
-                        $sql = self::insert($tableNameTarget, $records);
+                        $sql = $this->insert($tableNameTarget, $records);
                         call_user_func($callbackFunction, $sql, $tableNameSource, $tableNameTarget);
                     }
                     // reset buffer
@@ -583,7 +583,7 @@ class PicoDatabaseUtilMySql //NOSONAR
             }
             if(!empty($records) && isset($callbackFunction) && is_callable($callbackFunction))
             {
-                $sql = self::insert($tableNameTarget, $records);
+                $sql = $this->insert($tableNameTarget, $records);
                 call_user_func($callbackFunction, $sql, $tableNameSource, $tableNameTarget);
             }
         }
@@ -606,7 +606,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param int $maxRecord The maximum record limit per query specified by the user.
      * @return int The effective maximum record limit to be used in queries.
      */
-    public static function getMaxRecord($tableInfo, $maxRecord)
+    public function getMaxRecord($tableInfo, $maxRecord)
     {
         // Check if the table information specifies a maximum record limit
         if ($tableInfo->getMaximumRecord() !== null) {
@@ -633,7 +633,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param string[]|null $maps Optional array of mapping definitions in the format 'target:source'.
      * @return mixed[] The updated data array with fixed types and mappings applied.
      */
-    public static function processDataMapping($data, $columns, $maps = null)
+    public function processDataMapping($data, $columns, $maps = null)
     {
         // Check if mappings are provided and are in array format
         if(isset($maps) && is_array($maps))
@@ -655,7 +655,7 @@ class PicoDatabaseUtilMySql //NOSONAR
         $data = array_intersect_key($data, array_flip(array_keys($columns)));
 
         // Fix data types based on column definitions
-        $data = self::fixImportData($data, $columns);
+        $data = $this->fixImportData($data, $columns);
         return $data; // Return the processed data
     }
 
@@ -670,7 +670,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param string[] $columns An associative array mapping column names to their types.
      * @return mixed[] The updated data array with fixed types.
      */
-    public static function fixImportData($data, $columns)
+    public function fixImportData($data, $columns)
     {
         // Iterate through each item in the data array
         foreach($data as $name=>$value)
@@ -683,17 +683,17 @@ class PicoDatabaseUtilMySql //NOSONAR
                 if(strtolower($type) == 'tinyint(1)' || strtolower($type) == 'boolean' || strtolower($type) == 'bool')
                 {
                     // Process boolean types
-                    $data = self::fixBooleanData($data, $name, $value);
+                    $data = $this->fixBooleanData($data, $name, $value);
                 }
                 else if(stripos($type, 'integer') !== false || stripos($type, 'int(') !== false)
                 {
                     // Process integer types
-                    $data = self::fixIntegerData($data, $name, $value);
+                    $data = $this->fixIntegerData($data, $name, $value);
                 }
                 else if(stripos($type, 'float') !== false || stripos($type, 'double') !== false || stripos($type, 'decimal') !== false)
                 {
                     // Process float types
-                    $data = self::fixFloatData($data, $name, $value);
+                    $data = $this->fixFloatData($data, $name, $value);
                 }
             }
         }
@@ -709,7 +709,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param mixed $value The value to be processed.
      * @return string The formatted string representation of the value.
      */
-    public static function fixData($value)
+    public function fixData($value)
     {
         // Initialize the return variable
         $ret = null;
@@ -749,7 +749,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param mixed $value The value to be processed.
      * @return mixed[] The updated array with the fixed boolean data.
      */
-    public static function fixBooleanData($data, $name, $value)
+    public function fixBooleanData($data, $name, $value)
     {
         // Check if the value is null or an empty string
         if($value === null || $value === '')
@@ -776,7 +776,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param mixed $value The value to be processed.
      * @return mixed[] The updated array with the fixed integer data.
      */
-    public static function fixIntegerData($data, $name, $value)
+    public function fixIntegerData($data, $name, $value)
     {
         // Check if the value is null or an empty string
         if($value === null || $value === '')
@@ -803,7 +803,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param mixed $value The value to be processed.
      * @return mixed[] The updated array with the fixed float data.
      */
-    public static function fixFloatData($data, $name, $value)
+    public function fixFloatData($data, $name, $value)
     {
         // Check if the value is null or an empty string
         if($value === null || $value === '')
@@ -830,7 +830,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      *                    represents a record to be inserted.
      * @return string The generated SQL INSERT statement with placeholders for values.
      */
-    public static function insert($tableName, $data)
+    public function insert($tableName, $data)
     {
         // Collect all unique columns from the data records
         $columns = array();
@@ -858,7 +858,7 @@ class PicoDatabaseUtilMySql //NOSONAR
 
         // Format each value for safe SQL insertion
         $formattedElements = array_map(function($element){
-            return self::fixData($element);
+            return $this->fixData($element);
         }, $values);
 
         // Replace placeholders with formatted values
@@ -875,7 +875,7 @@ class PicoDatabaseUtilMySql //NOSONAR
      * @param string $mariadbQuery The MariaDB CREATE TABLE query to be converted.
      * @return string The converted PostgreSQL CREATE TABLE query.
      */
-    public static function convertMariaDbToPostgreSql($mariadbQuery) {
+    public function convertMariaDbToPostgreSql($mariadbQuery) {
         // Remove comments
         $query = preg_replace('/--.*?\n|\/\*.*?\*\//s', '', $mariadbQuery);
         

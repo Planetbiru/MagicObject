@@ -43,7 +43,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param string $picoTableName Table name.
      * @return array An array of column details.
      */
-    public static function getColumnList($database, $picoTableName)
+    public function getColumnList($database, $picoTableName)
     {
         $schema = $database->getDatabaseCredentials()->getDatabaseSchema();
         if(!isset($schema) || empty($schema))
@@ -62,7 +62,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param PicoTableInfo $tableInfo Table information.
      * @return array An array of auto-increment key names.
      */
-    public static function getAutoIncrementKey($tableInfo)
+    public function getAutoIncrementKey($tableInfo)
     {
         $autoIncrement = $tableInfo->getAutoIncrementKeys();
         $autoIncrementKeys = array();
@@ -88,7 +88,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param bool $dropIfExists Whether to add "DROP TABLE IF EXISTS" before the create statement.
      * @return string SQL statement to create the table.
      */
-    public static function dumpStructure($tableInfo, $picoTableName, $createIfNotExists = false, $dropIfExists = false)
+    public function dumpStructure($tableInfo, $picoTableName, $createIfNotExists = false, $dropIfExists = false)
     {
         $query = [];
         if ($dropIfExists) {
@@ -101,12 +101,12 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
             $createStatement .= " IF NOT EXISTS";
         }
 
-        $autoIncrementKeys = self::getAutoIncrementKey($tableInfo);
+        $autoIncrementKeys = $this->getAutoIncrementKey($tableInfo);
 
         $query[] = "$createStatement \"$picoTableName\" (";
 
         foreach ($tableInfo->getColumns() as $column) {
-            $query[] = self::createColumn($column);
+            $query[] = $this->createColumn($column);
         }
         $query[] = implode(",\r\n", $query);
         $query[] = ");";
@@ -130,7 +130,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param array $column Column details.
      * @return string SQL column definition.
      */
-    public static function createColumn($column)
+    public function createColumn($column)
     {
         $col = [];
         $col[] = "\t";
@@ -145,7 +145,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
 
         if (isset($column['default_value'])) {
             $defaultValue = $column['default_value'];
-            $defaultValue = self::fixDefaultValue($defaultValue, $column['type']);
+            $defaultValue = $this->fixDefaultValue($defaultValue, $column['type']);
             $col[] = "DEFAULT $defaultValue";
         }
 
@@ -159,7 +159,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param string $type Data type of the column.
      * @return string Fixed default value.
      */
-    public static function fixDefaultValue($defaultValue, $type)
+    public function fixDefaultValue($defaultValue, $type)
     {
         if (strtolower($defaultValue) == 'true' || strtolower($defaultValue) == 'false' || strtolower($defaultValue) == 'null') {
             return $defaultValue;
@@ -173,23 +173,77 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
     }
 
     /**
-     * Dumps data from various sources into SQL insert statements.
+     * Dumps data from various sources into SQL INSERT statements.
      *
-     * @param array $columns Columns of the target table.
-     * @param string $picoTableName Table name.
-     * @param MagicObject|PicoPageData $data Data to dump.
-     * @return string|null SQL insert statements or null if no data.
+     * This method processes data from PicoPageData, MagicObject, or an array of MagicObject instances 
+     * and generates SQL INSERT statements. It supports batching of records and allows for a callback 
+     * function to handle the generated SQL statements.
+     *
+     * @param array $columns Array of columns for the target table.
+     * @param string $picoTableName Name of the target table.
+     * @param MagicObject|PicoPageData|array $data Data to be dumped. Can be a PicoPageData instance, 
+     *                                             a MagicObject instance, or an array of MagicObject instances.
+     * @param int $maxRecord Maximum number of records to process in a single query (default is 100).
+     * @param callable|null $callbackFunction Optional callback function to process the generated SQL 
+     *                                         statements. The function should accept a single string parameter 
+     *                                         representing the SQL statement.
+     * @return string|null SQL INSERT statements or null if no data was processed.
      */
-    public static function dumpData($columns, $picoTableName, $data) //NOSONAR
+    public function dumpData($columns, $picoTableName, $data, $maxRecord = 100, $callbackFunction = null) //NOSONAR
     {
-        if ($data instanceof PicoPageData && isset($data->getResult()[0])) {
-            return self::dumpRecords($columns, $picoTableName, $data->getResult());
-        } else if ($data instanceof MagicObject) {
-            return self::dumpRecords($columns, $picoTableName, [$data]);
-        } else if (is_array($data) && isset($data[0]) && $data[0] instanceof MagicObject) {
-            return self::dumpRecords($columns, $picoTableName, $data);
+        // Check if $data is an instance of PicoPageData
+        if($data instanceof PicoPageData)
+        {
+            // Handle case where fetching data is not required
+            if($data->getFindOption() & MagicObject::FIND_OPTION_NO_FETCH_DATA && $maxRecord > 0 && isset($callbackFunction) && is_callable($callbackFunction))
+            {
+                $records = array();
+                $stmt = $data->getPDOStatement();
+                // Fetch records in batches
+                while($data = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT))
+                {
+                    // Ensure data has all required columns
+                    $data = $this->processDataMapping($data, $columns);
+                    if(count($records) < $maxRecord)
+                    {
+                        $records[] = $data;
+                    }
+                    else
+                    {
+                        if(isset($callbackFunction) && is_callable($callbackFunction))
+                        {
+                            // Call the callback function with the generated SQL
+                            $sql = $this->insert($picoTableName, $records);
+                            call_user_func($callbackFunction, $sql);
+                        }
+                        // Reset the records buffer
+                        $records = array();
+                    }
+                }
+                // Handle any remaining records
+                if(!empty($records) && isset($callbackFunction) && is_callable($callbackFunction))
+                {
+                    $sql = $this->insert($picoTableName, $records);
+                    call_user_func($callbackFunction, $sql);
+                }
+            }
+            else if(isset($data->getResult()[0]))
+            {
+                // If data is available, dump records directly
+                return $this->dumpRecords($columns, $picoTableName, $data->getResult());
+            }
         }
-        return null;
+        else if($data instanceof MagicObject)
+        {
+            // Handle a single MagicObject instance
+            return $this->dumpRecords($columns, $picoTableName, array($data));
+        }
+        else if(is_array($data) && isset($data[0]) && $data[0] instanceof MagicObject)
+        {
+            // Handle an array of MagicObject instances
+            return $this->dumpRecords($columns, $picoTableName, $data);
+        }
+        return null; // Return null if no valid data was processed
     }
 
     /**
@@ -200,11 +254,11 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param MagicObject[] $data Data records.
      * @return string SQL insert statements.
      */
-    public static function dumpRecords($columns, $picoTableName, $data)
+    public function dumpRecords($columns, $picoTableName, $data)
     {
         $result = "";
         foreach ($data as $record) {
-            $result .= self::dumpRecord($columns, $picoTableName, $record) . ";\r\n";
+            $result .= $this->dumpRecord($columns, $picoTableName, $record) . ";\r\n";
         }
         return $result;
     }
@@ -217,7 +271,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param MagicObject $record Data record.
      * @return string SQL insert statement.
      */
-    public static function dumpRecord($columns, $picoTableName, $record)
+    public function dumpRecord($columns, $picoTableName, $record)
     {
         $value = $record->valueArray();
         $rec = [];
@@ -244,7 +298,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param string $tableName Table name.
      * @return string[] An associative array of column names and their types.
      */
-    public static function showColumns($database, $tableName)
+    public function showColumns($database, $tableName)
     {
         $schema = $database->getDatabaseCredentials()->getDatabaseSchema();
         if(!isset($schema) || empty($schema))
@@ -269,7 +323,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param SecretObject $config Configuration
      * @return SecretObject
      */
-    public static function autoConfigureImportData($config)
+    public function autoConfigureImportData($config)
     {
         $databaseConfigSource = $config->getDatabaseSource();
         $databaseConfigTarget = $config->getDatabaseTarget();
@@ -322,7 +376,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param array $options Additional options for import configuration.
      * @return array Configured options for import.
      */
-    public static function updateConfigTable($databaseSource, $databaseTarget, $tables, $sourceTables, $target, $existingTables)
+    public function updateConfigTable($databaseSource, $databaseTarget, $tables, $sourceTables, $target, $existingTables)
     {
         if(!in_array($target, $existingTables))
         {
@@ -332,7 +386,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
                 // ada di database sumber
                 $tableInfo->setTarget($target);
                 $tableInfo->setSource($target);
-                $map = self::createMapTemplate($databaseSource, $databaseTarget, $target);
+                $map = $this->createMapTemplate($databaseSource, $databaseTarget, $target);
                 if(isset($map) && !empty($map))
                 {
                     $tableInfo->setMap($map);
@@ -357,10 +411,10 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param string $target Target table
      * @return string[]
      */
-    public static function createMapTemplate($databaseSource, $databaseTarget, $target)
+    public function createMapTemplate($databaseSource, $databaseTarget, $target)
     {
-        $targetColumns = array_keys(self::showColumns($databaseTarget, $target));
-        $sourceColumns = array_keys(self::showColumns($databaseSource, $target));
+        $targetColumns = array_keys($this->showColumns($databaseTarget, $target));
+        $sourceColumns = array_keys($this->showColumns($databaseSource, $target));
         $map = array();
         foreach($targetColumns as $column)
         {
@@ -382,7 +436,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param array $options Options for import operation.
      * @return void
      */
-    public static function importData($config, $callbackFunction)
+    public function importData($config, $callbackFunction)
     {
         $databaseConfigSource = $config->getDatabaseSource();
         $databaseConfigTarget = $config->getDatabaseTarget();
@@ -402,7 +456,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
                 $tableNameTarget = $tableInfo->getTarget();
                 $tableNameSource = $tableInfo->getSource();
                 $preImportScript = $tableInfo->getPreImportScript();
-                if(self::isNotEmpty($preImportScript))
+                if($this->isNotEmpty($preImportScript))
                 {
                     foreach($preImportScript as $sql)
                     {
@@ -416,7 +470,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
             {
                 $tableNameTarget = $tableInfo->getTarget();
                 $tableNameSource = $tableInfo->getSource();
-                self::importDataTable($databaseSource, $databaseTarget, $tableNameSource, $tableNameTarget, $tableInfo, $maxRecord, $callbackFunction);
+                $this->importDataTable($databaseSource, $databaseTarget, $tableNameSource, $tableNameTarget, $tableInfo, $maxRecord, $callbackFunction);
             }
 
             // query post import data
@@ -425,7 +479,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
                 $tableNameTarget = $tableInfo->getTarget();
                 $tableNameSource = $tableInfo->getSource();
                 $postImportScript = $tableInfo->getPostImportScript();
-                if(self::isNotEmpty($postImportScript))
+                if($this->isNotEmpty($postImportScript))
                 {
                     foreach($postImportScript as $sql)
                     {
@@ -448,7 +502,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param array $array Array to be checked
      * @return bool
      */
-    public static function isNotEmpty($array)
+    public function isNotEmpty($array)
     {
         return $array != null && is_array($array) && !empty($array);
     }
@@ -464,12 +518,12 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param callable $callbackFunction Callback function
      * @return bool
      */
-    public static function importDataTable($databaseSource, $databaseTarget, $tableNameSource, $tableNameTarget, $tableInfo, $maxRecord, $callbackFunction)
+    public function importDataTable($databaseSource, $databaseTarget, $tableNameSource, $tableNameTarget, $tableInfo, $maxRecord, $callbackFunction)
     {
-        $maxRecord = self::getMaxRecord($tableInfo, $maxRecord);
+        $maxRecord = $this->getMaxRecord($tableInfo, $maxRecord);
         try
         {
-            $columns = self::showColumns($databaseTarget, $tableNameTarget);
+            $columns = $this->showColumns($databaseTarget, $tableNameTarget);
             $queryBuilderSource = new PicoDatabaseQueryBuilder($databaseSource);
             $sourceTable = $tableInfo->getSource();
             $queryBuilderSource->newQuery()
@@ -479,7 +533,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
             $records = array();
             while($data = $stmt->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT))
             {
-                $data = self::processDataMapping($data, $columns, $tableInfo->getMap());
+                $data = $this->processDataMapping($data, $columns, $tableInfo->getMap());
                 if(count($records) < $maxRecord)
                 {
                     $records[] = $data;
@@ -488,7 +542,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
                 {
                     if(isset($callbackFunction) && is_callable($callbackFunction))
                     {
-                        $sql = self::insert($tableNameTarget, $records);
+                        $sql = $this->insert($tableNameTarget, $records);
                         call_user_func($callbackFunction, $sql, $tableNameSource, $tableNameTarget);
                     }
                     // reset buffer
@@ -497,7 +551,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
             }
             if(!empty($records) && isset($callbackFunction) && is_callable($callbackFunction))
             {
-                $sql = self::insert($tableNameTarget, $records);
+                $sql = $this->insert($tableNameTarget, $records);
                 call_user_func($callbackFunction, $sql, $tableNameSource, $tableNameTarget);
             }
         }
@@ -516,7 +570,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param int $maxRecord Maximum record per query
      * @return int
      */
-    public static function getMaxRecord($tableInfo, $maxRecord)
+    public function getMaxRecord($tableInfo, $maxRecord)
     {
         if($tableInfo->getMaximumRecord() != null)
         {
@@ -530,28 +584,41 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
     }
 
     /**
-     * Process data mapping
+     * Processes data mapping according to specified column types and mappings.
      *
-     * @param array $data
-     * @param SecretObject[] $maps Maps
-     * @return array
+     * This method updates the input data by mapping source fields to target fields
+     * based on the provided mappings, then filters and fixes the data types 
+     * according to the column definitions.
+     *
+     * @param mixed[] $data The input data to be processed.
+     * @param string[] $columns An associative array mapping column names to their types.
+     * @param string[]|null $maps Optional array of mapping definitions in the format 'target:source'.
+     * @return mixed[] The updated data array with fixed types and mappings applied.
      */
-    public static function processDataMapping($data, $columns, $maps)
+    public function processDataMapping($data, $columns, $maps = null)
     {
+        // Check if mappings are provided and are in array format
         if(isset($maps) && is_array($maps))
         {
             foreach($maps as $map)
             {
+                // Split the mapping into target and source
                 $arr = explode(':', $map, 2);
                 $target = trim($arr[0]);
                 $source = trim($arr[1]);
-                $data[$target] = $data[$source];
-                unset($data[$source]);
+                // Map the source value to the target key
+                if (isset($data[$source])) {
+                    $data[$target] = $data[$source];
+                    unset($data[$source]); // Remove the source key
+                }
             }
         }
+        // Filter the data to include only keys present in columns
         $data = array_intersect_key($data, array_flip(array_keys($columns)));
-        $data = self::fixImportData($data, $columns);
-        return $data;
+
+        // Fix data types based on column definitions
+        $data = $this->fixImportData($data, $columns);
+        return $data; // Return the processed data
     }
 
     /**
@@ -561,7 +628,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param string[] $columns Columns
      * @return mixed[]
      */
-    public static function fixImportData($data, $columns)
+    public function fixImportData($data, $columns)
     {
         foreach($data as $name=>$value)
         {
@@ -570,15 +637,15 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
                 $type = $columns[$name];
                 if(strtolower($type) == 'tinyint(1)' || strtolower($type) == 'boolean' || strtolower($type) == 'bool')
                 {
-                    $data = self::fixBooleanData($data, $name, $value);
+                    $data = $this->fixBooleanData($data, $name, $value);
                 }
                 else if(stripos($type, 'integer') !== false || stripos($type, 'int(') !== false)
                 {
-                    $data = self::fixIntegerData($data, $name, $value);
+                    $data = $this->fixIntegerData($data, $name, $value);
                 }
                 else if(stripos($type, 'float') !== false || stripos($type, 'double') !== false || stripos($type, 'decimal') !== false)
                 {
-                    $data = self::fixFloatData($data, $name, $value);
+                    $data = $this->fixFloatData($data, $name, $value);
                 }
             }
         }
@@ -591,7 +658,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param mixed $value Value
      * @return string
      */
-    public static function fixData($value)
+    public function fixData($value)
     {
         $ret = null;
         if (is_string($value))
@@ -621,7 +688,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param mixed $value Value
      * @return mixed[]
      */
-    public static function fixBooleanData($data, $name, $value)
+    public function fixBooleanData($data, $name, $value)
     {
         if($value === null || $value === '')
         {
@@ -642,7 +709,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param mixed $value Value
      * @return mixed[]
      */
-    public static function fixIntegerData($data, $name, $value)
+    public function fixIntegerData($data, $name, $value)
     {
         if($value === null || $value === '')
         {
@@ -663,7 +730,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param mixed $value Value
      * @return mixed[]
      */
-    public static function fixFloatData($data, $name, $value)
+    public function fixFloatData($data, $name, $value)
     {
         if($value === null || $value === '')
         {
@@ -683,7 +750,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param array $data Data
      * @return string
      */
-    public static function insert($tableName, $data)
+    public function insert($tableName, $data)
     {
         // Kumpulkan semua kolom
         $columns = array();
@@ -712,7 +779,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
 
         // Format elemen array
         $formattedElements = array_map(function($element){
-            return self::fixData($element);
+            return $this->fixData($element);
         }, $values);
 
         // Ganti tanda tanya dengan elemen array yang telah diformat
@@ -730,7 +797,7 @@ class PicoDatabaseUtilPostgreSql //NOSONAR
      * @param string $postgresqlQuery The PostgreSQL CREATE TABLE query to be converted.
      * @return string The converted MySQL CREATE TABLE query.
      */ 
-    public static function convertPostgreSqlToMySql($postgresqlQuery) {
+    public function convertPostgreSqlToMySql($postgresqlQuery) {
         // Remove comments
         $query = preg_replace('/--.*?\n|\/\*.*?\*\//s', '', $postgresqlQuery);
         

@@ -11,6 +11,7 @@ use MagicObject\Database\PicoTableInfoExtended;
 use MagicObject\MagicObject;
 use MagicObject\Util\Database\PicoDatabaseUtil;
 use MagicObject\Util\Database\PicoDatabaseUtilMySql;
+use MagicObject\Util\Database\PicoDatabaseUtilPostgreSql;
 
 /**
  * Database dump class for managing and generating SQL statements
@@ -60,10 +61,15 @@ class PicoDatabaseDump
         $tableInfo = $databasePersist->getTableInfo();
         $picoTableName = $tableInfo->getTableName();
 
-        if ($databaseType == PicoDatabaseType::DATABASE_TYPE_MARIADB || $databaseType == PicoDatabaseType::DATABASE_TYPE_MYSQL) {
-            return PicoDatabaseUtilMySql::dumpStructure($tableInfo, $picoTableName, $createIfNotExists, $dropIfExists, $engine, $charset);
-        } else {
-            return "";
+        if ($databaseType == PicoDatabaseType::DATABASE_TYPE_MARIADB || $databaseType == PicoDatabaseType::DATABASE_TYPE_MYSQL) 
+        {
+            $tool = new PicoDatabaseUtilMySql();
+            return $tool->dumpStructure($tableInfo, $picoTableName, $createIfNotExists, $dropIfExists, $engine, $charset);
+        } 
+        else if($databaseType == PicoDatabaseType::DATABASE_TYPE_POSTGRESQL) 
+        {
+            $tool = new PicoDatabaseUtilPostgreSql();
+            return $tool->dumpStructure($tableInfo, $picoTableName, $createIfNotExists, $dropIfExists, $engine, $charset);
         }
     }
 
@@ -83,9 +89,13 @@ class PicoDatabaseDump
         $picoTableName = $tableInfo->getTableName();
 
         if ($databaseType == PicoDatabaseType::DATABASE_TYPE_MARIADB || $databaseType == PicoDatabaseType::DATABASE_TYPE_MYSQL) {
-            return PicoDatabaseUtilMySql::dumpStructure($tableInfo, $picoTableName, $createIfNotExists, $dropIfExists, $engine, $charset);
-        } else {
-            return "";
+            $tool = new PicoDatabaseUtilMySql();
+            return $tool->dumpStructure($tableInfo, $picoTableName, $createIfNotExists, $dropIfExists, $engine, $charset);
+        } 
+        else if($databaseType == PicoDatabaseType::DATABASE_TYPE_POSTGRESQL) 
+        {
+            $tool = new PicoDatabaseUtilPostgreSql();
+            return $tool->dumpStructure($tableInfo, $picoTableName, $createIfNotExists, $dropIfExists, $engine, $charset);
         }
     }
 
@@ -490,10 +500,11 @@ class PicoDatabaseDump
 
         // Check the database type and call the appropriate utility for dumping data
         if ($databaseType == PicoDatabaseType::DATABASE_TYPE_MARIADB || $databaseType == PicoDatabaseType::DATABASE_TYPE_MYSQL) {
-            return PicoDatabaseUtilMySql::dumpData($this->columns, $this->picoTableName, $data, $maxRecord, $callbackFunction);
+            $tool = new PicoDatabaseUtilMySql();
+            return $tool->dumpData($this->columns, $this->picoTableName, $data, $maxRecord, $callbackFunction);
         } else {
-            // Return an empty string if the database type is unsupported
-            return "";
+            $tool = new PicoDatabaseUtilPostgreSql();
+            return $tool->dumpData($this->columns, $this->picoTableName, $data, $maxRecord, $callbackFunction);
         }
     }
 }
