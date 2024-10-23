@@ -7,60 +7,60 @@ use Exception;
 use MagicObject\Exceptions\CurlException;
 
 /**
- * Class Curl
+ * Class PicoCurlUtil
  *
- * Kelas ini menyediakan antarmuka untuk melakukan permintaan HTTP menggunakan cURL.
+ * This class provides an interface for making HTTP requests using cURL.
  */
 class PicoCurlUtil {
 
     /**
-     * Curl handle
+     * cURL handle
      *
      * @var CurlHandle
      */
     private $curl;
 
     /** 
-     * @var array $responseHeaders Header respons dari permintaan terakhir 
+     * @var array $responseHeaders Response headers from the last request 
      */
     private $responseHeaders = [];
 
     /** 
-     * @var string $responseBody Body respons dari permintaan terakhir 
+     * @var string $responseBody Response body from the last request 
      */
     private $responseBody = '';
 
     /** 
-     * @var int $httpCode Kode status HTTP dari permintaan terakhir 
+     * @var int $httpCode HTTP status code from the last request 
      */
     private $httpCode = 0;
 
     /**
-     * Curl constructor.
-     * Menginisialisasi handle cURL.
+     * PicoCurlUtil constructor.
+     * Initializes the cURL handle.
      */
     public function __construct() {
         $this->curl = curl_init();
         $this->setOption(CURLOPT_RETURNTRANSFER, true);
-        $this->setOption(CURLOPT_HEADER, true); // Untuk menangkap header
+        $this->setOption(CURLOPT_HEADER, true); // To capture headers
     }
 
     /**
-     * Mengatur opsi cURL.
+     * Sets a cURL option.
      *
-     * @param int $option Opsi cURL yang akan diatur
-     * @param mixed $value Nilai untuk opsi cURL
+     * @param int $option cURL option to set
+     * @param mixed $value Value for the cURL option
      */
     public function setOption($option, $value) {
         curl_setopt($this->curl, $option, $value);
     }
 
     /**
-     * Melakukan permintaan GET.
+     * Executes a GET request.
      *
-     * @param string $url URL untuk permintaan
-     * @param array $headers Header tambahan untuk permintaan
-     * @return string Body respons
+     * @param string $url URL for the request
+     * @param array $headers Additional headers for the request
+     * @return string Response body
      */
     public function get($url, $headers = []) {
         $this->setOption(CURLOPT_URL, $url);
@@ -69,12 +69,12 @@ class PicoCurlUtil {
     }
 
     /**
-     * Melakukan permintaan POST.
+     * Executes a POST request.
      *
-     * @param string $url URL untuk permintaan
-     * @param mixed $data Data yang akan dikirim
-     * @param array $headers Header tambahan untuk permintaan
-     * @return string Body respons
+     * @param string $url URL for the request
+     * @param mixed $data Data to send
+     * @param array $headers Additional headers for the request
+     * @return string Response body
      */
     public function post($url, $data, $headers = []) {
         $this->setOption(CURLOPT_URL, $url);
@@ -85,12 +85,12 @@ class PicoCurlUtil {
     }
 
     /**
-     * Melakukan permintaan PUT.
+     * Executes a PUT request.
      *
-     * @param string $url URL untuk permintaan
-     * @param mixed $data Data yang akan dikirim
-     * @param array $headers Header tambahan untuk permintaan
-     * @return string Body respons
+     * @param string $url URL for the request
+     * @param mixed $data Data to send
+     * @param array $headers Additional headers for the request
+     * @return string Response body
      */
     public function put($url, $data, $headers = []) {
         $this->setOption(CURLOPT_URL, $url);
@@ -101,11 +101,11 @@ class PicoCurlUtil {
     }
 
     /**
-     * Melakukan permintaan DELETE.
+     * Executes a DELETE request.
      *
-     * @param string $url URL untuk permintaan
-     * @param array $headers Header tambahan untuk permintaan
-     * @return string Body respons
+     * @param string $url URL for the request
+     * @param array $headers Additional headers for the request
+     * @return string Response body
      */
     public function delete($url, $headers = []) {
         $this->setOption(CURLOPT_URL, $url);
@@ -115,10 +115,10 @@ class PicoCurlUtil {
     }
 
     /**
-     * Menjalankan permintaan cURL dan memproses respons.
+     * Executes the cURL request and processes the response.
      *
-     * @return string Body respons
-     * @throws Exception Jika terjadi kesalahan saat menjalankan cURL
+     * @return string Response body
+     * @throws CurlException If an error occurs during cURL execution
      */
     private function execute() {
         $response = curl_exec($this->curl);
@@ -126,7 +126,7 @@ class PicoCurlUtil {
             throw new CurlException('Curl error: ' . curl_error($this->curl));
         }
 
-        // Pisahkan header dan body
+        // Separate headers and body
         $headerSize = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
         $this->responseHeaders = explode("\r\n", substr($response, 0, $headerSize));
         $this->responseBody = substr($response, $headerSize);
@@ -136,32 +136,32 @@ class PicoCurlUtil {
     }
 
     /**
-     * Mendapatkan kode status HTTP dari respons terakhir.
+     * Gets the HTTP status code from the last response.
      *
-     * @return int Kode status HTTP
+     * @return int HTTP status code
      */
     public function getHttpCode() {
         return $this->httpCode;
     }
 
     /**
-     * Mendapatkan header respons dari permintaan terakhir.
+     * Gets the response headers from the last request.
      *
-     * @return array Array header respons
+     * @return array Array of response headers
      */
     public function getResponseHeaders() {
         return $this->responseHeaders;
     }
 
     /**
-     * Menutup handle cURL.
+     * Closes the cURL handle.
      */
     public function close() {
         curl_close($this->curl);
     }
 
     /**
-     * Destructor untuk menutup cURL saat objek dihapus.
+     * Destructor to close cURL when the object is destroyed.
      */
     public function __destruct() {
         $this->close();
