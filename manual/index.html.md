@@ -12,6 +12,7 @@
 
 ---
 includes:
+  - intro
   - installation
   - implementation
   - simple-object

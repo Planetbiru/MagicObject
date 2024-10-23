@@ -12,6 +12,54 @@
 
 
 <article class="article" id="part1">
+<h1>Introduction</h1>
+<h2>What Is MagicObject</h2>
+<p>MagicObject is a powerful library designed to simplify object management and data handling in PHP applications. It provides a set of features that enhance flexibility, efficiency, and maintainability, making it easier for developers to create and manage complex applications.</p>
+<p>In modern application development, managing objects efficiently is paramount. The <strong>MagicObject</strong> library provides an extensive suite of features that simplify object creation, data handling, and database interactions. Below, we’ll explore some of the core functionalities that make MagicObject a powerful tool for developers.</p>
+<h2>Key Features</h2>
+<h3>Dynamic Object Creation</h3>
+<p>MagicObject allows for <strong>dynamic object creation</strong>, enabling developers to instantiate objects at runtime easily. This flexibility is crucial for applications that require variable object structures based on user input or external data sources.</p>
+<h3>Setters and Getters</h3>
+<p>The library simplifies property management with <strong>automatic setters and getters</strong>. This feature streamlines how properties are accessed and modified, promoting cleaner code and reducing boilerplate.</p>
+<h3>Multi-Level Objects</h3>
+<p>Support for <strong>multi-level objects</strong> enables developers to create nested structures seamlessly. This capability is essential for representing complex data models that mirror real-world relationships.</p>
+<h3>Entity Access</h3>
+<p>MagicObject streamlines interactions with entities, making it easier to manage and manipulate data models. This feature is particularly beneficial in applications with multiple entities, as it promotes organized and efficient access.</p>
+<h3>Filtering and Pagination</h3>
+<p>With built-in methods for <strong>filtering and pagination</strong>, developers can manage data display effectively. This feature enhances user experience by allowing the retrieval of specific data sets and controlling how much information is presented at once.</p>
+<h3>Native Query</h3>
+<p>Defining <strong>native queries</strong> within the library increases flexibility and resource efficiency in database access. This feature allows developers to leverage the full power of SQL while benefiting from MagicObject's abstraction layer.</p>
+<h3>Multiple Database Connections</h3>
+<p>MagicObject supports the configuration of <strong>multiple database connections</strong>, enabling applications to interact with different databases simultaneously. This capability is vital for applications that aggregate data from various sources or require connections to multiple environments.</p>
+<h3>Database Dumping</h3>
+<p>Efficiently exporting database contents is made possible through <strong>database dumping</strong> features. This functionality aids in backup processes, data migrations, and reporting.</p>
+<h3>Serialization/Deserialization</h3>
+<p>Handling JSON and YAML formats is straightforward with built-in <strong>serialization and deserialization</strong> methods. This feature is essential for applications that communicate with APIs or require data interchange formats.</p>
+<h3>Data Importing</h3>
+<p>MagicObject provides robust support for <strong>data importing</strong>, allowing users to bring data into the application even if the source and destination schemas differ. This flexibility is crucial in data migration and integration scenarios.</p>
+<h3>File Reading</h3>
+<p>The library supports reading configuration files in various formats, including <strong>INI, YAML, and JSON</strong>. This feature simplifies application configuration management, making it easier to maintain different environments.</p>
+<h3>Environment Variable Access</h3>
+<p>MagicObject enables easy fetching of <strong>environment variable values</strong>, promoting better configuration management and enhancing security by separating sensitive information from code.</p>
+<h3>Configuration Encryption</h3>
+<p>To secure application settings, MagicObject offers <strong>configuration encryption</strong> features. This ensures that sensitive data, such as API keys and database credentials, are protected from unauthorized access.</p>
+<h3>HTTP Data Handling</h3>
+<p>Creating objects from global request variables (e.g., POST, GET) is simplified with built-in <strong>HTTP data handling</strong> capabilities. This feature enhances the ease of integrating with web forms and APIs.</p>
+<h3>Session Management</h3>
+<p>Integrating with <strong>PHP sessions</strong> allows MagicObject to maintain state effectively across user interactions. This functionality is crucial for applications that rely on user sessions for personalized experiences.</p>
+<h3>Object Labeling</h3>
+<p>Enhancing object identification through <strong>object labeling</strong> improves the clarity of code and debugging processes. Labels allow developers to categorize and reference objects more easily.</p>
+<h3>Multi-Language Support</h3>
+<p>Facilitating <strong>localization</strong> is a key feature of MagicObject, allowing developers to create applications that can serve multiple languages and regions. This capability is essential for reaching a global audience.</p>
+<h3>File Uploads</h3>
+<p>Handling file uploads efficiently is another strength of MagicObject. The library provides tools to manage file uploads securely and effectively, making it easier to incorporate user-generated content.</p>
+<h3>Annotations</h3>
+<p>Adding <strong>metadata to objects</strong> through annotations allows for better structure and organization within the code. This feature can be leveraged for documentation, validation, and configuration purposes.</p>
+<h3>Debugging</h3>
+<p>Finally, MagicObject includes comprehensive <strong>debugging tools</strong> to inspect and analyze objects during development. This feature is invaluable for troubleshooting and ensuring that applications run smoothly.</p>
+</article>
+
+<article class="article" id="part2">
 <h1>MagicObject Installation</h1>
 <p>To install <strong>MagicObbject</strong></p>
 <pre><code>composer require planetbiru/magic-object</code></pre>
@@ -24,11 +72,11 @@
 <p>To install composer on your PC or download latest composer.phar, click <a href="https://getcomposer.org/download/">https://getcomposer.org/download/</a> </p>
 </article>
 
-<article class="article" id="part2">
+<article class="article" id="part3">
 <h1>MagicObject Implementation</h1>
 </article>
 
-<article class="article" id="part3">
+<article class="article" id="part4">
 <h2>Simple Object</h2>
 <h3>Set and Get Properties Value</h3>
 <pre><code class="language-php">&lt;?php
@@ -284,7 +332,7 @@ echo $someObject."\r\n\r\n";
 ``</code></pre>
 </article>
 
-<article class="article" id="part4">
+<article class="article" id="part5">
 <h2>Extends MagicObject</h2>
 <p>User can extend <code>MagicObject</code> to many classes.</p>
 <pre><code class="language-php">&lt;?php
@@ -338,7 +386,7 @@ class MyObject extends MagicObject
 <p>Default value: <code>CAMEL_CASE</code></p>
 </article>
 
-<article class="article" id="part5">
+<article class="article" id="part6">
 <h2>Multilevel Object</h2>
 <p>In the first code snippet, you are creating a multilevel object structure to represent a car with its components, specifically the tire and body.</p>
 <pre><code class="language-php">&lt;?php
@@ -441,7 +489,7 @@ foreach($song-&gt;getVocalist()-&gt;getAgency()-&gt;getCompany()-&gt;getPic() as
 <p>Both examples demonstrate how MagicObject allows you to create complex object structures and manage nested data efficiently. The use of YAML for configuration or data storage makes it easier to define complex structures in a human-readable format. The ability to set and get properties through method chaining enhances the flexibility and readability of your code.</p>
 </article>
 
-<article class="article" id="part6">
+<article class="article" id="part7">
 <h2>Object from Yaml</h2>
 <h3>From Yaml String</h3>
 <pre><code class="language-php">&lt;?php
@@ -507,7 +555,7 @@ echo $car-&gt;getBody()-&gt;getColor();
 </code></pre>
 </article>
 
-<article class="article" id="part7">
+<article class="article" id="part8">
 <h2>Object from INI</h2>
 <p>INI not support multilevel object. If multilevel object needed, use Yaml instead.</p>
 <h3>From INI String</h3>
@@ -536,7 +584,7 @@ $cfg-&gt;loadIniFile(__DIR__ . "/config.ini", false);
 </code></pre>
 </article>
 
-<article class="article" id="part8">
+<article class="article" id="part9">
 <h2>Environment Variable</h2>
 <p>Many application use environment variable to store the config. We can replace the config template with the environment variable. We must set the environment variable to the server before run the application.</p>
 <pre><code class="language-yaml"># config.yml
@@ -631,7 +679,7 @@ echo -e 'SetEnv APP_DATABASE_SALT "GaramDapur"' &gt;&gt; /etc/httpd/conf.d/mpm.c
 service httpd restart</code></pre>
 </article>
 
-<article class="article" id="part9">
+<article class="article" id="part10">
 <h2>Secret Object</h2>
 <h3>Definition</h3>
 <p>Secret Objects are very important in applications that use very sensitive and secret configurations. This configuration must be encrypted so that it cannot be seen either when someone tries to open the configuration file, environment variables, or even when the developer accidentally debugs an object related to the database so that the properties of the database object are exposed including the host name, database name, username and even password.</p>
@@ -1222,7 +1270,7 @@ catch(Exception $e)
 </code></pre>
 </article>
 
-<article class="article" id="part10">
+<article class="article" id="part11">
 <h2>Input POST/GET/COOKIE/REQUEST/SERVER</h2>
 <p>In PHP, handling user input can be done through various superglobals, such as $_POST, $_GET, $_COOKIE, $_REQUEST, and $_SERVER. Each of these superglobals serves a specific purpose for gathering data from different types of requests.</p>
 <h3>Input POST</h3>
@@ -1349,7 +1397,7 @@ PicoFilterConstant::FILTER_SANITIZE_ASCII               = 601;</code></pre>
 <p>In summary, handling input in PHP through superglobals is straightforward but requires careful filtering to ensure security. Using classes like <code>InputPost</code>, <code>InputGet</code>, <code>InputCookie</code>, <code>InputRequest</code>, and <code>InputServer</code> can abstract the underlying superglobal accesses, making the code cleaner and potentially more secure by enforcing consistent input handling and sanitization practices.</p>
 </article>
 
-<article class="article" id="part11">
+<article class="article" id="part12">
 <h2>Session</h2>
 <p>Session variables keep information about one single user, and are available to all pages in one application.</p>
 <h3>Session with File</h3>
@@ -1450,7 +1498,7 @@ $sessions-&gt;startSession();</code></pre>
 <p>This implementation provides a robust framework for session management in a PHP application, allowing flexibility in storage options (files or Redis) while emphasizing security through encryption. The use of YAML for configuration keeps the setup clean and easily adjustable. By encapsulating session configuration in dedicated classes, you enhance maintainability and security.</p>
 </article>
 
-<article class="article" id="part12">
+<article class="article" id="part13">
 <h2>Entity</h2>
 <p>Entity is class to access database. Entity is derived from MagicObject. Some annotations required to activated all entity features. </p>
 <p><strong>Constructor</strong></p>
@@ -5938,7 +5986,7 @@ catch(Exception $e)
 }</code></pre>
 </article>
 
-<article class="article" id="part13">
+<article class="article" id="part14">
 <h3>Specification</h3>
 <p>Specifications are implemented in the PicoSpecification and PicoPredicate classes. PicoSpecification is a framework that can contain one or more PicoPredicate.</p>
 <p>For example, we have the following query:</p>
@@ -6431,7 +6479,7 @@ catch(Exception $e)
 }</code></pre>
 </article>
 
-<article class="article" id="part14">
+<article class="article" id="part15">
 <h3>Pageable and Sortable</h3>
 <p>In MagicObject, pageable is used to divide data rows into several pages. This is required by the application to display a lot of data per page. While sortable is used to sort data before the data is divided per page.</p>
 <p>Pageable can stand alone without sortable. However, this method is not recommended because the data sequence is not as expected. If new data is entered, users will have difficulty finding where it is located in the list and on which page the data will appear. The solution is to add a sortable that will sort the data based on certain columns. For example, the time of data creation is descending, then the new data will be on the first page. Conversely, if sorted based on the time of data creation is ascending, then the new data will be on the last page.</p>
@@ -6723,7 +6771,7 @@ $pageable = new PicoPageable(new PicoLimit(0, 100), $sortable);
 <p><code>ORDER BY user_name ASC, email DESC, phone ASC LIMIT 200 OFFSET 400</code></p>
 </article>
 
-<article class="article" id="part15">
+<article class="article" id="part16">
 <h2>Filtering, Ordering and Pagination</h2>
 <p>MagicObject will filter data according to the given criteria. On the other hand, MagicObject will only retrieve data on the specified page by specifying <code>limit</code> and <code>offset</code> data in the <code>select</code> query.</p>
 <p>Example parameters:</p>
@@ -7606,7 +7654,7 @@ require_once "inc/footer.php";
 ?&gt;</code></pre>
 </article>
 
-<article class="article" id="part16">
+<article class="article" id="part17">
 <h2>Native Query</h2>
 <p>In MagicObject version 2, native queries have been introduced as an efficient way to interact with the database.</p>
 <p>Native queries offer significant performance improvements when handling large volumes of data, allowing users to craft highly efficient queries that meet diverse requirements.</p>
@@ -8236,7 +8284,7 @@ fclose($fp);</code></pre>
 <p>By leveraging the native query feature in MagicObject, you can create efficient and maintainable database interactions, enhancing your application's performance and security.</p>
 </article>
 
-<article class="article" id="part17">
+<article class="article" id="part18">
 <h2>Multiple Database Connections</h2>
 <p>MagicObject version 2 introduces support for multiple database connections, enabling users to manage entities stored across different databases seamlessly. When performing operations such as JOINs with entities from multiple databases, it is essential to define a database connection for each entity involved.</p>
 <h3>Example Scenario</h3>
@@ -8401,7 +8449,7 @@ $song-&gt;databaseEntity($databaseEntity);</code></pre>
 <p>With MagicObject version 2, managing entities across multiple database connections is straightforward. By defining the correct associations and utilizing the provided methods, users can effectively work with complex data structures that span multiple databases. Make sure to handle exceptions properly to ensure robustness in your application.</p>
 </article>
 
-<article class="article" id="part18">
+<article class="article" id="part19">
 <h2>Dump Database</h2>
 <p>We can dump database to another database type. We do not need any database converter. Just define the target database type when we dump the database.</p>
 <h3>Database Dump Overview</h3>
@@ -8882,7 +8930,7 @@ echo $dumpForSong-&gt;dumpData($pageData, PicoDatabaseType::DATABASE_TYPE_MYSQL)
 <p>This approach allows developers to quickly switch between database types and manage their database schemas and data efficiently. The use of dedicated instances of PicoDatabaseDump for multiple tables ensures clarity and organization in your database operations.</p>
 </article>
 
-<article class="article" id="part19">
+<article class="article" id="part20">
 <h2>Object Label</h2>
 <pre><code>&lt;?php
 
@@ -9007,7 +9055,7 @@ echo $userType-&gt;labelAdminCreate();
 // it will print "Admin Create"</code></pre>
 </article>
 
-<article class="article" id="part20">
+<article class="article" id="part21">
 <h2>Database Query Builder</h2>
 <p>Database Query Builder is a feature for creating object-based database queries. The output of the Database Query Builder is a query that can be directly executed by the database used.</p>
 <p>Database Query Builder is actually designed for all relational databases but is currently only available in two languages, namely MySQL and PostgreSQL. MagicObject internally uses the Database Query Builder to create queries based on given methods and parameters.</p>
@@ -9274,7 +9322,7 @@ where song.active = true
 <p>This way, <code>$active</code> will be escaped before being executed by the database. You don't need to escape it first.</p>
 </article>
 
-<article class="article" id="part21">
+<article class="article" id="part22">
 <h2>Upload File</h2>
 <p>Uploading lots of files with arrays is difficult for some developers, especially novice developers. There is a significant difference between uploading a single file and multiple files.</p>
 <p>When the developer decides to change the form from single file to multiple files or vice versa, the backend developer must change the code to handle the uploaded files.</p>
@@ -9334,7 +9382,7 @@ else
 <p>This implementation offers a straightforward way to manage file uploads in PHP, abstracting complexities for developers. By using methods like getAll() and isMultiple(), developers can seamlessly handle both types of uploads without needing to write separate logic for each scenario. This approach not only improves code maintainability but also enhances the developer experience.</p>
 </article>
 
-<article class="article" id="part22">
+<article class="article" id="part23">
 <h2>Language</h2>
 <p>MagicObject supports multilingual applications. MagicObject allows developers to create entities that support a wide variety of languages that users can choose from. At the same time, different users can use different languages.</p>
 <p>To create table with multiple language, create new class from <code>DataTable</code> object. We can copy data from aother object to <code>DataTable</code> easly.</p>
@@ -9554,7 +9602,7 @@ $apa = $rumah;
 echo $apa;</code></pre>
 </article>
 
-<article class="article" id="part23">
+<article class="article" id="part24">
 <h2>Database Migration</h2>
 <p>MagicObject allows users to import data from a database with different table names and column names between the source database and the destination database. This feature is used by developers who develop applications that are already used in production environments.</p>
 <p>On the one hand, the application requires a new database structure according to what is defined by the developer. On the other hand, users want to use existing data.</p>
