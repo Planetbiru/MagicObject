@@ -3,7 +3,6 @@
 namespace MagicObject\Util;
 
 use CurlHandle;
-use Exception;
 use MagicObject\Exceptions\CurlException;
 
 /**
@@ -20,18 +19,24 @@ class PicoCurlUtil {
      */
     private $curl;
 
-    /** 
-     * @var array $responseHeaders Response headers from the last request 
+    /**
+     * Response headers from the last request
+     *
+     * @var string[]
      */
     private $responseHeaders = [];
 
-    /** 
-     * @var string $responseBody Response body from the last request 
+    /**
+     * Response body from the last request
+     *
+     * @var string
      */
     private $responseBody = '';
 
-    /** 
-     * @var int $httpCode HTTP status code from the last request 
+    /**
+     * HTTP status code from the last request
+     *
+     * @var int
      */
     private $httpCode = 0;
 
@@ -42,7 +47,7 @@ class PicoCurlUtil {
     public function __construct() {
         $this->curl = curl_init();
         $this->setOption(CURLOPT_RETURNTRANSFER, true);
-        $this->setOption(CURLOPT_HEADER, true); // To capture headers
+        $this->setOption(CURLOPT_HEADER, true);
     }
 
     /**
@@ -56,11 +61,22 @@ class PicoCurlUtil {
     }
 
     /**
+     * Enables or disables SSL verification.
+     *
+     * @param bool $verify If true, SSL verification is enabled; if false, it is disabled.
+     */
+    public function setSslVerification($verify) {
+        $this->setOption(CURLOPT_SSL_VERIFYPEER, $verify);
+        $this->setOption(CURLOPT_SSL_VERIFYHOST, $verify ? 2 : 0);
+    }
+
+    /**
      * Executes a GET request.
      *
      * @param string $url URL for the request
      * @param array $headers Additional headers for the request
      * @return string Response body
+     * @throws CurlException If an error occurs during cURL execution
      */
     public function get($url, $headers = []) {
         $this->setOption(CURLOPT_URL, $url);
@@ -75,6 +91,7 @@ class PicoCurlUtil {
      * @param mixed $data Data to send
      * @param array $headers Additional headers for the request
      * @return string Response body
+     * @throws CurlException If an error occurs during cURL execution
      */
     public function post($url, $data, $headers = []) {
         $this->setOption(CURLOPT_URL, $url);
@@ -91,6 +108,7 @@ class PicoCurlUtil {
      * @param mixed $data Data to send
      * @param array $headers Additional headers for the request
      * @return string Response body
+     * @throws CurlException If an error occurs during cURL execution
      */
     public function put($url, $data, $headers = []) {
         $this->setOption(CURLOPT_URL, $url);
@@ -106,6 +124,7 @@ class PicoCurlUtil {
      * @param string $url URL for the request
      * @param array $headers Additional headers for the request
      * @return string Response body
+     * @throws CurlException If an error occurs during cURL execution
      */
     public function delete($url, $headers = []) {
         $this->setOption(CURLOPT_URL, $url);
@@ -126,7 +145,6 @@ class PicoCurlUtil {
             throw new CurlException('Curl error: ' . curl_error($this->curl));
         }
 
-        // Separate headers and body
         $headerSize = curl_getinfo($this->curl, CURLINFO_HEADER_SIZE);
         $this->responseHeaders = explode("\r\n", substr($response, 0, $headerSize));
         $this->responseBody = substr($response, $headerSize);
