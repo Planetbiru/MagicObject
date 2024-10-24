@@ -39,6 +39,10 @@ The `MagicDto` class is designed with properties that have protected access leve
     
     The `@JSON` annotation controls whether the JSON format should be prettified. Using `@JSON(prettify=true)` will format the output in a more readable way, while `@JSON(prettify=false)` will minimize the format
 
+2.  **@XML**
+    
+    The `@XML` annotation controls whether the XML format should be prettified. Using `@XML(prettify=true)` will format the output in a more readable way, while `@XML(prettify=false)` will minimize the format    
+
 
 **Property Annotations**
 

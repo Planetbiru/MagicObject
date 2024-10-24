@@ -3,6 +3,8 @@
 namespace MagicObject;
 
 use DateTime;
+use DOMDocument;
+use InvalidArgumentException;
 use MagicObject\Exceptions\InvalidAnnotationException;
 use MagicObject\Exceptions\InvalidQueryInputException;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
@@ -11,6 +13,7 @@ use MagicObject\Util\PicoDateTimeUtil;
 use MagicObject\Util\PicoGenericObject;
 use ReflectionClass;
 use ReflectionProperty;
+use SimpleXMLElement;
 use stdClass;
 
 /**
@@ -29,6 +32,7 @@ class MagicDto extends stdClass // NOSONAR
 {
     // Format constants
     const JSON = 'JSON';
+    const XML = 'XML';
     const PRETTIFY = 'prettify';
 
     /**
@@ -412,11 +416,24 @@ class MagicDto extends stdClass // NOSONAR
      *
      * @return bool True if JSON output is set to be prettified; otherwise, false
      */
-    protected function _pretty()
+    protected function _prettyJson()
     {
         return isset($this->_classParams[self::JSON])
             && isset($this->_classParams[self::JSON][self::PRETTIFY])
             && strcasecmp($this->_classParams[self::JSON][self::PRETTIFY], 'true') == 0
+            ;
+    }
+
+    /**
+     * Check if the XML output should be prettified
+     *
+     * @return bool True if XML output is set to be prettified; otherwise, false
+     */
+    protected function _prettyXml()
+    {
+        return isset($this->_classParams[self::XML])
+            && isset($this->_classParams[self::XML][self::PRETTIFY])
+            && strcasecmp($this->_classParams[self::XML][self::PRETTIFY], 'true') == 0
             ;
     }
 
@@ -493,16 +510,16 @@ class MagicDto extends stdClass // NOSONAR
     /**
      * Magic method to convert the object to a JSON string representation.
      *
-     * This method recursively converts the object's properties into a JSON format. 
-     * If any property is an instance of the same class, it will be stringified 
-     * as well. The output can be formatted for readability based on the 
-     * `_pretty()` method's return value.
+     * This method recursively converts the object's properties into JSON format. 
+     * If any property is an instance of the same class, it will also be stringified. 
+     * The output can be formatted for readability based on the JSON annotation 
+     * of the class.
      *
-     * @return string A JSON representation of the object, possibly pretty-printed.
+     * @return string A JSON representation of the object, potentially formatted for readability.
      */
     public function __toString()
     {
-        $pretty = $this->_pretty();
+        $pretty = $this->_prettyJson();
         $flag = $pretty ? JSON_PRETTY_PRINT : 0;
         $obj = clone $this;
         foreach($obj as $key=>$value)
@@ -517,13 +534,14 @@ class MagicDto extends stdClass // NOSONAR
     }
 
     /**
-     * Convert the object to a string.
+     * Magic method to convert the object to a JSON string representation.
      *
-     * This method returns the string representation of the object by calling 
-     * the magic `__toString()` method. It's useful for obtaining the 
-     * JSON representation directly as a string.
+     * This method recursively converts the object's properties into JSON format. 
+     * If any property is an instance of the same class, it will also be stringified. 
+     * The output can be formatted for readability based on the JSON annotation 
+     * of the class.
      *
-     * @return string The string representation of the object.
+     * @return string A JSON representation of the object, potentially formatted for readability.
      */
     public function toString()
     {
@@ -559,4 +577,71 @@ class MagicDto extends stdClass // NOSONAR
     {
         return json_decode((string) $this, true);
     }
+
+
+    /**
+     * Convert the object's properties to XML format.
+     *
+     * This method generates an XML representation of the object based on its properties. 
+     * The XML structure is built from the object's properties, and the output can 
+     * be formatted for readability based on the XML annotation of the class.
+     *
+     * @param string $root The name of the root element in the XML structure.
+     * @return string XML representation of the object's properties, potentially formatted for readability.
+     * @throws InvalidArgumentException If the JSON representation of the object is invalid.
+     */
+    public function toXml($root = "root") {
+        // Decode the JSON string into an associative array
+        $dataArray = $this->toArray();
+        
+        // Check if JSON was valid
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new InvalidArgumentException('Invalid JSON provided.');
+        }
+
+        // Create the XML structure
+        $xml = new SimpleXMLElement("<$root/>");
+        
+        // Recursive function to convert array to XML
+        $this->arrayToXml($dataArray, $xml);
+
+        $pretty = $this->_prettyXml();
+
+        if($pretty)
+        {      
+            // Convert SimpleXMLElement to DOMDocument for prettifying
+            $dom = new DOMDocument('1.0', 'UTF-8');
+            $dom->preserveWhiteSpace = false;
+            $dom->formatOutput = true;
+            $dom->loadXML($xml->asXML());
+            return $dom->saveXML();
+        }
+        else
+        {
+            return $xml->asXML();
+        }
+    }
+
+    /**
+     * Helper function to convert an array to XML
+     *
+     * @param array $dataArray The array to convert
+     * @param SimpleXMLElement $xml XML element to append to
+     */
+    function arrayToXml($dataArray, $xml) {
+        foreach ($dataArray as $key => $value) {
+            // Replace spaces and special characters in key names
+            $key = preg_replace('/[^a-z0-9_]/i', '_', $key);
+            
+            // If the value is an array, call this function recursively
+            if (is_array($value)) {
+                $subNode = $xml->addChild($key);
+                $this->arrayToXml($value, $subNode);
+            } else {
+                // If the value is not an array, just add it as a child
+                $xml->addChild($key, htmlspecialchars($value));
+            }
+        }
+    }
+
 }

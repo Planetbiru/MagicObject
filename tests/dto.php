@@ -627,6 +627,7 @@ class Artist extends MagicObject
 
 /**
  * @JSON(prettify=true)
+ * @XML(prettify=true)
  */
 class AlbumDto extends MagicDto
 {
@@ -720,4 +721,4 @@ $album->setReleaseDate("2024-10-29 01:06:12");
 
 $albumDto = new AlbumDto($album);
 
-echo $albumDto;
+echo $albumDto->toXml();
