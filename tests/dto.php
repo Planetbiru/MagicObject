@@ -692,7 +692,7 @@ class ProducerDto extends MagicDto
     /**
 	 * Producer ID
 	 * 
-     * @Source("producerId")
+     * @Source("id_producer")
      * @JsonProperty("id_producer")
 	 * @var string
 	 */
@@ -718,7 +718,7 @@ $album->getProducer()->setCity($city);
 $album->getProducer()->getCity()->setNamaKota("Jakarta");
 $album->setReleaseDate("2024-10-29 01:06:12");
 
-/*
+
 $albumDto = new AlbumDto($album);
 
 echo "JSON:\r\n";
@@ -730,7 +730,7 @@ $obj2 = $albumDto->xmlToObject($albumDto->toXml());
 
 echo "JSON 2:\r\n";
 echo json_encode($obj2, JSON_PRETTY_PRINT)."\r\n\r\n";
-*/
+
 
 $xml = '<?xml version="1.0"?>
 <root>
