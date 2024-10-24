@@ -317,7 +317,7 @@ class MagicDto extends stdClass // NOSONAR
             if($value instanceof self)
             {
                 $value = $this->stringifyObject($value);
-                $obj->set($key, $value);
+                $obj->{$key} = $value;
             }
         }
         return $obj->value();
@@ -458,7 +458,7 @@ class MagicDto extends stdClass // NOSONAR
             if($value instanceof self)
             {
                 $value = $this->stringifyObject($value);
-                $obj->set($key, $value);
+                $obj->{$key} = $value;
             }
         }
         return json_encode($obj->value(), $flag);
