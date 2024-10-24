@@ -439,9 +439,14 @@ class MagicDto extends stdClass // NOSONAR
     }
 
     /**
-     * Magic method to convert the object to a string.
+     * Magic method to convert the object to a JSON string representation.
      *
-     * @return string A JSON representation of the object.
+     * This method recursively converts the object's properties into a JSON format. 
+     * If any property is an instance of the same class, it will be stringified 
+     * as well. The output can be formatted for readability based on the 
+     * `_pretty()` method's return value.
+     *
+     * @return string A JSON representation of the object, possibly pretty-printed.
      */
     public function __toString()
     {
@@ -457,5 +462,49 @@ class MagicDto extends stdClass // NOSONAR
             }
         }
         return json_encode($obj->value(), $flag);
+    }
+
+    /**
+     * Convert the object to a string.
+     *
+     * This method returns the string representation of the object by calling 
+     * the magic `__toString()` method. It's useful for obtaining the 
+     * JSON representation directly as a string.
+     *
+     * @return string The string representation of the object.
+     */
+    public function toString()
+    {
+        return (string) $this;
+    }
+
+    /**
+     * Convert the object to a JSON object.
+     *
+     * This method decodes the JSON string representation of the object 
+     * (produced by the `__toString()` method) and returns it as a PHP 
+     * object. This is useful for working with the data in a more 
+     * structured format rather than as a JSON string.
+     *
+     * @return object|null A PHP object representation of the JSON data, or null if decoding fails.
+     */
+    public function toJson()
+    {
+        return json_decode((string) $this);
+    }
+
+    /**
+     * Convert the object to an associative array.
+     *
+     * This method decodes the JSON string representation of the object 
+     * (produced by the `__toString()` method) and returns it as an 
+     * associative array. This is useful for accessing the object's 
+     * properties in a more straightforward array format.
+     *
+     * @return array|null An associative array representation of the JSON data, or null if decoding fails.
+     */
+    public function toArray()
+    {
+        return json_decode((string) $this, true);
     }
 }
