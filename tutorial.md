@@ -1584,12 +1584,6 @@ protected $title;
 
     The `@JsonProperty` annotation specifies the output property name when data is serialized to JSON. If this annotation is not provided, MagicDto will serialize the property using its class property name. This ensures that data sent to third-party applications adheres to their expected format.
 
-3.  **@JsonFormat**
-
-    The @JsonFormat annotation specifies the output date-time format when data is serialized to JSON. The property type must be `DateTime`. It is written as @JsonFormat(pattern="Y-m-d H:i:s"). If this annotation is not provided, MagicDto will serialize the property using the default format Y-m-d H:i:s. This ensures that data sent to third-party applications adheres to their expected format.
-
-    Format the date and time according to the conventions used in the PHP programming language. This includes utilizing the built-in date and time functions, which allow for various formatting options to display dates and times in a way that is both readable and compatible with PHP's standards. Ensure that you adhere to formats such as 'Y-m-d H:i:s' for complete timestamps or 'd/m/Y' for more localized representations, depending on the specific requirements of your application.
-
 ```php
 /**
  * @JsonProperty("album_title")
@@ -1612,6 +1606,26 @@ protected $title;
 In this example, `@Source("album_name")` indicates that the incoming data will use `album_name`, while `@JsonProperty("album_title")` specifies that when the data is serialized, it will be output as `album_title`.
 
 To facilitate bidirectional communication, we need two different DTOs. The `@Source` annotation in the first DTO corresponds to the `@JsonProperty` annotation in the second DTO, while the `@JsonProperty` in the first DTO maps to the `@Source` in the second DTO.
+
+3.  **@JsonFormat**
+
+    The @JsonFormat annotation specifies the output date-time format when data is serialized to JSON. The property type must be `DateTime`. It is written as `@JsonFormat(pattern="Y-m-d H:i:s")`. If this annotation is not provided, MagicDto will serialize the property using the default format Y-m-d H:i:s. This ensures that data sent to third-party applications adheres to their expected format.
+
+    Format the date and time according to the conventions used in the PHP programming language. This includes utilizing the built-in date and time functions, which allow for various formatting options to display dates and times in a way that is both readable and compatible with PHP's standards. Ensure that you adhere to formats such as 'Y-m-d H:i:s' for complete timestamps or 'd/m/Y' for more localized representations, depending on the specific requirements of your application.
+
+    MagicDto automatically parses input as both strings and integers. The integer is a unique timestamp, while the string date-time format must be one of the following:
+  
+    - **'Y-m-d'**,              // ISO 8601: 2024-10-24
+    - **'Y-m-d H:i:s'**,        // ISO 8601: 2024-10-24 15:30:00
+    - **'Y-m-d\TH:i:s'**,       // ISO 8601: 2024-10-24T15:30:00
+    - **'Y-m-d\TH:i:s\Z'**,     // ISO 8601: 2024-10-24T15:30:00Z
+    - **'D, d M Y H:i:s O'**,   // RFC 2822: Thu, 24 Oct 2024 15:30:00 +0000
+    - **'d/m/Y'**,              // Local format: 24/10/2024
+    - **'d F Y'**,              // Format with month name: 24 October 2024
+    - **'l, d F Y'**            // Format with day of the week: Thursday, 24 October 2024
+
+
+
 
 **Example:**
 

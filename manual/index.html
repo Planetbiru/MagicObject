@@ -1381,11 +1381,6 @@ protected $title;</code></pre>
 <p><strong>@JsonProperty</strong></p>
 <p>The <code>@JsonProperty</code> annotation specifies the output property name when data is serialized to JSON. If this annotation is not provided, MagicDto will serialize the property using its class property name. This ensures that data sent to third-party applications adheres to their expected format.</p>
 </li>
-<li>
-<p><strong>@JsonFormat</strong></p>
-<p>The @JsonFormat annotation specifies the output date-time format when data is serialized to JSON. The property type must be <code>DateTime</code>. It is written as @JsonFormat(pattern=&quot;Y-m-d H:i:s&quot;). If this annotation is not provided, MagicDto will serialize the property using the default format Y-m-d H:i:s. This ensures that data sent to third-party applications adheres to their expected format.</p>
-<p>Format the date and time according to the conventions used in the PHP programming language. This includes utilizing the built-in date and time functions, which allow for various formatting options to display dates and times in a way that is both readable and compatible with PHP's standards. Ensure that you adhere to formats such as 'Y-m-d H:i:s' for complete timestamps or 'd/m/Y' for more localized representations, depending on the specific requirements of your application.</p>
-</li>
 </ol>
 <pre><code class="language-php">/**
  * @JsonProperty("album_title")
@@ -1401,6 +1396,24 @@ protected $title;</code></pre>
 protected $title;</code></pre>
 <p>In this example, <code>@Source("album_name")</code> indicates that the incoming data will use <code>album_name</code>, while <code>@JsonProperty("album_title")</code> specifies that when the data is serialized, it will be output as <code>album_title</code>.</p>
 <p>To facilitate bidirectional communication, we need two different DTOs. The <code>@Source</code> annotation in the first DTO corresponds to the <code>@JsonProperty</code> annotation in the second DTO, while the <code>@JsonProperty</code> in the first DTO maps to the <code>@Source</code> in the second DTO.</p>
+<ol start="3">
+<li>
+<p><strong>@JsonFormat</strong></p>
+<p>The @JsonFormat annotation specifies the output date-time format when data is serialized to JSON. The property type must be <code>DateTime</code>. It is written as <code>@JsonFormat(pattern="Y-m-d H:i:s")</code>. If this annotation is not provided, MagicDto will serialize the property using the default format Y-m-d H:i:s. This ensures that data sent to third-party applications adheres to their expected format.</p>
+<p>Format the date and time according to the conventions used in the PHP programming language. This includes utilizing the built-in date and time functions, which allow for various formatting options to display dates and times in a way that is both readable and compatible with PHP's standards. Ensure that you adhere to formats such as 'Y-m-d H:i:s' for complete timestamps or 'd/m/Y' for more localized representations, depending on the specific requirements of your application.</p>
+<p>MagicDto automatically parses input as both strings and integers. The integer is a unique timestamp, while the string date-time format must be one of the following:</p>
+<ul>
+<li><strong>'Y-m-d'</strong>,              // ISO 8601: 2024-10-24</li>
+<li><strong>'Y-m-d H:i:s'</strong>,        // ISO 8601: 2024-10-24 15:30:00</li>
+<li><strong>'Y-m-d\TH:i:s'</strong>,       // ISO 8601: 2024-10-24T15:30:00</li>
+<li><strong>'Y-m-d\TH:i:s\Z'</strong>,     // ISO 8601: 2024-10-24T15:30:00Z</li>
+<li><strong>'D, d M Y H:i:s O'</strong>,   // RFC 2822: Thu, 24 Oct 2024 15:30:00 +0000</li>
+<li><strong>'d/m/Y'</strong>,              // Local format: 24/10/2024</li>
+<li><strong>'d F Y'</strong>,              // Format with month name: 24 October 2024</li>
+<li><strong>'l, d F Y'</strong>            // Format with day of the week: Thursday, 24 October 2024</li>
+</ul>
+</li>
+</ol>
 <p><strong>Example:</strong></p>
 <p>DTO on the Input Side</p>
 <pre><code class="language-php">class AlbumDtoInput extends MagicDto
