@@ -85,18 +85,18 @@ class MagicDto extends stdClass // NOSONAR
     private $_label = array(); // NOSONAR
 
     /**
-     * Database persistence instance.
-     *
-     * @var PicoDatabasePersistence|null
-     */
-    private $_persistProp = null; // NOSONAR
-
-    /**
      * Data source.
      *
      * @var mixed
      */
-    private $dataSource = null;
+    private $_dataSource = null;
+    
+    /**
+     * Final value
+     *
+     * @var self
+     */
+    private $_value = null;
 
     /**
      * Constructor.
@@ -107,7 +107,25 @@ class MagicDto extends stdClass // NOSONAR
      */
     public function __construct($data = null)
     {
-        $this->dataSource = $data;
+        $selfPropertyList = $this->propertyList(false, true);
+        foreach($selfPropertyList as $prop)
+        {
+            $propReflect = new ReflectionProperty($this, $prop);
+            $doc = $propReflect->getDocComment();
+            $jsonProperty = $this->extractJsonProperty($doc);
+            $label = $this->extractLabel($doc);
+            
+            $this->_label[$prop] = trim($label);
+            if($this->_notNullAndNotEmpty($jsonProperty))
+            {
+                $this->_label[$jsonProperty] = trim($label);
+            }
+        }
+        if(isset($data))
+        {
+            $this->loadData($data);
+        }
+        $this->parseValue();
     }
     
     /**
@@ -128,8 +146,53 @@ class MagicDto extends stdClass // NOSONAR
      */
     public function loadData($data)
     {
-        $this->dataSource = $data;
+        $this->_dataSource = $data;
+        
+        $values = $this->value();
+        foreach($values as $key=>$value)
+        {
+            $this->$key = $value;
+        }
+        
         return $this;
+    }
+    
+    /**
+     * Get a list of properties
+     *
+     * @param bool $reflectSelf Flag indicating whether to reflect properties of the current class
+     * @param bool $asArrayProps Flag indicating whether to return properties as an array
+     * @return array An array of property names or ReflectionProperty objects
+     */
+    protected function propertyList($reflectSelf = false, $asArrayProps = false)
+    {
+        $reflectionClass = $reflectSelf ? self::class : get_called_class();
+        $class = new ReflectionClass($reflectionClass);
+
+        // filter only the calling class properties
+        // skip parent properties
+        $properties = array_filter(
+            $class->getProperties(),
+            function($property) use($class) {
+                return $property->getDeclaringClass()->getName() == $class->getName();
+            }
+        );
+        if($asArrayProps)
+        {
+            $result = array();
+            $index = 0;
+            foreach ($properties as $key) {
+                $prop = $key->name;
+                $result[$index] = $prop;
+
+                $index++;
+            }
+            return $result;
+        }
+        else
+        {
+            return $properties;
+        }
     }
 
     /**
@@ -444,6 +507,16 @@ class MagicDto extends stdClass // NOSONAR
      */
     public function value()
     {
+        return $this->_value;
+    }
+    
+    /**
+     * Get the object values
+     *
+     * @return stdClass An object containing the values of the properties
+     */
+    public function parseValue()
+    {
         $parentProps = $this->propertyList(true, true);
         $returnValue = new stdClass;
 
@@ -466,6 +539,7 @@ class MagicDto extends stdClass // NOSONAR
                 }
             }
         }
+        $this->_value = $returnValue;
         return $returnValue;
     }
 
@@ -507,7 +581,7 @@ class MagicDto extends stdClass // NOSONAR
     private function handleSelfInstance($source, $var, $propertyName)
     {
         if (strpos($source, "->") === false) {
-            $value = isset($source) ? $this->dataSource->get($source) : $this->dataSource->get($propertyName);
+            $value = isset($source) ? $this->_dataSource->get($source) : $this->_dataSource->get($propertyName);
             $objectValid = new $var($value);
             return $objectValid->value();
         } else {
@@ -526,7 +600,7 @@ class MagicDto extends stdClass // NOSONAR
     private function handleMagicObject($source, $propertyName)
     {
         if (strpos($source, "->") === false) {
-            $value = isset($source) ? $this->dataSource->get($source) : $this->dataSource->get($propertyName);
+            $value = isset($source) ? $this->_dataSource->get($source) : $this->_dataSource->get($propertyName);
             return ($value instanceof MagicObject || $value instanceof SetterGetter || 
                     $value instanceof SecretObject || $value instanceof PicoGenericObject) 
                 ? $value->value() 
@@ -539,7 +613,7 @@ class MagicDto extends stdClass // NOSONAR
     private function handleDefaultCase($source, $key, $propertyName)
     {
         if (strpos($source, "->") === false) {
-            return isset($source) ? $this->dataSource->get($source) : $this->dataSource->get($key);
+            return isset($source) ? $this->_dataSource->get($source) : $this->_dataSource->get($key);
         } else {
             return $this->getNestedValue($source);
         }
@@ -550,7 +624,7 @@ class MagicDto extends stdClass // NOSONAR
         $currentVal = null;
         $arr = explode("->", $source);
         $fullKey = $arr[0];
-        $currentVal = $this->dataSource->get($fullKey);
+        $currentVal = $this->_dataSource->get($fullKey);
         for ($i = 1; $i < count($arr); $i++) {
             if (isset($currentVal) && $currentVal->get($arr[$i]) != null) {
                 $currentVal = $currentVal->get($arr[$i]);
@@ -654,67 +728,6 @@ class MagicDto extends stdClass // NOSONAR
     }
 
     /**
-     * Get a list of properties
-     *
-     * @param bool $reflectSelf Flag indicating whether to reflect properties of the current class
-     * @param bool $asArrayProps Flag indicating whether to return properties as an array
-     * @return array An array of property names or ReflectionProperty objects
-     */
-    protected function propertyList($reflectSelf = false, $asArrayProps = false)
-    {
-        $reflectionClass = $reflectSelf ? self::class : get_called_class();
-        $class = new ReflectionClass($reflectionClass);
-
-        // filter only the calling class properties
-        // skip parent properties
-        $properties = array_filter(
-            $class->getProperties(),
-            function($property) use($class) {
-                return $property->getDeclaringClass()->getName() == $class->getName();
-            }
-        );
-        if($asArrayProps)
-        {
-            $result = array();
-            $index = 0;
-            foreach ($properties as $key) {
-                $prop = $key->name;
-                $result[$index] = $prop;
-
-                $index++;
-            }
-            return $result;
-        }
-        else
-        {
-            return $properties;
-        }
-    }
-
-    /**
-     * Convert the result to an array of objects.
-     *
-     * @param array $result The result set to convert.
-     * @return array An array of objects.
-     */
-    private function toArrayObject($result) // NOSONAR
-    {
-        $instance = array();
-        $index = 0;
-        if(isset($result) && is_array($result))
-        {
-            foreach($result as $value)
-            {
-                $className = get_class($this);
-                $obj = new $className($value);
-                $instance[$index] = $obj;
-                $index++;
-            }
-        }
-        return $instance;
-    }
-
-    /**
      * Get the number of properties of the object.
      *
      * @return int The number of properties.
@@ -783,5 +796,94 @@ class MagicDto extends stdClass // NOSONAR
             }
         }
         return json_encode($obj->value(), $flag);
+    }
+
+    /**
+     * Handles dynamic method calls for property access and manipulation.
+     *
+     * This method allows you to call methods that follow specific naming conventions
+     * to interact with the object's properties. It supports operations such as 
+     * checking existence, getting, setting, unsetting, and manipulating array properties.
+     *
+     * Supported method patterns:
+     * - isset<PropertyName>(): bool
+     * - is<PropertyName>(): bool
+     * - equals<PropertyName>($value): bool
+     * - get<PropertyName>(): mixed
+     * - set<PropertyName>($value): self
+     * - unset<PropertyName>(): self
+     * - push<PropertyName>($value): self
+     * - append<PropertyName>($value): self
+     * - unshift<PropertyName>($value): self
+     * - prepend<PropertyName>($value): self
+     * - pop<PropertyName>(): mixed
+     * - shift<PropertyName>(): mixed
+     *
+     * @param string $method The name of the method being called.
+     * @param array $params The parameters passed to the method.
+     * @return mixed The result of the dynamic method call.
+     * @throws InvalidArgumentException If the method name does not match any supported pattern.
+     */
+    public function __call($method, $params) // NOSONAR
+    {
+        if (strncasecmp($method, "isset", 5) === 0) {
+            $var = lcfirst(substr($method, 5));
+            return isset($this->$var);
+        }
+        else if (strncasecmp($method, "is", 2) === 0) {
+            $var = lcfirst(substr($method, 2));
+            return isset($this->$var) ? $this->$var == 1 : false;
+        }
+        else if (strncasecmp($method, "equals", 6) === 0) {
+            $var = lcfirst(substr($method, 6));
+            return isset($this->$var) && $this->$var == $params[0];
+        }
+        else if (strncasecmp($method, "get", 3) === 0) {
+            $var = lcfirst(substr($method, 3));
+            return isset($this->$var) ? $this->$var : null;
+        }
+        else if (strncasecmp($method, "set", 3) === 0 && isset($params) && isset($params[0]) && !$this->_readonly) {
+            $var = lcfirst(substr($method, 3));
+            $this->$var = $params[0];
+            $this->modifyNullProperties($var, $params[0]);
+            return $this;
+        }
+        else if (strncasecmp($method, "unset", 5) === 0 && !$this->_readonly) {
+            $var = lcfirst(substr($method, 5));
+            $this->removeValue($var, $params[0]);
+            return $this;
+        }
+        else if (strncasecmp($method, "push", 4) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
+            $var = lcfirst(substr($method, 4));
+            return $this->push($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+        }
+        else if (strncasecmp($method, "append", 6) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
+            $var = lcfirst(substr($method, 6));
+            return $this->append($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+        }
+        else if (strncasecmp($method, "unshift", 7) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
+            $var = lcfirst(substr($method, 7));
+            return $this->unshift($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+        }
+        else if (strncasecmp($method, "prepend", 7) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
+            $var = lcfirst(substr($method, 7));
+            return $this->prepend($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+        }
+        else if (strncasecmp($method, "pop", 3) === 0) {
+            $var = lcfirst(substr($method, 3));
+            return $this->pop($var);
+        }
+        else if (strncasecmp($method, "shift", 5) === 0) {
+            $var = lcfirst(substr($method, 5));
+            return $this->shift($var);
+        }
+        else if (strncasecmp($method, "label", 5) === 0) {
+            $var = lcfirst(substr($method, 5));
+            if(isset($this->_label[$var]))
+            {
+                return $this->_label[$var];
+            }
+            return "";
+        }
     }
 }
