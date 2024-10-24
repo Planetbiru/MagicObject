@@ -1357,6 +1357,14 @@ catch(Exception $e)
 <h3>Class Structure</h3>
 <p>The <code>MagicDto</code> class is designed with properties that have protected access levels, ensuring encapsulation while still allowing derived classes to access these properties. Each property is annotated with <code>@var</code>, which specifies its data type. This structured approach enhances type safety and improves code quality.</p>
 <h4>Key Annotations</h4>
+<p><strong>Class Annotations</strong></p>
+<ol>
+<li>
+<p><strong>@JSON</strong></p>
+<p>The <code>@JSON</code> annotation controls whether the JSON format should be prettified. Using <code>@JSON(prettify=true)</code> will format the output in a more readable way, while <code>@JSON(prettify=false)</code> will minimize the format</p>
+</li>
+</ol>
+<p><strong>Property Annotations</strong></p>
 <ol>
 <li>
 <p><strong>@Source</strong></p>
@@ -1372,6 +1380,11 @@ protected $title;</code></pre>
 <li>
 <p><strong>@JsonProperty</strong></p>
 <p>The <code>@JsonProperty</code> annotation specifies the output property name when data is serialized to JSON. If this annotation is not provided, MagicDto will serialize the property using its class property name. This ensures that data sent to third-party applications adheres to their expected format.</p>
+</li>
+<li>
+<p><strong>@JsonFormat</strong></p>
+<p>The @JsonFormat annotation specifies the output date-time format when data is serialized to JSON. The property type must be <code>DateTime</code>. It is written as @JsonFormat(pattern=&quot;Y-m-d H:i:s&quot;). If this annotation is not provided, MagicDto will serialize the property using the default format Y-m-d H:i:s. This ensures that data sent to third-party applications adheres to their expected format.</p>
+<p>Format the date and time according to the conventions used in the PHP programming language. This includes utilizing the built-in date and time functions, which allow for various formatting options to display dates and times in a way that is both readable and compatible with PHP's standards. Ensure that you adhere to formats such as 'Y-m-d H:i:s' for complete timestamps or 'd/m/Y' for more localized representations, depending on the specific requirements of your application.</p>
 </li>
 </ol>
 <pre><code class="language-php">/**
@@ -1409,7 +1422,8 @@ protected $title;</code></pre>
     /**
      * @Source("date_release")
      * @JsonProperty("releaseDate")
-     * @var string
+     * @JsonFormat(pattern="Y-m-d H:i:s")
+     * @var DateTime
      */
     protected $release;
 

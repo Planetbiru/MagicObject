@@ -1559,6 +1559,15 @@ The `MagicDto` class is designed with properties that have protected access leve
 
 #### Key Annotations
 
+**Class Annotations**
+
+1.  **@JSON**
+    
+    The `@JSON` annotation controls whether the JSON format should be prettified. Using `@JSON(prettify=true)` will format the output in a more readable way, while `@JSON(prettify=false)` will minimize the format
+
+
+**Property Annotations**
+
 1.  **@Source**
     
     The `@Source` annotation indicates the source property that maps to a specific field in the incoming data. If this annotation is omitted, MagicDto will default to using the property name that matches the class property name. This allows for flexibility in cases where the external API may use different naming conventions.
@@ -1574,7 +1583,13 @@ protected $title;
 2.  **@JsonProperty**
 
     The `@JsonProperty` annotation specifies the output property name when data is serialized to JSON. If this annotation is not provided, MagicDto will serialize the property using its class property name. This ensures that data sent to third-party applications adheres to their expected format.
-    
+
+3.  **@JsonFormat**
+
+    The @JsonFormat annotation specifies the output date-time format when data is serialized to JSON. The property type must be `DateTime`. It is written as @JsonFormat(pattern="Y-m-d H:i:s"). If this annotation is not provided, MagicDto will serialize the property using the default format Y-m-d H:i:s. This ensures that data sent to third-party applications adheres to their expected format.
+
+    Format the date and time according to the conventions used in the PHP programming language. This includes utilizing the built-in date and time functions, which allow for various formatting options to display dates and times in a way that is both readable and compatible with PHP's standards. Ensure that you adhere to formats such as 'Y-m-d H:i:s' for complete timestamps or 'd/m/Y' for more localized representations, depending on the specific requirements of your application.
+
 ```php
 /**
  * @JsonProperty("album_title")
@@ -1622,7 +1637,8 @@ class AlbumDtoInput extends MagicDto
     /**
      * @Source("date_release")
      * @JsonProperty("releaseDate")
-     * @var string
+     * @JsonFormat(pattern="Y-m-d H:i:s")
+     * @var DateTime
      */
     protected $release;
 

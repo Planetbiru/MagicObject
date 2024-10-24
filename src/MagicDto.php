@@ -2,10 +2,12 @@
 
 namespace MagicObject;
 
+use DateTime;
 use MagicObject\Exceptions\InvalidAnnotationException;
 use MagicObject\Exceptions\InvalidQueryInputException;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\ClassUtil\PicoObjectParser;
+use MagicObject\Util\PicoDateTimeUtil;
 use MagicObject\Util\PicoGenericObject;
 use ReflectionClass;
 use ReflectionProperty;
@@ -132,12 +134,34 @@ class MagicDto extends stdClass // NOSONAR
                     $returnValue->$propertyName = $this->handleSelfInstance($source, $var, $propertyName);
                 } elseif ($this->isMagicObjectInstance($objectTest)) {
                     $returnValue->$propertyName = $this->handleMagicObject($source, $propertyName);
+                } elseif ($this->isDateTimeInstance($objectTest)) {
+                    $returnValue->$propertyName = $this->formatDateTime($this->handleDateTimeObject($source, $propertyName), $this, $key);
                 } else {
                     $returnValue->$propertyName = $this->handleDefaultCase($source, $key, $propertyName);
                 }
             }
         }
         return $returnValue;
+    }
+
+    private function formatDateTime($dateTime, $class, $property)
+    {
+        if(!isset($dateTime))
+        {
+            return null;
+        }
+        $reflexProp = new PicoAnnotationParser(get_class($class), $property, PicoAnnotationParser::PROPERTY);
+        $parameters = $reflexProp->getParameters();
+        if(isset($parameters['JsonFormat']))
+        {
+            $parsed = $reflexProp->parseKeyValueAsObject($parameters['JsonFormat']);
+            $format = isset($parsed->pattern) ? $parsed->pattern : 'Y-m-d H:i:s';
+        }
+        else
+        {
+            $format = 'Y-m-d H:i:s';
+        }
+        return $dateTime->format($format);
     }
 
     /**
@@ -246,6 +270,17 @@ class MagicDto extends stdClass // NOSONAR
     }
 
     /**
+     * Checks if the given object is an instance of DateTime or its derivatives.
+     *
+     * @param mixed $objectTest The object to test.
+     * @return bool True if it is a MagicObject instance, otherwise false.
+     */
+    private function isDateTimeInstance($objectTest)
+    {
+        return $objectTest instanceof DateTime;
+    }
+
+    /**
      * Handles the case where the property is an instance of MagicObject.
      *
      * @param string|null $source The source to extract the value from.
@@ -262,6 +297,23 @@ class MagicDto extends stdClass // NOSONAR
                 : json_decode(json_encode($value));
         } else {
             return $this->getNestedValue($source);
+        }
+    }
+
+    /**
+     * Handles the case where the property is an instance of DateTime.
+     *
+     * @param string|null $source The source to extract the value from.
+     * @param string $propertyName The name of the property.
+     * @return DateTime|null The handled value for the MagicObject instance.
+     */
+    private function handleDateTimeObject($source, $propertyName)
+    {
+        if (strpos($source, "->") === false) {
+            $value = isset($source) ? $this->_dataSource->get($source) : $this->_dataSource->get($propertyName);
+            return PicoDateTimeUtil::parseDateTime($value);
+        } else {
+            return PicoDateTimeUtil::parseDateTime($this->getNestedValue($source));
         }
     }
 

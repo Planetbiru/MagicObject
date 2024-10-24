@@ -191,6 +191,8 @@ class EntityAlbum extends MagicObject
 	 */
 	protected $asDraft;
 
+
+
 }
 
 /**
@@ -671,6 +673,17 @@ class AlbumDto extends MagicDto
      * @var string
      */
     protected $kotaDomisili;
+
+	/**
+     * Release Date
+     *
+     * @JsonProperty("releaseDate")
+	 * @JsonFormat(pattern="Y-m-d H:i:s")
+     * @Source("releaseDate")
+     * @var DateTime
+     */
+    protected $releaseDate;
+	
 }
 
 class ProducerDto extends MagicDto
@@ -702,6 +715,7 @@ $album->getProducer()->setProducerId("5678");
 $album->getProducer()->setName("Kamshory");
 $album->getProducer()->setCity($city);
 $album->getProducer()->getCity()->setNamaKota("Jakarta");
+$album->setReleaseDate("2024-10-29 01:06:12");
 
 
 $albumDto = new AlbumDto($album);
