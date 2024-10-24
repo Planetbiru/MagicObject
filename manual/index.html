@@ -8971,12 +8971,45 @@ class Song extends MagicObject
 <pre><code class="language-php">$song = new Song();
 $dumpForSong = new PicoDatabaseDump();
 echo $dumpForSong-&gt;dumpStructure($song, PicoDatabaseType::DATABASE_TYPE_MYSQL, true, true);</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><strong>$song:</strong> An instance of the Song class, representing the table structure you want to dump.</li>
+<li><strong>PicoDatabaseType::DATABASE_TYPE_MYSQL:</strong> The type of database you are targeting (e.g., MySQL, PostgreSQL).</li>
+<li><strong>true (createIfNotExists):</strong> Whether to include the &quot;IF NOT EXISTS&quot; clause in the CREATE statement.</li>
+<li><strong>true (dropIfExists):</strong> Whether to include the &quot;DROP TABLE IF EXISTS&quot; statement before creating the table.</li>
+</ul>
 <h3>Dump Data</h3>
 <p>We can dump data by connecting to real database. Don't forget to define the target database type. If we will dump multiple table, we must use dedicated instance of <code>PicoDatabaseDump</code>.</p>
 <pre><code class="language-php">$song = new Song(null, $database);
 $pageData = $song-&gt;findAll();
 $dumpForSong = new PicoDatabaseDump();
 echo $dumpForSong-&gt;dumpData($pageData, PicoDatabaseType::DATABASE_TYPE_MYSQL);</code></pre>
+<p><strong>Important Note:</strong></p>
+<p>When exporting a table with a large amount of data, the above method may not be suitable, as it can consume a significant amount of memory while trying to accommodate all the data before writing it to a file.</p>
+<p>To efficiently handle large datasets, you can use the following approach:</p>
+<pre><code class="language-php">$song = new Song(null, $database);
+/*
+$speficication = null
+$pageable = null
+$sortable = null
+$passive = true
+$subqueryMap = null
+$findOption = MagicObject::FIND_OPTION_NO_COUNT_DATA | MagicObject::FIND_OPTION_NO_FETCH_DATA
+*/
+$pageData = $song-&gt;findAll(null, null, null, true, null, MagicObject::FIND_OPTION_NO_COUNT_DATA | MagicObject::FIND_OPTION_NO_FETCH_DATA);
+$dumpForSong = new PicoDatabaseDump();
+
+$dumpForSong-&gt;dumpData($pageData, PicoDatabaseType::DATABASE_TYPE_MYSQL, new Song(), $maxRecord, function($sql){
+    $fp = fopen("dump.sql", "a");
+    fputs($fp, $sql);
+    fclose($fp);
+});</code></pre>
+<p><strong>Explanation:</strong></p>
+<ul>
+<li><strong>findAll Parameters:</strong> This allows you to customize your query. The options provided (e.g., FIND_OPTION_NO_COUNT_DATA, FIND_OPTION_NO_FETCH_DATA) ensure that only the necessary data is fetched, thus reducing memory consumption.</li>
+<li><strong>Callback Function:</strong> The anonymous function passed as a parameter to dumpData handles the SQL output, appending it to dump.sql in an efficient manner, thereby avoiding excessive memory usage.</li>
+</ul>
+<p>By following these guidelines, you can effectively manage both the structure and data dumping processes while optimizing for performance and resource utilization.</p>
 <h3>Summary</h3>
 <ul>
 <li><strong>Structure Dumping</strong>: Use <code>dumpStructure</code> to get the schema of the database without a real connection.</li>
