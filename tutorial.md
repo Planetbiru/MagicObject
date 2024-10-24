@@ -1553,6 +1553,11 @@ In modern applications, especially those that interact with third-party services
     
     -   The MagicDto class utilizes PHP annotations to clarify the purpose of each property. These annotations enhance code readability and provide useful metadata for serialization.
 
+4. **XML Support**
+    -   MagicDto provides support for both XML input and output. This feature allows seamless integration with systems that utilize XML as their primary data format, making it easier to work with various data sources and services.
+
+    To parse XML string, use method `MagicTdo::xmlToObject(string $xmlString)`. This method takes an XML string as input and returning it as a stdClass object.
+
 ### Class Structure
 
 The `MagicDto` class is designed with properties that have protected access levels, ensuring encapsulation while still allowing derived classes to access these properties. Each property is annotated with `@var`, which specifies its data type. This structured approach enhances type safety and improves code quality.
@@ -1944,6 +1949,8 @@ class AgencyDto extends MagicDto
 
 **Usage**
 
+1. JSON Format
+
 ```php
 $song = new Song(null, $database);
 $song->find("1234");
@@ -1952,6 +1959,39 @@ $songDto = new SongDto($song);
 header("Content-type: application/json");
 echo $songDto;
 ```
+
+2. XML Format
+
+```php
+$song = new Song(null, $database);
+$song->find("1234");
+$songDto = new SongDto($song);
+
+header("Content-type: application/xml");
+echo $songDto->toXml("root");
+```
+
+3. Parse XML
+
+```php
+$albumDto = new AlbumDto();
+$obj = $albumDto->xmlToObject($xmlString);
+// $obj is stdClass
+header("Content-type: application/json");
+echo json_encode($obj);
+```
+
+3. Load from XML
+
+```php
+$albumDto = new AlbumDtoInput();
+$albumDto->loadXml($xmlString);
+header("Content-type: application/json");
+echo $albumDto;
+```
+
+`loadXml` method will load data from XML to `AlbumDtoInput`. `AlbumDtoInput` is the inverse of `AlbumDto`, where values of the `@JsonProperty` and `@Source` annotations are swapped. This inversion also applies to the objects contained within it.
+
 
 #### Explanation
 

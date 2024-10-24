@@ -1353,6 +1353,13 @@ catch(Exception $e)
 <li>The MagicDto class utilizes PHP annotations to clarify the purpose of each property. These annotations enhance code readability and provide useful metadata for serialization.</li>
 </ul>
 </li>
+<li>
+<p><strong>XML Support</strong></p>
+<ul>
+<li>MagicDto provides support for both XML input and output. This feature allows seamless integration with systems that utilize XML as their primary data format, making it easier to work with various data sources and services.</li>
+</ul>
+<p>To parse XML string, use method <code>MagicTdo::xmlToObject(string $xmlString)</code>. This method takes an XML string as input and returning it as a stdClass object.</p>
+</li>
 </ol>
 <h3>Class Structure</h3>
 <p>The <code>MagicDto</code> class is designed with properties that have protected access levels, ensuring encapsulation while still allowing derived classes to access these properties. Each property is annotated with <code>@var</code>, which specifies its data type. This structured approach enhances type safety and improves code quality.</p>
@@ -1699,12 +1706,40 @@ protected $title;</code></pre>
 }
 </code></pre>
 <p><strong>Usage</strong></p>
+<ol>
+<li>JSON Format</li>
+</ol>
 <pre><code class="language-php">$song = new Song(null, $database);
 $song-&gt;find("1234");
 $songDto = new SongDto($song);
 
 header("Content-type: application/json");
 echo $songDto;</code></pre>
+<ol start="2">
+<li>XML Format</li>
+</ol>
+<pre><code class="language-php">$song = new Song(null, $database);
+$song-&gt;find("1234");
+$songDto = new SongDto($song);
+
+header("Content-type: application/xml");
+echo $songDto-&gt;toXml("root");</code></pre>
+<ol start="3">
+<li>Parse XML</li>
+</ol>
+<pre><code class="language-php">$albumDto = new AlbumDto();
+$obj = $albumDto-&gt;xmlToObject($xmlString);
+// $obj is stdClass
+header("Content-type: application/json");
+echo json_encode($obj);</code></pre>
+<ol start="3">
+<li>Load from XML</li>
+</ol>
+<pre><code class="language-php">$albumDto = new AlbumDtoInput();
+$albumDto-&gt;loadXml($xmlString);
+header("Content-type: application/json");
+echo $albumDto;</code></pre>
+<p><code>loadXml</code> method will load data from XML to <code>AlbumDtoInput</code>. <code>AlbumDtoInput</code> is the inverse of <code>AlbumDto</code>, where values of the <code>@JsonProperty</code> and <code>@Source</code> annotations are swapped. This inversion also applies to the objects contained within it.</p>
 <h4>Explanation</h4>
 <ul>
 <li>

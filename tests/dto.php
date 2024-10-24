@@ -718,7 +718,34 @@ $album->getProducer()->setCity($city);
 $album->getProducer()->getCity()->setNamaKota("Jakarta");
 $album->setReleaseDate("2024-10-29 01:06:12");
 
-
+/*
 $albumDto = new AlbumDto($album);
 
+echo "JSON:\r\n";
+echo $albumDto."\r\n\r\n";
+echo "XML:\r\n";
 echo $albumDto->toXml();
+
+$obj2 = $albumDto->xmlToObject($albumDto->toXml());
+
+echo "JSON 2:\r\n";
+echo json_encode($obj2, JSON_PRETTY_PRINT)."\r\n\r\n";
+*/
+
+$xml = '<?xml version="1.0"?>
+<root>
+  <album_id>1234</album_id>
+  <album_name>Album Pertama</album_name>
+  <produsernya>
+    <id_producer>5678</id_producer>
+    <jenenge>Kamshory</jenenge>
+  </produsernya>
+  <producerName>Kamshory</producerName>
+  <domisili>Jakarta</domisili>
+  <releaseDate>2024-10-29 01:06:12</releaseDate>
+</root>';
+
+$album2 = new AlbumDto();
+$album2->loadXml($xml);
+
+echo $album2;
