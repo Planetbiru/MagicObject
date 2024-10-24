@@ -2,49 +2,24 @@
 
 namespace MagicObject;
 
-use DateTime;
-use Exception;
-use PDOException;
-use PDOStatement;
 use MagicObject\Database\PicoDatabase;
 use MagicObject\Database\PicoDatabaseEntity;
 use MagicObject\Database\PicoDatabasePersistence;
-use MagicObject\Database\PicoDatabasePersistenceExtended;
-use MagicObject\Database\PicoDatabaseQueryBuilder;
-use MagicObject\Database\PicoPageable;
-use MagicObject\Database\PicoPageData;
-use MagicObject\Database\PicoSort;
-use MagicObject\Database\PicoSortable;
-use MagicObject\Database\PicoSpecification;
-use MagicObject\Database\PicoTableInfo;
-use MagicObject\Exceptions\FindOptionException;
-use MagicObject\Exceptions\InvalidAnnotationException;
-use MagicObject\Exceptions\InvalidQueryInputException;
-use MagicObject\Exceptions\InvalidReturnTypeException;
-use MagicObject\Exceptions\NoDatabaseConnectionException;
-use MagicObject\Exceptions\NoRecordFoundException;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
-use MagicObject\Util\ClassUtil\PicoObjectParser;
-use MagicObject\Util\Database\PicoDatabaseUtil;
-use MagicObject\Util\PicoArrayUtil;
-use MagicObject\Util\PicoEnvironmentVariable;
 use MagicObject\Util\PicoGenericObject;
-use MagicObject\Util\PicoIniUtil;
 use MagicObject\Util\PicoStringUtil;
-use MagicObject\Util\PicoYamlUtil;
-use PDO;
 use ReflectionClass;
-use ReflectionMethod;
 use ReflectionProperty;
 use stdClass;
-use Symfony\Component\Yaml\Yaml;
 
 /**
- * Class for creating a magic object.
- * A magic object is an instance created from any class, allowing the user to add any property with any name and value. It can load data from INI files, YAML files, JSON files, and databases.
- * Users can create entities from database tables and perform insert, select, update, and delete operations on records in the database.
- * Users can also create properties from other entities using the full name of the class (namespace + class name).
- * 
+ * Class MagicDto
+ *
+ * Represents a dynamic data transfer object that allows the user to create and manipulate 
+ * properties on-the-fly. It can handle various data sources including INI, YAML, JSON, and 
+ * databases. Users can perform CRUD operations on database records and manipulate properties 
+ * as needed.
+ *
  * @author Kamshory
  * @package MagicObject
  * @link https://github.com/Planetbiru/MagicObject
@@ -54,10 +29,10 @@ class MagicDto extends stdClass // NOSONAR
     // Message constants
     const MESSAGE_NO_DATABASE_CONNECTION = "No database connection provided";
     const MESSAGE_NO_RECORD_FOUND = "No record found";
-    
+
     // Property naming strategy
     const PROPERTY_NAMING_STRATEGY = "property-naming-strategy";
-    
+
     // Key constants
     const KEY_PROPERTY_TYPE = "propertyType";
     const KEY_DEFAULT_VALUE = "default_value";
@@ -80,9 +55,9 @@ class MagicDto extends stdClass // NOSONAR
      * @var PicoDatabase
      */
     private $_database; // NOSONAR
-    
+
     /**
-     * Class containing a database entity
+     * Class containing a database entity.
      *
      * @var PicoDatabaseEntity|null
      */
@@ -115,23 +90,13 @@ class MagicDto extends stdClass // NOSONAR
      * @var PicoDatabasePersistence|null
      */
     private $_persistProp = null; // NOSONAR
-    
+
     /**
-     * Data source
+     * Data source.
      *
      * @var mixed
      */
     private $dataSource = null;
-
-    /**
-     * Retrieves the list of null properties.
-     *
-     * @return array The list of properties that are currently null.
-     */
-    public function nullPropertyList()
-    {
-        return $this->_nullProperties;
-    }
 
     /**
      * Constructor.
@@ -144,6 +109,16 @@ class MagicDto extends stdClass // NOSONAR
     {
         $this->dataSource = $data;
     }
+    
+    /**
+     * Retrieves the list of null properties.
+     *
+     * @return array The list of properties that are currently null.
+     */
+    public function nullPropertyList()
+    {
+        return $this->_nullProperties;
+    }
 
     /**
      * Loads data into the object.
@@ -153,23 +128,7 @@ class MagicDto extends stdClass // NOSONAR
      */
     public function loadData($data)
     {
-        if($data != null)
-        {
-            if($data instanceof self)
-            {
-                $values = $data->value();
-                foreach ($values as $key => $value) {
-                    $key2 = PicoStringUtil::camelize(str_replace("-", "_", $key));
-                    $this->set($key2, $value, true);
-                }
-            }
-            else if (is_array($data) || is_object($data)) {
-                foreach ($data as $key => $value) {
-                    $key2 = PicoStringUtil::camelize(str_replace("-", "_", $key));
-                    $this->set($key2, $value, true);
-                }
-            }
-        }
+        $this->dataSource = $data;
         return $this;
     }
 
@@ -533,6 +492,12 @@ class MagicDto extends stdClass // NOSONAR
         preg_match('/@var\s+(\S+)/', $doc, $matches);
         return !empty($matches[1]) ? $matches[1] : null;
     }
+    
+    private function extractLabel($doc)
+    {
+        preg_match('/@Label\("([^"]+)"\)/', $doc, $matches);
+        return !empty($matches[1]) ? $matches[1] : null;
+    }
 
     private function isSelfInstance($var, $objectTest)
     {
@@ -768,27 +733,6 @@ class MagicDto extends stdClass // NOSONAR
     }
 
     /**
-     * Magic method to convert the object to a string.
-     *
-     * @return string A JSON representation of the object.
-     */
-    public function __toString()
-    {
-        $pretty = $this->_pretty();
-        $flag = $pretty ? JSON_PRETTY_PRINT : 0;
-        $obj = clone $this;
-        foreach($obj as $key=>$value)
-        {
-            if($value instanceof self)
-            {
-                $value = $this->stringifyObject($value);
-                $obj->set($key, $value);
-            }
-        }
-        return json_encode($obj->value(), $flag);
-    }
-
-    /**
      * Recursively stringify an object or array of objects.
      *
      * @param self $value The object to stringify.
@@ -820,5 +764,105 @@ class MagicDto extends stdClass // NOSONAR
         return $value->value();
     }
 
+    /**
+     * Magic method to convert the object to a string.
+     *
+     * @return string A JSON representation of the object.
+     */
+    public function __toString()
+    {
+        $pretty = $this->_pretty();
+        $flag = $pretty ? JSON_PRETTY_PRINT : 0;
+        $obj = clone $this;
+        foreach($obj as $key=>$value)
+        {
+            if($value instanceof self)
+            {
+                $value = $this->stringifyObject($value);
+                $obj->set($key, $value);
+            }
+        }
+        return json_encode($obj->value(), $flag);
+    }
 
+    /**
+     * Handles dynamic method calls for property access and manipulation.
+     *
+     * This method allows you to call methods that follow specific naming conventions
+     * to interact with the object's properties. It supports operations such as 
+     * checking existence, getting, setting, unsetting, and manipulating array properties.
+     *
+     * Supported method patterns:
+     * - isset<PropertyName>(): bool
+     * - is<PropertyName>(): bool
+     * - equals<PropertyName>($value): bool
+     * - get<PropertyName>(): mixed
+     * - set<PropertyName>($value): self
+     * - unset<PropertyName>(): self
+     * - push<PropertyName>($value): self
+     * - append<PropertyName>($value): self
+     * - unshift<PropertyName>($value): self
+     * - prepend<PropertyName>($value): self
+     * - pop<PropertyName>(): mixed
+     * - shift<PropertyName>(): mixed
+     *
+     * @param string $method The name of the method being called.
+     * @param array $params The parameters passed to the method.
+     * @return mixed The result of the dynamic method call.
+     * @throws InvalidArgumentException If the method name does not match any supported pattern.
+     */
+    public function __call($method, $params) // NOSONAR
+    {
+        if (strncasecmp($method, "isset", 5) === 0) {
+            $var = lcfirst(substr($method, 5));
+            return isset($this->$var);
+        }
+        else if (strncasecmp($method, "is", 2) === 0) {
+            $var = lcfirst(substr($method, 2));
+            return isset($this->$var) ? $this->$var == 1 : false;
+        }
+        else if (strncasecmp($method, "equals", 6) === 0) {
+            $var = lcfirst(substr($method, 6));
+            return isset($this->$var) && $this->$var == $params[0];
+        }
+        else if (strncasecmp($method, "get", 3) === 0) {
+            $var = lcfirst(substr($method, 3));
+            return isset($this->$var) ? $this->$var : null;
+        }
+        else if (strncasecmp($method, "set", 3) === 0 && isset($params) && isset($params[0]) && !$this->_readonly) {
+            $var = lcfirst(substr($method, 3));
+            $this->$var = $params[0];
+            $this->modifyNullProperties($var, $params[0]);
+            return $this;
+        }
+        else if (strncasecmp($method, "unset", 5) === 0 && !$this->_readonly) {
+            $var = lcfirst(substr($method, 5));
+            $this->removeValue($var, $params[0]);
+            return $this;
+        }
+        else if (strncasecmp($method, "push", 4) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
+            $var = lcfirst(substr($method, 4));
+            return $this->push($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+        }
+        else if (strncasecmp($method, "append", 6) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
+            $var = lcfirst(substr($method, 6));
+            return $this->append($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+        }
+        else if (strncasecmp($method, "unshift", 7) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
+            $var = lcfirst(substr($method, 7));
+            return $this->unshift($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+        }
+        else if (strncasecmp($method, "prepend", 7) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
+            $var = lcfirst(substr($method, 7));
+            return $this->prepend($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+        }
+        else if (strncasecmp($method, "pop", 3) === 0) {
+            $var = lcfirst(substr($method, 3));
+            return $this->pop($var);
+        }
+        else if (strncasecmp($method, "shift", 5) === 0) {
+            $var = lcfirst(substr($method, 5));
+            return $this->shift($var);
+        }
+    }
 }
