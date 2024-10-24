@@ -114,6 +114,18 @@ class MagicDto extends stdClass // NOSONAR
         return $this;
     }
 
+    /**
+     * Loads XML data into the object.
+     *
+     * This method accepts an XML string, converts it to an object representation,
+     * and then loads the resulting data into the internal data source of the object.
+     * It processes the XML input, ensuring that only non-scalar values are handled 
+     * appropriately. This method is useful for integrating with external XML data sources.
+     *
+     * @param string $xmlString The XML string to load into the object.
+     * @return self Returns the current instance for method chaining.
+     * @throws InvalidArgumentException If the XML string is invalid or cannot be parsed.
+     */
     public function loadXml($xmlString)
     {
         $data = $this->xmlToObject($xmlString);
