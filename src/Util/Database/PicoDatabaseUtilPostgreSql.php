@@ -6,7 +6,6 @@ use Exception;
 use MagicObject\Database\PicoDatabase;
 use MagicObject\Database\PicoDatabaseQueryBuilder;
 use MagicObject\Database\PicoDatabaseType;
-use MagicObject\Database\PicoPageData;
 use MagicObject\Database\PicoTableInfo;
 use MagicObject\MagicObject;
 use MagicObject\SecretObject;
@@ -15,18 +14,30 @@ use PDO;
 /**
  * Class PicoDatabaseUtilPostgreSql
  *
- * Utility class for managing PostgreSQL database operations in the framework.
- * This class provides methods for retrieving table structures, generating SQL
- * statements for creating tables, dumping data into SQL insert statements,
- * and importing data from one database to another.
+ * This class extends the PicoDatabaseUtilBase and implements the PicoDatabaseUtilInterface specifically 
+ * for PostgreSQL database operations. It provides specialized utility methods tailored to leverage PostgreSQL's 
+ * features and syntax while ensuring compatibility with the general database utility interface.
  *
- * Key Functionalities:
- * - Retrieve and display column information for tables.
- * - Generate SQL statements to create tables based on existing structures.
- * - Dump data from various sources into SQL insert statements.
- * - Facilitate the import of data between source and target databases, including
- *   handling pre and post-import scripts.
- * - Ensure data integrity by fixing types during the import process.
+ * Key functionalities include:
+ *
+ * - **Retrieve and display column information for tables:** Methods to fetch detailed column data, 
+ *   including types and constraints, from PostgreSQL tables.
+ * - **Generate SQL statements to create tables based on existing structures:** Automated generation 
+ *   of CREATE TABLE statements to replicate existing table schemas.
+ * - **Dump data from various sources into SQL insert statements:** Convert data from different formats 
+ *   into valid SQL INSERT statements for efficient data insertion.
+ * - **Facilitate the import of data between source and target databases:** Streamlined processes for 
+ *   transferring data, including handling pre and post-import scripts to ensure smooth operations.
+ * - **Ensure data integrity by fixing types during the import process:** Validation and correction of 
+ *   data types to match PostgreSQL's requirements, enhancing data quality during imports.
+ *
+ * This class is designed for developers who are working with PostgreSQL databases and need a robust set of tools 
+ * to manage database operations efficiently. By adhering to the PicoDatabaseUtilInterface, it provides 
+ * a consistent API for database utilities while taking advantage of PostgreSQL-specific features.
+ *
+ * Usage:
+ * To use this class, instantiate it with a PostgreSQL database connection and utilize its methods to perform 
+ * various database tasks, ensuring efficient data management and manipulation.
  *
  * @author Kamshory
  * @package MagicObject\Util\Database
@@ -34,14 +45,20 @@ use PDO;
  */
 class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDatabaseUtilInterface //NOSONAR
 {
-    const KEY_NAME = "name";
 
     /**
-     * Retrieves a list of columns for a specified table.
+     * Retrieves a list of columns for a specified table in the database.
      *
-     * @param PicoDatabase $database Database connection.
-     * @param string $picoTableName Table name.
-     * @return array An array of column details.
+     * This method queries the information schema to obtain details about the columns 
+     * of the specified table, including their names, data types, nullability, 
+     * and default values.
+     *
+     * @param PicoDatabase $database The database connection instance.
+     * @param string $picoTableName The name of the table to retrieve column information from.
+     * @return array An array of associative arrays containing details about each column,
+     *               where each associative array includes 'column_name', 'data_type',
+     *               'is_nullable', and 'column_default'.
+     * @throws Exception If the database connection fails or the query cannot be executed.
      */
     public function getColumnList($database, $picoTableName)
     {
@@ -59,11 +76,17 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
     /**
      * Dumps the structure of a table as a SQL statement.
      *
-     * @param PicoTableInfo $tableInfo Table information.
-     * @param string $picoTableName Table name.
-     * @param bool $createIfNotExists Whether to add "IF NOT EXISTS" in the create statement.
-     * @param bool $dropIfExists Whether to add "DROP TABLE IF EXISTS" before the create statement.
-     * @return string SQL statement to create the table.
+     * This method generates a SQL CREATE TABLE statement based on the provided table information,
+     * including the option to include or exclude specific clauses such as "IF NOT EXISTS" and 
+     * "DROP TABLE IF EXISTS". It also handles the definition of primary keys if present.
+     *
+     * @param PicoTableInfo $tableInfo     The information about the table, including column details and primary keys.
+     * @param string        $picoTableName  The name of the table for which the structure is being generated.
+     * @param bool         $createIfNotExists Whether to add "IF NOT EXISTS" in the CREATE statement (default is false).
+     * @param bool         $dropIfExists      Whether to add "DROP TABLE IF EXISTS" before the CREATE statement (default is false).
+     * @param string|null  $engine            The storage engine to use for the table (optional, default is null).
+     * @param string|null  $charset           The character set to use for the table (optional, default is null).
+     * @return string                           The SQL statement to create the table, including column definitions and primary keys.
      */
     public function dumpStructure($tableInfo, $picoTableName, $createIfNotExists = false, $dropIfExists = false, $engine = null, $charset = null)
     {
@@ -104,14 +127,23 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
     /**
      * Creates a column definition for a SQL statement.
      *
-     * @param array $column Column details.
-     * @return string SQL column definition.
+     * This method constructs a SQL column definition based on the provided column details,
+     * including the column name, data type, nullability, and default value. The resulting 
+     * definition is formatted for use in a CREATE TABLE statement.
+     *
+     * @param array $column An associative array containing details about the column:
+     *                      - string name: The name of the column.
+     *                      - string type: The data type of the column (e.g., VARCHAR, INT).
+     *                      - bool|string nullable: Indicates if the column allows NULL values (true or 'true' for NULL; otherwise, NOT NULL).
+     *                      - mixed default_value: The default value for the column (optional).
+     *
+     * @return string The SQL column definition formatted as a string, suitable for inclusion in a CREATE TABLE statement.
      */
     public function createColumn($column)
     {
         $col = [];
         $col[] = "\t";
-        $col[] = "\"" . $column[self::KEY_NAME] . "\"";
+        $col[] = "\"" . $column[parent::KEY_NAME] . "\"";
         $col[] = $column['type'];
 
         if (isset($column['nullable']) && strtolower(trim($column['nullable'])) == 'true') {
@@ -132,9 +164,15 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
     /**
      * Fixes the default value for SQL insertion based on its type.
      *
-     * @param string $defaultValue Default value to fix.
-     * @param string $type Data type of the column.
-     * @return string Fixed default value.
+     * This method processes the given default value according to the specified data type,
+     * ensuring that it is correctly formatted for SQL insertion. For string-like types,
+     * the value is enclosed in single quotes, while boolean and null values are returned 
+     * as is.
+     *
+     * @param mixed $defaultValue The default value to fix, which can be a string, boolean, or null.
+     * @param string $type The data type of the column (e.g., ENUM, CHAR, TEXT, INT, FLOAT, DOUBLE).
+     *
+     * @return mixed The fixed default value formatted appropriately for SQL insertion.
      */
     public function fixDefaultValue($defaultValue, $type)
     {
@@ -150,12 +188,18 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
     }
 
     /**
-     * Dumps a single record into an SQL insert statement.
+     * Dumps a single record into an SQL INSERT statement.
      *
-     * @param array $columns Columns of the target table.
-     * @param string $picoTableName Table name.
-     * @param MagicObject $record Data record.
-     * @return string SQL insert statement.
+     * This method takes a data record and constructs an SQL INSERT statement 
+     * for the specified table. It maps the values of the record to the corresponding 
+     * columns based on the provided column definitions.
+     *
+     * @param array $columns An associative array where keys are column names and values are column details.
+     * @param string $picoTableName The name of the table where the record will be inserted.
+     * @param MagicObject $record The data record to be inserted, which provides a method to retrieve values.
+     *
+     * @return string The generated SQL INSERT statement.
+     * @throws Exception If the record cannot be processed or if there are no values to insert.
      */
     public function dumpRecord($columns, $picoTableName, $record)
     {
@@ -163,7 +207,7 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
         $rec = [];
         foreach ($value as $key => $val) {
             if (isset($columns[$key])) {
-                $rec[$columns[$key][self::KEY_NAME]] = $val;
+                $rec[$columns[$key][parent::KEY_NAME]] = $val;
             }
         }
 
@@ -178,11 +222,15 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
     }
 
     /**
-     * Shows the columns of a specified table.
+     * Retrieves the columns of a specified table from the database.
      *
-     * @param PicoDatabase $database Database connection.
-     * @param string $tableName Table name.
-     * @return string[] An associative array of column names and their types.
+     * This method executes a SQL query to show the columns of the given table and returns 
+     * an associative array where the keys are column names and the values are their respective types.
+     *
+     * @param PicoDatabase $database Database connection object.
+     * @param string $tableName Name of the table whose columns are to be retrieved.
+     * @return array An associative array mapping column names to their types.
+     * @throws Exception If the query fails or the table does not exist.
      */
     public function showColumns($database, $tableName)
     {
@@ -204,10 +252,14 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
     }
 
     /**
-     * Autoconfigure import data
+     * Automatically configures the import data settings based on the source and target databases.
      *
-     * @param SecretObject $config Configuration
-     * @return SecretObject
+     * This method connects to the source and target databases, retrieves the list of existing 
+     * tables, and updates the configuration for each target table by checking its presence in the 
+     * source database. It handles exceptions and logs any errors encountered during the process.
+     *
+     * @param SecretObject $config The configuration object containing database and table information.
+     * @return SecretObject The updated configuration object with modified table settings.
      */
     public function autoConfigureImportData($config)
     {
@@ -253,11 +305,15 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
     }
 
     /**
-     * Fix import data
+     * Fixes imported data based on specified column types.
      *
-     * @param mixed[] $data Data
-     * @param string[] $columns Columns
-     * @return mixed[]
+     * This method processes the input data array and adjusts the values 
+     * according to the expected types defined in the columns array. It 
+     * supports boolean, integer, and float types.
+     *
+     * @param mixed[] $data The input data to be processed.
+     * @param string[] $columns An associative array mapping column names to their types.
+     * @return mixed[] The updated data array with fixed types.
      */
     public function fixImportData($data, $columns)
     {
@@ -283,46 +339,4 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
         return $data;
     }
 
-    /**
-     * Create query insert with multiple record
-     *
-     * @param string $tableName Table name
-     * @param array $data Data
-     * @return string
-     */
-    public function insert($tableName, $data)
-    {
-        // Kumpulkan semua kolom
-        $columns = array();
-        foreach ($data as $record) {
-            $columns = array_merge($columns, array_keys($record));
-        }
-        $columns = array_unique($columns);
-
-        // Buat placeholder untuk prepared statement
-        $placeholdersArr = array_fill(0, count($columns), '?');
-        $placeholders = '(' . implode(', ', $placeholdersArr) . ')';
-
-        // Buat query INSERT
-        $query = "INSERT INTO $tableName (" . implode(', ', $columns) . ") \r\nVALUES \r\n".
-        implode(",\r\n", array_fill(0, count($data), $placeholders));
-
-        // Siapkan nilai untuk bind
-        $values = array();
-        foreach ($data as $record) {
-            foreach ($columns as $column) {
-                $values[] = isset($record[$column]) && $record[$column] !== null ? $record[$column] : null;
-            }
-        }
-
-        // Fungsi untuk menambahkan single quote jika elemen adalah string
-
-        // Format elemen array
-        $formattedElements = array_map(function($element){
-            return $this->fixData($element);
-        }, $values);
-
-        // Ganti tanda tanya dengan elemen array yang telah diformat
-        return vsprintf(str_replace('?', '%s', $query), $formattedElements);
-    }
 }

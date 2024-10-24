@@ -12,6 +12,7 @@ use PDO;
 
 class PicoDatabaseUtilBase
 {
+    const KEY_NAME = "name";
     /**
      * Gets the auto-increment keys from the provided table information.
      *
@@ -527,6 +528,53 @@ class PicoDatabaseUtilBase
     }
 
     /**
+     * Creates an SQL INSERT query for multiple records.
+     *
+     * This method generates an INSERT statement for a specified table and prepares the values 
+     * for binding in a batch operation. It supports multiple records and ensures proper 
+     * formatting of values.
+     *
+     * @param string $tableName Name of the table where data will be inserted.
+     * @param array $data An array of associative arrays, where each associative array 
+     *                    represents a record to be inserted.
+     * @return string The generated SQL INSERT statement with placeholders for values.
+     */
+    public function insert($tableName, $data)
+    {
+        // Collect all unique columns from the data records
+        $columns = array();
+        foreach ($data as $record) {
+            $columns = array_merge($columns, array_keys($record));
+        }
+        $columns = array_unique($columns);
+
+        // Create placeholders for the prepared statement
+        $placeholdersArr = array_fill(0, count($columns), '?');
+        $placeholders = '(' . implode(', ', $placeholdersArr) . ')';
+
+        // Build the INSERT query
+        $query = "INSERT INTO $tableName (" . implode(', ', $columns) . ") \r\nVALUES \r\n".
+        implode(",\r\n", array_fill(0, count($data), $placeholders));
+
+        // Prepare values for binding
+        $values = array();
+        foreach ($data as $record) {
+            foreach ($columns as $column) {
+                // Use null if the value is not set
+                $values[] = isset($record[$column]) && $record[$column] !== null ? $record[$column] : null;
+            }
+        }
+
+        // Format each value for safe SQL insertion
+        $formattedElements = array_map(function($element){
+            return $this->fixData($element);
+        }, $values);
+
+        // Replace placeholders with formatted values
+        return vsprintf(str_replace('?', '%s', $query), $formattedElements);
+    }
+
+    /**
      * Dumps a single record into an SQL insert statement.
      *
      * @param array $columns Columns of the target table.
@@ -551,22 +599,6 @@ class PicoDatabaseUtilBase
      * @return mixed[] The updated data array with fixed types.
      */
     public function fixImportData($data, $columns)
-    {
-        return null;
-    }
-    /**
-     * Creates an SQL INSERT query for multiple records.
-     *
-     * This method generates an INSERT statement for a specified table and prepares the values 
-     * for binding in a batch operation. It supports multiple records and ensures proper 
-     * formatting of values.
-     *
-     * @param string $tableName Name of the table where data will be inserted.
-     * @param array $data An array of associative arrays, where each associative array 
-     *                    represents a record to be inserted.
-     * @return string The generated SQL INSERT statement with placeholders for values.
-     */
-    public function insert($tableName, $data)
     {
         return null;
     }

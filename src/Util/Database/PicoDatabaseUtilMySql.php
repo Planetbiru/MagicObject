@@ -6,7 +6,6 @@ use Exception;
 use MagicObject\Database\PicoDatabase;
 use MagicObject\Database\PicoDatabaseQueryBuilder;
 use MagicObject\Database\PicoDatabaseType;
-use MagicObject\Database\PicoPageData;
 use MagicObject\Database\PicoTableInfo;
 use MagicObject\MagicObject;
 use MagicObject\SecretObject;
@@ -15,18 +14,30 @@ use PDO;
 /**
  * Class PicoDatabaseUtilMySql
  *
- * Utility class for managing MySQL database operations in the framework.
- * This class provides methods for retrieving table structures, generating SQL
- * statements for creating tables, dumping data into SQL insert statements,
- * and importing data from one database to another.
+ * This class extends the PicoDatabaseUtilBase and implements the PicoDatabaseUtilInterface specifically 
+ * for MySQL database operations. It provides specialized utility methods tailored to leverage MySQL's 
+ * features and syntax while ensuring compatibility with the general database utility interface.
  *
- * Key Functionalities:
- * - Retrieve and display column information for tables.
- * - Generate SQL statements to create tables based on existing structures.
- * - Dump data from various sources into SQL insert statements.
- * - Facilitate the import of data between source and target databases, including
- *   handling pre and post-import scripts.
- * - Ensure data integrity by fixing types during the import process.
+ * Key functionalities include:
+ *
+ * - **Retrieve and display column information for tables:** Methods to fetch detailed column data, 
+ *   including types and constraints, from MySQL tables.
+ * - **Generate SQL statements to create tables based on existing structures:** Automated generation 
+ *   of CREATE TABLE statements to replicate existing table schemas.
+ * - **Dump data from various sources into SQL insert statements:** Convert data from different formats 
+ *   into valid SQL INSERT statements for efficient data insertion.
+ * - **Facilitate the import of data between source and target databases:** Streamlined processes for 
+ *   transferring data, including handling pre and post-import scripts to ensure smooth operations.
+ * - **Ensure data integrity by fixing types during the import process:** Validation and correction of 
+ *   data types to match MySQL's requirements, enhancing data quality during imports.
+ *
+ * This class is designed for developers who are working with MySQL databases and need a robust set of tools 
+ * to manage database operations efficiently. By adhering to the PicoDatabaseUtilInterface, it provides 
+ * a consistent API for database utilities while taking advantage of MySQL-specific features.
+ *
+ * Usage:
+ * To use this class, instantiate it with a MySQL database connection and utilize its methods to perform 
+ * various database tasks, ensuring efficient data management and manipulation.
  *
  * @author Kamshory
  * @package MagicObject\Util\Database
@@ -34,7 +45,6 @@ use PDO;
  */
 class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabaseUtilInterface //NOSONAR
 {
-    const KEY_NAME = "name";
 
     /**
      * Retrieves a list of columns for a specified table.
@@ -52,13 +62,17 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
     /**
      * Dumps the structure of a table as a SQL statement.
      *
-     * @param PicoTableInfo $tableInfo Table information.
-     * @param string $picoTableName Table name.
-     * @param bool $createIfNotExists Whether to add "IF NOT EXISTS" in the create statement.
-     * @param bool $dropIfExists Whether to add "DROP TABLE IF EXISTS" before the create statement.
-     * @param string $engine Storage engine (default is 'InnoDB').
-     * @param string $charset Character set (default is 'utf8mb4').
-     * @return string SQL statement to create the table.
+     * This method generates a SQL CREATE TABLE statement based on the provided table information,
+     * including the option to include or exclude specific clauses such as "IF NOT EXISTS" and 
+     * "DROP TABLE IF EXISTS". It also handles the definition of primary keys if present.
+     *
+     * @param PicoTableInfo $tableInfo     The information about the table, including column details and primary keys.
+     * @param string        $picoTableName  The name of the table for which the structure is being generated.
+     * @param bool         $createIfNotExists Whether to add "IF NOT EXISTS" in the CREATE statement (default is false).
+     * @param bool         $dropIfExists      Whether to add "DROP TABLE IF EXISTS" before the CREATE statement (default is false).
+     * @param string|null  $engine            The storage engine to use for the table (optional, default is null).
+     * @param string|null  $charset           The character set to use for the table (optional, default is null).
+     * @return string                           The SQL statement to create the table, including column definitions and primary keys.
      */
     public function dumpStructure($tableInfo, $picoTableName, $createIfNotExists = false, $dropIfExists = false, $engine = 'InnoDB', $charset = 'utf8mb4')
     {
@@ -102,7 +116,7 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
 
         foreach($tableInfo->getColumns() as $column)
         {
-            if(isset($autoIncrementKeys) && is_array($autoIncrementKeys) && in_array($column[self::KEY_NAME], $autoIncrementKeys))
+            if(isset($autoIncrementKeys) && is_array($autoIncrementKeys) && in_array($column[parent::KEY_NAME], $autoIncrementKeys))
             {
                 $query[] = "";
                 $query[] = "ALTER TABLE `$picoTableName` \r\n\tMODIFY ".trim($this->createColumn($column), " \r\n\t ")." AUTO_INCREMENT";
@@ -116,14 +130,23 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
     /**
      * Creates a column definition for a SQL statement.
      *
-     * @param array $column Column details.
-     * @return string SQL column definition.
+     * This method constructs a SQL column definition based on the provided column details,
+     * including the column name, data type, nullability, and default value. The resulting 
+     * definition is formatted for use in a CREATE TABLE statement.
+     *
+     * @param array $column An associative array containing details about the column:
+     *                      - string name: The name of the column.
+     *                      - string type: The data type of the column (e.g., VARCHAR, INT).
+     *                      - bool|string nullable: Indicates if the column allows NULL values (true or 'true' for NULL; otherwise, NOT NULL).
+     *                      - mixed default_value: The default value for the column (optional).
+     *
+     * @return string The SQL column definition formatted as a string, suitable for inclusion in a CREATE TABLE statement.
      */
     public function createColumn($column)
     {
         $col = array();
         $col[] = "\t";
-        $col[] = "`".$column[self::KEY_NAME]."`";
+        $col[] = "`".$column[parent::KEY_NAME]."`";
         $col[] = $column['type'];
         if(isset($column['nullable']) && strtolower(trim($column['nullable'])) == 'true')
         {
@@ -145,9 +168,15 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
     /**
      * Fixes the default value for SQL insertion based on its type.
      *
-     * @param string $defaultValue Default value to fix.
-     * @param string $type Data type of the column.
-     * @return string Fixed default value.
+     * This method processes the given default value according to the specified data type,
+     * ensuring that it is correctly formatted for SQL insertion. For string-like types,
+     * the value is enclosed in single quotes, while boolean and null values are returned 
+     * as is.
+     *
+     * @param mixed $defaultValue The default value to fix, which can be a string, boolean, or null.
+     * @param string $type The data type of the column (e.g., ENUM, CHAR, TEXT, INT, FLOAT, DOUBLE).
+     *
+     * @return mixed The fixed default value formatted appropriately for SQL insertion.
      */
     public function fixDefaultValue($defaultValue, $type)
     {
@@ -163,12 +192,18 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
     }
 
     /**
-     * Dumps a single record into an SQL insert statement.
+     * Dumps a single record into an SQL INSERT statement.
      *
-     * @param array $columns Columns of the target table.
-     * @param string $picoTableName Table name.
-     * @param MagicObject $record Data record.
-     * @return string SQL insert statement.
+     * This method takes a data record and constructs an SQL INSERT statement 
+     * for the specified table. It maps the values of the record to the corresponding 
+     * columns based on the provided column definitions.
+     *
+     * @param array $columns An associative array where keys are column names and values are column details.
+     * @param string $picoTableName The name of the table where the record will be inserted.
+     * @param MagicObject $record The data record to be inserted, which provides a method to retrieve values.
+     *
+     * @return string The generated SQL INSERT statement.
+     * @throws Exception If the record cannot be processed or if there are no values to insert.
      */
     public function dumpRecord($columns, $picoTableName, $record)
     {
@@ -178,7 +213,7 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
         {
             if(isset($columns[$key]))
             {
-                $rec[$columns[$key][self::KEY_NAME]] = $val;
+                $rec[$columns[$key][parent::KEY_NAME]] = $val;
             }
         }
         $queryBuilder = new PicoDatabaseQueryBuilder(PicoDatabaseType::DATABASE_TYPE_MYSQL);
@@ -304,53 +339,5 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
         return $data;
     }
 
-    /**
-     * Creates an SQL INSERT query for multiple records.
-     *
-     * This method generates an INSERT statement for a specified table and prepares the values 
-     * for binding in a batch operation. It supports multiple records and ensures proper 
-     * formatting of values.
-     *
-     * @param string $tableName Name of the table where data will be inserted.
-     * @param array $data An array of associative arrays, where each associative array 
-     *                    represents a record to be inserted.
-     * @return string The generated SQL INSERT statement with placeholders for values.
-     */
-    public function insert($tableName, $data)
-    {
-        // Collect all unique columns from the data records
-        $columns = array();
-        foreach ($data as $record) {
-            $columns = array_merge($columns, array_keys($record));
-        }
-        $columns = array_unique($columns);
-
-        // Create placeholders for the prepared statement
-        $placeholdersArr = array_fill(0, count($columns), '?');
-        $placeholders = '(' . implode(', ', $placeholdersArr) . ')';
-
-        // Build the INSERT query
-        $query = "INSERT INTO $tableName (" . implode(', ', $columns) . ") \r\nVALUES \r\n".
-        implode(",\r\n", array_fill(0, count($data), $placeholders));
-
-        // Prepare values for binding
-        $values = array();
-        foreach ($data as $record) {
-            foreach ($columns as $column) {
-                // Use null if the value is not set
-                $values[] = isset($record[$column]) && $record[$column] !== null ? $record[$column] : null;
-            }
-        }
-
-        // Format each value for safe SQL insertion
-        $formattedElements = array_map(function($element){
-            return $this->fixData($element);
-        }, $values);
-
-        // Replace placeholders with formatted values
-        return vsprintf(str_replace('?', '%s', $query), $formattedElements);
-    }
-
     
-
 }
