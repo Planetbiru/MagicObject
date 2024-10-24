@@ -174,26 +174,6 @@ When creating a DTO for a `Song`, the user can incorporate properties from the a
 
 #### Code Implementation
 
-**SongDto** 
-
-```php
-class SongDto extends MagicDto
-{
-    /**
-     * The name of the agency associated with the artist.
-     * 
-     * This property is sourced from the agency related to the artist of the song.
-     * 
-     * @Source("artist->agency->name")
-     * @JsonProperty("agency_name")
-     * @var string
-     */
-    protected $agencyName;
-
-    // Additional properties and methods for the SongDto can be defined here.
-}
-```
-
 **Song**
 
 ```php
@@ -280,6 +260,126 @@ class Agency extends MagicObject {
     
     // Additional properties and methods for the Agency can be defined here.
 }
+```
+
+**SongDto** 
+
+```php
+class SongDto extends MagicDto
+{
+    /**
+    * Song ID
+    * 
+    * @Source("songId")
+    * @JsonProperty(name="song_id")
+    * @var string
+    */
+    protected $songId;
+
+    /**
+    * Title
+    *
+    * @Source("title")
+    * @JsonProperty("title")
+    * @var string
+    */
+    protected $title;
+
+    /**
+    * Artist
+    *
+    * @Source("artist")
+    * @JsonProperty("artist")
+    * @var ArtistDto
+    */
+    protected $artist;
+
+    /**
+     * The name of the agency associated with the artist.
+     * 
+     * This property is sourced from the agency related to the artist of the song.
+     * 
+     * @Source("artist->agency->name")
+     * @JsonProperty("agency_name")
+     * @var string
+     */
+    protected $agencyName;
+
+    // Additional properties and methods for the SongDto can be defined here.
+}
+```
+
+**ArtistDto** 
+
+```php
+class ArtistDto extends MagicDto
+{
+    /**
+    * Artist ID
+    * 
+    * @Source("artistId")
+    * @JsonProperty(name="artist_id")
+    * @var string
+    */
+    protected $artistId;
+
+    /**
+    * Name
+    *
+    * @Source("name")
+    * @JsonProperty("name")
+    * @var string
+    */
+    protected $name;
+
+    /**
+    * Agency
+    *
+    * @Source("agency")
+    * @JsonProperty("agency")
+    * @var AgencyDto
+    */
+    protected $agency;
+
+    /**
+     * The name of the agency associated with the artist.
+     * 
+     * This property is sourced from the agency related to the artist of the song.
+     * 
+     * @Source("artist->agency->name")
+     * @JsonProperty("agency_name")
+     * @var string
+     */
+    protected $agencyName;
+
+    // Additional properties and methods for the SongDto can be defined here.
+}
+```
+
+**AgencyDto** 
+
+```php
+class AgencyDto extends MagicDto
+{
+    /**
+    * Agency ID
+    * 
+    * @Source("agencyId")
+    * @JsonProperty(name="agency_id")
+    * @var string
+    */
+    protected $agencyId;
+
+    /**
+    * Name
+    *
+    * @Source("name")
+    * @JsonProperty("name")
+    * @var string
+    */
+    protected $name;
+}
+
 ```
 
 **Usage**
