@@ -1326,6 +1326,378 @@ catch(Exception $e)
 </article>
 
 <article class="article" id="part11">
+<h2>MagicDto</h2>
+<h3>Introduction to DTOs</h3>
+<p>A Data Transfer Object (DTO) is a design pattern used to transfer data between software application subsystems or layers. DTOs encapsulate data, reducing the number of method calls needed to retrieve or send information. JSON (JavaScript Object Notation) has become the standard for data serialization due to its simplicity and ease of integration with various programming languages.</p>
+<p>The properties defined in MagicDto adhere strictly to the specifications set forth by the developer, ensuring a well-defined structure. This means that users are prohibited from adding any input or output that falls outside the established DTO framework. As a result, the integrity of the data is maintained, and the application remains predictable and reliable, as any deviation from the predefined structure is not permitted. This strict adherence to the DTO structure promotes clarity and consistency, facilitating better communication between different layers of the application while reducing the risk of errors or unintended behavior.</p>
+<h3>The Need for MagicDto</h3>
+<p>In modern applications, especially those that interact with third-party services, maintaining consistent data formats can be challenging. Different systems may use varying naming conventions, such as camel case (<code>myProperty</code>) and snake case (<code>my_property</code>). Additionally, inconsistencies can occur with uppercase and lowercase letters, leading to potential mismatches when exchanging data.</p>
+<p><strong>MagicDto</strong> addresses these issues by allowing developers to create DTOs that seamlessly translate property names between different naming conventions. This ensures that data is properly formatted for both internal and external use, enhancing interoperability and reducing errors.</p>
+<h3>Features of MagicDto</h3>
+<ol>
+<li>
+<p><strong>Flexible Naming Strategies</strong>:</p>
+<ul>
+<li>MagicDto supports both camel case and snake case naming strategies. This flexibility is particularly useful when integrating with diverse APIs or legacy systems that may employ different conventions.</li>
+</ul>
+</li>
+<li>
+<p><strong>Automatic Property Mapping</strong>:</p>
+<ul>
+<li>Users can define DTOs that automatically map properties from their internal representation to the expected format of third-party services. This reduces boilerplate code and simplifies maintenance.</li>
+</ul>
+</li>
+<li>
+<p><strong>Annotations for Clarity</strong>:</p>
+<ul>
+<li>The MagicDto class utilizes PHP annotations to clarify the purpose of each property. These annotations enhance code readability and provide useful metadata for serialization.</li>
+</ul>
+</li>
+</ol>
+<h3>Class Structure</h3>
+<p>The <code>MagicDto</code> class is designed with properties that have protected access levels, ensuring encapsulation while still allowing derived classes to access these properties. Each property is annotated with <code>@var</code>, which specifies its data type. This structured approach enhances type safety and improves code quality.</p>
+<h4>Key Annotations</h4>
+<ol>
+<li>
+<p><strong>@Source</strong></p>
+<p>The <code>@Source</code> annotation indicates the source property that maps to a specific field in the incoming data. If this annotation is omitted, MagicDto will default to using the property name that matches the class property name. This allows for flexibility in cases where the external API may use different naming conventions.</p>
+</li>
+</ol>
+<pre><code class="language-php">/**
+ * @Source("album_name")
+ * @var string
+ */
+protected $title;</code></pre>
+<ol start="2">
+<li>
+<p><strong>@JsonProperty</strong></p>
+<p>The <code>@JsonProperty</code> annotation specifies the output property name when data is serialized to JSON. If this annotation is not provided, MagicDto will serialize the property using its class property name. This ensures that data sent to third-party applications adheres to their expected format.</p>
+</li>
+</ol>
+<pre><code class="language-php">/**
+ * @JsonProperty("album_title")
+ * @var string
+ */
+protected $title;</code></pre>
+<p>We can put it together</p>
+<pre><code class="language-php">/**
+ * @Source("album_name")
+ * @JsonProperty("album_title")
+ * @var string
+ */
+protected $title;</code></pre>
+<p>In this example, <code>@Source("album_name")</code> indicates that the incoming data will use <code>album_name</code>, while <code>@JsonProperty("album_title")</code> specifies that when the data is serialized, it will be output as <code>album_title</code>.</p>
+<p>To facilitate bidirectional communication, we need two different DTOs. The <code>@Source</code> annotation in the first DTO corresponds to the <code>@JsonProperty</code> annotation in the second DTO, while the <code>@JsonProperty</code> in the first DTO maps to the <code>@Source</code> in the second DTO.</p>
+<p><strong>Example:</strong></p>
+<p>DTO on the Input Side</p>
+<pre><code class="language-php">class AlbumDtoInput extends MagicDto
+{
+    /**
+     * @Source("album_id")
+     * @JsonProperty("albumId")
+     * @var string
+     */
+    protected $id;
+
+    /**
+     * @Source("album_name")
+     * @JsonProperty("albumTitle")
+     * @var string
+     */
+    protected $title;
+
+    /**
+     * @Source("date_release")
+     * @JsonProperty("releaseDate")
+     * @var string
+     */
+    protected $release;
+
+    /**
+     * @Source("song")
+     * @JsonProperty("numberOfSong")
+     * @var string
+     */
+    protected $songs;
+}</code></pre>
+<p>DTO on the Output Side</p>
+<pre><code class="language-php">class AlbumDtoOutput extends MagicDto
+{
+    /**
+     * @Source("albumId")
+     * @JsonProperty("album_id")
+     * @var string
+     */
+    protected $id;
+
+    /**
+     * @Source("albumTitle")
+     * @JsonProperty("album_name")
+     * @var string
+     */
+    protected $title;
+
+    /**
+     * @Source("releaseDate")
+     * @JsonProperty("date_release")
+     * @var string
+     */
+    protected $release;
+
+    /**
+     * @Source("numberOfSong")
+     * @JsonProperty("song")
+     * @var string
+     */
+    protected $songs;
+}</code></pre>
+<p><strong>Description</strong></p>
+<p>In this example, we have two DTO classes: AlbumDtoInput and AlbumDtoOutput. The AlbumDtoInput class is designed to receive data from external sources, using the @Source annotation to specify the incoming property names and the @JsonProperty annotation to define the corresponding properties in the internal representation.</p>
+<p>Conversely, the AlbumDtoOutput class is structured for sending data outwards. Here, the @Source annotation reflects the internal property names, while the @JsonProperty annotation defines the expected property names when the data is serialized for external use. This bidirectional mapping ensures that data flows seamlessly between internal and external systems.</p>
+<p>The <code>@Source</code> annotation allows a Data Transfer Object (DTO) to inherit properties from an underlying object, enabling seamless data integration across related entities.</p>
+<h3>Cross Object Mapping</h3>
+<h4>Cross Object Mapping Explanation</h4>
+<ol>
+<li>
+<p><strong>Concept Clarification</strong>:</p>
+<ul>
+<li>Cross Object Mapping refers to the ability to access and utilize properties from related objects in a hierarchical structure. In your case, the <code>SongDto</code> pulls in the agency name associated with the artist of a song.</li>
+</ul>
+</li>
+<li>
+<p><strong>DTO Definition</strong>:</p>
+<ul>
+<li>A DTO is a simple object that carries data between processes. In this context, <code>SongDto</code> aggregates data from the <code>Song</code>, <code>Artist</code>, and <code>Agency</code> models without duplicating properties unnecessarily.</li>
+</ul>
+</li>
+</ol>
+<p>For example, we want to directly include properties from the agency within the SongDto.</p>
+<ul>
+<li><strong>Song</strong>
+<ul>
+<li><strong>Artist</strong>
+<ul>
+<li><strong>Agency</strong></li>
+</ul></li>
+</ul></li>
+</ul>
+<p>When creating a DTO for a <code>Song</code>, the user can incorporate properties from the associated <code>Agency</code> into the <code>SongDto</code>. This is particularly useful for aggregating data from related models without needing to replicate information.</p>
+<h4>Code Implementation</h4>
+<p><strong>Song</strong></p>
+<pre><code class="language-php">class Song extends MagicObject {
+    /**
+    * Song ID
+    * 
+    * @Column(name="song_id")
+    * @var string
+    */
+    protected $songId;
+
+    /**
+    * Name
+    * 
+    * @Column(name="name")
+    * @var string
+    */
+    protected $name;
+
+    /**
+    * Artist
+    * 
+    * @JoinColumn(name="artist_id")
+    * @var Artist
+    */
+    protected $artist;
+
+    // Additional properties and methods for the Song can be defined here.
+}</code></pre>
+<p><strong>Artist</strong></p>
+<pre><code class="language-php">class Artist extends MagicObject {
+    /**
+    * Artist ID
+    * 
+    * @Column(name="artist_id")
+    * @var string
+    */
+    protected $artistId;
+
+    /**
+    * Name
+    * 
+    * @Column(name="name")
+    * @var string
+    */
+    protected $name;
+
+    /**
+    * Agency
+    * 
+    * @JoinColumn(name="agency_id")
+    * @var Agency
+    */
+    protected $agency;
+
+    // Additional properties and methods for the Artist can be defined here.
+}</code></pre>
+<p><strong>Agency</strong></p>
+<pre><code class="language-php">class Agency extends MagicObject {
+    /**
+    * Agency ID
+    * 
+    * @Column(name="agency_id")
+    * @var string
+    */
+    protected $agencyId;
+
+    /**
+    * Name
+    * 
+    * @Column(name="name")
+    * @var string
+    */
+    protected $name;
+
+    // Additional properties and methods for the Agency can be defined here.
+}</code></pre>
+<p><strong>SongDto</strong> </p>
+<pre><code class="language-php">class SongDto extends MagicDto
+{
+    /**
+    * Song ID
+    * 
+    * @Source("songId")
+    * @JsonProperty(name="song_id")
+    * @var string
+    */
+    protected $songId;
+
+    /**
+    * Title
+    *
+    * @Source("title")
+    * @JsonProperty("title")
+    * @var string
+    */
+    protected $title;
+
+    /**
+    * Artist
+    *
+    * @Source("artist")
+    * @JsonProperty("artist")
+    * @var ArtistDto
+    */
+    protected $artist;
+
+    /**
+     * The name of the agency associated with the artist.
+     * 
+     * This property is sourced from the agency related to the artist of the song.
+     * 
+     * @Source("artist-&gt;agency-&gt;name")
+     * @JsonProperty("agency_name")
+     * @var string
+     */
+    protected $agencyName;
+
+    // Additional properties and methods for the SongDto can be defined here.
+}</code></pre>
+<p><strong>ArtistDto</strong> </p>
+<pre><code class="language-php">class ArtistDto extends MagicDto
+{
+    /**
+    * Artist ID
+    * 
+    * @Source("artistId")
+    * @JsonProperty(name="artist_id")
+    * @var string
+    */
+    protected $artistId;
+
+    /**
+    * Name
+    *
+    * @Source("name")
+    * @JsonProperty("name")
+    * @var string
+    */
+    protected $name;
+
+    /**
+    * Agency
+    *
+    * @Source("agency")
+    * @JsonProperty("agency")
+    * @var AgencyDto
+    */
+    protected $agency;
+
+    /**
+     * The name of the agency associated with the artist.
+     * 
+     * This property is sourced from the agency related to the artist of the song.
+     * 
+     * @Source("artist-&gt;agency-&gt;name")
+     * @JsonProperty("agency_name")
+     * @var string
+     */
+    protected $agencyName;
+
+    // Additional properties and methods for the SongDto can be defined here.
+}</code></pre>
+<p><strong>AgencyDto</strong> </p>
+<pre><code class="language-php">class AgencyDto extends MagicDto
+{
+    /**
+    * Agency ID
+    * 
+    * @Source("agencyId")
+    * @JsonProperty(name="agency_id")
+    * @var string
+    */
+    protected $agencyId;
+
+    /**
+    * Name
+    *
+    * @Source("name")
+    * @JsonProperty("name")
+    * @var string
+    */
+    protected $name;
+}
+</code></pre>
+<p><strong>Usage</strong></p>
+<pre><code class="language-php">$song = new Song(null, $database);
+$song-&gt;find("1234");
+$songDto = new SongDto($song);
+
+header("Content-type: application/json");
+echo $songDto;</code></pre>
+<h4>Explanation</h4>
+<ul>
+<li>
+<p><strong>@Source</strong>: This annotation specifies the path to the property within the nested object structure. In this case, <code>artist-&gt;agency-&gt;name</code> indicates that the <code>agencyName</code> will pull data from the <code>name</code> property of the <code>Agency</code> object linked to the <code>Artist</code>.</p>
+</li>
+<li>
+<p><strong>@JsonProperty</strong>: This annotation maps the <code>agencyName</code> property to a different key in the JSON representation of the DTO. Here, it will be serialized as <code>agency_name</code>.</p>
+</li>
+<li>
+<p><strong>protected $agencyName</strong>: This declares the <code>agencyName</code> property with protected visibility, ensuring that it can only be accessed within the class itself and by subclasses.</p>
+</li>
+</ul>
+<p>This approach enhances data encapsulation and promotes cleaner code by allowing DTOs to automatically gather necessary data from related entities.</p>
+<h3>Benefits of Using MagicDto</h3>
+<ul>
+<li><strong>Reduced Complexity</strong>: By automating property translation, MagicDto minimizes the need for manual mapping code, reducing complexity and potential errors.</li>
+<li><strong>Improved Maintainability</strong>: With clearly defined annotations and a structured approach, developers can easily understand and maintain the DTOs, even as systems evolve.</li>
+<li><strong>Enhanced Interoperability</strong>: MagicDto ensures that data exchanged between different systems is consistent and correctly formatted, leading to smoother integrations and fewer runtime issues.</li>
+</ul>
+<h3>Conclusion</h3>
+<p>MagicDto is a powerful solution for managing data transfer in applications that need to communicate with external systems. By leveraging flexible naming strategies and clear annotations, it simplifies the process of creating and maintaining DTOs, ensuring seamless data exchange. Whether you’re building a new application or integrating with legacy systems, MagicDto can help you navigate the complexities of data serialization and improve overall application reliability.</p>
+</article>
+
+<article class="article" id="part12">
 <h2>Input POST/GET/COOKIE/REQUEST/SERVER</h2>
 <p>In PHP, handling user input can be done through various superglobals, such as $_POST, $_GET, $_COOKIE, $_REQUEST, and $_SERVER. Each of these superglobals serves a specific purpose for gathering data from different types of requests.</p>
 <h3>Input POST</h3>
@@ -1452,7 +1824,7 @@ PicoFilterConstant::FILTER_SANITIZE_ASCII               = 601;</code></pre>
 <p>In summary, handling input in PHP through superglobals is straightforward but requires careful filtering to ensure security. Using classes like <code>InputPost</code>, <code>InputGet</code>, <code>InputCookie</code>, <code>InputRequest</code>, and <code>InputServer</code> can abstract the underlying superglobal accesses, making the code cleaner and potentially more secure by enforcing consistent input handling and sanitization practices.</p>
 </article>
 
-<article class="article" id="part12">
+<article class="article" id="part13">
 <h2>Session</h2>
 <p>Session variables keep information about one single user, and are available to all pages in one application.</p>
 <h3>Session with File</h3>
@@ -1553,7 +1925,7 @@ $sessions-&gt;startSession();</code></pre>
 <p>This implementation provides a robust framework for session management in a PHP application, allowing flexibility in storage options (files or Redis) while emphasizing security through encryption. The use of YAML for configuration keeps the setup clean and easily adjustable. By encapsulating session configuration in dedicated classes, you enhance maintainability and security.</p>
 </article>
 
-<article class="article" id="part13">
+<article class="article" id="part14">
 <h2>Entity</h2>
 <p>Entity is class to access database. Entity is derived from MagicObject. Some annotations required to activated all entity features. </p>
 <p><strong>Constructor</strong></p>
@@ -6041,7 +6413,7 @@ catch(Exception $e)
 }</code></pre>
 </article>
 
-<article class="article" id="part14">
+<article class="article" id="part15">
 <h3>Specification</h3>
 <p>Specifications are implemented in the PicoSpecification and PicoPredicate classes. PicoSpecification is a framework that can contain one or more PicoPredicate.</p>
 <p>For example, we have the following query:</p>
@@ -6534,7 +6906,7 @@ catch(Exception $e)
 }</code></pre>
 </article>
 
-<article class="article" id="part15">
+<article class="article" id="part16">
 <h3>Pageable and Sortable</h3>
 <p>In MagicObject, pageable is used to divide data rows into several pages. This is required by the application to display a lot of data per page. While sortable is used to sort data before the data is divided per page.</p>
 <p>Pageable can stand alone without sortable. However, this method is not recommended because the data sequence is not as expected. If new data is entered, users will have difficulty finding where it is located in the list and on which page the data will appear. The solution is to add a sortable that will sort the data based on certain columns. For example, the time of data creation is descending, then the new data will be on the first page. Conversely, if sorted based on the time of data creation is ascending, then the new data will be on the last page.</p>
@@ -6826,7 +7198,7 @@ $pageable = new PicoPageable(new PicoLimit(0, 100), $sortable);
 <p><code>ORDER BY user_name ASC, email DESC, phone ASC LIMIT 200 OFFSET 400</code></p>
 </article>
 
-<article class="article" id="part16">
+<article class="article" id="part17">
 <h2>Filtering, Ordering and Pagination</h2>
 <p>MagicObject will filter data according to the given criteria. On the other hand, MagicObject will only retrieve data on the specified page by specifying <code>limit</code> and <code>offset</code> data in the <code>select</code> query.</p>
 <p>Example parameters:</p>
@@ -7709,7 +8081,7 @@ require_once "inc/footer.php";
 ?&gt;</code></pre>
 </article>
 
-<article class="article" id="part17">
+<article class="article" id="part18">
 <h2>Native Query</h2>
 <p>In MagicObject version 2, native queries have been introduced as an efficient way to interact with the database.</p>
 <p>Native queries offer significant performance improvements when handling large volumes of data, allowing users to craft highly efficient queries that meet diverse requirements.</p>
@@ -8339,7 +8711,7 @@ fclose($fp);</code></pre>
 <p>By leveraging the native query feature in MagicObject, you can create efficient and maintainable database interactions, enhancing your application's performance and security.</p>
 </article>
 
-<article class="article" id="part18">
+<article class="article" id="part19">
 <h2>Multiple Database Connections</h2>
 <p>MagicObject version 2 introduces support for multiple database connections, enabling users to manage entities stored across different databases seamlessly. When performing operations such as JOINs with entities from multiple databases, it is essential to define a database connection for each entity involved.</p>
 <h3>Example Scenario</h3>
@@ -8504,7 +8876,7 @@ $song-&gt;databaseEntity($databaseEntity);</code></pre>
 <p>With MagicObject version 2, managing entities across multiple database connections is straightforward. By defining the correct associations and utilizing the provided methods, users can effectively work with complex data structures that span multiple databases. Make sure to handle exceptions properly to ensure robustness in your application.</p>
 </article>
 
-<article class="article" id="part19">
+<article class="article" id="part20">
 <h2>Dump Database</h2>
 <p>We can dump database to another database type. We do not need any database converter. Just define the target database type when we dump the database.</p>
 <h3>Database Dump Overview</h3>
@@ -8971,12 +9343,45 @@ class Song extends MagicObject
 <pre><code class="language-php">$song = new Song();
 $dumpForSong = new PicoDatabaseDump();
 echo $dumpForSong-&gt;dumpStructure($song, PicoDatabaseType::DATABASE_TYPE_MYSQL, true, true);</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><strong>$song:</strong> An instance of the Song class, representing the table structure you want to dump.</li>
+<li><strong>PicoDatabaseType::DATABASE_TYPE_MYSQL:</strong> The type of database you are targeting (e.g., MySQL, PostgreSQL).</li>
+<li><strong>true (createIfNotExists):</strong> Whether to include the &quot;IF NOT EXISTS&quot; clause in the CREATE statement.</li>
+<li><strong>true (dropIfExists):</strong> Whether to include the &quot;DROP TABLE IF EXISTS&quot; statement before creating the table.</li>
+</ul>
 <h3>Dump Data</h3>
 <p>We can dump data by connecting to real database. Don't forget to define the target database type. If we will dump multiple table, we must use dedicated instance of <code>PicoDatabaseDump</code>.</p>
 <pre><code class="language-php">$song = new Song(null, $database);
 $pageData = $song-&gt;findAll();
 $dumpForSong = new PicoDatabaseDump();
 echo $dumpForSong-&gt;dumpData($pageData, PicoDatabaseType::DATABASE_TYPE_MYSQL);</code></pre>
+<p><strong>Important Note:</strong></p>
+<p>When exporting a table with a large amount of data, the above method may not be suitable, as it can consume a significant amount of memory while trying to accommodate all the data before writing it to a file.</p>
+<p>To efficiently handle large datasets, you can use the following approach:</p>
+<pre><code class="language-php">$song = new Song(null, $database);
+/*
+$speficication = null
+$pageable = null
+$sortable = null
+$passive = true
+$subqueryMap = null
+$findOption = MagicObject::FIND_OPTION_NO_COUNT_DATA | MagicObject::FIND_OPTION_NO_FETCH_DATA
+*/
+$pageData = $song-&gt;findAll(null, null, null, true, null, MagicObject::FIND_OPTION_NO_COUNT_DATA | MagicObject::FIND_OPTION_NO_FETCH_DATA);
+$dumpForSong = new PicoDatabaseDump();
+
+$dumpForSong-&gt;dumpData($pageData, PicoDatabaseType::DATABASE_TYPE_MYSQL, new Song(), $maxRecord, function($sql){
+    $fp = fopen("dump.sql", "a");
+    fputs($fp, $sql);
+    fclose($fp);
+});</code></pre>
+<p><strong>Explanation:</strong></p>
+<ul>
+<li><strong>findAll Parameters:</strong> This allows you to customize your query. The options provided (e.g., FIND_OPTION_NO_COUNT_DATA, FIND_OPTION_NO_FETCH_DATA) ensure that only the necessary data is fetched, thus reducing memory consumption.</li>
+<li><strong>Callback Function:</strong> The anonymous function passed as a parameter to dumpData handles the SQL output, appending it to dump.sql in an efficient manner, thereby avoiding excessive memory usage.</li>
+</ul>
+<p>By following these guidelines, you can effectively manage both the structure and data dumping processes while optimizing for performance and resource utilization.</p>
 <h3>Summary</h3>
 <ul>
 <li><strong>Structure Dumping</strong>: Use <code>dumpStructure</code> to get the schema of the database without a real connection.</li>
@@ -8985,7 +9390,7 @@ echo $dumpForSong-&gt;dumpData($pageData, PicoDatabaseType::DATABASE_TYPE_MYSQL)
 <p>This approach allows developers to quickly switch between database types and manage their database schemas and data efficiently. The use of dedicated instances of PicoDatabaseDump for multiple tables ensures clarity and organization in your database operations.</p>
 </article>
 
-<article class="article" id="part20">
+<article class="article" id="part21">
 <h2>Object Label</h2>
 <pre><code>&lt;?php
 
@@ -9110,7 +9515,7 @@ echo $userType-&gt;labelAdminCreate();
 // it will print "Admin Create"</code></pre>
 </article>
 
-<article class="article" id="part21">
+<article class="article" id="part22">
 <h2>Database Query Builder</h2>
 <p>Database Query Builder is a feature for creating object-based database queries. The output of the Database Query Builder is a query that can be directly executed by the database used.</p>
 <p>Database Query Builder is actually designed for all relational databases but is currently only available in two languages, namely MySQL and PostgreSQL. MagicObject internally uses the Database Query Builder to create queries based on given methods and parameters.</p>
@@ -9377,7 +9782,7 @@ where song.active = true
 <p>This way, <code>$active</code> will be escaped before being executed by the database. You don't need to escape it first.</p>
 </article>
 
-<article class="article" id="part22">
+<article class="article" id="part23">
 <h2>Upload File</h2>
 <p>Uploading lots of files with arrays is difficult for some developers, especially novice developers. There is a significant difference between uploading a single file and multiple files.</p>
 <p>When the developer decides to change the form from single file to multiple files or vice versa, the backend developer must change the code to handle the uploaded files.</p>
@@ -9437,7 +9842,7 @@ else
 <p>This implementation offers a straightforward way to manage file uploads in PHP, abstracting complexities for developers. By using methods like getAll() and isMultiple(), developers can seamlessly handle both types of uploads without needing to write separate logic for each scenario. This approach not only improves code maintainability but also enhances the developer experience.</p>
 </article>
 
-<article class="article" id="part23">
+<article class="article" id="part24">
 <h2>Language</h2>
 <p>MagicObject supports multilingual applications. MagicObject allows developers to create entities that support a wide variety of languages that users can choose from. At the same time, different users can use different languages.</p>
 <p>To create table with multiple language, create new class from <code>DataTable</code> object. We can copy data from aother object to <code>DataTable</code> easly.</p>
@@ -9657,7 +10062,7 @@ $apa = $rumah;
 echo $apa;</code></pre>
 </article>
 
-<article class="article" id="part24">
+<article class="article" id="part25">
 <h2>Database Migration</h2>
 <p>MagicObject allows users to import data from a database with different table names and column names between the source database and the destination database. This feature is used by developers who develop applications that are already used in production environments.</p>
 <p>On the one hand, the application requires a new database structure according to what is defined by the developer. On the other hand, users want to use existing data.</p>
