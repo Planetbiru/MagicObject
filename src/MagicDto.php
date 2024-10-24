@@ -5,6 +5,7 @@ namespace MagicObject;
 use MagicObject\Exceptions\InvalidAnnotationException;
 use MagicObject\Exceptions\InvalidQueryInputException;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
+use MagicObject\Util\ClassUtil\PicoObjectParser;
 use MagicObject\Util\PicoGenericObject;
 use ReflectionClass;
 use ReflectionProperty;
@@ -40,22 +41,18 @@ class MagicDto extends stdClass // NOSONAR
      *
      * @var mixed
      */
-    private $dataSource = null;
+    private $_dataSource = null;
 
     /**
      * Constructor.
      *
      * Initializes the object with provided data and database connection.
      *
-     * @param self|array|stdClass|object|null $data Initial data to populate the object.
+     * @param self|array|stdClass|MagicObject|SetterGetter|SecretObject|PicoGenericObject|null $data Initial data to populate the object.
      */
     public function __construct($data = null)
     {
-        if(isset($data))
-        {
-            $this->dataSource = $data;
-        }
-        
+        $this->loadData($data);   
         $jsonAnnot = new PicoAnnotationParser(get_class($this));
         $params = $jsonAnnot->getParameters();
         foreach($params as $paramName=>$paramValue)
@@ -75,12 +72,39 @@ class MagicDto extends stdClass // NOSONAR
     /**
      * Loads data into the object.
      *
-     * @param mixed $data Data to load, which can be another MagicObject, an array, or an object.
+     * This method accepts various data types, including:
+     * - An instance of the class itself
+     * - An array
+     * - A standard object (stdClass)
+     * - Other specific object types such as MagicObject, SetterGetter, 
+     *   SecretObject, and PicoGenericObject. 
+     * 
+     * The method processes the input data and stores it in the internal 
+     * data source of the object, ensuring that only non-scalar values are 
+     * handled.
+     *
+     * @param self|array|stdClass|MagicObject|SetterGetter|SecretObject|PicoGenericObject|null $data 
+     *        The data to load, which can be one of the specified types 
+     *        or null.
      * @return self Returns the current instance for method chaining.
      */
     public function loadData($data)
     {
-        $this->dataSource = $data;
+        if (isset($data)) {
+            // Check if data is not a scalar value
+            if (is_object($data) || is_array($data)) {
+                // Check if the data is one of the allowed object types
+                if ($data instanceof self || $data instanceof MagicObject || 
+                    $data instanceof SetterGetter || $data instanceof SecretObject || 
+                    $data instanceof PicoGenericObject) {
+                    // Directly assign the data source if it is an allowed object type
+                    $this->_dataSource = $data;
+                } else {
+                    // Parse the object or array recursively
+                    $this->_dataSource = PicoObjectParser::parseRecursiveObject($data);
+                } 
+            }
+        }
         return $this;
     }
     
@@ -199,7 +223,7 @@ class MagicDto extends stdClass // NOSONAR
     private function handleSelfInstance($source, $var, $propertyName)
     {
         if (strpos($source, "->") === false) {
-            $value = isset($source) ? $this->dataSource->get($source) : $this->dataSource->get($propertyName);
+            $value = isset($source) ? $this->_dataSource->get($source) : $this->_dataSource->get($propertyName);
             $objectValid = new $var($value);
             return $objectValid->value();
         } else {
@@ -231,7 +255,7 @@ class MagicDto extends stdClass // NOSONAR
     private function handleMagicObject($source, $propertyName)
     {
         if (strpos($source, "->") === false) {
-            $value = isset($source) ? $this->dataSource->get($source) : $this->dataSource->get($propertyName);
+            $value = isset($source) ? $this->_dataSource->get($source) : $this->_dataSource->get($propertyName);
             return ($value instanceof MagicObject || $value instanceof SetterGetter || 
                     $value instanceof SecretObject || $value instanceof PicoGenericObject) 
                 ? $value->value() 
@@ -252,7 +276,7 @@ class MagicDto extends stdClass // NOSONAR
     private function handleDefaultCase($source, $key, $propertyName)
     {
         if (strpos($source, "->") === false) {
-            return isset($source) ? $this->dataSource->get($source) : $this->dataSource->get($key);
+            return isset($source) ? $this->_dataSource->get($source) : $this->_dataSource->get($key);
         } else {
             return $this->getNestedValue($source);
         }
@@ -269,7 +293,7 @@ class MagicDto extends stdClass // NOSONAR
         $currentVal = null;
         $arr = explode("->", $source);
         $fullKey = $arr[0];
-        $currentVal = $this->dataSource->get($fullKey);
+        $currentVal = $this->_dataSource->get($fullKey);
         for ($i = 1; $i < count($arr); $i++) {
             if (isset($currentVal) && $currentVal->get($arr[$i]) != null) {
                 $currentVal = $currentVal->get($arr[$i]);
