@@ -623,6 +623,9 @@ class Artist extends MagicObject
 
 }
 
+/**
+ * @JSON(prettify=true)
+ */
 class AlbumDto extends MagicDto
 {
     /**

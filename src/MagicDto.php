@@ -2,12 +2,10 @@
 
 namespace MagicObject;
 
-use MagicObject\Database\PicoDatabase;
-use MagicObject\Database\PicoDatabaseEntity;
-use MagicObject\Database\PicoDatabasePersistence;
+use MagicObject\Exceptions\InvalidAnnotationException;
+use MagicObject\Exceptions\InvalidQueryInputException;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\PicoGenericObject;
-use MagicObject\Util\PicoStringUtil;
 use ReflectionClass;
 use ReflectionProperty;
 use stdClass;
@@ -26,42 +24,9 @@ use stdClass;
  */
 class MagicDto extends stdClass // NOSONAR
 {
-    // Message constants
-    const MESSAGE_NO_DATABASE_CONNECTION = "No database connection provided";
-    const MESSAGE_NO_RECORD_FOUND = "No record found";
-
-    // Property naming strategy
-    const PROPERTY_NAMING_STRATEGY = "property-naming-strategy";
-
-    // Key constants
-    const KEY_PROPERTY_TYPE = "propertyType";
-    const KEY_DEFAULT_VALUE = "default_value";
-    const KEY_NAME = "name";
-    const KEY_VALUE = "value";
-
     // Format constants
     const JSON = 'JSON';
-
-    /**
-     * Indicates whether the object is read-only.
-     *
-     * @var bool
-     */
-    private $_readonly = false; // NOSONAR
-
-    /**
-     * Database connection instance.
-     *
-     * @var PicoDatabase
-     */
-    private $_database; // NOSONAR
-
-    /**
-     * Class containing a database entity.
-     *
-     * @var PicoDatabaseEntity|null
-     */
-    private $_databaseEntity; // NOSONAR
+    const PRETTIFY = 'prettify';
 
     /**
      * Class parameters.
@@ -69,27 +34,6 @@ class MagicDto extends stdClass // NOSONAR
      * @var array
      */
     private $_classParams = array(); // NOSONAR
-
-    /**
-     * List of null properties.
-     *
-     * @var array
-     */
-    private $_nullProperties = array(); // NOSONAR
-
-    /**
-     * Property labels.
-     *
-     * @var array
-     */
-    private $_label = array(); // NOSONAR
-
-    /**
-     * Database persistence instance.
-     *
-     * @var PicoDatabasePersistence|null
-     */
-    private $_persistProp = null; // NOSONAR
 
     /**
      * Data source.
@@ -107,19 +51,27 @@ class MagicDto extends stdClass // NOSONAR
      */
     public function __construct($data = null)
     {
-        $this->dataSource = $data;
+        if(isset($data))
+        {
+            $this->dataSource = $data;
+        }
+        
+        $jsonAnnot = new PicoAnnotationParser(get_class($this));
+        $params = $jsonAnnot->getParameters();
+        foreach($params as $paramName=>$paramValue)
+        {
+            try
+            {
+                $vals = $jsonAnnot->parseKeyValue($paramValue);
+                $this->_classParams[$paramName] = $vals;
+            }
+            catch(InvalidQueryInputException $e)
+            {
+                throw new InvalidAnnotationException("Invalid annotation @".$paramName);
+            }
+        }
     }
     
-    /**
-     * Retrieves the list of null properties.
-     *
-     * @return array The list of properties that are currently null.
-     */
-    public function nullPropertyList()
-    {
-        return $this->_nullProperties;
-    }
-
     /**
      * Loads data into the object.
      *
@@ -130,311 +82,6 @@ class MagicDto extends stdClass // NOSONAR
     {
         $this->dataSource = $data;
         return $this;
-    }
-
-    /**
-     * Set the read-only state of the object.
-     *
-     * When set to read-only, setters will not change the value of its properties,
-     * but loadData will still function normally.
-     *
-     * @param bool $readonly Flag to set the object as read-only
-     * @return self Returns the instance of the current object for method chaining.
-     */
-    protected function readOnly($readonly)
-    {
-        $this->_readonly = $readonly;
-        return $this;
-    }
-
-    /**
-     * Remove properties except for the specified ones.
-     *
-     * @param object|array $sourceData Data to filter
-     * @param array $propertyNames Names of properties to retain
-     * @return object|array Filtered data
-     */
-    public function removePropertyExcept($sourceData, $propertyNames)
-    {
-        if(is_object($sourceData))
-        {
-            // iterate
-            $resultData = new stdClass;
-            foreach($sourceData as $key=>$val)
-            {
-                if(in_array($key, $propertyNames))
-                {
-                    $resultData->$key = $val;
-                }
-            }
-            return $resultData;
-        }
-        if(is_array($sourceData))
-        {
-            // iterate
-            $resultData = array();
-            foreach($sourceData as $key=>$val)
-            {
-                if(in_array($key, $propertyNames))
-                {
-                    $resultData[$key] = $val;
-                }
-            }
-            return $resultData;
-        }
-        return new stdClass;
-    }
-
-    /**
-     * Modify null properties.
-     *
-     * @param string $propertyName Property name
-     * @param mixed $propertyValue Property value
-     * @return void
-     */
-    private function modifyNullProperties($propertyName, $propertyValue)
-    {
-        if($propertyValue === null && !isset($this->_nullProperties[$propertyName]))
-        {
-            $this->_nullProperties[$propertyName] = true;
-        }
-        if($propertyValue != null && isset($this->_nullProperties[$propertyName]))
-        {
-            unset($this->_nullProperties[$propertyName]);
-        }
-    }
-
-    /**
-     * Set property value.
-     *
-     * @param string $propertyName Property name
-     * @param mixed|null $propertyValue Property value
-     * @param bool $skipModifyNullProperties Skip modifying null properties
-     * @return self Returns the instance of the current object for method chaining.
-     */
-    public function set($propertyName, $propertyValue, $skipModifyNullProperties = false)
-    {
-        $var = PicoStringUtil::camelize($propertyName);
-        $this->{$var} = $propertyValue;
-        if(!$skipModifyNullProperties && $propertyValue === null)
-        {
-            $this->modifyNullProperties($var, $propertyValue);
-        }
-        return $this;
-    }
-
-    /**
-     * Adds an element to the end of an array property.
-     *
-     * @param string $propertyName Property name
-     * @param mixed $propertyValue Property value
-     * @return self Returns the instance of the current object for method chaining.
-     */
-    public function push($propertyName, $propertyValue)
-    {
-        $var = PicoStringUtil::camelize($propertyName);
-        if(!isset($this->$var))
-        {
-            $this->$var = array();
-        }
-        array_push($this->$var, $propertyValue);
-        return $this;
-    }
-    
-    /**
-     * Adds an element to the end of an array property (alias for push).
-     *
-     * @param string $propertyName Property name
-     * @param mixed $propertyValue Property value
-     * @return self Returns the instance of the current object for method chaining.
-     */
-    public function append($propertyName, $propertyValue)
-    {
-        return $this->push($propertyName, $propertyValue);
-    }
-    
-    /**
-     * Adds an element to the beginning of an array property.
-     *
-     * @param string $propertyName Property name
-     * @param mixed $propertyValue Property value
-     * @return self Returns the instance of the current object for method chaining.
-     */
-    public function unshift($propertyName, $propertyValue)
-    {
-        $var = PicoStringUtil::camelize($propertyName);
-        if(!isset($this->$var))
-        {
-            $this->$var = array();
-        }
-        array_unshift($this->$var, $propertyValue);
-        return $this;
-    }
-    
-    /**
-     * Adds an element to the beginning of an array property (alias for unshift).
-     *
-     * @param string $propertyName Property name
-     * @param mixed $propertyValue Property value
-     * @return self Returns the instance of the current object for method chaining.
-     */
-    public function prepend($propertyName, $propertyValue)
-    {
-        return $this->unshift($propertyName, $propertyValue);
-    }
-
-    /**
-     * Remove the last element of an array property and return it.
-     *
-     * @param string $propertyName Property name
-     * @return mixed
-     */
-    public function pop($propertyName)
-    {
-        $var = PicoStringUtil::camelize($propertyName);
-        if(isset($this->$var) && is_array($this->$var))
-        {
-            return array_pop($this->$var);
-        }
-        return null;
-    }
-    
-    /**
-     * Remove the first element of an array property and return it.
-     *
-     * @param string $propertyName Property name
-     * @return mixed
-     */
-    public function shift($propertyName)
-    {
-        $var = PicoStringUtil::camelize($propertyName);
-        if(isset($this->$var) && is_array($this->$var))
-        {
-            return array_shift($this->$var);
-        }
-        return null;
-    }
-
-    /**
-     * Get property value.
-     *
-     * @param string $propertyName Property name
-     * @return mixed|null
-     */
-    public function get($propertyName)
-    {
-        $var = PicoStringUtil::camelize($propertyName);
-        return isset($this->$var) ? $this->$var : null;
-    }
-
-    /**
-     * Get property value or a default value if not set.
-     *
-     * @param string $propertyName Property name
-     * @param mixed|null $defaultValue Default value
-     * @return mixed|null
-     */
-    public function getOrDefault($propertyName, $defaultValue = null)
-    {
-        $var = PicoStringUtil::camelize($propertyName);
-        return isset($this->$var) ? $this->$var : $defaultValue;
-    }
-
-    /**
-     * Set property value (magic setter).
-     *
-     * @param string $propertyName Property name
-     * @param mixed $propertyValue Property value
-     */
-    public function __set($propertyName, $propertyValue)
-    {
-        return $this->set($propertyName, $propertyValue);
-    }
-
-    /**
-     * Get property value (magic getter).
-     *
-     * @param string $propertyName Property name
-     * @return mixed|null
-     */
-    public function __get($propertyName)
-    {
-        $propertyName = lcfirst($propertyName);
-        if($this->__isset($propertyName))
-        {
-            return $this->get($propertyName);
-        }
-    }
-
-    /**
-     * Check if a property has been set or not (including null).
-     *
-     * @param string $propertyName Property name
-     * @return bool
-     */
-    public function __isset($propertyName)
-    {
-        $propertyName = lcfirst($propertyName);
-        return isset($this->$propertyName);
-    }
-
-    /**
-     * Unset property value.
-     *
-     * @param string $propertyName Property name
-     * @return void
-     */
-    public function __unset($propertyName)
-    {
-        $propertyName = lcfirst($propertyName);
-        unset($this->$propertyName);
-    }
-
-    /**
-     * Copy values from another object.
-     *
-     * @param self|mixed $source Source data
-     * @param array|null $filter Filter
-     * @param bool $includeNull Flag to include null values
-     * @return void
-     */
-    public function copyValueFrom($source, $filter = null, $includeNull = false)
-    {
-        if($filter != null)
-        {
-            $tmp = array();
-            $index = 0;
-            foreach($filter as $val)
-            {
-                $tmp[$index] = trim(PicoStringUtil::camelize($val));
-                $index++;
-            }
-            $filter = $tmp;
-        }
-        $values = $source->value();
-        foreach($values as $property=>$value)
-        {
-            if(
-                ($filter == null || (is_array($filter) && !empty($filter) && in_array($property, $filter)))
-                &&
-                ($includeNull || $value != null)
-                )
-            {
-                $this->set($property, $value);
-            }
-        }
-    }
-
-    /**
-     * Remove property value and set it to null.
-     *
-     * @param string $propertyName Property name
-     * @param bool $skipModifyNullProperties Skip modifying null properties
-     * @return self Returns the instance of the current object for method chaining.
-     */
-    private function removeValue($propertyName, $skipModifyNullProperties = false)
-    {
-        return $this->set($propertyName, null, $skipModifyNullProperties);
     }
     
     /**
@@ -469,41 +116,86 @@ class MagicDto extends stdClass // NOSONAR
         return $returnValue;
     }
 
+    /**
+     * Retrieves the documentation comment for a specified property.
+     *
+     * @param string $key The name of the property.
+     * @return string|null The documentation comment for the property, or null if not found.
+     */
     private function getPropertyDocComment($key)
     {
         $propReflect = new ReflectionProperty($this, $key);
         return $propReflect->getDocComment();
     }
 
+    /**
+     * Extracts the source from the documentation comment.
+     *
+     * @param string $doc The documentation comment containing the source.
+     * @return string|null The extracted source or null if not found.
+     */
     private function extractSource($doc)
     {
         preg_match('/@Source\("([^"]+)"\)/', $doc, $matches);
         return !empty($matches[1]) ? $matches[1] : null;
     }
 
+    /**
+     * Extracts the JSON property name from the documentation comment.
+     *
+     * @param string $doc The documentation comment containing the JSON property.
+     * @return string|null The extracted JSON property name or null if not found.
+     */
     private function extractJsonProperty($doc)
     {
         preg_match('/@JsonProperty\("([^"]+)"\)/', $doc, $matches);
         return !empty($matches[1]) ? $matches[1] : null;
     }
 
+    /**
+     * Extracts the variable type from the documentation comment.
+     *
+     * @param string $doc The documentation comment containing the variable type.
+     * @return string|null The extracted variable type or null if not found.
+     */
     private function extractVar($doc)
     {
         preg_match('/@var\s+(\S+)/', $doc, $matches);
         return !empty($matches[1]) ? $matches[1] : null;
     }
     
+    /**
+     * Extracts the label from the documentation comment.
+     *
+     * @param string $doc The documentation comment containing the label.
+     * @return string|null The extracted label or null if not found.
+     */
     private function extractLabel($doc)
     {
         preg_match('/@Label\("([^"]+)"\)/', $doc, $matches);
         return !empty($matches[1]) ? $matches[1] : null;
     }
 
+    /**
+     * Checks if the given variable is a self-instance.
+     *
+     * @param string $var The variable name.
+     * @param mixed $objectTest The object to test against.
+     * @return bool True if it's a self-instance, otherwise false.
+     */
     private function isSelfInstance($var, $objectTest)
     {
         return strtolower($var) != 'stdclass' && $objectTest instanceof self;
     }
 
+    /**
+     * Handles the case where the property is a self-instance.
+     *
+     * @param string|null $source The source to extract the value from.
+     * @param string $var The variable type.
+     * @param string $propertyName The name of the property.
+     * @return mixed The handled value for the self-instance.
+     */
     private function handleSelfInstance($source, $var, $propertyName)
     {
         if (strpos($source, "->") === false) {
@@ -515,6 +207,12 @@ class MagicDto extends stdClass // NOSONAR
         }
     }
 
+    /**
+     * Checks if the given object is an instance of MagicObject or its derivatives.
+     *
+     * @param mixed $objectTest The object to test.
+     * @return bool True if it is a MagicObject instance, otherwise false.
+     */
     private function isMagicObjectInstance($objectTest)
     {
         return $objectTest instanceof MagicObject || 
@@ -523,6 +221,13 @@ class MagicDto extends stdClass // NOSONAR
             $objectTest instanceof PicoGenericObject;
     }
 
+    /**
+     * Handles the case where the property is an instance of MagicObject.
+     *
+     * @param string|null $source The source to extract the value from.
+     * @param string $propertyName The name of the property.
+     * @return mixed The handled value for the MagicObject instance.
+     */
     private function handleMagicObject($source, $propertyName)
     {
         if (strpos($source, "->") === false) {
@@ -536,6 +241,14 @@ class MagicDto extends stdClass // NOSONAR
         }
     }
 
+    /**
+     * Handles the default case when retrieving property values.
+     *
+     * @param string|null $source The source to extract the value from.
+     * @param string $key The key of the property.
+     * @param string $propertyName The name of the property.
+     * @return mixed The handled default value.
+     */
     private function handleDefaultCase($source, $key, $propertyName)
     {
         if (strpos($source, "->") === false) {
@@ -545,6 +258,12 @@ class MagicDto extends stdClass // NOSONAR
         }
     }
 
+    /**
+     * Retrieves nested values from the data source based on a specified source string.
+     *
+     * @param string $source The source string indicating the path to the value.
+     * @return mixed The nested value retrieved from the data source.
+     */
     private function getNestedValue($source)
     {
         $currentVal = null;
@@ -577,20 +296,17 @@ class MagicDto extends stdClass // NOSONAR
                 $obj->set($key, $value);
             }
         }
-
         return $obj->value();
-        
     }
 
     /**
      * Get the object value as an associative array
      *
-     * @param bool $snakeCase Flag indicating whether to convert property names to snake case
      * @return array An associative array representing the object values
      */
-    public function valueArray($snakeCase = false)
+    public function valueArray()
     {
-        $value = $this->value($snakeCase);
+        $value = $this->value();
         return json_decode(json_encode($value), true);
     }
 
@@ -616,20 +332,6 @@ class MagicDto extends stdClass // NOSONAR
     }
 
     /**
-     * Check if the JSON naming strategy is snake case
-     *
-     * @return bool True if the naming strategy is snake case; otherwise, false
-     */
-    protected function _snakeJson()
-    {
-        return isset($this->_classParams[self::JSON])
-            && isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY])
-            && strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY], 'SNAKE_CASE') == 0
-            ;
-    }
-
-
-    /**
      * Check if the JSON output should be prettified
      *
      * @return bool True if JSON output is set to be prettified; otherwise, false
@@ -637,20 +339,9 @@ class MagicDto extends stdClass // NOSONAR
     protected function _pretty()
     {
         return isset($this->_classParams[self::JSON])
-            && isset($this->_classParams[self::JSON]['prettify'])
-            && strcasecmp($this->_classParams[self::JSON]['prettify'], 'true') == 0
+            && isset($this->_classParams[self::JSON][self::PRETTIFY])
+            && strcasecmp($this->_classParams[self::JSON][self::PRETTIFY], 'true') == 0
             ;
-    }
-
-    /**
-     * Check if a value is not null and not empty
-     *
-     * @param mixed $value The value to check
-     * @return bool True if the value is not null and not empty; otherwise, false
-     */
-    private function _notNullAndNotEmpty($value)
-    {
-        return $value != null && !empty($value);
     }
 
     /**
@@ -689,47 +380,6 @@ class MagicDto extends stdClass // NOSONAR
         {
             return $properties;
         }
-    }
-
-    /**
-     * Convert the result to an array of objects.
-     *
-     * @param array $result The result set to convert.
-     * @return array An array of objects.
-     */
-    private function toArrayObject($result) // NOSONAR
-    {
-        $instance = array();
-        $index = 0;
-        if(isset($result) && is_array($result))
-        {
-            foreach($result as $value)
-            {
-                $className = get_class($this);
-                $obj = new $className($value);
-                $instance[$index] = $obj;
-                $index++;
-            }
-        }
-        return $instance;
-    }
-
-    /**
-     * Get the number of properties of the object.
-     *
-     * @return int The number of properties.
-     */
-    public function size()
-    {
-        $parentProps = $this->propertyList(true, true);
-        $length = 0;
-        foreach ($this as $key => $val) {
-            if(!in_array($key, $parentProps))
-            {
-                $length++;
-            }
-        }
-        return $length;
     }
 
     /**
