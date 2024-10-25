@@ -23,10 +23,22 @@ class PicoSqlite extends PicoDatabase
      * Constructor to initialize the SQLite database connection.
      *
      * @param string $databaseFilePath The path to the SQLite database file.
+     * @param callable|null $callbackExecuteQuery Callback for executing modifying queries. Parameter 1 is SQL, parameter 2 is one of query type (PicoDatabase::QUERY_INSERT, PicoDatabase::QUERY_UPDATE, PicoDatabase::QUERY_DELETE, PicoDatabase::QUERY_TRANSACTION).
+     * @param callable|null $callbackDebugQuery Callback for debugging queries. Parameter 1 is SQL.
      * @throws PDOException if the connection fails.
      */
-    public function __construct($databaseFilePath) {
+    public function __construct($databaseFilePath, $callbackExecuteQuery = null, $callbackDebugQuery = null) {
         $this->databaseFilePath = $databaseFilePath;
+
+        if ($callbackExecuteQuery !== null && is_callable($callbackExecuteQuery)) {
+            $this->callbackExecuteQuery = $callbackExecuteQuery;
+        }
+
+        if ($callbackDebugQuery !== null && is_callable($callbackDebugQuery)) {
+            $this->callbackDebugQuery = $callbackDebugQuery;
+        }
+
+        $this->databaseType = PicoDatabaseType::DATABASE_TYPE_SQLITE;
     }
 
     /**
@@ -42,8 +54,9 @@ class PicoSqlite extends PicoDatabase
             $this->databaseConnection = new PDO("sqlite:" . $this->databaseFilePath);
             $this->databaseConnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $connected = true;
+            $this->connected = true;
         } catch (PDOException $e) {
-            echo "Connection failed: " . $e->getMessage();
+            throw new PDOException($e->getMessage(), intval($e->getCode()));
         }
         return $connected;
     }
