@@ -529,7 +529,7 @@ class PicoDatabasePersistence // NOSONAR
             
             if(isset($cache))
             {
-                $noCache = self::VALUE_FALSE == strtolower($cache[self::KEY_ENABLE]);
+                $noCache = isset($cache[self::KEY_ENABLE]) && self::VALUE_FALSE == strtolower($cache[self::KEY_ENABLE]);
             }
             if(empty($package))
             {
