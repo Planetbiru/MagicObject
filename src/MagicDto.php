@@ -185,7 +185,7 @@ class MagicDto extends stdClass // NOSONAR
      */
     private function createTestObject($var)
     {
-        return class_exists($var) ? new $var() : null;
+        return isset($var) && !empty($var) && class_exists($var) ? new $var() : null;
     }
 
     /**
@@ -382,11 +382,7 @@ class MagicDto extends stdClass // NOSONAR
      */
     private function handleDefaultCase($source, $key)
     {
-        if (strpos($source, "->") === false) {
-            return isset($source) ? $this->_dataSource->get($source) : $this->_dataSource->get($key);
-        } else {
-            return $this->getNestedValue($source);
-        }
+        return $this->handleStdClass($source, $key);
     }
 
     /**
@@ -398,11 +394,25 @@ class MagicDto extends stdClass // NOSONAR
      */
     private function handleStdClass($source, $key)
     {
+        // Check if the source does not contain a nested property indicator
         if (strpos($source, "->") === false) {
-            return isset($source) && isset($this->_dataSource->{$source}) ? $this->_dataSource->{$source} : $this->_dataSource->{$key};
+            // If the source is set and exists in the data source, retrieve its value
+            if (isset($source) && isset($this->_dataSource->{$source})) {
+                $value = $this->_dataSource->{$source};
+            // If the source is not available, check for the key in the data source
+            } elseif (isset($this->_dataSource->{$key})) {
+                $value = $this->_dataSource->{$key};
+            // If neither is available, set value to null
+            } else {
+                $value = null;
+            }
+        // If the source indicates a nested property, retrieve its value using a different method
         } else {
-            return $this->getNestedValue($source);
+            $value = $this->getNestedValue($source);
         }
+        
+        // Return the retrieved value
+        return $value;
     }
 
     /**
