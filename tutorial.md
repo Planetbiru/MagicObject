@@ -11795,32 +11795,12 @@ try
 {
     $database->connect();
 
-    $tableStructure = "
-    CREATE TABLE IF NOT EXISTS album(
-        album_id VARCHAR(40),
-        name varchar(50),
-        title TEXT,
-        description TEXT,
-        producer_id VARCHAR(40),
-        release_date DATE,
-        number_of_song INT(11),
-        duration DOUBLE,
-        image_path TEXT,
-        sort_order INT(11),
-        time_create TIMESTAMP,
-        time_edit TIMESTAMP,
-        admin_create VARCHAR(40),
-        admin_edit VARCHAR(40),
-        ip_create VARCHAR(50),
-        ip_edit VARCHAR(50),
-        active TINYINT(1),
-        as_draft TINYINT(1),
-        PRIMARY KEY(album_id)
-    );
-    ";
-    $database->query($tableStructure);
-
     $album = new Album(null, $database);
+
+    // create table if not exists
+    $tableStructure = $database->showCreateTable($album, true);
+
+    $database->query($tableStructure);
 
     $album->setAlbumId("1235");
     $album->setName("Meraih Mimpi 2 ");
@@ -11850,7 +11830,6 @@ try
     {
         echo $row."\r\n";
     }
-        
 }
 catch(Exception $e)
 {
