@@ -47,7 +47,7 @@ class MagicDto extends stdClass // NOSONAR
      *
      * @var mixed
      */
-    private $_dataSource = null;
+    private $_dataSource = null; //NOSONAR
 
     /**
      * Constructor.
@@ -96,20 +96,18 @@ class MagicDto extends stdClass // NOSONAR
      */
     public function loadData($data)
     {
-        if (isset($data)) {
-            // Check if data is not a scalar value
-            if (is_object($data) || is_array($data)) {
-                // Check if the data is one of the allowed object types
-                if ($data instanceof self || $data instanceof MagicObject || 
-                    $data instanceof SetterGetter || $data instanceof SecretObject || 
-                    $data instanceof PicoGenericObject) {
-                    // Directly assign the data source if it is an allowed object type
-                    $this->_dataSource = $data;
-                } else {
-                    // Parse the object or array recursively
-                    $this->_dataSource = PicoObjectParser::parseRecursiveObject($data);
-                } 
-            }
+        // Check if data is not a scalar value
+        if (isset($data) && (is_object($data) || is_array($data))) {
+            // Check if the data is one of the allowed object types
+            if ($data instanceof self || $data instanceof MagicObject || 
+                $data instanceof SetterGetter || $data instanceof SecretObject || 
+                $data instanceof PicoGenericObject) {
+                // Directly assign the data source if it is an allowed object type
+                $this->_dataSource = $data;
+            } else {
+                // Parse the object or array recursively
+                $this->_dataSource = PicoObjectParser::parseRecursiveObject($data);
+            } 
         }
         return $this;
     }
@@ -151,7 +149,7 @@ class MagicDto extends stdClass // NOSONAR
                 $var = $this->extractVar($doc);
                 $propertyName = $jsonProperty ? $jsonProperty : $key;
 
-                $objectTest = class_exists($var) ? new $var() : null;
+                $objectTest = $this->createTestObject($var);
 
                 if ($this->isSelfInstance($objectTest)) {
                     $returnValue->$propertyName = $this->handleSelfInstance($source, $var, $propertyName);
@@ -160,13 +158,24 @@ class MagicDto extends stdClass // NOSONAR
                 } elseif ($this->isDateTimeInstance($objectTest)) {
                     $returnValue->$propertyName = $this->formatDateTime($this->handleDateTimeObject($source, $propertyName), $this, $key);
                 } else if($this->_dataSource instanceof stdClass || is_object($this->_dataSource)) {
-                    $returnValue->$propertyName = $this->handleStdClass($source, $key, $propertyName);
+                    $returnValue->$propertyName = $this->handleStdClass($source, $key);
                 } else if(isset($this->_dataSource)) {
-                    $returnValue->$propertyName = $this->handleDefaultCase($source, $key, $propertyName);
+                    $returnValue->$propertyName = $this->handleDefaultCase($source, $key);
                 }
             }
         }
         return $returnValue;
+    }
+    
+    /**
+     * Create test object
+     *
+     * @param string $var
+     * @return mixed|null
+     */
+    private function createTestObject($var)
+    {
+        return class_exists($var) ? new $var() : null;
     }
 
     private function formatDateTime($dateTime, $class, $property)
@@ -250,17 +259,6 @@ class MagicDto extends stdClass // NOSONAR
     }
 
     /**
-     * Checks if the given variable is a self-instance.
-     *
-     * @param mixed $objectTest The object to test against.
-     * @return bool True if it's a self-instance, otherwise false.
-     */
-    private function isSelfInstance($objectTest)
-    {
-        return $objectTest instanceof self;
-    }
-
-    /**
      * Handles the case where the property is a self-instance.
      *
      * @param string|null $source The source to extract the value from.
@@ -278,6 +276,17 @@ class MagicDto extends stdClass // NOSONAR
             return $this->getNestedValue($source);
         }
     }
+    
+    /**
+     * Checks if the given variable is a self-instance.
+     *
+     * @param mixed $objectTest The object to test against.
+     * @return bool True if it's a self-instance, otherwise false.
+     */
+    private function isSelfInstance($objectTest)
+    {
+        return isset($objectTest) && $objectTest instanceof self;
+    }
 
     /**
      * Checks if the given object is an instance of MagicObject or its derivatives.
@@ -287,10 +296,10 @@ class MagicDto extends stdClass // NOSONAR
      */
     private function isMagicObjectInstance($objectTest)
     {
-        return $objectTest instanceof MagicObject || 
+        return isset($objectTest) && ($objectTest instanceof MagicObject || 
             $objectTest instanceof SetterGetter || 
             $objectTest instanceof SecretObject || 
-            $objectTest instanceof PicoGenericObject;
+            $objectTest instanceof PicoGenericObject);
     }
 
     /**
@@ -301,7 +310,7 @@ class MagicDto extends stdClass // NOSONAR
      */
     private function isDateTimeInstance($objectTest)
     {
-        return $objectTest instanceof DateTime;
+        return isset($objectTest) && $objectTest instanceof DateTime;
     }
 
     /**
@@ -346,10 +355,9 @@ class MagicDto extends stdClass // NOSONAR
      *
      * @param string|null $source The source to extract the value from.
      * @param string $key The key of the property.
-     * @param string $propertyName The name of the property.
      * @return mixed The handled default value.
      */
-    private function handleDefaultCase($source, $key, $propertyName)
+    private function handleDefaultCase($source, $key)
     {
         if (strpos($source, "->") === false) {
             return isset($source) ? $this->_dataSource->get($source) : $this->_dataSource->get($key);
@@ -363,10 +371,9 @@ class MagicDto extends stdClass // NOSONAR
      *
      * @param string|null $source The source to extract the value from.
      * @param string $key The key of the property.
-     * @param string $propertyName The name of the property.
      * @return mixed The handled default value.
      */
-    private function handleStdClass($source, $key, $propertyName)
+    private function handleStdClass($source, $key)
     {
         if (strpos($source, "->") === false) {
             return isset($source) && isset($this->_dataSource->{$source}) ? $this->_dataSource->{$source} : $this->_dataSource->{$key};
@@ -694,7 +701,7 @@ class MagicDto extends stdClass // NOSONAR
      * @param array $dataArray The array to convert
      * @param SimpleXMLElement $xml XML element to append to
      */
-    function arrayToXml($dataArray, $xml) {
+    public function arrayToXml($dataArray, $xml) {
         foreach ($dataArray as $key => $value) {
             // Replace spaces and special characters in key names
             $key = preg_replace('/[^a-z0-9_]/i', '_', $key);
