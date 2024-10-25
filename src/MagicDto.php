@@ -132,9 +132,16 @@ class MagicDto extends stdClass // NOSONAR
     }
     
     /**
-     * Get the object values
+     * Retrieves an object containing the values of the properties of the current instance.
      *
-     * @return stdClass An object containing the values of the properties
+     * This method iterates through the properties of the instance, excluding inherited properties,
+     * and constructs an object where each property is mapped to its corresponding value.
+     * The method handles various property types including self-references, magic objects,
+     * DateTime instances, and standard class objects.
+     *
+     * @return stdClass An object containing the values of the properties, where each property 
+     *                  name corresponds to the JSON property or the original key if no 
+     *                  JSON property is defined.
      */
     public function value()
     {
@@ -168,16 +175,32 @@ class MagicDto extends stdClass // NOSONAR
     }
     
     /**
-     * Create test object
+     * Creates an instance of a class based on the provided variable name.
      *
-     * @param string $var
-     * @return mixed|null
+     * This method checks if the class corresponding to the given variable name exists.
+     * If it does, an instance of that class is created and returned; otherwise, null is returned.
+     *
+     * @param string $var The name of the class to instantiate.
+     * @return mixed|null An instance of the class if it exists, or null if the class does not exist.
      */
     private function createTestObject($var)
     {
         return class_exists($var) ? new $var() : null;
     }
 
+    /**
+     * Formats a DateTime object according to specified JSON format parameters.
+     *
+     * This method checks if the provided DateTime object is set and, if so, retrieves 
+     * formatting parameters from the property's annotations. If a 'JsonFormat' 
+     * parameter is present, its pattern is used; otherwise, a default format 
+     * of 'Y-m-d H:i:s' is applied.
+     *
+     * @param DateTime|null $dateTime The DateTime object to format.
+     * @param object $class The class instance from which the property originates.
+     * @param string $property The name of the property being processed.
+     * @return string|null The formatted date as a string, or null if the DateTime is not set.
+     */
     private function formatDateTime($dateTime, $class, $property)
     {
         if(!isset($dateTime))
@@ -252,7 +275,7 @@ class MagicDto extends stdClass // NOSONAR
      * @param string $doc The documentation comment containing the label.
      * @return string|null The extracted label or null if not found.
      */
-    private function extractLabel($doc)
+    private function extractLabel($doc) // NOSONAR
     {
         preg_match('/@Label\("([^"]+)"\)/', $doc, $matches);
         return !empty($matches[1]) ? $matches[1] : null;
