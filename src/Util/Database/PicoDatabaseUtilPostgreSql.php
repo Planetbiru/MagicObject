@@ -106,7 +106,7 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
         $query[] = "$createStatement \"$tableName\" (";
 
         foreach ($tableInfo->getColumns() as $column) {
-            $query[] = $this->createColumn($column);
+            $query[] = $this->createColumnPostgre($column, $autoIncrementKeys);
         }
         $query[] = implode(",\r\n", $query);
         $query[] = ");";
@@ -160,6 +160,69 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
 
         return implode(" ", $col);
     }
+
+    /**
+     * Creates a column definition for a PostgreSQL SQL statement.
+     *
+     * This method constructs a SQL column definition based on the provided column details,
+     * including the column name, data type, nullability, and default value. The resulting 
+     * definition is formatted for use in a CREATE TABLE statement. If the column is specified
+     * as auto-increment, it will use SERIAL or BIGSERIAL data types as appropriate.
+     *
+     * @param array $column An associative array containing details about the column:
+     *                      - string name: The name of the column.
+     *                      - string type: The data type of the column (e.g., VARCHAR, INT).
+     *                      - bool|string nullable: Indicates if the column allows NULL values 
+     *                        ('true' or true for NULL; otherwise, NOT NULL).
+     *                      - mixed default_value: The default value for the column (optional).
+     *
+     * @param array|null $autoIncrementKeys An optional array of column names that should 
+     *                                       be treated as auto-incrementing.
+     *
+     * @return string The SQL column definition formatted as a string, suitable for 
+     *                inclusion in a CREATE TABLE statement.
+     */
+    public function createColumnPostgre($column, $autoIncrementKeys = null)
+    {
+        $col = [];
+        $col[] = "\t";
+        $col[] = "\"" . $column[parent::KEY_NAME] . "\"";
+
+        // Check if the column should be auto-incrementing.
+        if(isset($autoIncrementKeys) && is_array($autoIncrementKeys) && in_array($column[parent::KEY_NAME], $autoIncrementKeys))
+        {
+            // Determine the appropriate serial type based on the column's type.
+            if(stripos($column['type'], 'big'))
+            {
+                $col[] = "BIGSERIAL"; // Use BIGSERIAL for large integers.
+            }
+            else
+            {
+                $col[] = "SERIAL"; // Use SERIAL for standard integers.
+            }
+        }
+        else
+        {
+            $col[] = $column['type']; // Use the specified type if not auto-incrementing.
+        }
+
+        // Determine nullability and add it to the definition.
+        if (isset($column['nullable']) && strtolower(trim($column['nullable'])) == 'true') {
+            $col[] = "NULL"; // Allow NULL values.
+        } else {
+            $col[] = "NOT NULL"; // Disallow NULL values.
+        }
+
+        // Handle default value if provided, using a helper method to format it.
+        if (isset($column['default_value'])) {
+            $defaultValue = $column['default_value'];
+            $defaultValue = $this->fixDefaultValue($defaultValue, $column['type']);
+            $col[] = "DEFAULT $defaultValue";
+        }
+
+        return implode(" ", $col); // Join all parts into a single string.
+    }
+
 
     /**
      * Fixes the default value for SQL insertion based on its type.
