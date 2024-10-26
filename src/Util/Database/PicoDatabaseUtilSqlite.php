@@ -146,7 +146,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
             }
 
             // Add to query
-            $query .= "    $columnName $sqlType$nullable$defaultValue,\n";
+            $query .= "\t$columnName $sqlType$nullable$defaultValue,\n";
             
         }
     
@@ -165,7 +165,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
         if (!empty($pKeyArrFinal)) {
             $primaryKey = implode(", ", $pKeyArrFinal);
             $query = rtrim($query, ",\n");
-            $query .= ",\n    PRIMARY KEY ($primaryKey)\n";
+            $query .= ",\n\tPRIMARY KEY ($primaryKey)\n";
         }
     
         $query .= ");";
