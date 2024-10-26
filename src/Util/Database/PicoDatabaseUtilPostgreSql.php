@@ -54,13 +54,13 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
      * and default values.
      *
      * @param PicoDatabase $database The database connection instance.
-     * @param string $picoTableName The name of the table to retrieve column information from.
+     * @param string $tableName The name of the table to retrieve column information from.
      * @return array An array of associative arrays containing details about each column,
      *               where each associative array includes 'column_name', 'data_type',
      *               'is_nullable', and 'column_default'.
      * @throws Exception If the database connection fails or the query cannot be executed.
      */
-    public function getColumnList($database, $picoTableName)
+    public function getColumnList($database, $tableName)
     {
         $schema = $database->getDatabaseCredentials()->getDatabaseSchema();
         if(!isset($schema) || empty($schema))
@@ -69,7 +69,7 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
         }
         $sql = "SELECT column_name, data_type, is_nullable, column_default 
                 FROM information_schema.columns 
-                WHERE table_schema = '$schema' AND table_name = '$picoTableName'";
+                WHERE table_schema = '$schema' AND table_name = '$tableName'";
         return $database->fetchAll($sql);
     }
 
@@ -81,18 +81,18 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
      * "DROP TABLE IF EXISTS". It also handles the definition of primary keys if present.
      *
      * @param PicoTableInfo $tableInfo     The information about the table, including column details and primary keys.
-     * @param string        $picoTableName  The name of the table for which the structure is being generated.
+     * @param string        $tableName  The name of the table for which the structure is being generated.
      * @param bool         $createIfNotExists Whether to add "IF NOT EXISTS" in the CREATE statement (default is false).
      * @param bool         $dropIfExists      Whether to add "DROP TABLE IF EXISTS" before the CREATE statement (default is false).
      * @param string|null  $engine            The storage engine to use for the table (optional, default is null).
      * @param string|null  $charset           The character set to use for the table (optional, default is null).
      * @return string                           The SQL statement to create the table, including column definitions and primary keys.
      */
-    public function dumpStructure($tableInfo, $picoTableName, $createIfNotExists = false, $dropIfExists = false, $engine = null, $charset = null)
+    public function dumpStructure($tableInfo, $tableName, $createIfNotExists = false, $dropIfExists = false, $engine = null, $charset = null)
     {
         $query = [];
         if ($dropIfExists) {
-            $query[] = "-- DROP TABLE IF EXISTS \"$picoTableName\";";
+            $query[] = "-- DROP TABLE IF EXISTS \"$tableName\";";
             $query[] = "";
         }
 
@@ -103,7 +103,7 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
 
         $autoIncrementKeys = $this->getAutoIncrementKey($tableInfo);
 
-        $query[] = "$createStatement \"$picoTableName\" (";
+        $query[] = "$createStatement \"$tableName\" (";
 
         foreach ($tableInfo->getColumns() as $column) {
             $query[] = $this->createColumn($column);
@@ -114,7 +114,7 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
         $pk = $tableInfo->getPrimaryKeys();
         if (isset($pk) && is_array($pk) && !empty($pk)) {
             $query[] = "";
-            $query[] = "ALTER TABLE \"$picoTableName\"";
+            $query[] = "ALTER TABLE \"$tableName\"";
             foreach ($pk as $primaryKey) {
                 $query[] = "\tADD PRIMARY KEY (\"$primaryKey[name]\")";
             }
@@ -195,13 +195,13 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
      * columns based on the provided column definitions.
      *
      * @param array $columns An associative array where keys are column names and values are column details.
-     * @param string $picoTableName The name of the table where the record will be inserted.
+     * @param string $tableName The name of the table where the record will be inserted.
      * @param MagicObject $record The data record to be inserted, which provides a method to retrieve values.
      *
      * @return string The generated SQL INSERT statement.
      * @throws Exception If the record cannot be processed or if there are no values to insert.
      */
-    public function dumpRecord($columns, $picoTableName, $record)
+    public function dumpRecord($columns, $tableName, $record)
     {
         $value = $record->valueArray();
         $rec = [];
@@ -214,7 +214,7 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
         $queryBuilder = new PicoDatabaseQueryBuilder(PicoDatabaseType::DATABASE_TYPE_POSTGRESQL);
         $queryBuilder->newQuery()
             ->insert()
-            ->into($picoTableName)
+            ->into($tableName)
             ->fields(array_keys($rec))
             ->values(array_values($rec));
 

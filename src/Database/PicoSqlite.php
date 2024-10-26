@@ -2,11 +2,8 @@
 
 namespace MagicObject\Database;
 
-use MagicObject\MagicObject;
 use PDO;
 use PDOException;
-use ReflectionClass;
-use ReflectionProperty;
 
 /**
  * Class PicoSqlite
@@ -183,100 +180,6 @@ class PicoSqlite extends PicoDatabase
         }
 
         return $stmt->execute();
-    }
-
-    /**
-     * Generates a SQL CREATE TABLE query based on the provided class annotations.
-     *
-     * This function inspects the given class for its properties and their annotations
-     * to construct a SQL statement that can be used to create a corresponding table in a database.
-     * It extracts the table name from the `@Table` annotation and processes each property 
-     * to determine the column definitions from the `@Column` annotations.
-     *
-     * @param MagicObject $entity The instance of the class whose properties will be used
-     *                             to generate the table structure.
-     * @param bool $ifNotExists If true, the query will include an "IF NOT EXISTS" clause.
-     * @return string The generated SQL CREATE TABLE query.
-     * 
-     * @throws ReflectionException If the class does not exist or is not accessible.
-     */
-    function showCreateTable($entity, $ifNotExists = false) {        
-        $tableInfo = $entity->tableInfo();
-        $tableName = $tableInfo->getTableName();
-    
-        // Start building the CREATE TABLE query
-        if($ifNotExists)
-        {
-            $condition = " IF NOT EXISTS";
-        }
-        else
-        {
-            $condition = "";
-        }
-        $query = "CREATE TABLE$condition $tableName (\n";
-    
-        // Define primary key
-        $primaryKey = null;
-
-        $pKeys = $tableInfo->getPrimaryKeys();
-        if(isset($pKeys) && is_array($pKeys) && !empty($pKeys))
-        {
-            $pKeyArr = [];
-            $pkVals = array_values($pKeys);
-            foreach($pkVals as $pk)
-            {
-                $pKeyArr[] = $pk['name'];
-            }
-            $primaryKey = implode(", ", $pKeyArr);
-        }
-
-        foreach ($tableInfo->getColumns() as $column) {
-        
-            $columnName = $column['name'];
-            $columnType = $column['type'];
-            $length = isset($column['length']) ? $column['length'] : null;
-            $nullable = (isset($column['nullable']) && $column['nullable'] === 'true') ? 'NULL' : 'NOT NULL';
-            $defaultValue = isset($column['defaultValue']) ? "DEFAULT '{$column['defaultValue']}'" : '';
-
-            // Convert column type for SQL
-            $columnType = strtolower($columnType); // Convert to lowercase for case-insensitive comparison
-
-            if (strpos($columnType, 'varchar') !== false) {
-                $sqlType = "VARCHAR($length)";
-            } elseif ($columnType === 'int') {
-                $sqlType = 'INT';
-            } elseif ($columnType === 'float') {
-                $sqlType = 'FLOAT';
-            } elseif ($columnType === 'text') {
-                $sqlType = 'TEXT';
-            } elseif ($columnType === 'longtext') {
-                $sqlType = 'LONGTEXT';
-            } elseif ($columnType === 'date') {
-                $sqlType = 'DATE';
-            } elseif ($columnType === 'timestamp') {
-                $sqlType = 'TIMESTAMP';
-            } elseif ($columnType === 'tinyint(1)') {
-                $sqlType = 'TINYINT(1)';
-            } else {
-                $sqlType = 'VARCHAR(255)'; // Fallback type
-            }
-
-            // Add to query
-            $query .= "    $columnName $sqlType $nullable,\n";
-            
-        }
-    
-        // Remove the last comma and add primary key constraint
-        $query = rtrim($query, ",\n") . "\n";
-        
-        if ($primaryKey) {
-            $query = rtrim($query, ",\n");
-            $query .= ",\n    PRIMARY KEY ($primaryKey)\n";
-        }
-    
-        $query .= ");";
-    
-        return str_replace("\n", "\r\n", $query);
     }
     
 

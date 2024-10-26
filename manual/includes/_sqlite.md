@@ -197,6 +197,7 @@ $sqlite->delete('users', $conditions);
 
 use MagicObject\Database\PicoSqlite;
 use MagicObject\MagicObject;
+use MagicObject\Util\Database\PicoDatabaseUtilSqlite;
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 
@@ -386,8 +387,8 @@ try
     $album = new Album(null, $database);
 
     // create table if not exists
-    $tableStructure = $database->showCreateTable($album, true);
-
+    $util = new PicoDatabaseUtilSqlite();
+    $tableStructure = $util->showCreateTable($album, true);
     $database->query($tableStructure);
 
     $album->setAlbumId("1235");
