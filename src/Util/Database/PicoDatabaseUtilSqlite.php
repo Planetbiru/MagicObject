@@ -115,6 +115,18 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
                 $pKeyArrUsed[] = $columnName;
             } elseif (strpos($columnType, 'varchar') !== false) {
                 $sqlType = "VARCHAR($length)";
+            } elseif ($columnType === 'tinyint(1)') {
+                $sqlType = 'TINYINT(1)';
+            } elseif (stripos($columnType, 'tinyint') !== false) {
+                $sqlType = strtoupper($columnType);
+            } elseif (stripos($columnType, 'smallint') !== false) {
+                $sqlType = strtoupper($columnType);
+            } elseif (stripos($columnType, 'bigint') !== false) {
+                $sqlType = strtoupper($columnType);
+            } elseif (stripos($columnType, 'integer') !== false) {
+                $sqlType = strtoupper($columnType);
+            } elseif (stripos($columnType, 'int') !== false) {
+                $sqlType = strtoupper($columnType);
             } elseif ($columnType === 'int') {
                 $sqlType = 'INT';
             } elseif ($columnType === 'float') {
@@ -127,8 +139,8 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
                 $sqlType = 'DATE';
             } elseif ($columnType === 'timestamp') {
                 $sqlType = 'TIMESTAMP';
-            } elseif ($columnType === 'tinyint(1)') {
-                $sqlType = 'TINYINT(1)';
+            } elseif ($columnType === 'blob') {
+                $sqlType = 'BLOB';
             } else {
                 $sqlType = 'VARCHAR(255)'; // Fallback type
             }
