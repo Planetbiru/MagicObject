@@ -1061,7 +1061,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $propertyName Property name
      * @param mixed $propertyValue Property value
-     * @return void
+     * @return self
      */
     private function modifyNullProperties($propertyName, $propertyValue)
     {
@@ -1073,6 +1073,7 @@ class MagicObject extends stdClass // NOSONAR
         {
             unset($this->_nullProperties[$propertyName]);
         }
+        return $this;
     }
 
     /**
@@ -1267,7 +1268,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param self|mixed $source Source data
      * @param array|null $filter Filter
      * @param bool $includeNull Flag to include null values
-     * @return void
+     * @return self
      */
     public function copyValueFrom($source, $filter = null, $includeNull = false)
     {
@@ -1294,6 +1295,7 @@ class MagicObject extends stdClass // NOSONAR
                 $this->set($property, $value);
             }
         }
+        return $this;
     }
 
     /**
@@ -1315,7 +1317,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function tableInfo()
     {
-        if(!isset($this->tableInfo))
+        if(!isset($this->_tableInfoProp))
         {
             $this->_persistProp = new PicoDatabasePersistence($this->_database, $this);
             $this->_tableInfoProp = $this->_persistProp->getTableInfo();
