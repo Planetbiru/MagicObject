@@ -313,7 +313,18 @@ class PicoDatabase //NOSONAR
         
         try {
             $stmt->execute($params);
-            $result = $stmt->rowCount() > 0 ? $stmt->fetch($tentativeType) : $defaultValue;
+            if($this->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE)
+            {
+                $result = $stmt->fetch($tentativeType);
+                if($result === false)
+                {
+                    $result = $defaultValue;
+                }
+            }
+            else
+            {
+                $result = $stmt->rowCount() > 0 ? $stmt->fetch($tentativeType) : $defaultValue;
+            }
         } catch (PDOException $e) {
             $result = $defaultValue;
         }
@@ -340,7 +351,15 @@ class PicoDatabase //NOSONAR
         
         try {
             $stmt->execute($params);
-            return $stmt->rowCount() > 0;
+            if($this->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE)
+            {
+                $result = $stmt->fetch();
+                return $result !== false;
+            }
+            else
+            {
+                return $stmt->rowCount() > 0;
+            }
         } catch (PDOException $e) {
             throw new PDOException($e->getMessage(), intval($e->getCode()));
         }
@@ -367,7 +386,18 @@ class PicoDatabase //NOSONAR
         
         try {
             $stmt->execute($params);
-            $result = $stmt->rowCount() > 0 ? $stmt->fetchAll($tentativeType) : $defaultValue;
+            if($this->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE)
+            {
+                $result = $stmt->fetch($tentativeType);
+                if($result === false)
+                {
+                    $result = $defaultValue;
+                }
+            }
+            else
+            {
+                $result = $stmt->rowCount() > 0 ? $stmt->fetchAll($tentativeType) : $defaultValue;
+            }
         } catch (PDOException $e) {
             $result = $defaultValue;
         }
