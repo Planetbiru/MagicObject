@@ -26,7 +26,7 @@ class Map
      *
      * @param Area[]|null $areas An array of Area objects to initialize the map with.
      */
-    public function __construct(array $areas = null)
+    public function __construct($areas = null)
     {
         if (isset($areas) && is_array($areas)) {
             $this->areas = $areas;
@@ -41,7 +41,7 @@ class Map
      * @param Area $area Area to add
      * @return self
      */
-    public function addArea(Area $area)
+    public function addArea($area)
     {
         $this->areas[] = $area;
         return $this;
