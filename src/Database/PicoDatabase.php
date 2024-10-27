@@ -141,9 +141,9 @@ class PicoDatabase //NOSONAR
             $initialQueries = "SET time_zone = '$timeZoneOffset';";
 
             if ($this->databaseCredentials->getDriver() == PicoDatabaseType::DATABASE_TYPE_POSTGRESQL &&
-                $this->databaseCredentials->getDatabaseShema() != null && 
-                $this->databaseCredentials->getDatabaseShema() != "") {
-                $initialQueries .= "SET search_path TO " . $this->databaseCredentials->getDatabaseShema();
+                $this->databaseCredentials->getDatabaseSchema() != null && 
+                $this->databaseCredentials->getDatabaseSchema() != "") {
+                $initialQueries .= "SET search_path TO " . $this->databaseCredentials->getDatabaseSchema();
             }
 
             $this->databaseType = $this->databaseCredentials->getDriver();
