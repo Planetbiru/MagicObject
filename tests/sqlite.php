@@ -258,12 +258,12 @@ try
     // create table if not exists
     $util = new PicoDatabaseUtilSqlite();
     $tableStructure = $util->showCreateTable($album, true);
-    echo $tableStructure."\r\n";
+    //echo $tableStructure."\r\n";
 
     $database->query($tableStructure);
 
     $tableStructure2 = $util->showCreateTable($acuanPengawasan, true);
-    echo $tableStructure2."\r\n";
+    //echo $tableStructure2."\r\n";
 
     $database->query($tableStructure);
     $database->query($tableStructure2);
@@ -315,7 +315,7 @@ try
     $res = $album2->findAll();
     foreach($res->getResult() as $row)
     {
-        echo $row."\r\n";
+        //echo $row."\r\n";
     }
 }
 catch(Exception $e)

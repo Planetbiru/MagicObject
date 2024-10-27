@@ -61,14 +61,17 @@
 
 <article class="article" id="part2">
 <h1>MagicObject Installation</h1>
+<h2>Installing MagicObject</h2>
 <p>To install <strong>MagicObbject</strong></p>
 <pre><code>composer require planetbiru/magic-object</code></pre>
 <p>or if composer is not installed</p>
 <pre><code>php composer.phar require planetbiru/magic-object</code></pre>
+<h2>Removing MagicObject</h2>
 <p>To remove <strong>MagicObbject</strong></p>
 <pre><code>composer remove planetbiru/magic-object</code></pre>
 <p>or if composer is not installed</p>
 <pre><code>php composer.phar remove planetbiru/magic-object</code></pre>
+<h2>Installing Composer</h2>
 <p>To install composer on your PC or download latest composer.phar, click <a href="https://getcomposer.org/download/">https://getcomposer.org/download/</a> </p>
 </article>
 
@@ -10449,13 +10452,23 @@ catch(Exception $e)
 
 <article class="article" id="part25">
 <h2>Upload File</h2>
-<p>Uploading lots of files with arrays is difficult for some developers, especially novice developers. There is a significant difference between uploading a single file and multiple files.</p>
-<p>When the developer decides to change the form from single file to multiple files or vice versa, the backend developer must change the code to handle the uploaded files.</p>
+<h3>Overview</h3>
+<p>Uploading files can be challenging, especially for novice developers. This guide explains how to manage single and multiple file uploads in PHP, highlighting the differences and providing straightforward examples.</p>
+<h3>Key Features</h3>
+<ul>
+<li><strong>Easy File Handling:</strong> The <code>PicoUploadFile</code> class simplifies the process of retrieving uploaded files.</li>
+<li><strong>Unified Retrieval:</strong> The <code>getAll</code> method allows you to handle files uploaded through both single and multiple forms without needing separate logic.</li>
+</ul>
+<h3>Uploading Files</h3>
+<h4>Single File Upload</h4>
+<p>To upload a single file, use the following HTML form:</p>
 <pre><code class="language-html">&lt;!-- single file --&gt;
 &lt;form action="" method="post" enctype="multipart/form-data"&gt;
      &lt;input name="myupload" type="file" /&gt;
      &lt;input type="submit" /&gt;
 &lt;/form&gt;</code></pre>
+<h4>Multiple File Upload</h4>
+<p>To enable multiple file uploads, modify the input name to include brackets (<code>[]</code>) and use the <code>multiple</code> attribute:</p>
 <pre><code class="language-html">&lt;!-- multiple files --&gt;
 &lt;form action="" method="post" enctype="multipart/form-data"&gt;
      &lt;input name="myupload[]" type="file" webkitdirectory multiple /&gt;
@@ -10465,33 +10478,30 @@ catch(Exception $e)
 <li>For single uploads, the input field is named <code>myupload</code>.</li>
 <li>For multiple uploads, the input field name is <code>myupload[]</code>, which allows multiple files to be uploaded at once.</li>
 </ul>
+<h3>PHP Backend Handling</h3>
+<p>To handle the uploaded files on the server side, you can use the PicoUploadFile class. Here’s how to do it:</p>
 <pre><code class="language-php">&lt;?php
 
-use MagicObject\File\PicoUplodFile;
+use MagicObject\File\PicoUploadFile;
 
 require_once "vendor/autoload.php";
 
-$files = new PicoUplodFile();
+$files = new PicoUploadFile();
 
 $file1 = $files-&gt;get('myupload');
-// or 
+// or alternatively
 // $file1 = $files-&gt;myupload;
 
 $targetDir = __DIR__;
 
-foreach($file1-&gt;getAll() as $fileItem)
-{
+foreach ($file1-&gt;getAll() as $fileItem) {
     $temporaryName = $fileItem-&gt;getTmpName();
     $name = $fileItem-&gt;getName();
     $size = $fileItem-&gt;getSize();
+
     echo "$name | $temporaryName | $size\r\n";
-    move_uploaded_file($temporaryName, $targetDir."/".$name);
-}
-</code></pre>
-<ul>
-<li>The <code>PicoUplodFile</code> class simplifies file handling. The developer can retrieve the uploaded files easily using the get method.</li>
-<li>The <code>getAll</code> method retrieves all files, regardless of whether they were uploaded via single or multiple file forms.</li>
-</ul>
+    move_uploaded_file($temporaryName, $targetDir . "/" . $name);
+}</code></pre>
 <h3>Checking Upload Type</h3>
 <p>Developers simply retrieve data using the <code>getAll</code> method and developers will get all files uploaded by users either via single file or multiple file forms. If necessary, the developer can check whether the file was uploaded using a single file or multiple file form with the <code>isMultiple()</code> method</p>
 <pre><code class="language-php">
@@ -10504,7 +10514,7 @@ else
     // do something here
 }</code></pre>
 <h3>Summary</h3>
-<p>This implementation offers a straightforward way to manage file uploads in PHP, abstracting complexities for developers. By using methods like getAll() and isMultiple(), developers can seamlessly handle both types of uploads without needing to write separate logic for each scenario. This approach not only improves code maintainability but also enhances the developer experience.</p>
+<p>This implementation offers a straightforward way to manage file uploads in PHP, abstracting complexities for developers. By using methods like <code>getAll()</code> and <code>isMultiple()</code>, developers can seamlessly handle both types of uploads without needing to write separate logic for each scenario. This approach not only improves code maintainability but also enhances the developer experience.</p>
 </article>
 
 <article class="article" id="part26">
