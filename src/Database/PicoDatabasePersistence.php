@@ -208,10 +208,10 @@ class PicoDatabasePersistence // NOSONAR
     private $joinCache = array();
 
     /**
-     * Database connection
+     * Class constructor to initialize database connection and entity object.
      *
-     * @param PicoDatabase|null $database Database connection
-     * @param MagicObject|mixed $object Entity object
+     * @param PicoDatabase|null $database Database connection or null
+     * @param MagicObject|mixed $object Entity object to be handled
      */
     public function __construct($database, $object)
     {
@@ -221,21 +221,21 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Check if string is null or empty
+     * Check if a given string is null or empty.
      *
-     * @param string $string String to be checked
-     * @return string
+     * @param string $string The string to check
+     * @return bool True if the string is null or empty, false otherwise
      */
-    public static function nulOrEmpty($string)
+    public static function nullOrEmpty($string)
     {
         return $string == null || empty($string);
     }
     
     /**
-     * Check if string is not null and not empty
+     * Check if a given string is not null and not empty.
      *
-     * @param string $string String to be checked
-     * @return string
+     * @param string $string The string to check
+     * @return bool True if the string is not null and not empty, false otherwise
      */
     public static function notNullAndNotEmpty($string)
     {
@@ -243,12 +243,12 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Apply subquery result
+     * Apply results from a subquery to master data.
      *
-     * @param array $data Master data
-     * @param array $row Reference data
-     * @param array $subqueryMap Subquery map
-     * @return array
+     * @param array $data Master data to which subquery results will be applied
+     * @param array $row Reference data containing subquery results
+     * @param array $subqueryMap Mapping information for subqueries
+     * @return array Updated master data with applied subquery results
      */
     public static function applySubqueryResult($data, $row, $subqueryMap)
     {
@@ -275,10 +275,10 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Set flag to skip null column
+     * Set a flag to include or skip null columns in the operation.
      *
-     * @param bool $skip Skip null
-     * @return self
+     * @param bool $skip Flag indicating whether to skip null columns
+     * @return self Returns the current instance for method chaining
      */
     public function includeNull($skip)
     {
@@ -287,12 +287,13 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Parse key value string
+     * Parse a key-value string using a specified parser.
      *
-     * @param PicoAnnotationParser $reflexClass Class parser
-     * @param string $queryString String to be parsed
-     * @param string $parameter Parameter name
-     * @return array
+     * @param PicoAnnotationParser $reflexClass The class used for parsing
+     * @param string $queryString The key-value string to parse
+     * @param string $parameter The name of the parameter being parsed
+     * @return array Parsed key-value pairs
+     * @throws InvalidAnnotationException If the query string is invalid
      */
     private function parseKeyValue($reflexClass, $queryString, $parameter)
     {
@@ -307,13 +308,13 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Add column name
+     * Add column name to the columns array based on provided parameters.
      *
-     * @param array $columns Columns
-     * @param PicoAnnotationParser $reflexProp Property parser
-     * @param ReflectionProperty $prop Property reflection
-     * @param array $parameters Parameters
-     * @return array
+     * @param array $columns The current columns array
+     * @param PicoAnnotationParser $reflexProp The property parser
+     * @param ReflectionProperty $prop The property reflection instance
+     * @param array $parameters Parameters containing column name annotations
+     * @return array Updated columns array with new column names
      */
     private function addColumnName($columns, $reflexProp, $prop, $parameters)
     {
@@ -332,13 +333,13 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Add column type
+     * Add column type information to the columns array.
      *
-     * @param array $columns Columns
-     * @param PicoAnnotationParser $reflexProp Property parser
-     * @param ReflectionProperty $prop Property reflection
-     * @param array $parameters Parameters
-     * @return array
+     * @param array $columns The current columns array
+     * @param PicoAnnotationParser $reflexProp The property parser
+     * @param ReflectionProperty $prop The property reflection instance
+     * @param array $parameters Parameters containing column type annotations
+     * @return array Updated columns array with new column types
      */
     private function addColumnType($columns, $reflexProp, $prop, $parameters)
     {
@@ -362,13 +363,13 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Add column column name
+     * Add a join column name to the join columns array.
      *
-     * @param array $joinColumns Join columns
-     * @param PicoAnnotationParser $reflexProp Property parser
-     * @param ReflectionProperty $prop Property reflection
-     * @param array $parameters Parameters
-     * @return array
+     * @param array $joinColumns The current join columns array
+     * @param PicoAnnotationParser $reflexProp The property parser for the current property
+     * @param ReflectionProperty $prop The reflection property instance
+     * @param array $parameters Parameters containing join column annotations
+     * @return array Updated join columns array with the new column name
      */
     private function addJoinColumnName($joinColumns, $reflexProp, $prop, $parameters)
     {
@@ -387,12 +388,12 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Add column column type
+     * Add a join column type to the join columns array.
      *
-     * @param array $joinColumns Join columns
-     * @param ReflectionProperty $prop Property reflection
-     * @param array $parameters Parameters
-     * @return array
+     * @param array $joinColumns The current join columns array
+     * @param ReflectionProperty $prop The reflection property instance
+     * @param array $parameters Parameters containing join column type annotations
+     * @return array Updated join columns array with the new column type
      */
     private function addJoinColumnType($joinColumns, $prop, $parameters)
     {
@@ -409,13 +410,13 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Add primary key
+     * Add primary key information to the primary keys array.
      *
-     * @param array $joinColumns Join columns
-     * @param array $columns Columns
-     * @param ReflectionProperty $prop Property reflection
-     * @param array $parameters Parameters
-     * @return array
+     * @param array $primaryKeys The current primary keys array
+     * @param array $columns The columns array
+     * @param ReflectionProperty $prop The reflection property instance
+     * @param array $parameters Parameters containing primary key annotations
+     * @return array Updated primary keys array with the new primary key
      */
     private function addPrimaryKey($primaryKeys, $columns, $prop, $parameters)
     {
@@ -430,14 +431,14 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Add primary key
+     * Add autogenerated key information to the auto-increment keys array.
      *
-     * @param array $autoIncrementKeys Autoincrement keys
-     * @param array $columns Columns
-     * @param PicoAnnotationParser $reflexClass Class parser
-     * @param ReflectionProperty $prop Property reflection
-     * @param array $parameters Parameters
-     * @return array
+     * @param array $autoIncrementKeys The current auto-increment keys array
+     * @param array $columns The columns array
+     * @param PicoAnnotationParser $reflexClass The property parser
+     * @param ReflectionProperty $prop The reflection property instance
+     * @param array $parameters Parameters containing auto-generated value annotations
+     * @return array Updated auto-increment keys array with new autogenerated key
      */
     private function addAutogenerated($autoIncrementKeys, $columns, $reflexClass, $prop, $parameters)
     {
@@ -457,14 +458,14 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Add default value
+     * Add default value information to the default values array.
      *
-     * @param array $defaultValue Default value
-     * @param array $columns Columns
-     * @param PicoAnnotationParser $reflexClass Class parser
-     * @param ReflectionProperty $prop Property reflection
-     * @param array $parameters Parameters
-     * @return array
+     * @param array $defaultValue The current default values array
+     * @param array $columns The columns array
+     * @param PicoAnnotationParser $reflexClass The property parser
+     * @param ReflectionProperty $prop The reflection property instance
+     * @param array $parameters Parameters containing default value annotations
+     * @return array Updated default values array with new default value
      */
     private function addDefaultValue($defaultValue, $columns, $reflexClass, $prop, $parameters)
     {
@@ -487,13 +488,13 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Add not null column
+     * Add not-null column information to the not-null columns array.
      *
-     * @param array $notNullColumns Not null column
-     * @param array $columns Columns
-     * @param ReflectionProperty $prop Property reflection
-     * @param array $parameters Parameters
-     * @return array
+     * @param array $notNullColumns The current not-null columns array
+     * @param array $columns The columns array
+     * @param ReflectionProperty $prop The reflection property instance
+     * @param array $parameters Parameters containing not-null annotations
+     * @return array Updated not-null columns array with new not-null column
      */
     private function addNotNull($notNullColumns, $columns, $prop, $parameters)
     {
@@ -508,10 +509,10 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get table information by parsing class and property annotation
+     * Get table information by parsing class and property annotations.
      *
-     * @return PicoTableInfo
-     * @throws EntityException
+     * @return PicoTableInfo Table information based on parsed annotations
+     * @throws EntityException If the entity is invalid
      */
     public function getTableInfo()
     {
@@ -592,11 +593,11 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get match row
+     * Check if the given PDO statement matches any rows.
      *
-     * @param PDOStatement $stmt PDO statement
-     * @param string $databaseType Database type
-     * @return bool
+     * @param PDOStatement $stmt PDO statement to check.
+     * @param string|null $databaseType Optional database type, for specific behavior (e.g., SQLite).
+     * @return bool True if rows match, false otherwise.
      */
     public function matchRow($stmt, $databaseType = null)
     {
@@ -613,10 +614,10 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Save data to database
+     * Save the current object to the database.
      *
-     * @param bool $includeNull Flag include NULL
-     * @return PDOStatement|EntityException
+     * @param bool $includeNull Whether to include NULL values in the save operation.
+     * @return PDOStatement|EntityException Returns the executed statement on success or throws an exception on failure.
      */
     public function save($includeNull = false)
     {
@@ -658,11 +659,11 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Query of save data
+     * Construct a query for saving the current object data.
      *
-     * @param bool $includeNull Flag include NULL
-     * @return PicoDatabaseQueryBuilder
-     * @throws EntityException
+     * @param bool $includeNull Whether to include NULL values in the query.
+     * @return PicoDatabaseQueryBuilder Returns the constructed query builder for the save operation.
+     * @throws EntityException If an error occurs while constructing the query.
      */
     public function saveQuery($includeNull = false)
     {
@@ -704,11 +705,11 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get object values
+     * Retrieve the values of the object for database operations.
      *
-     * @param PicoTableInfo $info Table information
-     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder
-     * @return array
+     * @param PicoTableInfo $info Table information containing column definitions.
+     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder for escaping values.
+     * @return array Associative array of column names and their corresponding values.
      */
     private function getValues($info, $queryBuilder)
     {
@@ -728,9 +729,10 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get null column set manualy
-     * @param PicoTableInfo $info Table information
-     * @return array
+     * Get a list of columns that should be set to NULL.
+     *
+     * @param PicoTableInfo $info Table information containing column definitions.
+     * @return array List of column names that should be set to NULL.
      */
     private function getNullCols($info)
     {
@@ -751,9 +753,10 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Get noninsertable column
-     * @param PicoTableInfo $info Table information
-     * @return array
+     * Retrieve a list of columns that are not insertable.
+     *
+     * @param PicoTableInfo $info Table information containing column definitions.
+     * @return array List of non-insertable column names.
      */
     private function getNonInsertableCols($info)
     {
@@ -773,9 +776,10 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Get nonupdatable column
-     * @param PicoTableInfo $info Table information
-     * @return array
+     * Retrieve a list of columns that are not updatable.
+     *
+     * @param PicoTableInfo $info Table information containing column definitions.
+     * @return array List of non-updatable column names.
      */
     private function getNonUpdatableCols($info)
     {
@@ -795,11 +799,12 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get SET statement
+     * Construct the SET statement for an SQL update operation.
      *
-     * @param PicoTableInfo $info Table information
-     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder
-     * @return string
+     * @param PicoTableInfo $info Table information containing column definitions.
+     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder for escaping values.
+     * @return string The constructed SET clause for the update statement.
+     * @throws NoUpdatableColumnException If no updatable columns are found.
      */
     private function getSet($info, $queryBuilder)
     {
@@ -836,11 +841,12 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get WHERE statement
+     * Construct the WHERE statement for SQL operations.
      *
-     * @param PicoTableInfo $info Table information
-     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder
-     * @return string
+     * @param PicoTableInfo $info Table information containing primary key definitions.
+     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder for escaping values.
+     * @return string The constructed WHERE clause.
+     * @throws NoPrimaryKeyDefinedException If no primary keys are defined.
      */
     private function getWhere($info, $queryBuilder)
     {
@@ -871,11 +877,11 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get primary keys
+     * Retrieve the primary keys from the table information.
      *
-     * @param PicoTableInfo $info Table information
-     * @return array
-     * @throws EntityException
+     * @param PicoTableInfo|null $info Optional table information; if null, it retrieves the current table info.
+     * @return array List of primary key column names.
+     * @throws EntityException If an error occurs while retrieving primary keys.
      */
     public function getPrimaryKeys($info = null)
     {
@@ -892,11 +898,11 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get columns
+     * Retrieve all column names from the table information.
      *
-     * @param PicoTableInfo $info Table information
-     * @return array
-     * @throws EntityException
+     * @param PicoTableInfo|null $info Optional table information; if null, it retrieves the current table info.
+     * @return array List of column names.
+     * @throws EntityException If an error occurs while retrieving columns.
      */
     public function getColumns($info = null)
     {
@@ -913,11 +919,11 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get join columns
+     * Retrieve all join column names from the table information.
      *
-     * @param PicoTableInfo $info Table information
-     * @return array
-     * @throws EntityException
+     * @param PicoTableInfo|null $info Optional table information; if null, it retrieves the current table info.
+     * @return array List of join column names.
+     * @throws EntityException If an error occurs while retrieving join columns.
      */
     public function getJoinSources($info = null)
     {
@@ -934,11 +940,11 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Check if column is primary key or not
+     * Check if the specified column name is a primary key.
      *
-     * @param string $columnName Column name
-     * @param array $primaryKeys Primary keys
-     * @return bool
+     * @param string $columnName The name of the column to check.
+     * @param array $primaryKeys An array of primary key column names.
+     * @return bool True if the column is a primary key, false otherwise.
      */
     public function isPrimaryKeys($columnName, $primaryKeys)
     {
@@ -946,10 +952,10 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get primary key with autoincrement value
+     * Retrieve primary keys that have auto-increment values.
      *
-     * @param PicoTableInfo $info Table information
-     * @return array
+     * @param PicoTableInfo $info Information about the table, including key definitions.
+     * @return array An associative array of auto-increment primary keys and their values.
      */
     public function getPrimaryKeyAutoIncrement($info)
     {
@@ -969,11 +975,11 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Add generated value
+     * Add generated values for auto-increment or UUID fields.
      *
-     * @param PicoTableInfo $info Table information
-     * @param bool $firstCall First call
-     * @return self
+     * @param PicoTableInfo $info Table information.
+     * @param bool $firstCall Indicates whether this is the first call to the method.
+     * @return self Fluent interface; returns the current instance.
      */
     private function addGeneratedValue($info, $firstCall)
     {
@@ -985,7 +991,7 @@ class PicoDatabasePersistence // NOSONAR
                 foreach($keys as $prop=>$col)
                 {
                     $autoVal = $this->object->get($prop);
-                    if(self::nulOrEmpty($autoVal) && isset($col[self::KEY_STRATEGY]))
+                    if(self::nullOrEmpty($autoVal) && isset($col[self::KEY_STRATEGY]))
                     {
                         $this->setGeneratedValue($prop, $col[self::KEY_STRATEGY], $firstCall);
                     }
@@ -996,11 +1002,12 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Set generated value
+     * Set a generated value for a specified property based on its generation strategy.
      *
-     * @param string $prop Property name
-     * @param string $strategy Generation strategy
-     * @return self
+     * @param string $prop The property name to set the generated value for.
+     * @param string $strategy The generation strategy to use (e.g., UUID, IDENTITY).
+     * @param bool $firstCall Indicates whether this is the first call to the method.
+     * @return self Fluent interface; returns the current instance.
      */
     private function setGeneratedValue($prop, $strategy, $firstCall)
     {
@@ -1030,10 +1037,10 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Insert data
+     * Insert the current object's data into the database.
      *
-     * @param bool $includeNull Flag include NULL
-     * @return PDOStatement|EntityException
+     * @param bool $includeNull Whether to include NULL values in the insert operation.
+     * @return PDOStatement|EntityException Returns the executed statement on success or throws an exception on failure.
      */
     public function insert($includeNull = false)
     {
@@ -1044,10 +1051,10 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Query of insert data
+     * Construct the query for inserting the current object's data.
      *
-     * @param bool $includeNull Flag include NULL
-     * @return PicoDatabaseQueryBuilder|EntityException
+     * @param bool $includeNull Whether to include NULL values in the insert query.
+     * @return PicoDatabaseQueryBuilder|EntityException Returns the constructed query builder or throws an exception on failure.
      */
     public function insertQuery($includeNull = false)
     {
@@ -1058,11 +1065,11 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Insert data
+     * Execute the insert operation using the given table information and query builder.
      *
-     * @param PicoTableInfo $info Table information
-     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder
-     * @return PDOStatement
+     * @param PicoTableInfo|null $info Table information.
+     * @param PicoDatabaseQueryBuilder|null $queryBuilder Query builder for the insert operation.
+     * @return PDOStatement The executed statement.
      */
     private function _insert($info = null, $queryBuilder = null)
     {
@@ -1076,12 +1083,12 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Insert data
+     * Construct the SQL insert query using the provided table information and query builder.
      *
-     * @param PicoTableInfo $info Table information
-     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder
-     * @return PicoDatabaseQueryBuilder
-     * @throws EntityException
+     * @param PicoTableInfo|null $info Table information.
+     * @param PicoDatabaseQueryBuilder|null $queryBuilder Query builder for the insert operation.
+     * @return PicoDatabaseQueryBuilder The constructed query builder.
+     * @throws EntityException If an error occurs while constructing the query.
      */
     private function _insertQuery($info = null, $queryBuilder = null)
     {
@@ -1107,11 +1114,12 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Fix insertable values
+     * Filter the values to only include those that are insertable based on table info.
      *
-     * @param array $values Values
-     * @param PicoTableInfo $info Table information
-     * @return array
+     * @param array $values Values to be filtered.
+     * @param PicoTableInfo|null $info Table information.
+     * @return array The filtered array of insertable values.
+     * @throws NoInsertableColumnException If no values are found that can be inserted.
      */
     private function fixInsertableValues($values, $info = null)
     {
@@ -1163,11 +1171,11 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Check if data require a generated value
+     * Check if a generated value is required based on the strategy and property name.
      *
-     * @param string $strategy
-     * @param string $propertyName
-     * @return bool
+     * @param string $strategy The generation strategy for the property.
+     * @param string $propertyName The name of the property to check.
+     * @return bool True if a generated value is required, false otherwise.
      */
     private function isRequireGenerateValue($strategy, $propertyName)
     {
@@ -1177,11 +1185,10 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Implode array keys to field list
+     * Create a comma-separated string of field names for an SQL insert statement.
      *
-     * @param array $values Values
-     * @param PicoTableInfo $info Table information
-     * @return string
+     * @param array $values An associative array of values where keys are field names.
+     * @return string A string representation of the field names.
      */
     public function createStatementFields($values)
     {
@@ -1189,10 +1196,10 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Implode array values to value list
+     * Create a comma-separated string of values for an SQL insert statement.
      *
-     * @param array $values Values
-     * @return string
+     * @param array $values An associative array of values.
+     * @return string A string representation of the values.
      */
     public function createStatementValues($values)
     {      
@@ -1200,11 +1207,12 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get table column name from an object property
+     * Convert a property name to its corresponding database column name.
      *
-     * @param string $propertyName Property names
-     * @param array $columns Columns
-     * @return string
+     * @param string $propertyNames A string containing property names.
+     * @param array $columns An array of column definitions.
+     * @return string The resulting string with column names.
+     * @throws NoColumnMatchException If no column matches the provided property names.
      */
     private function getColumnNames($propertyNames, $columns)
     {
@@ -1244,10 +1252,10 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Ger column map
+     * Get a mapping of columns from the provided table information.
      *
-     * @param PicoTableInfo $info Table information
-     * @return array
+     * @param PicoTableInfo $info Table information.
+     * @return array An associative array mapping property names to column names.
      */
     private function getColumnMap($info)
     {
@@ -1270,10 +1278,10 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Fix comparison
+     * Adjust the comparison string for SQL queries.
      *
-     * @param string $column Column
-     * @return string
+     * @param string $column The column comparison string.
+     * @return string The adjusted comparison string.
      */
     private function fixComparison($column)
     {
@@ -1297,12 +1305,12 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Create WHERE by argument given
+     * Create a SQL WHERE clause based on provided arguments.
      *
-     * @param PicoTableInfo $info Table information
-     * @param string $propertyName Property name
-     * @param array $propertyValues Property values
-     * @return string
+     * @param PicoTableInfo $info Table information.
+     * @param string $propertyName The name of the property to include in the WHERE clause.
+     * @param array $propertyValues The values to compare against.
+     * @return string The constructed WHERE clause.
      */
     private function createWhereFromArgs($info, $propertyName, $propertyValues)
     {
@@ -1338,11 +1346,12 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Get table name
+     * Get table name of the entity
      *
      * @param string|null $entityName Entity name
      * @param PicoTableInfo $info Table information
-     * @return string|null
+     * @return string|null The corresponding table name or null if not found
+     * @throws Exception If unable to retrieve the class name or parse annotations
      */
     private function getTableOf($entityName, $info)
     {
@@ -1379,11 +1388,12 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Get entity primary key
+     * Get entity primary key of the entity
      *
      * @param string $entityName Entity name
      * @param PicoTableInfo $info Table information
-     * @return string[]
+     * @return string[] Array of primary key column names
+     * @throws Exception If unable to retrieve the class name or parse annotations
      */
     private function getPrimaryKeyOf($entityName, $info)
     {
@@ -1416,7 +1426,8 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param string $entityName Entity name
      * @param PicoTableInfo $info Table information
-     * @return array
+     * @return array Associative array mapping property names to column names
+     * @throws Exception If unable to retrieve the class name or parse annotations
      */
     private function getColumnMapOf($entityName, $info)
     {
@@ -1447,8 +1458,9 @@ class PicoDatabasePersistence // NOSONAR
      * @param string|null $parentName Parent name
      * @param string $masterTable Master table
      * @param string|null $entityTable Entity table
-     * @param string $field Field
-     * @return string
+     * @param string $field Field name
+     * @param bool $master Indicates if the master table is being used
+     * @return string Fully qualified column name for the join
      */
     private function getJoinSource($parentName, $masterTable, $entityTable, $field, $master = false)
     {
@@ -1470,12 +1482,12 @@ class PicoDatabasePersistence // NOSONAR
     } 
 
     /**
-     * Create WHERE from specification
+     * Create WHERE clause from specification
      *
-     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder
-     * @param PicoSpecification $specification Specification
+     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder instance
+     * @param PicoSpecification $specification Specification containing filter criteria
      * @param PicoTableInfo $info Table information
-     * @return string
+     * @return string The constructed WHERE clause
      */
     protected function createWhereFromSpecification($sqlQuery, $specification, $info)
     {
@@ -1495,13 +1507,13 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Join array string with maximum length. If max is reached, it will create new line
+     * Join array of strings with a maximum length for each line
      *
-     * @param string[] $arr Array string to be joined
-     * @param int $max Threshold to split line
-     * @param string $normalSplit Normal splitter
-     * @param string $maxSplit Overflow splitter
-     * @return string
+     * @param string[] $arr Array of strings to join
+     * @param int $max Maximum length of each line
+     * @param string $normalSplit Normal splitter for joining
+     * @param string $maxSplit Splitter for overflow lines
+     * @return string Joined string with line breaks as necessary
      */
     private function joinStringArray($arr, $max = 0, $normalSplit = " ", $maxSplit = " \r\n")
     {
@@ -1527,12 +1539,12 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Split chunk query
+     * Split array into chunks based on maximum length
      *
-     * @param string[] $arr Array string to be joined
-     * @param int $max Threshold to split line
-     * @param string $normalSplit Normal splitter
-     * @return array
+     * @param string[] $arr Array of strings to split
+     * @param int $max Maximum length for each chunk
+     * @param string $normalSplit Normal splitter for joining
+     * @return array Array of string chunks
      */
     private function splitChunk($arr, $max, $normalSplit)
     {
@@ -1564,14 +1576,14 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Add where statemenet
+     * Add WHERE statement to the query
      *
-     * @param array $arr Array values
-     * @param array $masterColumnMaps Master column  map
-     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder
-     * @param PicoSpecification $spec Specification
+     * @param array $arr Array of existing WHERE clauses
+     * @param array $masterColumnMaps Master column mappings
+     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder instance
+     * @param PicoSpecification $spec Specification to process
      * @param PicoTableInfo $info Table information
-     * @return array
+     * @return array Updated array of WHERE clauses
      */
     private function addWhere($arr, $masterColumnMaps, $sqlQuery, $spec, $info)
     {
@@ -1630,11 +1642,11 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Construct comarison value
+     * Construct comparison value for predicates
      *
-     * @param PicoPredicate $predicate Predicate
-     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder
-     * @return string
+     * @param PicoPredicate $predicate Predicate with comparison values
+     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder instance
+     * @return string Formatted comparison value for SQL query
      */
     private function contructComparisonValue($predicate, $sqlQuery)
     {
@@ -1654,11 +1666,11 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Format column
+     * Format column name with optional formatting
      *
-     * @param string $column Column name
-     * @param string $format Format
-     * @return string
+     * @param string $column Column name to format
+     * @param string|null $format Formatting string
+     * @return string Formatted column name
      */
     private function formatColumn($column, $format)
     {
@@ -1670,10 +1682,10 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Trim WHERE
+     * Trim unnecessary parts from WHERE clause
      *
-     * @param string $where Where statement
-     * @return string
+     * @param string $where WHERE clause string
+     * @return string Trimmed WHERE clause
      */
     private function trimWhere($where)
     {
@@ -1681,11 +1693,11 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Create ORDER BY
+     * Create ORDER BY clause
      *
      * @param PicoTableInfo $info Table information
-     * @param PicoSortable|string $order Sortable
-     * @return string|null
+     * @param PicoSortable|string $order Sorting criteria
+     * @return string|null The constructed ORDER BY clause or null
      */
     private function createOrderBy($info, $order)
     {
@@ -1714,11 +1726,11 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Create sort by
+     * Create sorting SQL query
      *
-     * @param PicoSortable $order Sortable
-     * @param PicoTableInfo $info Table information
-     * @return string
+     * @param PicoSortable $order Sorting criteria
+     * @param PicoTableInfo|null $info Table information
+     * @return string|null The constructed ORDER BY clause or null
      */
     public function createOrderByQuery($order, $info = null)
     {
@@ -1739,11 +1751,11 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Create sort without mapping
+     * Create sorting without mapping
      *
-     * @param PicoSortable $order Sortable
-     * @param PicoTableInfo|null $info
-     * @return string
+     * @param PicoSortable $order Sorting criteria
+     * @param PicoTableInfo|null $info Table information
+     * @return string|null The constructed ORDER BY clause or null
      */
     private function createWithoutMapping($order, $info)
     {
@@ -1770,11 +1782,11 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Create sort with mapping
+     * Create sorting with mapping
      *
-     * @param PicoSortable $order Sortable
+     * @param PicoSortable $order Sorting criteria
      * @param PicoTableInfo $info Table information
-     * @return string
+     * @return string The constructed ORDER BY clause
      */
     private function createWithMapping($order, $info)
     {
@@ -1829,11 +1841,11 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Check if primary key has valid value or not
+     * Check if primary keys have valid values
      *
-     * @param string[] $primaryKeys Primary keys
-     * @param array $propertyValues Property values
-     * @return bool
+     * @param string[] $primaryKeys Array of primary key names
+     * @param array $propertyValues Property values to check
+     * @return bool True if primary keys are valid, false otherwise
      */
     private function isValidPrimaryKeyValues($primaryKeys, $propertyValues)
     {
@@ -1841,10 +1853,10 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Convert scalar to array
+     * Convert a scalar value to an array
      *
-     * @param mixed $propertyValue Property values
-     * @return array
+     * @param mixed $propertyValues Property values to convert
+     * @return array Converted array of property values
      */
     private function toArray($propertyValues)
     {
@@ -1856,10 +1868,10 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Get all table columns on entity 
+     * Get all columns of the entity
      *
      * @param PicoTableInfo $info Table information
-     * @return string
+     * @return string Comma-separated string of all column names
      */
     private function getAllColumns($info)
     {
@@ -1873,11 +1885,11 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Find one record by primary key value
+     * Find a single record by primary key value
      *
-     * @param mixed $propertyValue Property values
-     * @return object
-     * @throws EntityException|InvalidFilterException|EmptyResultException
+     * @param mixed $propertyValue Primary key value(s)
+     * @return object The found record
+     * @throws EntityException|InvalidFilterException|EmptyResultException If record is not found or filter is invalid
      */
     public function find($propertyValues)
     {
@@ -1954,10 +1966,10 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Add specification to query builder
      *
-     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder
-     * @param PicoSpecification|array $specification Specification
+     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder instance
+     * @param PicoSpecification|array $specification Specification or specifications array
      * @param PicoTableInfo $info Table information
-     * @return PicoDatabaseQueryBuilder
+     * @return PicoDatabaseQueryBuilder Modified query builder with specification applied
      */
     private function setSpecification($sqlQuery, $specification, $info)
     {
@@ -1975,9 +1987,9 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Add pageable to query builder
      *
-     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder
-     * @param PicoPageable $pageable Pageable
-     * @return PicoDatabaseQueryBuilder
+     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder instance
+     * @param PicoPageable $pageable Pageable object
+     * @return PicoDatabaseQueryBuilder Modified query builder with pageable applied
      */
     private function setPageable($sqlQuery, $pageable)
     {
@@ -1998,11 +2010,11 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Add sortable to query builder
      *
-     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder
-     * @param PicoPageable|null $pageable Pageable
-     * @param PicoSortable|string|null $sortable Sortable
+     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder instance
+     * @param PicoPageable|null $pageable Pageable object (optional)
+     * @param PicoSortable|string|null $sortable Sortable object or field name (optional)
      * @param PicoTableInfo $info Table information
-     * @return PicoDatabaseQueryBuilder
+     * @return PicoDatabaseQueryBuilder Modified query builder with sortable applied
      */
     private function setSortable($sqlQuery, $pageable, $sortable, $info)
     {
@@ -2049,11 +2061,11 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Set ORDER BY
+     * Set ORDER BY clause in the query
      *
-     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder
-     * @param string $sortOrder Sort order
-     * @return PicoDatabaseQueryBuilder
+     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder instance
+     * @param string $sortOrder Sort order string
+     * @return PicoDatabaseQueryBuilder Modified query builder with ORDER BY clause
      */
     private function setOrdeBy($sqlQuery, $sortOrder)
     {
@@ -2065,11 +2077,11 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Add JOIN query
+     * Add JOIN query to the query builder
      *
-     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder
+     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder instance
      * @param PicoTableInfo $info Table information
-     * @return PicoDatabaseQueryBuilder
+     * @return PicoDatabaseQueryBuilder Modified query builder with JOIN clauses
      */
     protected function addJoinQuery($sqlQuery, $info)
     {
@@ -2116,13 +2128,13 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Check if need join query
+     * Check if JOIN query is required based on specification, pageable, and sortable
      *
-     * @param PicoSpecification $specification Specification
-     * @param PicoPageable|null $pageable Pageable
-     * @param PicoSortable|string|null $sortable Sortable
+     * @param PicoSpecification $specification Specification object
+     * @param PicoPageable|null $pageable Pageable object (optional)
+     * @param PicoSortable|string|null $sortable Sortable object or field name (optional)
      * @param PicoTableInfo $info Table information
-     * @return bool
+     * @return bool True if JOIN is required, otherwise false
      */
     protected function isRequireJoin($specification, $pageable, $sortable, $info)
     {
@@ -2138,12 +2150,12 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Require join from sortable
+     * Determine if JOIN is required based on pageable and sortable
      *
-     * @param PicoPageable|null $pageable Pageable
-     * @param PicoSortable|string|null $sortable Sortable
+     * @param PicoPageable|null $pageable Pageable object (optional)
+     * @param PicoSortable|string|null $sortable Sortable object or field name (optional)
      * @param PicoTableInfo $info Table information
-     * @return bool
+     * @return bool True if JOIN is required, otherwise false
      */
     private function isRequireJoinFromPageableAndSortable($pageable, $sortable, $info)
     {
@@ -2171,10 +2183,10 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Require join from specification
+     * Determine if JOIN is required based on specification
      *
-     * @param PicoSpecification $specification Specification
-     * @return bool
+     * @param PicoSpecification $specification Specification object
+     * @return bool True if JOIN is required, otherwise false
      */
     private function isRequireJoinFromSpecification($specification)
     {
@@ -2182,15 +2194,15 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Create PDO statement
+     * Create a PDO statement based on specification, pageable, sortable, and selected fields
      *
-     * @param PicoSpecification $specification Specification
-     * @param PicoPageable $pageable Pagable
-     * @param PicoSortable $sortable Sortable
-     * @param array $subqueryMap Subquery map
-     * @param string $selected Selected
-     * @return PDOStatement
-     * @throws PDOException
+     * @param PicoSpecification $specification Specification object
+     * @param PicoPageable $pageable Pageable object
+     * @param PicoSortable $sortable Sortable object
+     * @param array|null $subqueryMap Subquery map (optional)
+     * @param string|null $selected Selected fields (optional)
+     * @return PDOStatement Prepared PDO statement
+     * @throws PDOException If there is an error in PDO operations
      */
     public function createPDOStatement($specification, $pageable, $sortable, $subqueryMap = null, $selected = null)
     {
@@ -2208,13 +2220,13 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get findAll query
+     * Get query to find all records from the database without any filter
      *
-     * @param PicoSpecification|null $specification Specification
-     * @param PicoPageable|null $pageable Pageable
-     * @param PicoSortable|string|null $sortable Sortable
-     * @param PicoTableInfo $info Table information
-     * @return PicoDatabaseQueryBuilder
+     * @param PicoSpecification|null $specification Specification object (optional)
+     * @param PicoPageable|null $pageable Pageable object (optional)
+     * @param PicoSortable|string|null $sortable Sortable object or field name (optional)
+     * @param PicoTableInfo|null $info Table information (optional)
+     * @return PicoDatabaseQueryBuilder Query builder for finding all records
      */
     public function findAllQuery($specification, $pageable = null, $sortable = null, $info = null)
     {
@@ -2226,14 +2238,14 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Get findSpecific query
+     * Get findSpecific query builder
      *
-     * @param string $selected
-     * @param PicoSpecification|null $specification Specification
-     * @param PicoPageable|null $pageable Pageable
-     * @param PicoSortable|string|null $sortable Sortable
-     * @param PicoTableInfo $info Table information
-     * @return PicoDatabaseQueryBuilder
+     * @param string $selected           The columns to select
+     * @param PicoSpecification|null $specification  Specification to filter results
+     * @param PicoPageable|null $pageable Pageable information for pagination
+     * @param PicoSortable|string|null $sortable Sort order for the results
+     * @param PicoTableInfo|null $info   Table information (optional, defaults to current table info)
+     * @return PicoDatabaseQueryBuilder    The configured query builder
      */
     public function findSpecificQuery($selected, $specification, $pageable = null, $sortable = null, $info = null)
     {
@@ -2271,12 +2283,13 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get all record from database wihout filter
+     * Retrieve a single record from the database without filters
      *
-     * @param PicoSpecification|null $specification Specification
-     * @param PicoSortable|string|null $sortable Sortable
-     * @param array|null $subqueryMap Subquery map
-     * @throws EntityException|EmptyResultException
+     * @param PicoSpecification|null $specification  Specification to filter results
+     * @param PicoSortable|string|null $sortable       Sort order for the results
+     * @param array|null $subqueryMap                Optional subquery mappings
+     * @return array|null                              The retrieved record or null if not found
+     * @throws EntityException|EmptyResultException    If no results are found
      */
     public function findOne($specification, $sortable = null, $subqueryMap = null)
     {
@@ -2293,13 +2306,14 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get all record from database wihout filter
+     * Retrieve all records from the database without filters
      *
-     * @param PicoSpecification|null $specification Specification
-     * @param PicoPageable|null $pageable Pageable
-     * @param PicoSortable|string|null $sortable Sortable
-     * @param array|null $subqueryMap Subquery map
-     * @throws EntityException|EmptyResultException
+     * @param PicoSpecification|null $specification  Specification to filter results
+     * @param PicoPageable|null $pageable           Pageable information for pagination
+     * @param PicoSortable|string|null $sortable     Sort order for the results
+     * @param array|null $subqueryMap               Optional subquery mappings
+     * @return array|null                             The list of records or null if not found
+     * @throws EntityException|EmptyResultException   If no results are found
      */
     public function findAll($specification, $pageable = null, $sortable = null, $subqueryMap = null)
     {
@@ -2315,11 +2329,12 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Find one with primary key value
+     * Find a record by its primary key value
      *
-     * @param mixed $primaryKeyVal Primary key value
-     * @param array $subqueryMap Subquery map
-     * @return array
+     * @param mixed $primaryKeyVal    The value of the primary key
+     * @param array $subqueryMap      Optional subquery mappings
+     * @return array|null             The retrieved record or null if not found
+     * @throws EmptyResultException    If no record is found
      */
     public function findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryMap)
     {
@@ -2378,14 +2393,15 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Get all record from database wihout filter with subquery
+     * Retrieve records from the database with optional subqueries
      *
-     * @param string $selected Selected
-     * @param PicoSpecification $specification Specification
-     * @param PicoPageable|null $pageable Pageable
-     * @param PicoSortable|string|null $sortable Sortable
-     * @param array $subqueryMap Subquery map
-     * @throws EntityException|EmptyResultException
+     * @param string $selected        The columns to select
+     * @param PicoSpecification $specification  Specification to filter results
+     * @param PicoPageable|null $pageable         Pageable information for pagination
+     * @param PicoSortable|string|null $sortable   Sort order for the results
+     * @param array|null $subqueryMap               Optional subquery mappings
+     * @return array|null             The list of records or null if not found
+     * @throws EntityException|EmptyResultException If no results are found
      */
     public function findSpecificWithSubquery($selected, $specification, $pageable = null, $sortable = null, $subqueryMap = null)
     {
@@ -2430,11 +2446,11 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Create subquery
+     * Create a subquery based on the provided mapping
      *
-     * @param PicoTableInfo $info Table information
-     * @param array $subqueryMap Subquery map
-     * @return string
+     * @param PicoTableInfo $info   Table information
+     * @param array $subqueryMap    Mapping for subqueries
+     * @return string               The generated subquery string
      */
     public function subquery($info, $subqueryMap)
     {
@@ -2467,12 +2483,12 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Join string with separator
+     * Concatenate two strings with a separator
      *
-     * @param string $string1 First string
-     * @param string $string2 Second string
-     * @param string $separator Separator
-     * @return string
+     * @param string $string1       The first string
+     * @param string $string2       The second string
+     * @param string $separator      The separator to use
+     * @return string               The concatenated string
      */
     public function joinString($string1, $string2, $separator)
     {
@@ -2485,18 +2501,16 @@ class PicoDatabasePersistence // NOSONAR
             return $string1;
         }
     }
-    
-    
 
     /**
-     * Get all record from database wihout filter
+     * Retrieve specific records from the database
      *
-     * @param string $selected Selected
-     * @param PicoSpecification $specification Specification
-     * @param PicoPageable|null $pageable Pageable
-     * @param PicoSortable|string|null $sortable Sortable
-     * @return array|null
-     * @throws EntityException|EmptyResultException
+     * @param string $selected        The columns to select
+     * @param PicoSpecification $specification  Specification to filter results
+     * @param PicoPageable|null $pageable         Pageable information for pagination
+     * @param PicoSortable|string|null $sortable   Sort order for the results
+     * @return array|null             The list of records or null if not found
+     * @throws EntityException|EmptyResultException If no results are found
      */
     public function findSpecific($selected, $specification, $pageable = null, $sortable = null)
     {
@@ -2530,15 +2544,16 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get query for all mathced record from database
+     * Build a query for matched records based on specified criteria
      *
-     * @param string $propertyName Property name
-     * @param mixed $propertyValue Property value
-     * @param PicoPageable $pageable Pageable
-     * @param PicoSortable|string $sortable Sortable
-     * @param PicoTableInfo $info Table information
-     * @return PicoDatabaseQueryBuilder
-     * @throws PDOException|NoDatabaseConnectionException|EntityException
+     * @param string $propertyName   The property name to filter by
+     * @param mixed $propertyValue   The value of the property to filter by
+     * @param PicoPageable|null $pageable         Pageable information for pagination
+     * @param PicoSortable|string|null $sortable   Sort order for the results
+     * @param PicoTableInfo $info    Table information
+     * @param array|null $subqueryMap Optional subquery mappings
+     * @return PicoDatabaseQueryBuilder The configured query builder
+     * @throws PDOException|NoDatabaseConnectionException|EntityException If an error occurs
      */
     public function findByQuery($propertyName, $propertyValue, $pageable = null, $sortable = null, $info = null, $subqueryMap = null)
     {
@@ -2571,15 +2586,15 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get all mathced record from database
+     * Retrieve matched records from the database
      *
-     * @param string $propertyName Property name
-     * @param mixed $propertyValue Property value
-     * @param PicoPageable $pageable Pageable
-     * @param PicoSortable|string $sortable Sortable
-     * @param array $subqueryMap Subquery map
-     * @return array|null
-     * @throws PDOException|NoDatabaseConnectionException|EntityException
+     * @param string $propertyName   The property name to filter by
+     * @param mixed $propertyValue   The value of the property to filter by
+     * @param PicoPageable|null $pageable         Pageable information for pagination
+     * @param PicoSortable|string|null $sortable   Sort order for the results
+     * @param array|null $subqueryMap Optional subquery mappings
+     * @return array|null             The list of matched records or null if not found
+     * @throws PDOException|NoDatabaseConnectionException|EntityException If an error occurs
      */
     public function findBy($propertyName, $propertyValue, $pageable = null, $sortable = null, $subqueryMap = null)
     {
@@ -2616,11 +2631,11 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Check if record is exists or not
+     * Check if a record exists based on property criteria
      *
-     * @param string $propertyName Property name
-     * @param mixed $propertyValue Property value
-     * @return bool
+     * @param string $propertyName   The property name to check
+     * @param mixed $propertyValue   The value of the property to check
+     * @return bool                 True if the record exists, false otherwise
      */
     public function existsBy($propertyName, $propertyValue)
     {
@@ -2628,13 +2643,13 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get all record from database wihout filter
+     * Count the total number of records without filters
      *
-     * @param PicoSpecification|null $specification Specification
-     * @param PicoPageable $pageable Pagable
-     * @param PicoSortable $sortable Sortable
-     * @return int
-     * @throws EntityException|EmptyResultException
+     * @param PicoSpecification|null $specification  Specification to filter results
+     * @param PicoPageable|null $pageable            Pageable information for pagination
+     * @param PicoSortable|null $sortable             Sort order for the results
+     * @return int                                   The count of records
+     * @throws EntityException|EmptyResultException   If an error occurs
      */
     public function countAll($specification = null, $pageable = null, $sortable = null)
     {
@@ -2680,12 +2695,12 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Count data
+     * Count records based on specified criteria
      *
-     * @param string $propertyName Property name
-     * @param mixed $propertyValue Property value
-     * @return int
-     * @throws EntityException|InvalidFilterException|PDOException|EmptyResultException
+     * @param string $propertyName   The property name to filter by
+     * @param mixed $propertyValue   The value of the property to filter by
+     * @return int                   The count of matched records
+     * @throws EntityException|InvalidFilterException|PDOException|EmptyResultException If an error occurs
      */
     public function countBy($propertyName, $propertyValue)
     {
@@ -2728,12 +2743,12 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Delete record from database without read it first
+     * Delete records based on specified criteria without reading them first
      *
-     * @param string $propertyName Property name
-     * @param mixed $propertyValue Property value
-     * @return int
-     * @throws EntityException|InvalidFilterException|PDOException|EmptyResultException
+     * @param string $propertyName   The property name to filter by
+     * @param mixed $propertyValue   The value of the property to filter by
+     * @return int                   The number of deleted records
+     * @throws EntityException|InvalidFilterException|PDOException|EmptyResultException If an error occurs
      */
     public function deleteBy($propertyName, $propertyValue)
     {
@@ -2769,13 +2784,20 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Get one mathced record from database
+     * Retrieves a single matched record from the database based on the specified property name and value.
      *
-     * @param string $propertyName Property name
-     * @param array $propertyValues Property values
-     * @param PicoSortable|string|null $sortable Sortable
-     * @return array|null
-     * @throws EntityException|InvalidFilterException|EmptyResultException
+     * This method constructs a SQL query to find a single record that matches the provided property name and value.
+     * It can also sort the results based on the optional sortable parameter. If no record is found, it returns null.
+     *
+     * @param string $propertyName The name of the property to filter the records by.
+     * @param mixed $propertyValue The value of the property to match against.
+     * @param PicoSortable|string|null $sortable Optional. Defines sorting for the result set.
+     * 
+     * @return array|null Returns the matching record as an associative array, or null if no record is found.
+     * 
+     * @throws EntityException If there is an issue with the entity operations.
+     * @throws InvalidFilterException If the constructed filter is invalid.
+     * @throws EmptyResultException If the query results in an empty set.
      */
     public function findOneBy($propertyName, $propertyValue, $sortable = null)
     {
@@ -2877,10 +2899,14 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Get reference column name
+     * Retrieves the reference column name from the provided join information.
      *
-     * @param array $join Join columns
-     * @return string
+     * This method checks if the join array contains a specific key for the reference column name.
+     * If the key exists, it returns that value; otherwise, it returns the standard column name.
+     *
+     * @param array $join The join column definition, which may include keys for reference and standard column names.
+     * 
+     * @return string The reference column name, either from the specific key or the standard name.
      */
     private function getReferenceColumnName($join)
     {
@@ -2895,11 +2921,16 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get property name
-     * @param string $classNameJoin Class name join
-     * @param string $referenceColumName Reference column name
-     * @param PicoTableInfo $info Table information
-     * @return string|null
+     * Retrieves the property name corresponding to the given reference column name from a joined class.
+     *
+     * This method checks the columns of the specified class, and returns the property name that matches
+     * the reference column name. If no match is found, it returns the reference column name itself.
+     *
+     * @param string $classNameJoin The name of the class to join with.
+     * @param string $referenceColumName The name of the reference column to look up.
+     * @param PicoTableInfo $info The table information containing metadata about the columns.
+     * 
+     * @return string|null The corresponding property name if found, otherwise the reference column name.
      */
     private function getJoinKeyName($classNameJoin, $referenceColumName, $info)
     {
@@ -2917,10 +2948,15 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Prepare join cache
+     * Prepares the join cache for a specified class name.
      *
-     * @param string $classNameJoin Join class name
-     * @return self
+     * This method checks if the join cache for the given class name exists. If it does not exist,
+     * it initializes an empty array for caching join data. It ensures that the join cache is ready
+     * for storing results from subsequent queries.
+     *
+     * @param string $classNameJoin The class name for which to prepare the join cache.
+     * 
+     * @return self Returns the current instance to allow method chaining.
      */
     private function prepareJoinCache($classNameJoin)
     {
@@ -2992,12 +3028,17 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Join data by annotation @JoinColumn
+     * Joins data based on the specified join columns from the provided row.
+     *
+     * This method retrieves related data by following the join definitions specified in the 
+     * `PicoTableInfo` object. It populates the given data object with the joined entities
+     * based on the annotations defined in the join columns.
+     *
+     * @param mixed $data The original object or array to be populated with joined data.
+     * @param array $row The row of data containing column values.
+     * @param PicoTableInfo $info The table information that includes join column metadata.
      * 
-     * @param mixed $data Object
-     * @param array $row Row
-     * @param PicoTableInfo $info Table information
-     * @return object
+     * @return mixed The updated object or array with joined data.
      */
     public function join($data, $row, $info)
     {
@@ -3032,12 +3073,16 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Add property
+     * Adds a property to the original data array or object.
      *
-     * @param array|object $data Original data
-     * @param string $propName Property name
-     * @param mixed $value Property value
-     * @return array|object
+     * This method sets a property with the specified name to the given value. It handles
+     * both arrays and objects, ensuring that the property is added correctly based on the type.
+     *
+     * @param array|object $data The original data (array or object).
+     * @param string $propName The name of the property to add.
+     * @param mixed $value The value to assign to the property.
+     * 
+     * @return array|object The updated data array or object with the new property.
      */
     private function addProperty($data, $propName, $value)
     {
@@ -3053,10 +3098,13 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Check if filter is valid or not
+     * Validates whether the given filter is acceptable.
      *
-     * @param string $filter Filter
-     * @return bool
+     * This method checks if the provided filter is not null, not empty, and not a whitespace string.
+     *
+     * @param string $filter The filter string to validate.
+     * 
+     * @return bool True if the filter is valid; otherwise, false.
      */
     private function isValidFilter($filter)
     {
@@ -3064,10 +3112,14 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Check if data is not null and not empty and not a space
+     * Checks if the provided value is not null, not empty, and not just whitespace.
      *
-     * @param string $value Value to be checked
-     * @return bool
+     * This method trims the input value and performs checks to determine if it is 
+     * a valid, non-empty string.
+     *
+     * @param string $value The value to check.
+     * 
+     * @return bool True if the value is valid; otherwise, false.
      */
     private function notNullAndNotEmptyAndNotSpace($value)
     {
@@ -3075,11 +3127,16 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Fix data type
+     * Fixes the data types of the input data based on the table information.
      *
-     * @param array $data Input data
-     * @param PicoTableInfo $info Table information
-     * @return array
+     * This method maps the input data to the appropriate types as defined in the 
+     * provided `PicoTableInfo`. It ensures that the data types are correct according to 
+     * the column definitions.
+     *
+     * @param array $data The input data to be fixed.
+     * @param PicoTableInfo $info The table information containing type definitions.
+     * 
+     * @return array The data with fixed types.
      */
     public function fixDataType($data, $info)
     {
@@ -3098,11 +3155,15 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Fix value
+     * Fixes the value to the specified data type.
      *
-     * @param mixed $value Input value
-     * @param string $type Data type
-     * @return mixed
+     * This method converts the input value to the appropriate type based on the provided
+     * data type. It handles various types including boolean, integer, double, and DateTime.
+     *
+     * @param mixed $value The input value to be fixed.
+     * @param string $type The expected data type of the value.
+     * 
+     * @return mixed The value converted to the specified type.
      */
     public function fixData($value, $type)
     {
@@ -3160,10 +3221,14 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Boolean value
+     * Converts the input value to a boolean.
      *
-     * @param mixed $value Input value
-     * @return bool
+     * This method checks if the input value is equivalent to `1` or `'1'` to determine
+     * if it should return `true`; otherwise, it returns `false`.
+     *
+     * @param mixed $value The input value to convert.
+     * 
+     * @return bool True if the value is equivalent to `1`; otherwise, false.
      */
     private function boolval($value)
     {
@@ -3171,10 +3236,14 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Integer value
+     * Converts the input value to an integer.
      *
-     * @param mixed $value Input value
-     * @return mixed
+     * This method returns the integer value of the input. If the input is null, it
+     * returns null instead.
+     *
+     * @param mixed $value The input value to convert.
+     * 
+     * @return mixed The integer value or null if the input is null.
      */
     private function intval($value)
     {
@@ -3190,10 +3259,14 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Double value
+     * Converts the input value to a double.
      *
-     * @param mixed $value Input value
-     * @return mixed
+     * This method returns the double value of the input. If the input is null, it
+     * returns null instead.
+     *
+     * @param mixed $value The input value to convert.
+     * 
+     * @return mixed The double value or null if the input is null.
      */
     private function doubleval($value)
     {
@@ -3209,11 +3282,15 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Fixing input
+     * Fixes the input value based on its type.
      *
-     * @param mixed $value Input value
-     * @param array $column Column
-     * @return mixed
+     * If the input value is an instance of DateTime, it formats the date according
+     * to the specified column format. Otherwise, it returns the original value.
+     *
+     * @param mixed $value The input value to fix.
+     * @param array $column The column information containing potential date format.
+     * 
+     * @return mixed The formatted date string or the original value.
      */
     private function fixInput($value, $column)
     {
@@ -3232,9 +3309,13 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Check if date time is NULL
-     * @param string $value Value to be checked
-     * @return bool
+     * Checks if the given datetime value represents a null or empty datetime.
+     *
+     * This method checks specific string representations of null or default datetime values.
+     *
+     * @param string $value The value to check.
+     * 
+     * @return bool True if the value represents a null datetime; otherwise, false.
      */
     private function isDateTimeNull($value)
     {
@@ -3255,10 +3336,14 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Create type map
+     * Creates a mapping of column names to their corresponding property types.
      *
-     * @param PicoTableInfo $info Table information
-     * @return array
+     * This method generates an associative array where keys are column names and values
+     * are their associated property types based on the provided PicoTableInfo.
+     *
+     * @param PicoTableInfo $info The table information containing column metadata.
+     * 
+     * @return array An associative array mapping column names to property types.
      */
     private function createTypeMap($info)
     {
@@ -3274,10 +3359,13 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Select record from database
+     * Selects records from the database based on the defined criteria.
      *
-     * @return mixed
-     * @throws EntityException
+     * This method builds a query to retrieve records from the database using the
+     * current table information, filters, specifications, and pagination settings.
+     *
+     * @return mixed The result set of the query.
+     * @throws EntityException If an error occurs while selecting records.
      */
     public function select()
     {
@@ -3288,10 +3376,13 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Select all records from database
+     * Selects all records from the database.
      *
-     * @return mixed
-     * @throws EntityException
+     * This method constructs and executes a query to retrieve all records from the 
+     * specified table in the database.
+     *
+     * @return mixed The result set containing all records.
+     * @throws EntityException If an error occurs during the selection process.
      */
     public function selectAll()
     {
@@ -3302,10 +3393,13 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Query of select data
+     * Builds a query to select data without executing it.
      *
-     * @return PicoDatabaseQueryBuilder
-     * @throws EntityException
+     * This method prepares a select query using the specified table information and 
+     * filtering criteria but does not execute the query.
+     *
+     * @return PicoDatabaseQueryBuilder The query builder with the select query prepared.
+     * @throws EntityException If an error occurs while preparing the query.
      */
     public function selectQuery()
     {
@@ -3316,13 +3410,22 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Select record from database with primary keys given
+     * Selects a record from the database based on primary keys.
      *
-     * @param PicoTableInfo $info Table information
-     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder
-     * @param string $where Where statement
-     * @return mixed
-     * @throws EntityException|InvalidFilterException|EmptyResultException
+     * This method constructs and executes a select query using the provided table information
+     * and filtering criteria. It returns the first matching record or null if none found.
+     *
+     * @param PicoTableInfo|null $info The table information. If null, fetched internally.
+     * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
+     * @param string|null $where The where clause for the query. If null, fetched internally.
+     * @param mixed|null $specification Optional specifications for the query.
+     * @param mixed|null $pageable Optional pagination settings for the query.
+     * @param mixed|null $sortable Optional sorting settings for the query.
+     * 
+     * @return mixed The matching record or null if not found.
+     * @throws EntityException If an error occurs during the selection process.
+     * @throws InvalidFilterException If the provided filter is invalid.
+     * @throws EmptyResultException If no result is found.
      */
     private function _select($info = null, $queryBuilder = null, $where = null, $specification = null, $pageable = null, $sortable = null)
     {
@@ -3384,13 +3487,22 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Select record from database with primary keys given
+     * Selects all matching records from the database.
      *
-     * @param PicoTableInfo $info Table information
-     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder
-     * @param string $where Where statement
-     * @return mixed
-     * @throws EntityException|InvalidFilterException|EmptyResultException
+     * This method constructs and executes a select query to retrieve all records that match 
+     * the specified filtering criteria. It returns an array of results.
+     *
+     * @param PicoTableInfo|null $info The table information. If null, fetched internally.
+     * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
+     * @param string|null $where The where clause for the query. If null, fetched internally.
+     * @param mixed|null $specification Optional specifications for the query.
+     * @param mixed|null $pageable Optional pagination settings for the query.
+     * @param mixed|null $sortable Optional sorting settings for the query.
+     * 
+     * @return array An array of matching records.
+     * @throws EntityException If an error occurs during the selection process.
+     * @throws InvalidFilterException If the provided filter is invalid.
+     * @throws EmptyResultException If no results are found.
      */
     private function _selectAll($info = null, $queryBuilder = null, $where = null, $specification = null, $pageable = null, $sortable = null)
     {
@@ -3447,13 +3559,18 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Select record from database with primary keys given
+     * Prepares a query to select data without executing it.
      *
-     * @param PicoTableInfo $info Table information
-     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder
-     * @param string $where Where statement
-     * @return PicoDatabaseQueryBuilder
-     * @throws EntityException|InvalidFilterException
+     * This method constructs a select query using the specified table information and 
+     * filtering criteria without executing it, allowing for further modifications if needed.
+     *
+     * @param PicoTableInfo|null $info The table information. If null, fetched internally.
+     * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
+     * @param string|null $where The where clause for the query. If null, fetched internally.
+     * 
+     * @return PicoDatabaseQueryBuilder The query builder with the select query prepared.
+     * @throws InvalidFilterException If the provided filter is invalid.
+     * @throws EntityException If an error occurs while preparing the query.
      */
     private function _selectQuery($info = null, $queryBuilder = null, $where = null)
     {
@@ -3482,11 +3599,15 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Update data
+     * Updates records in the database.
      *
-     * @param bool $includeNull Flag include NULL
-     * @return PDOStatement
-     * @throws EntityException
+     * This method constructs and executes an update query to modify records in the 
+     * specified table. It accepts an optional flag to include null values in the update.
+     *
+     * @param bool $includeNull Optional. If true, null values are included in the update.
+     * 
+     * @return PDOStatement The executed update statement.
+     * @throws EntityException If an error occurs during the update process.
      */
     public function update($includeNull = false)
     {
@@ -3498,11 +3619,15 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Query of update data
+     * Prepares an update query without executing it.
      *
-     * @param bool $includeNull Flag include NULL
-     * @return PicoDatabaseQueryBuilder
-     * @throws EntityException
+     * This method constructs an update query using the specified table information and
+     * returns the query builder for further modifications.
+     *
+     * @param bool $includeNull Optional. If true, null values are included in the update.
+     * 
+     * @return PicoDatabaseQueryBuilder The query builder with the update query prepared.
+     * @throws EntityException If an error occurs while preparing the query.
      */
     public function updateQuery($includeNull = false)
     {
@@ -3514,13 +3639,17 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Update record on database with primary keys given
+     * Updates a record in the database based on primary keys.
      *
-     * @param PicoTableInfo $info Table information
-     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder
-     * @param string $where Where statement
-     * @return PDOStatement
-     * @throws InvalidFilterException
+     * This method constructs and executes an update query using the provided table information 
+     * and filtering criteria.
+     *
+     * @param PicoTableInfo|null $info The table information. If null, fetched internally.
+     * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
+     * @param string|null $where The where clause for the query. If null, fetched internally.
+     * 
+     * @return PDOStatement The executed update statement.
+     * @throws InvalidFilterException If the provided filter is invalid.
      */
     private function _update($info = null, $queryBuilder = null, $where = null)
     {
@@ -3529,13 +3658,18 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Update record on database with primary keys given
+     * Prepares an update query without executing it.
      *
-     * @param PicoTableInfo $info Table information
-     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder
-     * @param string $where Where statement
-     * @return PicoDatabaseQueryBuilder
-     * @throws InvalidFilterException|EntityException
+     * This method constructs an update query using the specified table information and filtering criteria,
+     * returning the query builder for further modifications.
+     *
+     * @param PicoTableInfo|null $info The table information. If null, fetched internally.
+     * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
+     * @param string|null $where The where clause for the query. If null, fetched internally.
+     * 
+     * @return PicoDatabaseQueryBuilder The query builder with the update query prepared.
+     * @throws InvalidFilterException If the provided filter is invalid.
+     * @throws EntityException If an error occurs while preparing the query.
      */
     private function _updateQuery($info = null, $queryBuilder = null, $where = null)
     {
@@ -3565,10 +3699,13 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Delete record from database
+     * Deletes a record from the database.
      *
-     * @return PDOStatement
-     * @throws EntityException
+     * This method constructs and executes a delete query to remove a record
+     * from the specified table based on the provided filtering criteria.
+     *
+     * @return PDOStatement The executed delete statement.
+     * @throws EntityException If an error occurs during the deletion process.
      */
     public function delete()
     {
@@ -3579,10 +3716,13 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Query of delete record
+     * Prepares a delete query without executing it.
      *
-     * @return PicoDatabaseQueryBuilder
-     * @throws EntityException
+     * This method constructs a delete query using the specified table information 
+     * and filtering criteria without executing it, allowing for further modifications.
+     *
+     * @return PicoDatabaseQueryBuilder The query builder with the delete query prepared.
+     * @throws EntityException If an error occurs while preparing the query.
      */
     public function deleteQuery()
     {
@@ -3593,12 +3733,16 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Delete record from database with primary keys given
+     * Deletes a record from the database based on primary keys.
      *
-     * @param PicoTableInfo $info Table information
-     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder
-     * @param string $where Where statement
-     * @return PDOStatement
+     * This method constructs and executes a delete query using the provided table 
+     * information and filtering criteria.
+     *
+     * @param PicoTableInfo|null $info The table information. If null, fetched internally.
+     * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
+     * @param string|null $where The where clause for the query. If null, fetched internally.
+     * 
+     * @return PDOStatement The executed delete statement.
      */
     private function _delete($info = null, $queryBuilder = null, $where = null)
     {
@@ -3607,13 +3751,18 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Delete record from database with primary keys given
+     * Prepares a delete query without executing it.
      *
-     * @param PicoTableInfo $info Table information
-     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder
-     * @param string $where Where statement
-     * @return PicoDatabaseQueryBuilder
-     * @throws InvalidFilterException|EntityException
+     * This method constructs a delete query using the specified table information and 
+     * filtering criteria, returning the query builder for further modifications.
+     *
+     * @param PicoTableInfo|null $info The table information. If null, fetched internally.
+     * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
+     * @param string|null $where The where clause for the query. If null, fetched internally.
+     * 
+     * @return PicoDatabaseQueryBuilder The query builder with the delete query prepared.
+     * @throws InvalidFilterException If the provided filter is invalid.
+     * @throws EntityException If an error occurs while preparing the query.
      */
     private function _deleteQuery($info = null, $queryBuilder = null, $where = null)
     {
@@ -3642,10 +3791,14 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Get MagicObject with WHERE specification
+     * Retrieves a MagicObject with a WHERE specification.
      *
-     * @param PicoSpecification $specification Specification
-     * @return PicoDatabasePersistenceExtended
+     * This method creates a new instance of PicoDatabasePersistenceExtended
+     * and configures it with a WHERE clause derived from the provided specification.
+     *
+     * @param PicoSpecification $specification The specification used to define the WHERE clause.
+     * 
+     * @return PicoDatabasePersistenceExtended The configured persistence object with the WHERE clause.
      */
     public function whereWithSpecification($specification)
     {
@@ -3671,10 +3824,13 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Check if parameter is array
+     * Checks if the given value is an array.
      *
-     * @param mixed $value Value to be checked
-     * @return bool
+     * This method verifies whether the provided value is set and is an array.
+     *
+     * @param mixed $value The value to be checked.
+     * 
+     * @return bool True if the value is an array, false otherwise.
      */
     public function isArray($value)
     {
