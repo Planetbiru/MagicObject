@@ -6,7 +6,7 @@ Uploading files can be challenging, especially for novice developers. This guide
 
 ### Key Features
 
--    **Easy File Handling:** The `PicoUplodFile` class simplifies the process of retrieving uploaded files.
+-    **Easy File Handling:** The `PicoUploadFile` class simplifies the process of retrieving uploaded files.
 -    **Unified Retrieval:** The `getAll` method allows you to handle files uploaded through both single and multiple forms without needing separate logic.
 
 ### Uploading Files
@@ -40,16 +40,16 @@ To enable multiple file uploads, modify the input name to include brackets (`[]`
 
 ### PHP Backend Handling
 
-To handle the uploaded files on the server side, you can use the PicoUplodFile class. Here’s how to do it:
+To handle the uploaded files on the server side, you can use the PicoUploadFile class. Here’s how to do it:
 
 ```php
 <?php
 
-use MagicObject\File\PicoUplodFile;
+use MagicObject\File\PicoUploadFile;
 
 require_once "vendor/autoload.php";
 
-$files = new PicoUplodFile();
+$files = new PicoUploadFile();
 
 $file1 = $files->get('myupload');
 // or alternatively

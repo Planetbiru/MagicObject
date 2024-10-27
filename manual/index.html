@@ -10456,7 +10456,7 @@ catch(Exception $e)
 <p>Uploading files can be challenging, especially for novice developers. This guide explains how to manage single and multiple file uploads in PHP, highlighting the differences and providing straightforward examples.</p>
 <h3>Key Features</h3>
 <ul>
-<li><strong>Easy File Handling:</strong> The <code>PicoUplodFile</code> class simplifies the process of retrieving uploaded files.</li>
+<li><strong>Easy File Handling:</strong> The <code>PicoUploadFile</code> class simplifies the process of retrieving uploaded files.</li>
 <li><strong>Unified Retrieval:</strong> The <code>getAll</code> method allows you to handle files uploaded through both single and multiple forms without needing separate logic.</li>
 </ul>
 <h3>Uploading Files</h3>
@@ -10479,14 +10479,14 @@ catch(Exception $e)
 <li>For multiple uploads, the input field name is <code>myupload[]</code>, which allows multiple files to be uploaded at once.</li>
 </ul>
 <h3>PHP Backend Handling</h3>
-<p>To handle the uploaded files on the server side, you can use the PicoUplodFile class. Here’s how to do it:</p>
+<p>To handle the uploaded files on the server side, you can use the PicoUploadFile class. Here’s how to do it:</p>
 <pre><code class="language-php">&lt;?php
 
-use MagicObject\File\PicoUplodFile;
+use MagicObject\File\PicoUploadFile;
 
 require_once "vendor/autoload.php";
 
-$files = new PicoUplodFile();
+$files = new PicoUploadFile();
 
 $file1 = $files-&gt;get('myupload');
 // or alternatively
