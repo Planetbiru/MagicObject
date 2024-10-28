@@ -421,7 +421,7 @@ class SecretObject extends stdClass //NOSONAR
         }
         else
         {
-            $data = $data."";
+            $data = (string) $data;
             return $this->encryptString($data, $hexKey);
         }
         return $data;
@@ -490,7 +490,7 @@ class SecretObject extends stdClass //NOSONAR
         }
         else
         {
-            $data = $data."";
+            $data = (string) $data;
             return $this->decryptString($data, $hexKey);
         }
         return $data;
@@ -756,7 +756,6 @@ class SecretObject extends stdClass //NOSONAR
                 $this->loadData($data);
             }
         }
-
         return $this;
     }
 
@@ -781,7 +780,6 @@ class SecretObject extends stdClass //NOSONAR
                 $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
             }
             $data = PicoArrayUtil::camelize($data);
-
             if($recursive)
             {
                 $this->loadData(PicoSecretParser::parseRecursiveObject($data));

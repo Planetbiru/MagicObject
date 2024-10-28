@@ -1375,7 +1375,7 @@ catch(Exception $e)
 </li>
 <li>
 <p><strong>@XML</strong></p>
-<p>The <code>@XML</code> annotation controls whether the XML format should be prettified. Using <code>@XML(prettify=true)</code> will format the output in a more readable way, while <code>@XML(prettify=false)</code> will minimize the format    </p>
+<p>The <code>@XML</code> annotation controls whether the XML format should be prettified. Using <code>@XML(prettify=true)</code> will format the output in a more readable way, while <code>@XML(prettify=false)</code> will minimize the format</p>
 </li>
 </ol>
 <p><strong>Property Annotations</strong></p>
@@ -1516,10 +1516,8 @@ protected $title;</code></pre>
 <ul>
 <li><strong>Song</strong>
 <ul>
-<li><strong>Artist</strong>
-<ul>
+<li><strong>Artist</strong></li>
 <li><strong>Agency</strong></li>
-</ul></li>
 </ul></li>
 </ul>
 <p>When creating a DTO for a <code>Song</code>, the user can incorporate properties from the associated <code>Agency</code> into the <code>SongDto</code>. This is particularly useful for aggregating data from related models without needing to replicate information.</p>
@@ -1600,7 +1598,7 @@ protected $title;</code></pre>
 
     // Additional properties and methods for the Agency can be defined here.
 }</code></pre>
-<p><strong>SongDto</strong> </p>
+<p><strong>SongDto</strong></p>
 <pre><code class="language-php">class SongDto extends MagicDto
 {
     /**
@@ -1643,7 +1641,7 @@ protected $title;</code></pre>
 
     // Additional properties and methods for the SongDto can be defined here.
 }</code></pre>
-<p><strong>ArtistDto</strong> </p>
+<p><strong>ArtistDto</strong></p>
 <pre><code class="language-php">class ArtistDto extends MagicDto
 {
     /**
@@ -1686,7 +1684,7 @@ protected $title;</code></pre>
 
     // Additional properties and methods for the SongDto can be defined here.
 }</code></pre>
-<p><strong>AgencyDto</strong> </p>
+<p><strong>AgencyDto</strong></p>
 <pre><code class="language-php">class AgencyDto extends MagicDto
 {
     /**
@@ -1743,17 +1741,36 @@ $albumDto-&gt;loadXml($xmlString);
 header("Content-type: application/json");
 echo $albumDto;</code></pre>
 <p><code>loadXml</code> method will load data from XML to <code>AlbumDtoInput</code>. <code>AlbumDtoInput</code> is the inverse of <code>AlbumDto</code>, where values of the <code>@JsonProperty</code> and <code>@Source</code> annotations are swapped. This inversion also applies to the objects contained within it.</p>
+<h3>Customizing Data Transfer Objects (DTOs) in MagicDto</h3>
+<p>When creating a Data Transfer Object (DTO) using <code>MagicDto</code>, users have the flexibility to define override methods that can manipulate input data before it is loaded into the DTO. This allows for customization and validation of the data being processed.</p>
+<h4>Example of an Override Method</h4>
+<pre><code class="language-php">public function onBeforeLoad($data)
+{
+    // This method can be overridden to manipulate the incoming data
+    return $data;
+}</code></pre>
+<p>By overriding the onBeforeLoad method, users can modify the input data directly before it is handled by the DTO. This can be useful for tasks such as data sanitization or transformation.</p>
+<h4>Handling Various Data Types</h4>
+<p><code>MagicDto</code> is designed to accept parameters of various data types, such as objects, arrays, or scalar values. To prevent errors during operations, it is crucial for users to check the data type before executing any logic on the input data.</p>
+<h4>Example of Validating Input Data</h4>
+<pre><code class="language-php">public function onLoadData($data)
+{
+    // Check if the input data is an instance of EntityAlbum
+    if ($data instanceof EntityAlbum) {
+        // Modify properties of the EntityAlbum object
+        $data-&gt;setName("Album Name");
+        $data-&gt;setProducerName($data-&gt;getProducer()-&gt;getName());
+    }
+
+    // Return the modified data
+    return $data;
+}</code></pre>
+<p>In the <code>`onLoadData</code> method, we first verify whether the incoming <code>$data</code> is an instance of <code>EntityAlbum</code>. If it is, we proceed to set specific properties on the <code>EntityAlbum</code> object. This ensures that the operations performed are valid and appropriate for the type of data being processed.</p>
 <h4>Explanation</h4>
 <ul>
-<li>
-<p><strong>@Source</strong>: This annotation specifies the path to the property within the nested object structure. In this case, <code>artist-&gt;agency-&gt;name</code> indicates that the <code>agencyName</code> will pull data from the <code>name</code> property of the <code>Agency</code> object linked to the <code>Artist</code>.</p>
-</li>
-<li>
-<p><strong>@JsonProperty</strong>: This annotation maps the <code>agencyName</code> property to a different key in the JSON representation of the DTO. Here, it will be serialized as <code>agency_name</code>.</p>
-</li>
-<li>
-<p><strong>protected $agencyName</strong>: This declares the <code>agencyName</code> property with protected visibility, ensuring that it can only be accessed within the class itself and by subclasses.</p>
-</li>
+<li><strong>@Source</strong>: This annotation specifies the path to the property within the nested object structure. In this case, <code>artist-&gt;agency-&gt;name</code> indicates that the <code>agencyName</code> will pull data from the <code>name</code> property of the <code>Agency</code> object linked to the <code>Artist</code>.</li>
+<li><strong>@JsonProperty</strong>: This annotation maps the <code>agencyName</code> property to a different key in the JSON representation of the DTO. Here, it will be serialized as <code>agency_name</code>.</li>
+<li><strong>protected $agencyName</strong>: This declares the <code>agencyName</code> property with protected visibility, ensuring that it can only be accessed within the class itself and by subclasses.</li>
 </ul>
 <p>This approach enhances data encapsulation and promotes cleaner code by allowing DTOs to automatically gather necessary data from related entities.</p>
 <h3>Benefits of Using MagicDto</h3>

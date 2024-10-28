@@ -685,6 +685,16 @@ class AlbumDto extends MagicDto
      */
     protected $releaseDate;
 	
+
+	public function onLoadData($data)
+	{
+		if($data instanceof EntityAlbum)
+		{
+			$data->setName("Malik");
+			$data->getProducer()->setName("aaaaa");
+		}
+		return $data;
+	}
 }
 
 class ProducerDto extends MagicDto
