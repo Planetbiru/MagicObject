@@ -738,7 +738,7 @@ class PicoDatabasePersistence // NOSONAR
     {
         $nullCols = array();
         $nullList = $this->object->nullPropertyList();
-        if($this->isArray($nullList))
+        if(self::isArray($nullList))
         {
             foreach($nullList as $key=>$val)
             {
@@ -986,7 +986,7 @@ class PicoDatabasePersistence // NOSONAR
         if(!$this->generatedValue)
         {
             $keys = $info->getAutoIncrementKeys();
-            if($this->isArray($keys))
+            if(self::isArray($keys))
             {
                 foreach($keys as $prop=>$col)
                 {
@@ -1885,11 +1885,17 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Find a single record by primary key value
+     * Finds a single record by its primary key value(s).
      *
-     * @param mixed $propertyValue Primary key value(s)
-     * @return object The found record
-     * @throws EntityException|InvalidFilterException|EmptyResultException If record is not found or filter is invalid
+     * This method retrieves a single record from the database that matches the specified primary key value(s).
+     * It returns the found record as an object. If no record is found or if the filter is invalid, appropriate 
+     * exceptions will be thrown.
+     *
+     * @param mixed $propertyValues The primary key value(s) used to find the record.
+     * @return object The found record, or null if not found.
+     * @throws EntityException If there is an issue with the entity.
+     * @throws InvalidFilterException If the provided filter criteria are invalid.
+     * @throws EmptyResultException If no record is found or no primary key is set.
      */
     public function find($propertyValues)
     {
@@ -1902,26 +1908,7 @@ class PicoDatabasePersistence // NOSONAR
         if($this->isValidPrimaryKeyValues($primaryKeys, $propertyValues))
         {
             $queryBuilder = new PicoDatabaseQueryBuilder($this->database);
-            $wheres = array();
-            $index = 0;
-            foreach($primaryKeys as $primatyKey)
-            {
-                $columnName = $primatyKey[self::KEY_NAME];
-                $columnValue = $propertyValues[$index];
-                if($columnValue === null)
-                {
-                    $wheres[] = $columnName . " is null";
-                }
-                else
-                {
-                    $wheres[] = $columnName . " = " . $queryBuilder->escapeValue($propertyValues[$index]);
-                }
-            }
-            $where = implode(" and ", $wheres);
-            if(!$this->isValidFilter($where))
-            {
-                throw new InvalidFilterException(self::MESSAGE_INVALID_FILTER);
-            }
+            $where = $this->createWhereByPrimaryKeys($queryBuilder, $primaryKeys, $propertyValues);
             $sqlQuery = $queryBuilder
                 ->newQuery()
                 ->select($this->getAllColumns($info))
@@ -1961,6 +1948,43 @@ class PicoDatabasePersistence // NOSONAR
         {
             throw new EmptyResultException("No primary key set");
         }
+    }
+    
+    /**
+     * Creates the WHERE clause for the query based on the primary keys and their values.
+     *
+     * This method constructs a WHERE clause for the SQL query using the provided primary key names
+     * and values. It checks for null values and properly escapes the values for security.
+     *
+     * @param PicoDatabaseQueryBuilder $queryBuilder The query builder instance used to create the SQL query.
+     * @param array $primaryKeys The primary keys of the table.
+     * @param mixed $propertyValues The values for the primary keys.
+     * @return string The constructed WHERE clause.
+     * @throws InvalidFilterException If the constructed filter is invalid.
+     */
+    private function createWhereByPrimaryKeys($queryBuilder, $primaryKeys, $propertyValues)
+    {
+        $wheres = array();
+        $index = 0;
+        foreach($primaryKeys as $primatyKey)
+        {
+            $columnName = $primatyKey[self::KEY_NAME];
+            $columnValue = $propertyValues[$index];
+            if($columnValue === null)
+            {
+                $wheres[] = $columnName . " is null";
+            }
+            else
+            {
+                $wheres[] = $columnName . " = " . $queryBuilder->escapeValue($propertyValues[$index]);
+            }
+        }
+        $where = implode(" and ", $wheres);
+        if(!$this->isValidFilter($where))
+        {
+            throw new InvalidFilterException(self::MESSAGE_INVALID_FILTER);
+        }
+        return $where;
     }
 
     /**
@@ -2695,52 +2719,45 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Count records based on specified criteria
+     * Count records based on specified criteria.
      *
-     * @param string $propertyName   The property name to filter by
-     * @param mixed $propertyValue   The value of the property to filter by
-     * @return int                   The count of matched records
-     * @throws EntityException|InvalidFilterException|PDOException|EmptyResultException If an error occurs
+     * @param string $propertyName   The property name to filter by.
+     * @param mixed $propertyValue   The value of the property to filter by.
+     * @return int                   The count of matched records.
+     * @throws EntityException|InvalidFilterException|PDOException|EmptyResultException If an error occurs.
      */
     public function countBy($propertyName, $propertyValue)
     {
         $info = $this->getTableInfo();
         $primaryKeys = array_values($info->getPrimaryKeys());
-        $agg = "*";
-        if(is_array($primaryKeys) && isset($primaryKeys[0][self::KEY_NAME]))
-        {
-            // it will be faster than asterisk
-            $agg = $primaryKeys[0][self::KEY_NAME];
-        }
+        $agg = !empty($primaryKeys) ? $primaryKeys[0][self::KEY_NAME] : "*"; // Use primary key if available
+
         $where = $this->createWhereFromArgs($info, $propertyName, $propertyValue);
-        if(!$this->isValidFilter($where))
-        {
+        
+        if (!$this->isValidFilter($where)) {
             throw new InvalidFilterException(self::MESSAGE_INVALID_FILTER);
         }
+
         $queryBuilder = new PicoDatabaseQueryBuilder($this->database);
         $sqlQuery = $queryBuilder
             ->newQuery()
-            ->select($agg)
+            ->select($this->database->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE ? "count(*)" : $agg)
             ->from($info->getTableName())
-            ->where($where)
-        ;
-        try
-        {
+            ->where($where);
+
+        try {
             $stmt = $this->database->executeQuery($sqlQuery);
-            if($stmt != null)
-            {
-                return $stmt->rowCount();
+            if ($stmt) {
+                return $this->database->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE 
+                    ? $stmt->fetchColumn() 
+                    : $stmt->rowCount();
             }
-            else
-            {
-                throw new PDOException("Unknown error");
-            }
-        }
-        catch(Exception $e)
-        {
+            throw new PDOException("Unknown error");
+        } catch (Exception $e) {
             throw new EmptyResultException($e->getMessage());
         }
     }
+
     
     /**
      * Delete records based on specified criteria without reading them first
@@ -2846,11 +2863,15 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Retrieves the full class name based on the given class name and table information.
+     * Retrieves the fully qualified class name based on the given class name and table information.
+     *
+     * If the class name does not include a namespace, it constructs the full class name using
+     * the package information from the provided PicoTableInfo. If the package is not defined, 
+     * it attempts to resolve the class name from the current namespace or imported classes.
      *
      * @param string $classNameJoin The class name to join.
      * @param PicoTableInfo $info Table information containing package details.
-     * @return string The fully qualified class name.
+     * @return string The fully qualified class name, which may include the package or namespace.
      */
     private function getRealClassName($classNameJoin, $info)
     {
@@ -2859,7 +2880,7 @@ class PicoDatabasePersistence // NOSONAR
         {
             // Class name does not include a namespace.
             $package = $info->getPackage();
-            if(isset($package) && !empty($package))
+            if(self::isNotEmpty($package))
             {
                 // Use the package annotation to construct the full class name.
                 $package = trim($package);
@@ -2867,33 +2888,49 @@ class PicoDatabasePersistence // NOSONAR
             }
             else
             {
-                if(!$this->processClassList)
+                $result = $this->getRealClassNameWithoutPackage($classNameJoin);
+            }
+        }
+        return $result;
+    }
+    
+    /**
+     * Resolves the fully qualified class name when no package is defined.
+     *
+     * This method checks if the class name is present in the imported class list or assumes
+     * it belongs to the current namespace if not found. It processes the class list only once
+     * to improve efficiency.
+     *
+     * @param string $classNameJoin The class name to join.
+     * @return string The fully qualified class name from the imported list or the same namespace.
+     */
+    private function getRealClassNameWithoutPackage($classNameJoin)
+    {
+        if(!$this->processClassList)
+        {
+            // Process the class list only once.
+            $reflect = new ExtendedReflectionClass($this->className);
+            $useStatements = $reflect->getUseStatements(); 
+            $this->namespaceName = $reflect->getNamespaceName();
+            if(self::isArray($useStatements))
+            {
+                foreach($useStatements as $val)
                 {
-                    // Process the class list only once.
-                    $reflect = new ExtendedReflectionClass($this->className);
-                    $useStatements = $reflect->getUseStatements(); 
-                    $this->namespaceName = $reflect->getNamespaceName();
-                    if($this->isArray($useStatements))
-                    {
-                        foreach($useStatements as $val)
-                        {
-                            $as = $val['as'];
-                            $cls = $val['class'];
-                            $this->importedClassList[$as] = $cls;
-                        }
-                    }
-                }
-                if(isset($this->importedClassList[$classNameJoin]))
-                {
-                    // Retrieve the class name from the imported list.
-                    $result = $this->importedClassList[$classNameJoin];
-                }
-                else if(stripos($classNameJoin, self::NAMESPACE_SEPARATOR) === false)
-                {
-                    // Assume it belongs to the same namespace.
-                    $result = rtrim($this->namespaceName, self::NAMESPACE_SEPARATOR).self::NAMESPACE_SEPARATOR. $classNameJoin;
+                    $as = $val['as'];
+                    $cls = $val['class'];
+                    $this->importedClassList[$as] = $cls;
                 }
             }
+        }
+        if(isset($this->importedClassList[$classNameJoin]))
+        {
+            // Retrieve the class name from the imported list.
+            $result = $this->importedClassList[$classNameJoin];
+        }
+        else if(stripos($classNameJoin, self::NAMESPACE_SEPARATOR) === false)
+        {
+            // Assume it belongs to the same namespace.
+            $result = rtrim($this->namespaceName, self::NAMESPACE_SEPARATOR).self::NAMESPACE_SEPARATOR. $classNameJoin;
         }
         return $result;
     }
@@ -3832,8 +3869,19 @@ class PicoDatabasePersistence // NOSONAR
      * 
      * @return bool True if the value is an array, false otherwise.
      */
-    public function isArray($value)
+    public static function isArray($value)
     {
         return isset($value) && is_array($value);
+    }
+    
+    /**
+     * Undocumented function
+     *
+     * @param string $input
+     * @return boolean
+     */
+    public static function isNotEmpty($input)
+    {
+        return isset($input) && !empty($input);
     }
 }
