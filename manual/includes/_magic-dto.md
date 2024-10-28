@@ -12,6 +12,12 @@ In modern applications, especially those that interact with third-party services
 
 **MagicDto** addresses these issues by allowing developers to create DTOs that seamlessly translate property names between different naming conventions. This ensures that data is properly formatted for both internal and external use, enhancing interoperability and reducing errors.
 
+### Benefits of Using MagicDto
+
+- **Reduced Complexity**: By automating property translation, MagicDto minimizes the need for manual mapping code, reducing complexity and potential errors.
+- **Improved Maintainability**: With clearly defined annotations and a structured approach, developers can easily understand and maintain the DTOs, even as systems evolve.
+- **Enhanced Interoperability**: MagicDto ensures that data exchanged between different systems is consistent and correctly formatted, leading to smoother integrations and fewer runtime issues.
+
 ### Features of MagicDto
 
 1. **Flexible Naming Strategies**:
@@ -496,6 +502,22 @@ public function onLoadData($data)
 
 In the ``onLoadData` method, we first verify whether the incoming `$data` is an instance of `EntityAlbum`. If it is, we proceed to set specific properties on the `EntityAlbum` object. This ensures that the operations performed are valid and appropriate for the type of data being processed.
 
+#### Example of Throwing Exceptions
+
+```php
+public function onBeforeLoad($data)
+{
+    if ($data instanceof EntityAlbum) {
+        throw new InvalidArgumentException("Data must be an EntityAlbum.");
+    }
+
+    // Further manipulation of data can occur here
+    return $data;
+}
+```
+
+In this example, if the incoming data is not an `EntityAlbum`, an `InvalidArgumentException` is thrown, preventing further processing of invalid data.
+
 #### Explanation
 
 - **@Source**: This annotation specifies the path to the property within the nested object structure. In this case, `artist->agency->name` indicates that the `agencyName` will pull data from the `name` property of the `Agency` object linked to the `Artist`.
@@ -503,12 +525,6 @@ In the ``onLoadData` method, we first verify whether the incoming `$data` is an 
 - **protected $agencyName**: This declares the `agencyName` property with protected visibility, ensuring that it can only be accessed within the class itself and by subclasses.
 
 This approach enhances data encapsulation and promotes cleaner code by allowing DTOs to automatically gather necessary data from related entities.
-
-### Benefits of Using MagicDto
-
-- **Reduced Complexity**: By automating property translation, MagicDto minimizes the need for manual mapping code, reducing complexity and potential errors.
-- **Improved Maintainability**: With clearly defined annotations and a structured approach, developers can easily understand and maintain the DTOs, even as systems evolve.
-- **Enhanced Interoperability**: MagicDto ensures that data exchanged between different systems is consistent and correctly formatted, leading to smoother integrations and fewer runtime issues.
 
 ### Conclusion
 

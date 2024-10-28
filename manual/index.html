@@ -1336,6 +1336,12 @@ catch(Exception $e)
 <h3>The Need for MagicDto</h3>
 <p>In modern applications, especially those that interact with third-party services, maintaining consistent data formats can be challenging. Different systems may use varying naming conventions, such as camel case (<code>myProperty</code>) and snake case (<code>my_property</code>). Additionally, inconsistencies can occur with uppercase and lowercase letters, leading to potential mismatches when exchanging data.</p>
 <p><strong>MagicDto</strong> addresses these issues by allowing developers to create DTOs that seamlessly translate property names between different naming conventions. This ensures that data is properly formatted for both internal and external use, enhancing interoperability and reducing errors.</p>
+<h3>Benefits of Using MagicDto</h3>
+<ul>
+<li><strong>Reduced Complexity</strong>: By automating property translation, MagicDto minimizes the need for manual mapping code, reducing complexity and potential errors.</li>
+<li><strong>Improved Maintainability</strong>: With clearly defined annotations and a structured approach, developers can easily understand and maintain the DTOs, even as systems evolve.</li>
+<li><strong>Enhanced Interoperability</strong>: MagicDto ensures that data exchanged between different systems is consistent and correctly formatted, leading to smoother integrations and fewer runtime issues.</li>
+</ul>
 <h3>Features of MagicDto</h3>
 <ol>
 <li>
@@ -1766,6 +1772,17 @@ echo $albumDto;</code></pre>
     return $data;
 }</code></pre>
 <p>In the <code>`onLoadData</code> method, we first verify whether the incoming <code>$data</code> is an instance of <code>EntityAlbum</code>. If it is, we proceed to set specific properties on the <code>EntityAlbum</code> object. This ensures that the operations performed are valid and appropriate for the type of data being processed.</p>
+<h4>Example of Throwing Exceptions</h4>
+<pre><code class="language-php">public function onBeforeLoad($data)
+{
+    if ($data instanceof EntityAlbum) {
+        throw new InvalidArgumentException("Data must be an EntityAlbum.");
+    }
+
+    // Further manipulation of data can occur here
+    return $data;
+}</code></pre>
+<p>In this example, if the incoming data is not an <code>EntityAlbum</code>, an <code>InvalidArgumentException</code> is thrown, preventing further processing of invalid data.</p>
 <h4>Explanation</h4>
 <ul>
 <li><strong>@Source</strong>: This annotation specifies the path to the property within the nested object structure. In this case, <code>artist-&gt;agency-&gt;name</code> indicates that the <code>agencyName</code> will pull data from the <code>name</code> property of the <code>Agency</code> object linked to the <code>Artist</code>.</li>
@@ -1773,12 +1790,6 @@ echo $albumDto;</code></pre>
 <li><strong>protected $agencyName</strong>: This declares the <code>agencyName</code> property with protected visibility, ensuring that it can only be accessed within the class itself and by subclasses.</li>
 </ul>
 <p>This approach enhances data encapsulation and promotes cleaner code by allowing DTOs to automatically gather necessary data from related entities.</p>
-<h3>Benefits of Using MagicDto</h3>
-<ul>
-<li><strong>Reduced Complexity</strong>: By automating property translation, MagicDto minimizes the need for manual mapping code, reducing complexity and potential errors.</li>
-<li><strong>Improved Maintainability</strong>: With clearly defined annotations and a structured approach, developers can easily understand and maintain the DTOs, even as systems evolve.</li>
-<li><strong>Enhanced Interoperability</strong>: MagicDto ensures that data exchanged between different systems is consistent and correctly formatted, leading to smoother integrations and fewer runtime issues.</li>
-</ul>
 <h3>Conclusion</h3>
 <p>MagicDto is a powerful solution for managing data transfer in applications that need to communicate with external systems. By leveraging flexible naming strategies and clear annotations, it simplifies the process of creating and maintaining DTOs, ensuring seamless data exchange. Whether you’re building a new application or integrating with legacy systems, MagicDto can help you navigate the complexities of data serialization and improve overall application reliability.</p>
 </article>
