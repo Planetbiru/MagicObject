@@ -5,7 +5,7 @@ use Exception;
 use Throwable;
 
 /**
- * Class EmptyResultException
+ * Class ErrorConnectionException
  *
  * Custom exception class for handling scenarios where a result is expected
  * but none is returned. This can be useful for database queries or API calls
@@ -15,7 +15,7 @@ use Throwable;
  * @package MagicObject\Exceptions
  * @link https://github.com/Planetbiru/MagicObject
  */
-class EmptyResultException extends Exception
+class ErrorConnectionException extends Exception
 {
     /**
      * Previous exception
@@ -25,7 +25,7 @@ class EmptyResultException extends Exception
     private $previous;
 
     /**
-     * Constructor for EmptyResultException.
+     * Constructor for ErrorConnectionException.
      *
      * @param string $message  Exception message
      * @param int $code        Exception code
