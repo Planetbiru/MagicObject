@@ -1419,21 +1419,63 @@ protected $title;</code></pre>
 <ol start="3">
 <li>
 <p><strong>@JsonFormat</strong></p>
-<p>The @JsonFormat annotation specifies the output date-time format when data is serialized to JSON. The property type must be <code>DateTime</code>. It is written as <code>@JsonFormat(pattern="Y-m-d H:i:s")</code>. If this annotation is not provided, MagicDto will serialize the property using the default format Y-m-d H:i:s. This ensures that data sent to third-party applications adheres to their expected format.</p>
-<p>Format the date and time according to the conventions used in the PHP programming language. This includes utilizing the built-in date and time functions, which allow for various formatting options to display dates and times in a way that is both readable and compatible with PHP's standards. Ensure that you adhere to formats such as 'Y-m-d H:i:s' for complete timestamps or 'd/m/Y' for more localized representations, depending on the specific requirements of your application.</p>
+<p>The @JsonFormat annotation specifies the output date-time format when data is serialized to JSON. The property type must be <code>DateTime</code>. It is written as <code>@JsonFormat(pattern="Y-m-d H:i:s")</code>. If this annotation is not provided, MagicDto will serialize the property using the default format <code>Y-m-d H:i:s</code>. This ensures that data sent to third-party applications adheres to their expected format.</p>
+<p>Format the date and time according to the conventions used in the PHP programming language. This includes utilizing the built-in date and time functions, which allow for various formatting options to display dates and times in a way that is both readable and compatible with PHP's standards. Ensure that you adhere to formats such as <code>Y-m-d H:i:s</code> for complete timestamps or <code>d/m/Y</code> for more localized representations, depending on the specific requirements of your application.</p>
 <p>MagicDto automatically parses input as both strings and integers. The integer is a unique timestamp, while the string date-time format must be one of the following:</p>
-<ul>
-<li><strong>'Y-m-d'</strong>,              // ISO 8601: 2024-10-24</li>
-<li><strong>'Y-m-d H:i:s'</strong>,        // ISO 8601: 2024-10-24 15:30:00</li>
-<li><strong>'Y-m-d\TH:i:s'</strong>,       // ISO 8601: 2024-10-24T15:30:00</li>
-<li><strong>'Y-m-d\TH:i:s\Z'</strong>,     // ISO 8601: 2024-10-24T15:30:00Z</li>
-<li><strong>'D, d M Y H:i:s O'</strong>,   // RFC 2822: Thu, 24 Oct 2024 15:30:00 +0000</li>
-<li><strong>'d/m/Y'</strong>,              // Local format: 24/10/2024</li>
-<li><strong>'d F Y'</strong>,              // Format with month name: 24 October 2024</li>
-<li><strong>'l, d F Y'</strong>            // Format with day of the week: Thursday, 24 October 2024</li>
-</ul>
 </li>
 </ol>
+<h4>Date Format Examples</h4>
+<p>Below are various date format strings that you can use in PHP, along with their descriptions and typical use cases:</p>
+<ul>
+<li>
+<p><strong><code>'Y-m-d'</code></strong><br />
+<em>Format:</em> ISO 8601<br />
+<em>Example:</em> <code>2024-10-24</code><br />
+<em>Description:</em> This format represents the date in a standard way that is widely used in APIs and databases. It is particularly useful for storing dates in a consistent format.</p>
+</li>
+<li>
+<p><strong><code>'Y-m-d H:i:s'</code></strong><br />
+<em>Format:</em> ISO 8601 with Time<br />
+<em>Example:</em> <code>2024-10-24 15:30:00</code><br />
+<em>Description:</em> This format includes both the date and time, making it suitable for logging events or recording timestamps in applications where precision is required.</p>
+</li>
+<li>
+<p><strong><code>'Y-m-d\TH:i:s'</code></strong><br />
+<em>Format:</em> ISO 8601 with 'T' Separator<br />
+<em>Example:</em> <code>2024-10-24T15:30:00</code><br />
+<em>Description:</em> This format uses a 'T' to separate the date and time, conforming to the strict ISO 8601 standard. It is commonly used in JSON data and web APIs.</p>
+</li>
+<li>
+<p><strong><code>'Y-m-d\TH:i:s\Z'</code></strong><br />
+<em>Format:</em> ISO 8601 with UTC Indicator<br />
+<em>Example:</em> <code>2024-10-24T15:30:00Z</code><br />
+<em>Description:</em> Similar to the previous format but includes a 'Z' at the end to indicate that the time is in UTC (Coordinated Universal Time). Useful in global applications where time zone context is important.</p>
+</li>
+<li>
+<p><strong><code>'D, d M Y H:i:s O'</code></strong><br />
+<em>Format:</em> RFC 2822<br />
+<em>Example:</em> <code>Thu, 24 Oct 2024 15:30:00 +0000</code><br />
+<em>Description:</em> This format is often used in email headers and HTTP headers. It provides a readable representation of the date and time along with the time zone offset.</p>
+</li>
+<li>
+<p><strong><code>'d/m/Y'</code></strong><br />
+<em>Format:</em> Local Format<br />
+<em>Example:</em> <code>24/10/2024</code><br />
+<em>Description:</em> A simple date format that is commonly used in various countries. It is easily readable and useful for forms and local applications.</p>
+</li>
+<li>
+<p><strong><code>'d F Y'</code></strong><br />
+<em>Format:</em> Date with Full Month Name<br />
+<em>Example:</em> <code>24 October 2024</code><br />
+<em>Description:</em> This format spells out the month, making it very human-readable. Ideal for generating reports or documents where clarity is essential.</p>
+</li>
+<li>
+<p><strong><code>'l, d F Y'</code></strong><br />
+<em>Format:</em> Date with Day of the Week<br />
+<em>Example:</em> <code>Thursday, 24 October 2024</code><br />
+<em>Description:</em> This format includes the full name of the day, providing a complete and easily readable date string. Perfect for calendars, invitations, or any context where a formal date presentation is needed.</p>
+</li>
+</ul>
 <p><strong>Example:</strong></p>
 <p>DTO on the Input Side</p>
 <pre><code class="language-php">class AlbumDtoInput extends MagicDto
