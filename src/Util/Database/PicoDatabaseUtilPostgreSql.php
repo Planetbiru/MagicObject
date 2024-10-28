@@ -2,11 +2,13 @@
 
 namespace MagicObject\Util\Database;
 
+use ErrorException;
 use Exception;
 use MagicObject\Database\PicoDatabase;
 use MagicObject\Database\PicoDatabaseQueryBuilder;
 use MagicObject\Database\PicoDatabaseType;
 use MagicObject\Database\PicoTableInfo;
+use MagicObject\Exceptions\ErrorConnectionException;
 use MagicObject\MagicObject;
 use MagicObject\SecretObject;
 use PDO;
@@ -164,11 +166,38 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
         return implode(" ", $col);
     }
     
+    /**
+     * Adjusts the SQL data type for auto-increment columns.
+     *
+     * This method checks if the given column is designated as an auto-increment key
+     * and modifies its SQL type accordingly. If the column is a big integer, it 
+     * will return "BIGSERIAL"; otherwise, it will return "SERIAL" for standard 
+     * integer types. If the column is not an auto-increment key, it returns 
+     * the original type.
+     *
+     * @param array $column An associative array containing details about the column,
+     *                      including its name and type.
+     * 
+     * @param string $type The original data type of the column.
+     * 
+     * @param array $autoIncrementKeys An array of column names that are designated as 
+     *                                 auto-increment keys.
+     * 
+     * @return string The adjusted SQL data type for the column, suitable for use 
+     *                in a CREATE TABLE statement.
+     */
     private function fixAutoIncrementType($column, $type, $autoIncrementKeys)
     {
         if(isset($autoIncrementKeys) && is_array($autoIncrementKeys) && in_array($column, $autoIncrementKeys))
         {
-            // TODO: 
+            if(stripos($type, "big"))
+            {
+                return "BIGSERIAL";
+            }
+            else
+            {
+                return "SERIAL";
+            }
         }
         else
         {
@@ -378,7 +407,7 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
 
             return $config;
         } catch (Exception $e) {
-            throw new Exception("Error during database connection: " . $e->getMessage());
+            throw new ErrorConnectionException("Error during database connection: " . $e->getMessage());
         }
     }
 
