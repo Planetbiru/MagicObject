@@ -1547,8 +1547,8 @@ protected $title;</code></pre>
     protected $songs;
 }</code></pre>
 <p><strong>Description</strong></p>
-<p>In this example, we have two DTO classes: AlbumDtoInput and AlbumDtoOutput. The AlbumDtoInput class is designed to receive data from external sources, using the @Source annotation to specify the incoming property names and the @JsonProperty annotation to define the corresponding properties in the internal representation.</p>
-<p>Conversely, the AlbumDtoOutput class is structured for sending data outwards. Here, the @Source annotation reflects the internal property names, while the @JsonProperty annotation defines the expected property names when the data is serialized for external use. This bidirectional mapping ensures that data flows seamlessly between internal and external systems.</p>
+<p>In this example, we have two DTO classes: <code>AlbumDtoInput</code> and <code>AlbumDtoOutput</code>. The <code>AlbumDtoInput</code> class is designed to receive data from external sources, using the <code>@Source</code> annotation to specify the incoming property names and the <code>@JsonProperty</code> annotation to define the corresponding properties in the internal representation.</p>
+<p>Conversely, the <code>AlbumDtoOutput</code> class is structured for sending data outwards. Here, the <code>@Source</code> annotation reflects the internal property names, while the <code>@JsonProperty</code> annotation defines the expected property names when the data is serialized for external use. This bidirectional mapping ensures that data flows seamlessly between internal and external systems.</p>
 <p>The <code>@Source</code> annotation allows a Data Transfer Object (DTO) to inherit properties from an underlying object, enabling seamless data integration across related entities.</p>
 <h3>Cross Object Mapping</h3>
 <h4>Cross Object Mapping Explanation</h4>

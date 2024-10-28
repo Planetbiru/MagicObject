@@ -1757,9 +1757,9 @@ class AlbumDtoOutput extends MagicDto
 
 **Description**
 
-In this example, we have two DTO classes: AlbumDtoInput and AlbumDtoOutput. The AlbumDtoInput class is designed to receive data from external sources, using the @Source annotation to specify the incoming property names and the @JsonProperty annotation to define the corresponding properties in the internal representation.
+In this example, we have two DTO classes: `AlbumDtoInput` and `AlbumDtoOutput`. The `AlbumDtoInput` class is designed to receive data from external sources, using the `@Source` annotation to specify the incoming property names and the `@JsonProperty` annotation to define the corresponding properties in the internal representation.
 
-Conversely, the AlbumDtoOutput class is structured for sending data outwards. Here, the @Source annotation reflects the internal property names, while the @JsonProperty annotation defines the expected property names when the data is serialized for external use. This bidirectional mapping ensures that data flows seamlessly between internal and external systems.
+Conversely, the `AlbumDtoOutput` class is structured for sending data outwards. Here, the `@Source` annotation reflects the internal property names, while the `@JsonProperty` annotation defines the expected property names when the data is serialized for external use. This bidirectional mapping ensures that data flows seamlessly between internal and external systems.
 
 The `@Source` annotation allows a Data Transfer Object (DTO) to inherit properties from an underlying object, enabling seamless data integration across related entities.
 
