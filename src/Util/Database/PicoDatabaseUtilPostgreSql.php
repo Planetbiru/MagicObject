@@ -139,12 +139,15 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
      *
      * @return string The SQL column definition formatted as a string, suitable for inclusion in a CREATE TABLE statement.
      */
-    public function createColumn($column)
+    public function createColumn($column, $autoIncrementKeys = null)
     {
         $col = [];
         $col[] = "\t";
         $col[] = "\"" . $column[parent::KEY_NAME] . "\"";
-        $col[] = $column['type'];
+        
+        $type = $this->fixAutoIncrementType($column, $column['type'], $autoIncrementKeys);
+        
+        $col[] = $type;
 
         if (isset($column['nullable']) && strtolower(trim($column['nullable'])) == 'true') {
             $col[] = "NULL";
@@ -159,6 +162,18 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
         }
 
         return implode(" ", $col);
+    }
+    
+    private function fixAutoIncrementType($column, $type, $autoIncrementKeys)
+    {
+        if(isset($autoIncrementKeys) && is_array($autoIncrementKeys) && in_array($column, $autoIncrementKeys))
+        {
+            // TODO: 
+        }
+        else
+        {
+            return $type;
+        }
     }
 
     /**
