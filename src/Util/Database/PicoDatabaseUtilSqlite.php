@@ -5,6 +5,7 @@ namespace MagicObject\Util\Database;
 use Exception;
 use MagicObject\Database\PicoDatabase;
 use MagicObject\Database\PicoTableInfo;
+use MagicObject\Exceptions\InvalidParameterException;
 use MagicObject\MagicObject;
 use MagicObject\SecretObject;
 use PDO;
@@ -430,6 +431,26 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
             error_log($e->getMessage());
         }
         return $config;
+    }
+    
+    /**
+     * Check if a table exists in the database.
+     *
+     * @param PicoDatabase $database
+     * @param string $tableName The name of the table to check.
+     * @return bool True if the table exists, false otherwise.
+     */
+    public function tableExists($database, $tableName)
+    {
+        if(!isset($tableName) || empty($tableName))
+        {
+            throw new InvalidParameterException("Table name can't be null or empty.");
+        }
+        $query = "SELECT name FROM sqlite_master WHERE type='table' AND name=:tableName";
+        $stmt = $database->getDatabaseConnection()->prepare($query);
+        $stmt->bindValue(':tableName', $tableName);
+        $stmt->execute();
+        return $stmt->fetch() !== false;
     }
     
 }
