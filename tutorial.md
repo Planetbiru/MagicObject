@@ -1675,6 +1675,11 @@ Below are various date format strings that you can use in PHP, along with their 
     _Format:_ Date with Day of the Week  
     _Example:_ `Thursday, 24 October 2024`  
     _Description:_ This format includes the full name of the day, providing a complete and easily readable date string. Perfect for calendars, invitations, or any context where a formal date presentation is needed.
+    
+-   **`'U'`**  
+    _Format:_ Unix Timestamp  
+    _Example:_ `1698151800`  
+    _Description:_ This format represents the date as a Unix timestamp, which is the number of seconds that have elapsed since January 1, 1970 (UTC). It is useful for database storage and calculations involving time, as well as for interoperability with systems that utilize Unix timestamps.
 
 
 **Example:**
