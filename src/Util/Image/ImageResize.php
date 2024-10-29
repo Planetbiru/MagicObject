@@ -361,4 +361,87 @@ class ImageResize
         imagedestroy($image);
         imagedestroy($rotatedImage);
     }
+    
+    /**
+     * Adds a watermark to an image.
+     *
+     * @param string $sourcePath Path to the source image.
+     * @param string $watermarkPath Path to the watermark image.
+     * @param string $outputPath Path to save the resulting image.
+     * @param int $opacity Opacity of the watermark (0-100).
+     * @param string $position Position of the watermark (top-left, top-right, bottom-left, bottom-right, center).
+     * @param int $marginX Horizontal margin from the edge.
+     * @param int $marginY Vertical margin from the edge.
+     * @return bool True on success, false on failure.
+     */
+    public function addWatermark($sourcePath, $watermarkPath, $outputPath, $opacity = 50, $position = 'bottom-right', $marginX = 10, $marginY = 10) {
+        // Load the source image
+        $sourceImage = imagecreatefromjpeg($sourcePath);
+        if (!$sourceImage) {
+            return false; // Return false if the source image cannot be loaded
+        }
+
+        // Load the watermark image
+        $watermarkImage = imagecreatefrompng($watermarkPath);
+        if (!$watermarkImage) {
+            imagedestroy($sourceImage); // Free memory for the source image
+            return false; // Return false if the watermark cannot be loaded
+        }
+
+        // Get the dimensions of the source image
+        $sourceWidth = imagesx($sourceImage);
+        $sourceHeight = imagesy($sourceImage);
+        
+        // Get the dimensions of the watermark image
+        $watermarkWidth = imagesx($watermarkImage);
+        $watermarkHeight = imagesy($watermarkImage);
+
+        // Calculate position for the watermark based on the specified position and margins
+        switch ($position) {
+            case 'top-left':
+                $destX = $marginX;
+                $destY = $marginY;
+                break;
+            case 'top-right':
+                $destX = $sourceWidth - $watermarkWidth - $marginX;
+                $destY = $marginY;
+                break;
+            case 'bottom-left':
+                $destX = $marginX;
+                $destY = $sourceHeight - $watermarkHeight - $marginY;
+                break;
+            case 'bottom-right':
+                $destX = $sourceWidth - $watermarkWidth - $marginX;
+                $destY = $sourceHeight - $watermarkHeight - $marginY;
+                break;
+            case 'center':
+                $destX = ($sourceWidth - $watermarkWidth) / 2; // Center horizontally
+                $destY = ($sourceHeight - $watermarkHeight) / 2; // Center vertically
+                break;
+            default:
+                $destX = $sourceWidth - $watermarkWidth - $marginX; // NOSONAR
+                $destY = $sourceHeight - $watermarkHeight - $marginY; // NOSONAR
+                break;
+        }
+
+        // Enable alpha blending for the watermark
+        imagealphablending($watermarkImage, true);
+        imagesavealpha($watermarkImage, true);
+        
+        // Set the transparent color for the watermark
+        $transparent = imagecolorallocatealpha($watermarkImage, 255, 255, 255, 127 - ($opacity / 100 * 127));
+        imagefilledrectangle($watermarkImage, 0, 0, $watermarkWidth, $watermarkHeight, $transparent);
+        
+        // Copy the watermark onto the source image
+        imagecopy($sourceImage, $watermarkImage, $destX, $destY, 0, 0, $watermarkWidth, $watermarkHeight);
+
+        // Save the resulting image
+        imagejpeg($sourceImage, $outputPath);
+
+        // Free memory for the images
+        imagedestroy($sourceImage);
+        imagedestroy($watermarkImage);
+
+        return true; // Return true on successful watermarking
+    }
 }
