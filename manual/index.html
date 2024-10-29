@@ -1835,7 +1835,6 @@ echo $albumDto;</code></pre>
 <ul>
 <li><strong>@Source</strong>: This annotation specifies the path to the property within the nested object structure. In this case, <code>artist-&gt;agency-&gt;name</code> indicates that the <code>agencyName</code> will pull data from the <code>name</code> property of the <code>Agency</code> object linked to the <code>Artist</code>.</li>
 <li><strong>@JsonProperty</strong>: This annotation maps the <code>agencyName</code> property to a different key in the JSON representation of the DTO. Here, it will be serialized as <code>agency_name</code>.</li>
-<li><strong>protected $agencyName</strong>: This declares the <code>agencyName</code> property with protected visibility, ensuring that it can only be accessed within the class itself and by subclasses.</li>
 </ul>
 <p>This approach enhances data encapsulation and promotes cleaner code by allowing DTOs to automatically gather necessary data from related entities.</p>
 <h3>Conclusion</h3>
