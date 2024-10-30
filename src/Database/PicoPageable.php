@@ -94,7 +94,7 @@ class PicoPageable
      *
      * @param PicoSortable $sortable Sortable
      *
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function setSortable($sortable)
     {
@@ -108,7 +108,7 @@ class PicoPageable
      *
      * @param string $sortBy Sort by
      * @param string $sortType Sort type
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function addSortable($sortBy, $sortType)
     {
@@ -153,7 +153,7 @@ class PicoPageable
      *
      * @param PicoPage $page Page
      *
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function setPage($page)
     {
@@ -179,7 +179,7 @@ class PicoPageable
      *
      * @param PicoLimit  $offsetLimit  Offset and limit
      *
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function setOffsetLimit($offsetLimit)
     {

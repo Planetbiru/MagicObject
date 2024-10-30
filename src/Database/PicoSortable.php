@@ -46,7 +46,7 @@ class PicoSortable
      *
      * @param int $argc Number of arguments passed to the constructor.
      * @param array $params Parameters for sorting.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     private function initSortable($argc, $params)
     {
@@ -78,7 +78,7 @@ class PicoSortable
      * Add a sortable criterion.
      *
      * @param PicoSort|array $sort The sorting criterion to add.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function add($sort)
     {
@@ -89,7 +89,7 @@ class PicoSortable
      * Add a sortable criterion.
      *
      * @param PicoSort|array $sort The sorting criterion to add.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function addSortable($sort)
     {

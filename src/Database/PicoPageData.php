@@ -218,7 +218,7 @@ class PicoPageData //NOSONAR
     /**
      * Calculate pagination content based on the pageable settings.
      *
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function calculateContent()
     {
@@ -252,7 +252,7 @@ class PicoPageData //NOSONAR
      * This method constructs an array of pagination controls based on the current page number and total pages.
      *
      * @param int $margin Number of pages to show before and after the current page.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function generatePagination($margin = 3)
     {
@@ -482,7 +482,7 @@ class PicoPageData //NOSONAR
      * Set find option flags to control query behavior.
      *
      * @param int $findOption Flags indicating the desired query options.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function setFindOption($findOption)
     {

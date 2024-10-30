@@ -43,7 +43,7 @@ class PicoPage
     /**
      * Increase the page number by one.
      *
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function nextPage()
     {
@@ -54,7 +54,7 @@ class PicoPage
     /**
      * Decrease the page number by one, ensuring it doesn't go below 1.
      *
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function previousPage()
     {
@@ -78,7 +78,7 @@ class PicoPage
      * Set the page number.
      *
      * @param int $pageNumber Page number.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function setPageNumber($pageNumber)
     {
@@ -100,7 +100,7 @@ class PicoPage
      * Set the page size.
      *
      * @param int $pageSize Page size.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function setPageSize($pageSize)
     {

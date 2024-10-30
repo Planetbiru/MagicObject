@@ -91,7 +91,7 @@ class PicoPageControl
      * Set margin to pagination
      *
      * @param int $margin Margin (previous and next) from current page
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function setMargin($margin)
     {
@@ -106,7 +106,7 @@ class PicoPageControl
      * @param string $next Button symbol for next page
      * @param string $first Button symbol for first page
      * @param string $last Button symbol for last page
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function setNavigation($prev = null, $next = null, $first = null, $last = null)
     {

@@ -54,7 +54,7 @@ class PicoDataComparation
      * Creates a comparison for equality.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public static function equals($value)
     {
@@ -65,7 +65,7 @@ class PicoDataComparation
      * Creates a comparison for inequality.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public static function notEquals($value)
     {
@@ -76,7 +76,7 @@ class PicoDataComparation
      * Creates a comparison for inclusion in a set.
      *
      * @param mixed[] $values The values to compare against.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public static function in($values)
     {
@@ -87,7 +87,7 @@ class PicoDataComparation
      * Creates a comparison for exclusion from a set.
      *
      * @param mixed[] $values The values to compare against.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public static function notIn($values)
     {
@@ -98,7 +98,7 @@ class PicoDataComparation
      * Creates a comparison using the LIKE operator.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public static function like($value)
     {
@@ -109,7 +109,7 @@ class PicoDataComparation
      * Creates a comparison using the NOT LIKE operator.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public static function notLike($value)
     {
@@ -120,7 +120,7 @@ class PicoDataComparation
      * Creates a comparison for less than.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public static function lessThan($value)
     {
@@ -131,7 +131,7 @@ class PicoDataComparation
      * Creates a comparison for greater than.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public static function greaterThan($value)
     {
@@ -142,7 +142,7 @@ class PicoDataComparation
      * Creates a comparison for less than or equal to.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public static function lessThanOrEquals($value)
     {
@@ -153,7 +153,7 @@ class PicoDataComparation
      * Creates a comparison for greater than or equal to.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public static function greaterThanOrEquals($value)
     {
