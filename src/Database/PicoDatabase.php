@@ -709,22 +709,30 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Get callback function when executing any query.
+     * Set callback function when executing queries that modify data.
      *
-     * @return  callable|null
+     * @param  callable|null  $callbackExecuteQuery  Callback function when executing queries that modify data.
+     *
+     * @return  self
      */ 
-    public function getCallbackDebugQuery()
+    public function setCallbackExecuteQuery($callbackExecuteQuery)
     {
-        return $this->callbackDebugQuery;
+        $this->callbackExecuteQuery = $callbackExecuteQuery;
+
+        return $this;
     }
 
     /**
-     * Get callback function when executing queries that modify data.
+     * Set callback function when executing any query.
      *
-     * @return  callable|null
+     * @param  callable|null  $callbackDebugQuery  Callback function when executing any query.
+     *
+     * @return  self
      */ 
-    public function getCallbackExecuteQuery()
+    public function setCallbackDebugQuery($callbackDebugQuery)
     {
-        return $this->callbackExecuteQuery;
+        $this->callbackDebugQuery = $callbackDebugQuery;
+
+        return $this;
     }
 }

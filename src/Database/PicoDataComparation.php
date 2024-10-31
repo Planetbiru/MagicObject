@@ -3,9 +3,17 @@
 namespace MagicObject\Database;
 
 /**
- * Class for handling data comparisons.
- * Provides various comparison operations for use in database queries.
- * 
+ * Class PicoDataComparation
+ *
+ * This class provides various comparison operations for use in database queries.
+ * It allows the creation of comparison objects that can be utilized to 
+ * compare values against specified criteria, facilitating flexible and 
+ * expressive database querying.
+ *
+ * The class supports a variety of comparison operators such as equality, 
+ * inequality, inclusion, and range comparisons. Each operator can be 
+ * applied to values of various types, including strings, booleans, and numbers.
+ *
  * @author Kamshory
  * @package MagicObject\Database
  * @link https://github.com/Planetbiru/MagicObject
@@ -54,7 +62,7 @@ class PicoDataComparation
      * Creates a comparison for equality.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self The PicoDataComparation object.
      */
     public static function equals($value)
     {
@@ -65,7 +73,7 @@ class PicoDataComparation
      * Creates a comparison for inequality.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self The PicoDataComparation object.
      */
     public static function notEquals($value)
     {
@@ -76,7 +84,7 @@ class PicoDataComparation
      * Creates a comparison for inclusion in a set.
      *
      * @param mixed[] $values The values to compare against.
-     * @return self
+     * @return self The PicoDataComparation object.
      */
     public static function in($values)
     {
@@ -87,7 +95,7 @@ class PicoDataComparation
      * Creates a comparison for exclusion from a set.
      *
      * @param mixed[] $values The values to compare against.
-     * @return self
+     * @return self The PicoDataComparation object.
      */
     public static function notIn($values)
     {
@@ -98,7 +106,7 @@ class PicoDataComparation
      * Creates a comparison using the LIKE operator.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self The PicoDataComparation object.
      */
     public static function like($value)
     {
@@ -109,7 +117,7 @@ class PicoDataComparation
      * Creates a comparison using the NOT LIKE operator.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self The PicoDataComparation object.
      */
     public static function notLike($value)
     {
@@ -120,7 +128,7 @@ class PicoDataComparation
      * Creates a comparison for less than.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self The PicoDataComparation object.
      */
     public static function lessThan($value)
     {
@@ -131,7 +139,7 @@ class PicoDataComparation
      * Creates a comparison for greater than.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self The PicoDataComparation object.
      */
     public static function greaterThan($value)
     {
@@ -142,7 +150,7 @@ class PicoDataComparation
      * Creates a comparison for less than or equal to.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self The PicoDataComparation object.
      */
     public static function lessThanOrEquals($value)
     {
@@ -153,7 +161,7 @@ class PicoDataComparation
      * Creates a comparison for greater than or equal to.
      *
      * @param mixed $value The value to compare.
-     * @return self
+     * @return self The PicoDataComparation object.
      */
     public static function greaterThanOrEquals($value)
     {

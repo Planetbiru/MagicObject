@@ -3,9 +3,13 @@
 namespace MagicObject\Database;
 
 /**
- * Class representing different database types.
+ * Class PicoDatabaseType
  *
- * This class provides constants for various database types supported by the MagicObject framework.
+ * This class defines constants representing various database types 
+ * supported by the MagicObject framework. It provides a centralized 
+ * way to reference these types, improving code clarity and maintainability.
+ * 
+ * Supported database types include MySQL, MariaDB, PostgreSQL, and SQLite.
  * 
  * @author Kamshory
  * @package MagicObject\Database
@@ -14,22 +18,30 @@ namespace MagicObject\Database;
 class PicoDatabaseType
 {
     /**
-     * MySQL database type.
+     * Constant for MySQL database type.
+     *
+     * @var string
      */
     const DATABASE_TYPE_MYSQL = "mysql";
 
     /**
-     * MariaDB database type.
+     * Constant for MariaDB database type.
+     *
+     * @var string
      */
     const DATABASE_TYPE_MARIADB = "mariadb";
 
     /**
-     * PostgreSQL database type.
+     * Constant for PostgreSQL database type.
+     *
+     * @var string
      */
     const DATABASE_TYPE_POSTGRESQL = "postgresql";
 
     /**
-     * SQLite database type.
+     * Constant for SQLite database type.
+     *
+     * @var string
      */
     const DATABASE_TYPE_SQLITE = "sqlite";
 }

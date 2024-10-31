@@ -2478,6 +2478,13 @@ class PicoDatabaseCredentials extends SecretObject
     protected $driver = 'mysql';
 
     /**
+     * Database file path for SQLite database only
+     *
+     * @var string
+     */
+    protected $databaseFilePath;
+
+    /**
      * Database server host.
      *
      * @EncryptIn
@@ -2546,7 +2553,6 @@ class PicoDatabaseCredentials extends SecretObject
 public function __construct($databaseCredentials, $callbackExecuteQuery = null, $callbackDebugQuery = null)
 ```
 
-
 **Parameters:**
 
 -   `SecretObject $databaseCredentials`: Database credentials object.
@@ -2565,12 +2571,75 @@ public function __construct($databaseCredentials, $callbackExecuteQuery = null, 
     -   If the callback has **1 parameter**, it will be:
         -   `$sqlQuery`: The SQL query being debugged.
 
+To use setter methods for configuring the `callbackExecuteQuery` and `callbackDebugQuery` in the PicoDatabase class, follow the example below. This allows you to set the callbacks after instantiation
+
+**Setting Callbacks with Setters**
+
+Here's how you can set the callbacks using setter methods:
+
+```php
+use MagicObject\Database\PicoDatabase;
+use MagicObject\Database\PicoDatabaseCredentials;
+
+// Example credentials setup
+$credentials = new PicoDatabaseCredentials();
+$credentials->setHost('localhost');
+$credentials->setUsername('user');
+$credentials->setPassword('password');
+
+// Instantiate PicoDatabase
+$db = new PicoDatabase($credentials);
+
+// Set callback for executing queries
+$db->setCallbackExecuteQuery(function($sqlQuery, $params, $type) {
+    echo "Executing query: $sqlQuery\n";
+    echo "Parameters: " . json_encode($params) . "\n";
+});
+
+// Set callback for debugging queries
+$db->setCallbackDebugQuery(function($sqlQuery, $params) {
+    echo "Debugging query: $sqlQuery\n";
+    echo "Parameters: " . json_encode($params) . "\n";
+});
+
+// Example usage of the database connection
+if ($db->connect()) {
+    // Fetch a user by ID, triggering the execute callback
+    $user = $db->fetch("SELECT * FROM users WHERE id = ?", [1]);
+    print_r($user);
+
+    // Disconnect
+    $db->disconnect();
+}
+```
+
+**Disabling Callbacks Using Setters**
+
+You can also disable the callbacks by setting them to `null`:
+
+```php
+// Instantiate PicoDatabase
+$dbWithoutCallbacks = new PicoDatabase($credentials);
+
+// Disable callbacks
+$dbWithoutCallbacks->setCallbackExecuteQuery(null);
+$dbWithoutCallbacks->setCallbackDebugQuery(null);
+
+// Use the database as usual without callback outputs
+if ($dbWithoutCallbacks->connect()) {
+    $user = $dbWithoutCallbacks->fetch("SELECT * FROM users WHERE id = ?", [1]);
+    print_r($user);
+    
+    // Disconnect
+    $dbWithoutCallbacks->disconnect();
+}
+```
+
 #### Connecting to the Database
 
 ```php
 public function connect($withDatabase = true): bool
 ```
-
 
 **Parameters**:
 
@@ -9602,13 +9671,13 @@ Native queries do not support multiple database connections. This means that all
 
 The parameters accepted by the native query function are as follows:
 
-1. string
-2. int or integer
-3. float
-4. bool or boolean
-5. null
-6. DateTime
-7. array of string, int, bool and DateTime
+1. `string`
+2. `int` or `integer`
+3. `float`
+4. `bool` or `boolean`
+5. `null`
+6. `DateTime`
+7. `array` of `string`, `int`, `bool` and `DateTime`
 
 For columns with data type `DATETIME` and `TIMESTAMP`, users can use either `string` or `DateTime` parameters. `DateTime` will be first converted to 'Y-md H:i:s' format automatically by MagicObject. Don't forget to define DateTimeZone for DateTime object. Also note the time resolution for the `in` and `=` criteria.
 
