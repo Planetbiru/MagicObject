@@ -195,15 +195,6 @@ $db->setCallbackDebugQuery(function($sqlQuery, $params) {
     echo "Parameters: " . json_encode($params) . "\n";
 });
 
-// Example usage of the database connection
-if ($db->connect()) {
-    // Fetch a user by ID, triggering the execute callback
-    $user = $db->fetch("SELECT * FROM users WHERE id = ?", [1]);
-    print_r($user);
-
-    // Disconnect
-    $db->disconnect();
-}
 ```
 
 **Disabling Callbacks Using Setters**
@@ -218,14 +209,6 @@ $dbWithoutCallbacks = new PicoDatabase($credentials);
 $dbWithoutCallbacks->setCallbackExecuteQuery(null);
 $dbWithoutCallbacks->setCallbackDebugQuery(null);
 
-// Use the database as usual without callback outputs
-if ($dbWithoutCallbacks->connect()) {
-    $user = $dbWithoutCallbacks->fetch("SELECT * FROM users WHERE id = ?", [1]);
-    print_r($user);
-    
-    // Disconnect
-    $dbWithoutCallbacks->disconnect();
-}
 ```
 
 #### Connecting to the Database
