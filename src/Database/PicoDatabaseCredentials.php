@@ -38,15 +38,6 @@ class PicoDatabaseCredentials extends SecretObject
     protected $driver = 'mysql';
 
     /**
-     * Database server host.
-     *
-     * @EncryptIn
-     * @DecryptOut
-     * @var string
-     */
-    protected $host = 'localhost';
-    
-    /**
      * Database file path for SQLite.
      *
      * @EncryptIn
@@ -55,6 +46,15 @@ class PicoDatabaseCredentials extends SecretObject
      */
     protected $databaseFilePath;
 
+    /**
+     * Database server host.
+     *
+     * @EncryptIn
+     * @DecryptOut
+     * @var string
+     */
+    protected $host = 'localhost';
+    
     /**
      * Database server port.
      *
