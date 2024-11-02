@@ -708,12 +708,23 @@ class PicoDatabase //NOSONAR
         return json_encode($val);
     }
 
+
+    /**
+     * Get callback function when executing queries that modify data.
+     *
+     * @return callable|null
+     */ 
+    public function getCallbackExecuteQuery()
+    {
+        return $this->callbackExecuteQuery;
+    }
+
     /**
      * Set callback function when executing queries that modify data.
      *
-     * @param  callable|null  $callbackExecuteQuery  Callback function when executing queries that modify data.
+     * @param callable|null  $callbackExecuteQuery  Callback function when executing queries that modify data.
      *
-     * @return  self
+     * @return self Returns the current instance for method chaining.
      */ 
     public function setCallbackExecuteQuery($callbackExecuteQuery)
     {
@@ -723,11 +734,21 @@ class PicoDatabase //NOSONAR
     }
 
     /**
+     * Get callback function when executing any query.
+     *
+     * @return callable|null
+     */ 
+    public function getCallbackDebugQuery()
+    {
+        return $this->callbackDebugQuery;
+    }
+
+    /**
      * Set callback function when executing any query.
      *
-     * @param  callable|null  $callbackDebugQuery  Callback function when executing any query.
+     * @param callable|null  $callbackDebugQuery  Callback function when executing any query.
      *
-     * @return  self
+     * @return self Returns the current instance for method chaining.
      */ 
     public function setCallbackDebugQuery($callbackDebugQuery)
     {
