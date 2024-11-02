@@ -277,7 +277,7 @@ class PicoDatabase //NOSONAR
     /**
      * Disconnect from the database.
      *
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function disconnect()
     {
@@ -289,7 +289,7 @@ class PicoDatabase //NOSONAR
      * Set the time zone offset.
      *
      * @param string $timeZoneOffset Client time zone.
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function setTimeZoneOffset($timeZoneOffset)
     {
@@ -302,7 +302,7 @@ class PicoDatabase //NOSONAR
      * Change the database.
      *
      * @param string $databaseName Database name.
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function useDatabase($databaseName)
     {

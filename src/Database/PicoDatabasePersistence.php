@@ -2995,7 +2995,7 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param string $classNameJoin The class name for which to prepare the join cache.
      * 
-     * @return self Returns the current instance to allow method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     private function prepareJoinCache($classNameJoin)
     {

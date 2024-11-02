@@ -46,7 +46,7 @@ class PicoLimit
      * This method adjusts the offset based on the current limit, allowing 
      * for the retrieval of the next set of records in a paginated result.
      *
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function nextPage()
     {
@@ -60,7 +60,7 @@ class PicoLimit
      * This method adjusts the offset back, ensuring it does not fall below 
      * zero, thus allowing navigation to the previous set of records.
      *
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function previousPage()
     {
@@ -84,7 +84,7 @@ class PicoLimit
      * This method ensures that the limit is at least 1.
      *
      * @param int $limit The maximum number of records.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function setLimit($limit)
     {
@@ -108,7 +108,7 @@ class PicoLimit
      * This method ensures that the offset is not negative.
      *
      * @param int $offset The number of records to skip.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function setOffset($offset)
     {

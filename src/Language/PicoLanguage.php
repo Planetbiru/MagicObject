@@ -33,7 +33,7 @@ class PicoLanguage
      * Load data into the object.
      *
      * @param stdClass|array $data Data to be loaded into the object.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function loadData($data)
     {
@@ -51,7 +51,7 @@ class PicoLanguage
      *
      * @param string $propertyName Name of the property to set.
      * @param mixed|null $propertyValue Value to assign to the property.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function set($propertyName, $propertyValue)
     {

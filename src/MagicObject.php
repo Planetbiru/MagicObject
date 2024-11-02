@@ -212,7 +212,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $rawData Raw INI data
      * @param bool $systemEnv Flag to indicate whether to use environment variables
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function loadIniString($rawData, $systemEnv = false)
     {
@@ -236,7 +236,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $path File path to the INI file
      * @param bool $systemEnv Flag to indicate whether to use environment variables
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function loadIniFile($path, $systemEnv = false)
     {
@@ -262,7 +262,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param bool $systemEnv Replace all environment variable values
      * @param bool $asObject Result as an object instead of an array
      * @param bool $recursive Convert all objects to MagicObject
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function loadYamlString($rawData, $systemEnv = false, $asObject = false, $recursive = false)
     {
@@ -310,7 +310,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param bool $systemEnv Replace all environment variable values
      * @param bool $asObject Result as an object instead of an array
      * @param bool $recursive Convert all objects to MagicObject
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function loadYamlFile($path, $systemEnv = false, $asObject = false, $recursive = false)
     {
@@ -358,7 +358,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param bool $systemEnv Replace all environment variable values
      * @param bool $asObject Result as an object instead of an array
      * @param bool $recursive Convert all objects to MagicObject
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function loadJsonString($rawData, $systemEnv = false, $asObject = false, $recursive = false)
     {
@@ -406,7 +406,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param bool $systemEnv Replace all environment variable values
      * @param bool $asObject Result as an object instead of an array
      * @param bool $recursive Convert all objects to MagicObject
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function loadJsonFile($path, $systemEnv = false, $asObject = false, $recursive = false)
     {
@@ -454,7 +454,7 @@ class MagicObject extends stdClass // NOSONAR
      * but loadData will still function normally.
      *
      * @param bool $readonly Flag to set the object as read-only
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     protected function readOnly($readonly)
     {
@@ -466,7 +466,7 @@ class MagicObject extends stdClass // NOSONAR
      * Set the database connection.
      *
      * @param PicoDatabase $database Database connection
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function withDatabase($database)
     {
@@ -607,7 +607,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Select data from the database.
      *
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      * @throws NoDatabaseConnectionException|NoRecordFoundException|PDOException
      */
     public function select()
@@ -632,7 +632,7 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Select all data from the database.
      *
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      * @throws NoDatabaseConnectionException|NoRecordFoundException|PDOException
      */
     public function selectAll()
@@ -1082,7 +1082,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param string $propertyName Property name
      * @param mixed|null $propertyValue Property value
      * @param bool $skipModifyNullProperties Skip modifying null properties
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function set($propertyName, $propertyValue, $skipModifyNullProperties = false)
     {
@@ -1100,7 +1100,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $propertyName Property name
      * @param mixed $propertyValue Property value
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function push($propertyName, $propertyValue)
     {
@@ -1118,7 +1118,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $propertyName Property name
      * @param mixed $propertyValue Property value
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function append($propertyName, $propertyValue)
     {
@@ -1130,7 +1130,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $propertyName Property name
      * @param mixed $propertyValue Property value
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function unshift($propertyName, $propertyValue)
     {
@@ -1148,7 +1148,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $propertyName Property name
      * @param mixed $propertyValue Property value
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function prepend($propertyName, $propertyValue)
     {
@@ -1303,7 +1303,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $propertyName Property name
      * @param bool $skipModifyNullProperties Skip modifying null properties
-     * @return self Returns the instance of the current object for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     private function removeValue($propertyName, $skipModifyNullProperties = false)
     {

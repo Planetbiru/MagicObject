@@ -579,7 +579,7 @@ class SecretObject extends stdClass //NOSONAR
      * array, or scalar value.
      *
      * @param mixed $data The data to load.
-     * @return self Returns the current object instance.
+     * @return self Returns the current instance for method chaining.
      */
     public function loadData($data)
     {
@@ -610,7 +610,7 @@ class SecretObject extends stdClass //NOSONAR
      *
      * @param string $rawData The raw INI data as a string.
      * @param bool $systemEnv Flag to indicate whether to use environment variable replacement.
-     * @return self Returns the current object instance.
+     * @return self Returns the current instance for method chaining.
      */
     public function loadIniString($rawData, $systemEnv = false)
     {
@@ -636,7 +636,7 @@ class SecretObject extends stdClass //NOSONAR
      *
      * @param string $path The path to the INI file.
      * @param bool $systemEnv Flag to indicate whether to use environment variable replacement.
-     * @return self Returns the current object instance.
+     * @return self Returns the current instance for method chaining.
      */
     public function loadIniFile($path, $systemEnv = false)
     {
@@ -664,7 +664,7 @@ class SecretObject extends stdClass //NOSONAR
      * @param bool $systemEnv Flag to indicate whether to replace environment variables.
      * @param bool $asObject Flag to indicate whether to return results as an object.
      * @param bool $recursive Flag to indicate whether to convert nested objects to MagicObject.
-     * @return self Returns the current object instance.
+     * @return self Returns the current instance for method chaining.
      */
     public function loadYamlString($rawData, $systemEnv = false, $asObject = false, $recursive = false)
     {
@@ -699,7 +699,7 @@ class SecretObject extends stdClass //NOSONAR
      * @param bool $systemEnv Flag to indicate whether to replace environment variables.
      * @param bool $asObject Flag to indicate whether to return results as an object.
      * @param bool $recursive Flag to indicate whether to convert nested objects to MagicObject.
-     * @return self Returns the current object instance.
+     * @return self Returns the current instance for method chaining.
      */
     public function loadYamlFile($path, $systemEnv = false, $asObject = false, $recursive = false)
     {
@@ -733,7 +733,7 @@ class SecretObject extends stdClass //NOSONAR
      * @param string $rawData The JSON data as a string.
      * @param bool $systemEnv Flag to indicate whether to replace environment variables.
      * @param bool $recursive Flag to create recursive object.
-     * @return self Returns the current object instance.
+     * @return self Returns the current instance for method chaining.
      */
     public function loadJsonString($rawData, $systemEnv = false, $asObject = false, $recursive = false)
     {
@@ -767,7 +767,7 @@ class SecretObject extends stdClass //NOSONAR
      * @param string $path The path to the JSON file.
      * @param bool $systemEnv Flag to indicate whether to replace environment variables.
      * @param bool $recursive Flag to create recursive object.
-     * @return self Returns the current object instance.
+     * @return self Returns the current instance for method chaining.
      */
     public function loadJsonFile($path, $systemEnv = false, $asObject = false, $recursive = false)
     {
@@ -799,7 +799,7 @@ class SecretObject extends stdClass //NOSONAR
      * but the loadData method will still work.
      *
      * @param bool $readonly Flag to set the object to read-only.
-     * @return self Returns the current object instance.
+     * @return self Returns the current instance for method chaining.
      */
     protected function readOnly($readonly)
     {
@@ -812,7 +812,7 @@ class SecretObject extends stdClass //NOSONAR
      *
      * @param string $propertyName The name of the property to set.
      * @param mixed|null $propertyValue The value to set for the property.
-     * @return self Returns the current object instance.
+     * @return self Returns the current instance for method chaining.
      */
     public function set($propertyName, $propertyValue)
     {
@@ -824,7 +824,7 @@ class SecretObject extends stdClass //NOSONAR
      *
      * @param string $propertyName The name of the property.
      * @param mixed $propertyValue The value to add.
-     * @return self Returns the current object instance.
+     * @return self Returns the current instance for method chaining.
      */
     public function push($propertyName, $propertyValue)
     {
@@ -889,7 +889,7 @@ class SecretObject extends stdClass //NOSONAR
      *                           should be copied. If null, all properties will be considered.
      * @param bool $includeNull A flag indicating whether to include properties with null 
      *                          values. Defaults to false, meaning null values will be excluded.
-     * @return self Returns the current object instance for method chaining.
+     * @return self Returns the current instance for method chaining.
      */
     public function copyValueFrom($source, $filter = null, $includeNull = false)
     {
@@ -1103,7 +1103,7 @@ class SecretObject extends stdClass //NOSONAR
      *
      * @param string $propertyName The name of the property.
      * @param mixed $propertyValue The value of the property.
-     * @return self Returns the current object instance.
+     * @return self Returns the current instance for method chaining.
      */
     private function modifyNullProperties($propertyName, $propertyValue)
     {
