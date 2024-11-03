@@ -74,7 +74,6 @@ class MagicDto extends stdClass // NOSONAR
                 throw new InvalidAnnotationException("Invalid annotation @".$paramName);
             }
         }
-
     }
 
     /**

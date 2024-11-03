@@ -723,7 +723,6 @@ class PicoDatabase //NOSONAR
      * Set callback function when executing queries that modify data.
      *
      * @param callable|null  $callbackExecuteQuery  Callback function when executing queries that modify data.
-     *
      * @return self Returns the current instance for method chaining.
      */ 
     public function setCallbackExecuteQuery($callbackExecuteQuery)
@@ -747,7 +746,6 @@ class PicoDatabase //NOSONAR
      * Set callback function when executing any query.
      *
      * @param callable|null  $callbackDebugQuery  Callback function when executing any query.
-     *
      * @return self Returns the current instance for method chaining.
      */ 
     public function setCallbackDebugQuery($callbackDebugQuery)

@@ -2811,9 +2811,7 @@ class PicoDatabasePersistence // NOSONAR
      * @param string $propertyName The name of the property to filter the records by.
      * @param mixed $propertyValue The value of the property to match against.
      * @param PicoSortable|string|null $sortable Optional. Defines sorting for the result set.
-     * 
      * @return array|null Returns the matching record as an associative array, or null if no record is found.
-     * 
      * @throws EntityException If there is an issue with the entity operations.
      * @throws InvalidFilterException If the constructed filter is invalid.
      * @throws EmptyResultException If the query results in an empty set.
@@ -2944,7 +2942,6 @@ class PicoDatabasePersistence // NOSONAR
      * If the key exists, it returns that value; otherwise, it returns the standard column name.
      *
      * @param array $join The join column definition, which may include keys for reference and standard column names.
-     * 
      * @return string The reference column name, either from the specific key or the standard name.
      */
     private function getReferenceColumnName($join)
@@ -2968,7 +2965,6 @@ class PicoDatabasePersistence // NOSONAR
      * @param string $classNameJoin The name of the class to join with.
      * @param string $referenceColumName The name of the reference column to look up.
      * @param PicoTableInfo $info The table information containing metadata about the columns.
-     * 
      * @return string|null The corresponding property name if found, otherwise the reference column name.
      */
     private function getJoinKeyName($classNameJoin, $referenceColumName, $info)
@@ -2994,7 +2990,6 @@ class PicoDatabasePersistence // NOSONAR
      * for storing results from subsequent queries.
      *
      * @param string $classNameJoin The class name for which to prepare the join cache.
-     * 
      * @return self Returns the current instance for method chaining.
      */
     private function prepareJoinCache($classNameJoin)
@@ -3076,7 +3071,6 @@ class PicoDatabasePersistence // NOSONAR
      * @param mixed $data The original object or array to be populated with joined data.
      * @param array $row The row of data containing column values.
      * @param PicoTableInfo $info The table information that includes join column metadata.
-     * 
      * @return mixed The updated object or array with joined data.
      */
     public function join($data, $row, $info)
@@ -3120,7 +3114,6 @@ class PicoDatabasePersistence // NOSONAR
      * @param array|object $data The original data (array or object).
      * @param string $propName The name of the property to add.
      * @param mixed $value The value to assign to the property.
-     * 
      * @return array|object The updated data array or object with the new property.
      */
     private function addProperty($data, $propName, $value)
@@ -3142,7 +3135,6 @@ class PicoDatabasePersistence // NOSONAR
      * This method checks if the provided filter is not null, not empty, and not a whitespace string.
      *
      * @param string $filter The filter string to validate.
-     * 
      * @return bool True if the filter is valid; otherwise, false.
      */
     private function isValidFilter($filter)
@@ -3157,7 +3149,6 @@ class PicoDatabasePersistence // NOSONAR
      * a valid, non-empty string.
      *
      * @param string $value The value to check.
-     * 
      * @return bool True if the value is valid; otherwise, false.
      */
     private function notNullAndNotEmptyAndNotSpace($value)
@@ -3174,7 +3165,6 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param array $data The input data to be fixed.
      * @param PicoTableInfo $info The table information containing type definitions.
-     * 
      * @return array The data with fixed types.
      */
     public function fixDataType($data, $info)
@@ -3201,7 +3191,6 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param mixed $value The input value to be fixed.
      * @param string $type The expected data type of the value.
-     * 
      * @return mixed The value converted to the specified type.
      */
     public function fixData($value, $type)
@@ -3266,7 +3255,6 @@ class PicoDatabasePersistence // NOSONAR
      * if it should return `true`; otherwise, it returns `false`.
      *
      * @param mixed $value The input value to convert.
-     * 
      * @return bool True if the value is equivalent to `1`; otherwise, false.
      */
     private function boolval($value)
@@ -3281,7 +3269,6 @@ class PicoDatabasePersistence // NOSONAR
      * returns null instead.
      *
      * @param mixed $value The input value to convert.
-     * 
      * @return mixed The integer value or null if the input is null.
      */
     private function intval($value)
@@ -3304,7 +3291,6 @@ class PicoDatabasePersistence // NOSONAR
      * returns null instead.
      *
      * @param mixed $value The input value to convert.
-     * 
      * @return mixed The double value or null if the input is null.
      */
     private function doubleval($value)
@@ -3328,7 +3314,6 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param mixed $value The input value to fix.
      * @param array $column The column information containing potential date format.
-     * 
      * @return mixed The formatted date string or the original value.
      */
     private function fixInput($value, $column)
@@ -3353,7 +3338,6 @@ class PicoDatabasePersistence // NOSONAR
      * This method checks specific string representations of null or default datetime values.
      *
      * @param string $value The value to check.
-     * 
      * @return bool True if the value represents a null datetime; otherwise, false.
      */
     private function isDateTimeNull($value)
@@ -3460,7 +3444,6 @@ class PicoDatabasePersistence // NOSONAR
      * @param mixed|null $specification Optional specifications for the query.
      * @param mixed|null $pageable Optional pagination settings for the query.
      * @param mixed|null $sortable Optional sorting settings for the query.
-     * 
      * @return mixed The matching record or null if not found.
      * @throws EntityException If an error occurs during the selection process.
      * @throws InvalidFilterException If the provided filter is invalid.
@@ -3537,7 +3520,6 @@ class PicoDatabasePersistence // NOSONAR
      * @param mixed|null $specification Optional specifications for the query.
      * @param mixed|null $pageable Optional pagination settings for the query.
      * @param mixed|null $sortable Optional sorting settings for the query.
-     * 
      * @return array An array of matching records.
      * @throws EntityException If an error occurs during the selection process.
      * @throws InvalidFilterException If the provided filter is invalid.
@@ -3606,7 +3588,6 @@ class PicoDatabasePersistence // NOSONAR
      * @param PicoTableInfo|null $info The table information. If null, fetched internally.
      * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
      * @param string|null $where The where clause for the query. If null, fetched internally.
-     * 
      * @return PicoDatabaseQueryBuilder The query builder with the select query prepared.
      * @throws InvalidFilterException If the provided filter is invalid.
      * @throws EntityException If an error occurs while preparing the query.
@@ -3644,7 +3625,6 @@ class PicoDatabasePersistence // NOSONAR
      * specified table. It accepts an optional flag to include null values in the update.
      *
      * @param bool $includeNull Optional. If true, null values are included in the update.
-     * 
      * @return PDOStatement The executed update statement.
      * @throws EntityException If an error occurs during the update process.
      */
@@ -3664,7 +3644,6 @@ class PicoDatabasePersistence // NOSONAR
      * returns the query builder for further modifications.
      *
      * @param bool $includeNull Optional. If true, null values are included in the update.
-     * 
      * @return PicoDatabaseQueryBuilder The query builder with the update query prepared.
      * @throws EntityException If an error occurs while preparing the query.
      */
@@ -3686,7 +3665,6 @@ class PicoDatabasePersistence // NOSONAR
      * @param PicoTableInfo|null $info The table information. If null, fetched internally.
      * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
      * @param string|null $where The where clause for the query. If null, fetched internally.
-     * 
      * @return PDOStatement The executed update statement.
      * @throws InvalidFilterException If the provided filter is invalid.
      */
@@ -3705,7 +3683,6 @@ class PicoDatabasePersistence // NOSONAR
      * @param PicoTableInfo|null $info The table information. If null, fetched internally.
      * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
      * @param string|null $where The where clause for the query. If null, fetched internally.
-     * 
      * @return PicoDatabaseQueryBuilder The query builder with the update query prepared.
      * @throws InvalidFilterException If the provided filter is invalid.
      * @throws EntityException If an error occurs while preparing the query.
@@ -3780,7 +3757,6 @@ class PicoDatabasePersistence // NOSONAR
      * @param PicoTableInfo|null $info The table information. If null, fetched internally.
      * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
      * @param string|null $where The where clause for the query. If null, fetched internally.
-     * 
      * @return PDOStatement The executed delete statement.
      */
     private function _delete($info = null, $queryBuilder = null, $where = null)
@@ -3798,7 +3774,6 @@ class PicoDatabasePersistence // NOSONAR
      * @param PicoTableInfo|null $info The table information. If null, fetched internally.
      * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
      * @param string|null $where The where clause for the query. If null, fetched internally.
-     * 
      * @return PicoDatabaseQueryBuilder The query builder with the delete query prepared.
      * @throws InvalidFilterException If the provided filter is invalid.
      * @throws EntityException If an error occurs while preparing the query.
@@ -3836,7 +3811,6 @@ class PicoDatabasePersistence // NOSONAR
      * and configures it with a WHERE clause derived from the provided specification.
      *
      * @param PicoSpecification $specification The specification used to define the WHERE clause.
-     * 
      * @return PicoDatabasePersistenceExtended The configured persistence object with the WHERE clause.
      */
     public function whereWithSpecification($specification)
@@ -3868,7 +3842,6 @@ class PicoDatabasePersistence // NOSONAR
      * This method verifies whether the provided value is set and is an array.
      *
      * @param mixed $value The value to be checked.
-     * 
      * @return bool True if the value is an array, false otherwise.
      */
     public static function isArray($value)
@@ -3877,10 +3850,13 @@ class PicoDatabasePersistence // NOSONAR
     }
     
     /**
-     * Undocumented function
+     * Check if the given input is not empty.
      *
-     * @param string $input
-     * @return boolean
+     * This function determines if the provided input is set and not empty,
+     * returning true if it contains a non-empty value, and false otherwise.
+     *
+     * @param mixed $input The input value to check.
+     * @return bool True if the input is not empty, false otherwise.
      */
     public static function isNotEmpty($input)
     {

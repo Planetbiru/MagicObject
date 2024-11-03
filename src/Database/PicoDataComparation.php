@@ -188,9 +188,12 @@ class PicoDataComparation
     }
 
     /**
-     * Gets the appropriate equals operator based on value.
+     * Returns the appropriate equals operator based on the value's state.
      *
-     * @return string
+     * If the value is null or of type null, returns the IS operator; 
+     * otherwise, returns the standard equals operator.
+     *
+     * @return string The equals operator.
      */
     private function _equals()
     {
@@ -198,9 +201,12 @@ class PicoDataComparation
     }
 
     /**
-     * Gets the appropriate not equals operator based on value.
+     * Returns the appropriate not equals operator based on the value's state.
      *
-     * @return string
+     * If the value is null or of type null, returns the IS NOT operator; 
+     * otherwise, returns the standard not equals operator.
+     *
+     * @return string The not equals operator.
      */
     private function _notEquals()
     {
@@ -208,9 +214,9 @@ class PicoDataComparation
     }
 
     /**
-     * Gets the less than operator.
+     * Returns the less than operator.
      *
-     * @return string
+     * @return string The less than operator.
      */
     private function _lessThan()
     {
@@ -218,9 +224,9 @@ class PicoDataComparation
     }
 
     /**
-     * Gets the greater than operator.
+     * Returns the greater than operator.
      *
-     * @return string
+     * @return string The greater than operator.
      */
     private function _greaterThan()
     {
@@ -228,9 +234,9 @@ class PicoDataComparation
     }
 
     /**
-     * Gets the less than or equals operator.
+     * Returns the less than or equals operator.
      *
-     * @return string
+     * @return string The less than or equals operator.
      */
     private function _lessThanOrEquals()
     {
@@ -238,9 +244,9 @@ class PicoDataComparation
     }
 
     /**
-     * Gets the greater than or equals operator.
+     * Returns the greater than or equals operator.
      *
-     * @return string
+     * @return string The greater than or equals operator.
      */
     private function _greaterThanOrEquals()
     {
@@ -248,9 +254,9 @@ class PicoDataComparation
     }
 
     /**
-     * Gets the comparison operator based on the value and type.
+     * Determines the comparison operator based on the current value and its type.
      *
-     * @return string
+     * @return string The comparison operator corresponding to the current state.
      */
     public function getComparison() // NOSONAR
     {
@@ -278,7 +284,7 @@ class PicoDataComparation
     /**
      * Gets the value being compared.
      *
-     * @return mixed
+     * @return mixed The value that is currently being compared.
      */
     public function getValue()
     {

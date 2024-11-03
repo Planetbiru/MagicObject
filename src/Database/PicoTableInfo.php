@@ -359,8 +359,6 @@ class PicoTableInfo // NOSONAR
         return $this;
     }
 
-    
-
     /**
      * Get the package name or namespace.
      *
