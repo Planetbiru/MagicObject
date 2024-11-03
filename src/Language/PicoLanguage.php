@@ -56,7 +56,7 @@ class PicoLanguage
     public function set($propertyName, $propertyValue)
     {
         $var = PicoStringUtil::camelize($propertyName);
-        $this->$var = $propertyValue;
+        $this->{$var} = $propertyValue;
         return $this;
     }
 
@@ -69,7 +69,7 @@ class PicoLanguage
     public function get($propertyName)
     {
         $var = PicoStringUtil::camelize($propertyName);
-        return isset($this->$var) ? $this->$var : null;
+        return isset($this->{$var}) ? $this->{$var} : null;
     }
 
     /**
@@ -107,7 +107,7 @@ class PicoLanguage
      */
     public function __isset($name)
     {
-        return isset($this->$name);
+        return isset($this->{$name});
     }
 
     /**
@@ -118,7 +118,7 @@ class PicoLanguage
      */
     public function __unset($name)
     {
-        unset($this->$name);
+        unset($this->{$name});
     }
 
     /**
@@ -150,7 +150,7 @@ class PicoLanguage
             return $this->get($var);
         } elseif (strncasecmp($method, "equals", 6) === 0) {
             $var = lcfirst(substr($method, 6));
-            $value = isset($this->$var) ? $this->$var : null;
+            $value = isset($this->{$var}) ? $this->{$var} : null;
             return isset($params[0]) && $params[0] == $value;
         }
     }

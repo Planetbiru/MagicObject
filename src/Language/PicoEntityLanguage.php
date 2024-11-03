@@ -241,7 +241,7 @@ class PicoEntityLanguage
     public function set($propertyName, $propertyValue)
     {
         $var = PicoStringUtil::camelize($propertyName);
-        $this->$var = $propertyValue;
+        $this->{$var} = $propertyValue;
         return $this;
     }
 
@@ -284,7 +284,7 @@ class PicoEntityLanguage
      */
     public function __isset($name)
     {
-        return isset($this->$name);
+        return isset($this->{$name});
     }
 
     /**

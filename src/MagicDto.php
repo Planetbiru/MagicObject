@@ -194,15 +194,15 @@ class MagicDto extends stdClass // NOSONAR
                 $objectTest = $this->createTestObject($var);
 
                 if ($this->isSelfInstance($objectTest)) {
-                    $returnValue->$propertyName = $this->handleSelfInstance($source, $var, $propertyName);
+                    $returnValue->{$propertyName} = $this->handleSelfInstance($source, $var, $propertyName);
                 } elseif ($this->isMagicObjectInstance($objectTest)) {
-                    $returnValue->$propertyName = $this->handleMagicObject($source, $propertyName);
+                    $returnValue->{$propertyName} = $this->handleMagicObject($source, $propertyName);
                 } elseif ($this->isDateTimeInstance($objectTest)) {
-                    $returnValue->$propertyName = $this->formatDateTime($this->handleDateTimeObject($source, $propertyName), $this, $key);
+                    $returnValue->{$propertyName} = $this->formatDateTime($this->handleDateTimeObject($source, $propertyName), $this, $key);
                 } else if($this->_dataSource instanceof stdClass || is_object($this->_dataSource)) {
-                    $returnValue->$propertyName = $this->handleStdClass($source, $key);
+                    $returnValue->{$propertyName} = $this->handleStdClass($source, $key);
                 } else if(isset($this->_dataSource)) {
-                    $returnValue->$propertyName = $this->handleDefaultCase($source, $key);
+                    $returnValue->{$propertyName} = $this->handleDefaultCase($source, $key);
                 }
             }
         }

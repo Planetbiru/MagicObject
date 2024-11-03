@@ -248,11 +248,11 @@ class SecretObject extends stdClass //NOSONAR
     {
         if (strncasecmp($method, "isset", 5) === 0) {
             $var = lcfirst(substr($method, 5));
-            return isset($this->$var);
+            return isset($this->{$var});
         }
         else if (strncasecmp($method, "is", 2) === 0) {
             $var = lcfirst(substr($method, 2));
-            return isset($this->$var) ? $this->$var == 1 : false;
+            return isset($this->{$var}) ? $this->{$var} == 1 : false;
         } else if (strncasecmp($method, "get", 3) === 0) {
             $var = lcfirst(substr($method, 3));
             return $this->_get($var);
@@ -271,21 +271,21 @@ class SecretObject extends stdClass //NOSONAR
         }
         else if (strncasecmp($method, "push", 4) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
             $var = lcfirst(substr($method, 4));
-            if(!isset($this->$var))
+            if(!isset($this->{$var}))
             {
-                $this->$var = array();
+                $this->{$var} = array();
             }
-            if(is_array($this->$var))
+            if(is_array($this->{$var}))
             {
-                array_push($this->$var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+                array_push($this->{$var}, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
             }
             return $this;
         }
         else if (strncasecmp($method, "pop", 3) === 0) {
             $var = lcfirst(substr($method, 3));
-            if(isset($this->$var) && is_array($this->$var))
+            if(isset($this->{$var}) && is_array($this->{$var}))
             {
-                return array_pop($this->$var);
+                return array_pop($this->{$var});
             }
             return null;
         }
@@ -311,7 +311,7 @@ class SecretObject extends stdClass //NOSONAR
         {
             $value = $this->decryptValue($value, $this->secureKey());
         }
-        $this->$var = $value;
+        $this->{$var} = $value;
         return $this;
     }
 
@@ -348,7 +348,7 @@ class SecretObject extends stdClass //NOSONAR
      */
     private function _getValue($var)
     {
-        return isset($this->$var) ? $this->$var : null;
+        return isset($this->{$var}) ? $this->{$var} : null;
     }
 
     /**
@@ -409,7 +409,7 @@ class SecretObject extends stdClass //NOSONAR
         {
             foreach($data as $key=>$value)
             {
-                $data->$key = $this->encryptValue($value, $hexKey);
+                $data->{$key} = $this->encryptValue($value, $hexKey);
             }
         }
         else if(is_array($data))
@@ -478,7 +478,7 @@ class SecretObject extends stdClass //NOSONAR
         {
             foreach($data as $key=>$value)
             {
-                $data->$key = $this->decryptValue($value, $hexKey);
+                $data->{$key} = $this->decryptValue($value, $hexKey);
             }
         }
         else if(is_array($data))
@@ -829,11 +829,11 @@ class SecretObject extends stdClass //NOSONAR
     public function push($propertyName, $propertyValue)
     {
         $var = PicoStringUtil::camelize($propertyName);
-        if(!isset($this->$var))
+        if(!isset($this->{$var}))
         {
-            $this->$var = array();
+            $this->{$var} = array();
         }
-        array_push($this->$var, $propertyValue);
+        array_push($this->{$var}, $propertyValue);
         return $this;
     }
 
@@ -846,9 +846,9 @@ class SecretObject extends stdClass //NOSONAR
     public function pop($propertyName)
     {
         $var = PicoStringUtil::camelize($propertyName);
-        if(isset($this->$var) && is_array($this->$var))
+        if(isset($this->{$var}) && is_array($this->{$var}))
         {
-            return array_pop($this->$var);
+            return array_pop($this->{$var});
         }
         return null;
     }
@@ -874,7 +874,7 @@ class SecretObject extends stdClass //NOSONAR
     public function getOrDefault($propertyName, $defaultValue = null)
     {
         $var = PicoStringUtil::camelize($propertyName);
-        return isset($this->$var) ? $this->$var : $defaultValue;
+        return isset($this->{$var}) ? $this->{$var} : $defaultValue;
     }
 
     /**
@@ -936,7 +936,7 @@ class SecretObject extends stdClass //NOSONAR
             if(!in_array($key, $parentProps))
             {
                 // get decripted or encrypted value
-                $value->$key = $this->_get($key);
+                $value->{$key} = $this->_get($key);
             }
         }
         if($snakeCase)
@@ -945,7 +945,7 @@ class SecretObject extends stdClass //NOSONAR
             foreach ($value as $key => $val) {
                 $key2 = PicoStringUtil::snakeize($key);
                 // get decripted or encrypted value
-                $value2->$key2 = PicoStringUtil::snakeizeObject($val);
+                $value2->{$key2} = PicoStringUtil::snakeizeObject($val);
             }
             return $value2;
         }
