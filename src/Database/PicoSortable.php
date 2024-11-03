@@ -223,9 +223,12 @@ class PicoSortable
     }
 
     /**
-     * Convert the object to a string representation for debugging purposes.
+     * Convert the object to a JSON string representation for debugging.
      *
-     * @return string The string representation of the sortable criteria.
+     * This method is intended for debugging purposes only and provides 
+     * a JSON representation of the object's state.
+     *
+     * @return string The JSON representation of the object.
      */
     public function __toString()
     {

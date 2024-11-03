@@ -133,12 +133,12 @@ class PicoLimit
     }
 
     /**
-     * Return a string representation of the object in JSON format.
+     * Convert the object to a JSON string representation for debugging.
      *
-     * This method provides a convenient way to view the current limit 
-     * and offset settings as a JSON string.
+     * This method is intended for debugging purposes only and provides 
+     * a JSON representation of the object's state.
      *
-     * @return string
+     * @return string The JSON representation of the object.
      */
     public function __toString()
     {

@@ -191,9 +191,12 @@ class PicoPageable
     }
 
     /**
-     * Magic method to return a string representation of the object for debugging.
+     * Convert the object to a JSON string representation for debugging.
      *
-     * @return string JSON representation of the pageable state.
+     * This method is intended for debugging purposes only and provides 
+     * a JSON representation of the object's state.
+     *
+     * @return string The JSON representation of the object.
      */
     public function __toString()
     {

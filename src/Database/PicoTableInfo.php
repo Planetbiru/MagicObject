@@ -141,6 +141,8 @@ class PicoTableInfo // NOSONAR
         $stdClass->autoIncrementKeys = $this->autoIncrementKeys;
         $stdClass->defaultValue = $this->defaultValue;
         $stdClass->notNullColumns = $this->notNullColumns;
+        $stdClass->this->noCache = $this->noCache;
+        $stdClass->package = $this->package;
         return json_encode($stdClass);
     }
 

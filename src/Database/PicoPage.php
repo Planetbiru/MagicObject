@@ -124,9 +124,12 @@ class PicoPage
     }
 
     /**
-     * Returns a string representation of the object.
+     * Convert the object to a JSON string representation for debugging.
      *
-     * @return string JSON encoded representation of the current page and size.
+     * This method is intended for debugging purposes only and provides 
+     * a JSON representation of the object's state.
+     *
+     * @return string The JSON representation of the object.
      */
     public function __toString()
     {
