@@ -62,7 +62,7 @@ class PicoDataComparation
      * Creates a comparison for equality.
      *
      * @param mixed $value The value to compare.
-     * @return self The PicoDataComparation object.
+     * @return self Returns the current instance for method chaining.
      */
     public static function equals($value)
     {
@@ -73,7 +73,7 @@ class PicoDataComparation
      * Creates a comparison for inequality.
      *
      * @param mixed $value The value to compare.
-     * @return self The PicoDataComparation object.
+     * @return self Returns the current instance for method chaining.
      */
     public static function notEquals($value)
     {
@@ -84,7 +84,7 @@ class PicoDataComparation
      * Creates a comparison for inclusion in a set.
      *
      * @param mixed[] $values The values to compare against.
-     * @return self The PicoDataComparation object.
+     * @return self Returns the current instance for method chaining.
      */
     public static function in($values)
     {
@@ -95,7 +95,7 @@ class PicoDataComparation
      * Creates a comparison for exclusion from a set.
      *
      * @param mixed[] $values The values to compare against.
-     * @return self The PicoDataComparation object.
+     * @return self Returns the current instance for method chaining.
      */
     public static function notIn($values)
     {
@@ -106,7 +106,7 @@ class PicoDataComparation
      * Creates a comparison using the LIKE operator.
      *
      * @param mixed $value The value to compare.
-     * @return self The PicoDataComparation object.
+     * @return self Returns the current instance for method chaining.
      */
     public static function like($value)
     {
@@ -117,7 +117,7 @@ class PicoDataComparation
      * Creates a comparison using the NOT LIKE operator.
      *
      * @param mixed $value The value to compare.
-     * @return self The PicoDataComparation object.
+     * @return self Returns the current instance for method chaining.
      */
     public static function notLike($value)
     {
@@ -128,7 +128,7 @@ class PicoDataComparation
      * Creates a comparison for less than.
      *
      * @param mixed $value The value to compare.
-     * @return self The PicoDataComparation object.
+     * @return self Returns the current instance for method chaining.
      */
     public static function lessThan($value)
     {
@@ -139,7 +139,7 @@ class PicoDataComparation
      * Creates a comparison for greater than.
      *
      * @param mixed $value The value to compare.
-     * @return self The PicoDataComparation object.
+     * @return self Returns the current instance for method chaining.
      */
     public static function greaterThan($value)
     {
@@ -150,7 +150,7 @@ class PicoDataComparation
      * Creates a comparison for less than or equal to.
      *
      * @param mixed $value The value to compare.
-     * @return self The PicoDataComparation object.
+     * @return self Returns the current instance for method chaining.
      */
     public static function lessThanOrEquals($value)
     {
@@ -161,7 +161,7 @@ class PicoDataComparation
      * Creates a comparison for greater than or equal to.
      *
      * @param mixed $value The value to compare.
-     * @return self The PicoDataComparation object.
+     * @return self Returns the current instance for method chaining.
      */
     public static function greaterThanOrEquals($value)
     {
@@ -188,9 +188,12 @@ class PicoDataComparation
     }
 
     /**
-     * Gets the appropriate equals operator based on value.
+     * Returns the appropriate equals operator based on the value's state.
      *
-     * @return string
+     * If the value is null or of type null, returns the IS operator; 
+     * otherwise, returns the standard equals operator.
+     *
+     * @return string The equals operator.
      */
     private function _equals()
     {
@@ -198,9 +201,12 @@ class PicoDataComparation
     }
 
     /**
-     * Gets the appropriate not equals operator based on value.
+     * Returns the appropriate not equals operator based on the value's state.
      *
-     * @return string
+     * If the value is null or of type null, returns the IS NOT operator; 
+     * otherwise, returns the standard not equals operator.
+     *
+     * @return string The not equals operator.
      */
     private function _notEquals()
     {
@@ -208,9 +214,9 @@ class PicoDataComparation
     }
 
     /**
-     * Gets the less than operator.
+     * Returns the less than operator.
      *
-     * @return string
+     * @return string The less than operator.
      */
     private function _lessThan()
     {
@@ -218,9 +224,9 @@ class PicoDataComparation
     }
 
     /**
-     * Gets the greater than operator.
+     * Returns the greater than operator.
      *
-     * @return string
+     * @return string The greater than operator.
      */
     private function _greaterThan()
     {
@@ -228,9 +234,9 @@ class PicoDataComparation
     }
 
     /**
-     * Gets the less than or equals operator.
+     * Returns the less than or equals operator.
      *
-     * @return string
+     * @return string The less than or equals operator.
      */
     private function _lessThanOrEquals()
     {
@@ -238,9 +244,9 @@ class PicoDataComparation
     }
 
     /**
-     * Gets the greater than or equals operator.
+     * Returns the greater than or equals operator.
      *
-     * @return string
+     * @return string The greater than or equals operator.
      */
     private function _greaterThanOrEquals()
     {
@@ -248,9 +254,9 @@ class PicoDataComparation
     }
 
     /**
-     * Gets the comparison operator based on the value and type.
+     * Determines the comparison operator based on the current value and its type.
      *
-     * @return string
+     * @return string The comparison operator corresponding to the current state.
      */
     public function getComparison() // NOSONAR
     {
@@ -278,7 +284,7 @@ class PicoDataComparation
     /**
      * Gets the value being compared.
      *
-     * @return mixed
+     * @return mixed The value that is currently being compared.
      */
     public function getValue()
     {

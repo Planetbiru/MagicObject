@@ -31,8 +31,10 @@ class PicoPage
     /**
      * Constructor.
      *
-     * @param int $pageNumber Page number.
-     * @param int $pageSize Page size.
+     * Initializes the page number and page size.
+     *
+     * @param int $pageNumber Page number (default is 1).
+     * @param int $pageSize Page size (default is 1).
      */
     public function __construct($pageNumber = 1, $pageSize = 1)
     {
@@ -65,9 +67,9 @@ class PicoPage
     }
 
     /**
-     * Get the current page number.
+     * Retrieves the current page number.
      *
-     * @return int
+     * @return int The current page number.
      */
     public function getPageNumber()
     {
@@ -87,9 +89,9 @@ class PicoPage
     }
 
     /**
-     * Get the page size (number of items per page).
+     * Retrieves the page size (number of items per page).
      *
-     * @return int
+     * @return int The page size.
      */
     public function getPageSize()
     {
@@ -109,9 +111,9 @@ class PicoPage
     }
 
     /**
-     * Get the limit and offset for database queries.
+     * Calculates the limit and offset for database queries.
      *
-     * @return PicoLimit
+     * @return PicoLimit An instance of PicoLimit with the calculated offset and limit.
      */
     public function getLimit()
     {
@@ -122,9 +124,12 @@ class PicoPage
     }
 
     /**
-     * Magic method to return a string representation of the object.
+     * Convert the object to a JSON string representation for debugging.
      *
-     * @return string
+     * This method is intended for debugging purposes only and provides 
+     * a JSON representation of the object's state.
+     *
+     * @return string The JSON representation of the object.
      */
     public function __toString()
     {

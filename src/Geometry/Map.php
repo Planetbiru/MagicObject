@@ -39,7 +39,7 @@ class Map
      * This method appends a new Area object to the map's collection of areas.
      *
      * @param Area $area Area to add
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function addArea($area)
     {

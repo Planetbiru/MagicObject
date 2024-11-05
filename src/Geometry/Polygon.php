@@ -37,7 +37,7 @@ class Polygon
      * Add a point to the polygon.
      *
      * @param Point $point Point to add.
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function addPoint($point)
     {
@@ -50,7 +50,7 @@ class Polygon
      *
      * This method removes all points currently defined for the polygon.
      *
-     * @return self
+     * @return self Returns the current instance for method chaining.
      */
     public function clearPolygon()
     {
