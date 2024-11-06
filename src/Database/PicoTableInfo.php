@@ -378,7 +378,7 @@ class PicoTableInfo // NOSONAR
      *
      * @return  self
      */ 
-    public function setPackage(string $package)
+    public function setPackage($package)
     {
         $this->package = $package;
 
