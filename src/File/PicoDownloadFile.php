@@ -5,121 +5,153 @@ namespace MagicObject\File;
 /**
  * Class PicoDownloadFile
  *
- * This class facilitates downloading a file, supporting partial content requests (range requests),
- * which allows the file to be transferred in chunks. This is particularly useful for large files
- * where downloading the entire file in one go might be inefficient or unfeasible. The class also
- * ensures that the requested file exists and handles various errors such as missing files and invalid
- * range requests gracefully.
+ * Facilitates downloading a file, with support for partial content (range requests). 
+ * This class ensures that requested files exist, handles errors, and supports downloading large files
+ * efficiently by sending them in chunks. 
  *
- * **Key Features**:
- * - Supports downloading the full file or a partial file range (e.g., for resuming interrupted downloads).
- * - Sends proper HTTP headers for file transfer and range requests.
- * - Handles errors such as non-existent files or invalid range requests (HTTP 404 and 416).
- *
- * **Usage**:
- * - Instantiate the class with the file path and an optional filename parameter.
- * - Call the `download()` method to trigger the file download.
- * 
- * Example:
- * ```php
- * $file = new PicoDownloadFile('/path/to/file.zip');
- * $file->download();
- * ```
- * 
  * @package MagicObject\File
- * @author Kamshory
- * @link https://github.com/Planetbiru/MagicApp
  */
 class PicoDownloadFile
 {
     /**
-     * The path to the file being downloaded.
-     *
-     * @var string
+     * @var string The path to the file being downloaded.
      */
     private $filepath;
 
     /**
-     * The name of the file to be sent to the client. If not provided, the filename will be
-     * inferred from the file's path.
-     *
-     * @var string
+     * @var string The filename to be used in the download response.
      */
     private $filename;
 
     /**
      * PicoDownloadFile constructor.
      *
-     * Initializes the class with the file path to be downloaded and an optional filename.
-     * If no filename is provided, the class will use the base name of the file path.
-     *
-     * @param string $filepath The full path to the file to be downloaded.
-     * @param string|null $filename The name of the file to be sent in the download response (optional).
+     * @param string $filepath The full path to the file.
+     * @param string|null $filename The name of the file for download (optional).
      */
     public function __construct($filepath, $filename = null)
     {
         $this->filepath = $filepath;
-        // If no filename is provided, use the basename of the file path
-        if (!isset($filename)) {
-            $filename = basename($filepath);
-        }
-        $this->filename = $filename;
+        $this->filename = $filename ?: basename($filepath); // Use basename if no filename provided
     }
 
     /**
-     * Initiates the download of the file.
+     * Initiates the download of the file with support for partial content (range requests).
      *
-     * This method sends the appropriate HTTP headers to facilitate the download of a file, 
-     * including support for partial content (range requests). The method handles:
-     * - Verifying the file's existence.
-     * - Parsing and handling byte range requests (for resuming downloads).
-     * - Sending appropriate HTTP headers for file transfer.
-     * - Streaming the file to the client in chunks (if applicable).
-     * 
-     * If the file doesn't exist, a 404 error is sent. If the range is invalid, a 416 error is sent.
-     * If the file exists and everything is valid, the file will be served to the client.
+     * Handles the following:
+     * - Verifies the file exists at the specified path.
+     * - Supports byte range requests for resuming downloads.
+     * - Sends appropriate HTTP headers for file transfer.
+     * - Streams the file to the client in chunks (8 KB by default).
      *
-     * **Process**:
-     * - Verifies that the file exists at the provided path.
-     * - Parses the range header (if any) and determines the appropriate byte range.
-     * - Sends headers for partial or full content transfer.
-     * - Streams the file in chunks to the client.
+     * @param bool $exit Whether to terminate the script after sending the file. Default is `false`.
      * 
-     * @return void
+     * @return bool Returns `true` if the entire file was successfully sent, `false` if only part of the file was sent.
      */
-    public function download()
+    public function download($exit = false) //NOSONAR
     {
-        // Ensure the file exists
-        if (!file_exists($this->filepath)) {
-            header("HTTP/1.1 404 Not Found");
-            echo "File not found.";
+        if (!$this->fileExists()) {
+            $this->sendError(404, "File not found.");
+            return false;
+        }
+
+        $fileSize = filesize($this->filepath);
+        list($start, $end) = $this->getRange($fileSize);
+
+        if ($this->isInvalidRange($start, $end, $fileSize)) {
+            $this->sendError(416, "Range Not Satisfiable", $fileSize);
+            return false;
+        }
+
+        $this->sendHeaders($start, $end, $fileSize);
+
+        $fp = fopen($this->filepath, 'rb');
+        if ($fp === false) {
+            $this->sendError(500, "Failed to open file.");
+            return false;
+        }
+
+        
+        $this->streamFile($fp, $start, $end);
+
+        fclose($fp);
+
+        if ($exit) {
             exit;
         }
 
-        // Get the file size
-        $fileSize = filesize($this->filepath);
+        return $end === ($fileSize - 1); // Return true if the whole file was sent
+    }
 
-        // Handle range requests if provided by the client
+    /**
+     * Checks if the file exists.
+     *
+     * @return bool True if the file exists, false otherwise.
+     */
+    private function fileExists()
+    {
+        return file_exists($this->filepath);
+    }
+
+    /**
+     * Sends an error response with the given status code and message.
+     *
+     * @param int $statusCode The HTTP status code.
+     * @param string $message The error message.
+     * @param int|null $fileSize The file size to include in the Content-Range header (optional).
+     */
+    private function sendError($statusCode, $message, $fileSize = null)
+    {
+        header("HTTP/1.1 $statusCode $message");
+        if ($fileSize !== null) {
+            header("Content-Range: bytes 0-0/$fileSize");
+        }
+        echo $message;
+    }
+
+    /**
+     * Determines the byte range from the HTTP_RANGE header.
+     *
+     * @param int $fileSize The size of the file.
+     * @return array The start and end byte positions for the range.
+     */
+    private function getRange($fileSize)
+    {
         if (isset($_SERVER['HTTP_RANGE'])) {
-            // Format Range: bytes=start-end
             list($range, $extra) = explode(',', $_SERVER['HTTP_RANGE'], 2); //NOSONAR
             list($start, $end) = explode('-', $range);
-            $start = (int) $start;
-            $end = $end ? (int) $end : $fileSize - 1;
+            $start = max(0, (int)$start);
+            $end = $end ? (int)$end : $fileSize - 1;
         } else {
-            // If no range is provided, send the entire file
             $start = 0;
             $end = $fileSize - 1;
         }
 
-        // Ensure the range is valid
-        if ($start > $end || $start >= $fileSize || $end >= $fileSize) {
-            header("HTTP/1.1 416 Range Not Satisfiable");
-            header("Content-Range: bytes 0-0/$fileSize");
-            exit;
-        }
+        return [$start, $end];
+    }
 
-        // Send response headers for partial content (range requests)
+    /**
+     * Checks if the byte range is valid.
+     *
+     * @param int $start The start byte.
+     * @param int $end The end byte.
+     * @param int $fileSize The total size of the file.
+     * @return bool True if the range is invalid.
+     */
+    private function isInvalidRange($start, $end, $fileSize)
+    {
+        return $start > $end || $start >= $fileSize || $end >= $fileSize;
+    }
+
+    /**
+     * Sends the appropriate HTTP headers for the download.
+     *
+     * @param int $start The start byte.
+     * @param int $end The end byte.
+     * @param int $fileSize The total size of the file.
+     */
+    private function sendHeaders($start, $end, $fileSize)
+    {
         header('HTTP/1.1 206 Partial Content');
         header("Content-Type: application/octet-stream");
         header("Content-Description: File Transfer");
@@ -127,26 +159,22 @@ class PicoDownloadFile
         header("Content-Range: bytes $start-$end/$fileSize");
         header("Content-Length: " . ($end - $start + 1));
         header("Accept-Ranges: bytes");
+    }
 
-        // Open the file for reading
-        $fp = fopen($this->filepath, 'rb');
-        if ($fp === false) {
-            header("HTTP/1.1 500 Internal Server Error");
-            echo "Failed to open file.";
-            exit;
-        }
-
-        // Move the pointer to the start position
-        fseek($fp, $start);
-
-        // Read and send the file in chunks (8 KB buffer size)
+    /**
+     * Streams the file to the client in chunks.
+     *
+     * @param resource $fp The file pointer.
+     * @param int $start The start byte.
+     * @param int $end The end byte.
+     */
+    private function streamFile($fp, $start, $end)
+    {
         $bufferSize = 1024 * 8; // 8 KB buffer size
+        fseek($fp, $start);
         while (!feof($fp) && ftell($fp) <= $end) {
             echo fread($fp, $bufferSize);
             flush();
         }
-
-        fclose($fp);
-        exit;
     }
 }
