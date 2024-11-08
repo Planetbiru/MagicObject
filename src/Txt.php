@@ -35,7 +35,20 @@ class Txt
      *
      * @return self A new instance of the Txt class.
      */
-    public function getInstance()
+    public static function getInstance()
+    {
+        return new self;
+    }
+    
+    /**
+     * Returns a new instance of the Txt class.
+     *
+     * This method allows you to retrieve an instance of the Txt class to perform non-static operations,
+     * such as dynamic property access using the __get() magic method.
+     *
+     * @return self A new instance of the Txt class.
+     */
+    public static function of()
     {
         return new self;
     }
