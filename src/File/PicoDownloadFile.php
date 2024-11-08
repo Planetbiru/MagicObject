@@ -9,7 +9,9 @@ namespace MagicObject\File;
  * This class ensures that requested files exist, handles errors, and supports downloading large files
  * efficiently by sending them in chunks. 
  *
+ * @author Kamshory
  * @package MagicObject\File
+ * @link https://github.com/Planetbiru/MagicObject
  */
 class PicoDownloadFile
 {
@@ -70,7 +72,6 @@ class PicoDownloadFile
             $this->sendError(500, "Failed to open file.");
             return false;
         }
-
         
         $this->streamFile($fp, $start, $end);
 
