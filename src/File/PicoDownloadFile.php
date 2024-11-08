@@ -102,7 +102,7 @@ class PicoDownloadFile
         // Handle range requests if provided by the client
         if (isset($_SERVER['HTTP_RANGE'])) {
             // Format Range: bytes=start-end
-            list($range, $extra) = explode(',', $_SERVER['HTTP_RANGE'], 2);
+            list($range, $extra) = explode(',', $_SERVER['HTTP_RANGE'], 2); //NOSONAR
             list($start, $end) = explode('-', $range);
             $start = (int) $start;
             $end = $end ? (int) $end : $fileSize - 1;
