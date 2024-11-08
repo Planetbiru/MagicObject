@@ -16,7 +16,8 @@ class Txt
      * Handles static calls to undefined methods.
      *
      * This method intercepts calls to static methods that are not explicitly defined in the class 
-     * and returns the name of the method being called.
+     * and returns the name of the method being called. It allows for flexible handling of undefined 
+     * static methods.
      *
      * @param string $name The name of the method being called.
      * @param array $arguments An array of arguments passed to the method.
@@ -30,10 +31,10 @@ class Txt
     /**
      * Returns a new instance of the Txt class.
      *
-     * This method allows you to retrieve an instance of the Txt class to perform non-static operations,
-     * such as dynamic property access using the __get() magic method.
+     * This method allows you to retrieve an instance of the Txt class for non-static operations.
+     * This instance can be used to access dynamic properties via the __get() magic method.
      *
-     * @return self A new instance of the Txt class.
+     * @return Txt A new instance of the Txt class.
      */
     public static function getInstance()
     {
@@ -41,12 +42,12 @@ class Txt
     }
     
     /**
-     * Returns a new instance of the Txt class.
+     * Creates and returns a new instance of the Txt class.
      *
-     * This method allows you to retrieve an instance of the Txt class to perform non-static operations,
-     * such as dynamic property access using the __get() magic method.
+     * Similar to getInstance(), this method allows you to retrieve an instance of the Txt class 
+     * for non-static operations, such as dynamic property access using the __get() magic method.
      *
-     * @return self A new instance of the Txt class.
+     * @return Txt A new instance of the Txt class.
      */
     public static function of()
     {
@@ -62,7 +63,8 @@ class Txt
      * @param string $name The name of the property being accessed.
      * @return string The name of the accessed property.
      */
-    public function __get($name) {
+    public function __get($name)
+    {
         return $name;
     }
 }
