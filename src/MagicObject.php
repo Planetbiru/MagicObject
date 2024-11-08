@@ -173,7 +173,7 @@ class MagicObject extends stdClass // NOSONAR
             }
             $this->loadData($data);
         }
-        if($database != null)
+        if($database != null && $database instanceof PicoDatabase)
         {
             $this->_database = $database;
         }
@@ -485,7 +485,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function currentDatabase($database = null)
     {
-        if($database != null)
+        if($database != null && $database instanceof PicoDatabase)
         {
             $this->withDatabase($database);
         }
