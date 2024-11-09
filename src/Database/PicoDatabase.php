@@ -189,7 +189,7 @@ class PicoDatabase //NOSONAR
                 throw new InvalidDatabaseConfiguration("Database username may not be empty. Please check your database configuration!");
             }
             $initialQueries = "SET time_zone = '$timeZoneOffset';";
-            if ($this->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_POSTGRESQL &&
+            if ($this->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_PGSQL &&
                 $this->databaseCredentials->getDatabaseSchema() != null && 
                 $this->databaseCredentials->getDatabaseSchema() != "") {
                 $initialQueries .= "SET search_path TO " . $this->databaseCredentials->getDatabaseSchema();
@@ -229,7 +229,7 @@ class PicoDatabase //NOSONAR
         }
         else if(stripos($databaseType, 'postgre') !== false || stripos($databaseType, 'pgsql') !== false)
         {
-            return PicoDatabaseType::DATABASE_TYPE_POSTGRESQL;
+            return PicoDatabaseType::DATABASE_TYPE_PGSQL;
         }
         else if(stripos($databaseType, 'maria') !== false)
         {

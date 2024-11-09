@@ -98,7 +98,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
      */
     public function isPgSql()
     {
-        return strcasecmp($this->databaseType, PicoDatabaseType::DATABASE_TYPE_POSTGRESQL) == 0;
+        return strcasecmp($this->databaseType, PicoDatabaseType::DATABASE_TYPE_PGSQL) == 0;
     }
 
 	/**
@@ -638,7 +638,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 			stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_SQLITE) !== false) {
 			return str_replace(["\r", "\n"], ["\\r", "\\n"], addslashes($query));
 		}
-		if (stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_POSTGRESQL) !== false) {
+		if (stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_PGSQL) !== false) {
 			return str_replace(["\r", "\n"], ["\\r", "\\n"], $this->replaceQuote($query));
 		}
 		return $query;
