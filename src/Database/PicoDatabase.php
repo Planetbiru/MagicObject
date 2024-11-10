@@ -117,15 +117,15 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Get PDO connection details, including driver, host, port, database name, and schema.
+     * Get PDO connection details, including driver, host, port, database name, schema, and time zone.
      *
      * This function retrieves information about the PDO connection, such as the database driver, host, port, 
-     * database name, and schema based on the type of database (e.g., MySQL, PostgreSQL, SQLite).
+     * database name, schema, and time zone based on the type of database (e.g., MySQL, PostgreSQL, SQLite).
      *
-     * It uses the PDO connection's attributes and queries the database if necessary to obtain the schema name.
+     * It uses the PDO connection's attributes and queries the database if necessary to obtain the schema name and time zone.
      *
      * @param PDO $pdo The PDO connection object.
-     * @return SecretObject Returns a SecretObject containing the connection details (driver, host, port, database name, schema).
+     * @return SecretObject Returns a SecretObject containing the connection details (driver, host, port, database name, schema, and time zone).
      * 
      * @throws PDOException If there is an error with the PDO query or connection.
      */
@@ -147,22 +147,56 @@ class PicoDatabase //NOSONAR
         // Get the database name from the DSN (usually found at the end of the DSN after host and port)
         $databaseName = isset($dsnParts['path']) ? ltrim($dsnParts['path'], '/') : null;
 
+        // Initialize the schema and time zone
+        $schema = null;
+        $timezone = null;
+
+        // Determine the database type
         $dbType = $this->getDbType($driver);
+        
+        // Retrieve the schema and time zone based on the database type
         if ($dbType == PicoDatabaseType::DATABASE_TYPE_PGSQL) {
-            // For PostgreSQL, fetch the current schema using a query
+            // For PostgreSQL, fetch the current schema and time zone using queries
             $stmt = $pdo->query('SELECT current_schema()');
             $schema = $stmt->fetchColumn(); // Fetch the schema name
+            
+            $stmtTimezone = $pdo->query('SHOW timezone');
+            $timezone = $stmtTimezone->fetchColumn(); // Fetch the time zone
         }
         elseif ($dbType == PicoDatabaseType::DATABASE_TYPE_MYSQL || $dbType == PicoDatabaseType::DATABASE_TYPE_MARIADB) {
             // For MySQL, the schema is the same as the database name
             $schema = $databaseName; // MySQL schema is the database name
+            
+            // Retrieve the global time zone from MySQL
+            $stmtTimezone = $pdo->query('SELECT @@global.time_zone');
+            $timezone = $stmtTimezone->fetchColumn(); // Fetch the global time zone
+
+            // If the time zone is set to 'SYSTEM', retrieve the system's time zone and convert it
+            if ($timezone == 'SYSTEM') {
+                $stmtSystemTimeZone = $pdo->query('SELECT @@system_time_zone');
+                $systemTimeZone = $stmtSystemTimeZone->fetchColumn();
+
+                // Convert MySQL system time zone to PHP-compatible time zone (e.g., 'Asia/Jakarta')
+                // This conversion may require a lookup table, as MySQL system time zones
+                // (e.g., 'CST', 'PST') are not directly equivalent to PHP time zones (e.g., 'Asia/Jakarta').
+                // Here, we will simply return the system time zone as a placeholder:
+                $timezone = $systemTimeZone;
+            }
         }
-        elseif ($dbType ==PicoDatabaseType::DATABASE_TYPE_SQLITE) {
+        elseif ($dbType == PicoDatabaseType::DATABASE_TYPE_SQLITE) {
             // For SQLite, there is no concept of schema, so set it to null
             $schema = null;
+            // SQLite does not have a time zone setting
+            $timezone = null;
         } else {
-            // For other drivers, set schema to null (or handle it as needed)
+            // For other drivers, set schema and time zone to null (or handle it as needed)
             $schema = null;
+            $timezone = null;
+        }
+
+        // If the time zone is provided, convert it to a recognized PHP time zone if necessary
+        if (isset($timezone)) {
+            $timezone = $this->mysqlToPhpTimezone($timezone);
         }
 
         // Create and populate the SecretObject with the connection details
@@ -172,10 +206,90 @@ class PicoDatabase //NOSONAR
         $databaseCredentials->setPort($port);
         $databaseCredentials->setDatabaseName($databaseName);
         $databaseCredentials->setDatabaseSchema($schema);
+        $databaseCredentials->setTimeZone($timezone);
 
         // Return the populated SecretObject containing the connection details
         return $databaseCredentials;
     }
+
+    /**
+     * Map MySQL system time zone or abbreviations like 'WIB' to a valid PHP time zone.
+     *
+     * This function converts time zone abbreviations (like 'WIB', 'WITA', 'WIT') or system time zones
+     * to a recognized PHP time zone format (e.g., 'Asia/Jakarta').
+     *
+     * @param string $timezoneAbbr The time zone abbreviation or system time zone (e.g., 'WIB', 'SYSTEM').
+     * @return string|null Returns a PHP-compatible time zone (e.g., 'Asia/Jakarta') or null if not recognized.
+     */
+    private function mysqlToPhpTimezone($timezoneAbbr)
+    {
+        $timezoneMapping = [
+            // Indonesia
+            'WIB'  => 'Asia/Jakarta',   // Western Indonesia Time (e.g., Jakarta, Bali)
+            'WITA' => 'Asia/Makassar',  // Central Indonesia Time (e.g., Bali, Sulawesi)
+            'WIT'  => 'Asia/Jayapura',  // Eastern Indonesia Time (e.g., Papua)
+
+            // Common USA Time Zones
+            'PST'  => 'America/Los_Angeles', // Pacific Standard Time (Standard Time)
+            'PDT'  => 'America/Los_Angeles', // Pacific Daylight Time (Daylight Saving Time)
+            'MST'  => 'America/Denver',      // Mountain Standard Time
+            'MDT'  => 'America/Denver',      // Mountain Daylight Time
+            'CST'  => 'America/Chicago',     // Central Standard Time
+            'CDT'  => 'America/Chicago',     // Central Daylight Time
+            'EST'  => 'America/New_York',    // Eastern Standard Time
+            'EDT'  => 'America/New_York',    // Eastern Daylight Time
+            'AKST' => 'America/Anchorage',  // Alaska Standard Time
+            'AKDT' => 'America/Anchorage',  // Alaska Daylight Time
+            'HST'  => 'Pacific/Honolulu',   // Hawaii Standard Time
+
+            // United Kingdom
+            'GMT'  => 'Europe/London',      // Greenwich Mean Time (Standard Time)
+            'BST'  => 'Europe/London',      // British Summer Time (Daylight Saving Time)
+
+            // Central Europe
+            'CET'  => 'Europe/Paris',       // Central European Time
+            'CEST' => 'Europe/Paris',       // Central European Summer Time (Daylight Saving Time)
+
+            // Central Asia and Russia
+            'MSK'  => 'Europe/Moscow',      // Moscow Standard Time
+            'MSD'  => 'Europe/Moscow',      // Moscow Daylight Time (not used anymore)
+
+            // Australia
+            'AEST' => 'Australia/Sydney',   // Australian Eastern Standard Time
+            'AEDT' => 'Australia/Sydney',   // Australian Eastern Daylight Time
+            'ACST' => 'Australia/Adelaide', // Australian Central Standard Time
+            'ACDT' => 'Australia/Adelaide', // Australian Central Daylight Time
+            'AWST' => 'Australia/Perth',    // Australian Western Standard Time
+
+            // Africa
+            'CAT'  => 'Africa/Harare',      // Central Africa Time
+            'EAT'  => 'Africa/Nairobi',     // East Africa Time
+            'WAT'  => 'Africa/Algiers',     // West Africa Time
+
+            // India
+            'IST'  => 'Asia/Kolkata',       // Indian Standard Time
+
+            // China and East Asia
+            'CST'  => 'Asia/Shanghai',      // China Standard Time
+            'JST'  => 'Asia/Tokyo',         // Japan Standard Time
+            'KST'  => 'Asia/Seoul',         // Korea Standard Time
+
+            // Other time zones
+            'UTC'  => 'UTC',                // Coordinated Universal Time
+            'Z'    => 'UTC',                // Zulu time (same as UTC)
+            'ART'  => 'Africa/Argentina',   // Argentina Time
+            'NFT'  => 'Pacific/Norfolk',    // Norfolk Time Zone (Australia)
+
+            // Time zones used in specific areas
+            'NST'  => 'Asia/Kolkata',       // Newfoundland Standard Time (if used as an abbreviation)
+        ];
+
+        // Return the mapped PHP time zone or null if not found
+        return isset($timezoneMapping[$timezoneAbbr]) ? $timezoneMapping[$timezoneAbbr] : null;
+    }
+
+
+
 
     /**
      * Constructor to initialize the PicoDatabase object.
