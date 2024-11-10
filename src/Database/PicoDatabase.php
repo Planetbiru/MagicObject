@@ -183,12 +183,7 @@ class PicoDatabase //NOSONAR
                 $timezone = $systemTimeZone;
             }
         }
-        elseif ($dbType == PicoDatabaseType::DATABASE_TYPE_SQLITE) {
-            // For SQLite, there is no concept of schema, so set it to null
-            $schema = null;
-            // SQLite does not have a time zone setting
-            $timezone = null;
-        } else {
+        else {
             // For other drivers, set schema and time zone to null (or handle it as needed)
             $schema = null;
             $timezone = null;
