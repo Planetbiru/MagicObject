@@ -2,7 +2,6 @@
 
 namespace MagicObject\Util\Database;
 
-use ErrorException;
 use Exception;
 use MagicObject\Database\PicoDatabase;
 use MagicObject\Database\PicoDatabaseQueryBuilder;
