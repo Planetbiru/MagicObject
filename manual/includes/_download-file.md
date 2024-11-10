@@ -20,7 +20,11 @@ The class supports the following:
 This class is ideal for scenarios where large files need to be served to clients and you want to offer functionality like resuming interrupted downloads.
 
 
-### Constructor: `__construct($filepath, $filename = null)`
+### Constructor
+
+```php
+__construct($filepath, $filename = null)
+```
 
 **Parameters**:
 
@@ -35,7 +39,11 @@ This class is ideal for scenarios where large files need to be served to clients
 $file = new PicoDownloadFile("/path/to/large-file.zip", "downloaded-file.zip");
 ```
 
-### Method: `download($exit = false)`
+### Method
+
+```php
+download($exit = false)
+```
 
 **Parameters**:
 

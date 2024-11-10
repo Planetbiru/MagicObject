@@ -10676,7 +10676,8 @@ else
 <li>Returning relevant HTTP status codes and error messages.</li>
 </ul>
 <p>This class is ideal for scenarios where large files need to be served to clients and you want to offer functionality like resuming interrupted downloads.</p>
-<h3>Constructor: <code>__construct($filepath, $filename = null)</code></h3>
+<h3>Constructor</h3>
+<pre><code class="language-php">__construct($filepath, $filename = null)</code></pre>
 <p><strong>Parameters</strong>:</p>
 <ul>
 <li><code>$filepath</code> (string): The full path to the file that should be downloaded.</li>
@@ -10685,7 +10686,8 @@ else
 <p><strong>Description</strong>: Initializes the <code>PicoDownloadFile</code> object with the path of the file to be downloaded and an optional filename for the download response. If the filename is not specified, the base name of the file is used.</p>
 <p><strong>Example</strong>:</p>
 <pre><code class="language-php">$file = new PicoDownloadFile("/path/to/large-file.zip", "downloaded-file.zip");</code></pre>
-<h3>Method: <code>download($exit = false)</code></h3>
+<h3>Method</h3>
+<pre><code class="language-php">download($exit = false)</code></pre>
 <p><strong>Parameters</strong>:</p>
 <ul>
 <li><code>$exit</code> (bool, optional): Whether to terminate the script after sending the file. Default is <code>false</code>.</li>
