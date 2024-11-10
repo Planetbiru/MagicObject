@@ -69,7 +69,7 @@ If `$exit` is set to `true`, the script will terminate after the file is sent.
 require 'vendor/autoload.php'; // Include the PicoDownloadFile class
 $path = "/path/to/large-file.zip";
 $localName = "downloaded-file.zip";
-$file = new MagicObject\File\PicoDownloadFile($path, $localName);
+$file = new PicoDownloadFile($path, $localName);
 $file->download(true); // Initiate download and terminate the script after sending
 ```
 
@@ -80,7 +80,7 @@ $file->download(true); // Initiate download and terminate the script after sendi
 require 'vendor/autoload.php'; // Include the PicoDownloadFile class
 $path = "/path/to/large-file.zip";
 $localName = "downloaded-file.zip";
-$file = new MagicObject\File\PicoDownloadFile($path, $localName);
+$file = new PicoDownloadFile($path, $localName);
 $finished = $file->download(false); // Initiate download without terminate the script after sending
 if($finished && file_exists($path))
 {

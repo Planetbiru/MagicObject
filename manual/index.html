@@ -10709,14 +10709,14 @@ else
 require 'vendor/autoload.php'; // Include the PicoDownloadFile class
 $path = "/path/to/large-file.zip";
 $localName = "downloaded-file.zip";
-$file = new MagicObject\File\PicoDownloadFile($path, $localName);
+$file = new PicoDownloadFile($path, $localName);
 $file-&gt;download(true); // Initiate download and terminate the script after sending</code></pre>
 <p><strong>Example 2</strong></p>
 <pre><code class="language-php">&lt;?php
 require 'vendor/autoload.php'; // Include the PicoDownloadFile class
 $path = "/path/to/large-file.zip";
 $localName = "downloaded-file.zip";
-$file = new MagicObject\File\PicoDownloadFile($path, $localName);
+$file = new PicoDownloadFile($path, $localName);
 $finished = $file-&gt;download(false); // Initiate download without terminate the script after sending
 if($finished &amp;&amp; file_exists($path))
 {
