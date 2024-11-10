@@ -11,7 +11,7 @@ In this example, we will illustrate how to manage entities stored in different d
 
 ### Entity Definitions
 
-Here are the definitions for the Album, Artist, and Song classes:
+Here are the definitions for the `Album`, `Artist`, `Producer`, and `Song` classes:
 
 **Album Class**
 
@@ -150,7 +150,7 @@ $artist = new Artist(null, $database2);
 
 ### Setting Database Entities
 
-You can set the database entities for Album and Artist associated with a Song instance in several ways:
+You can set the database entities for `Album`, `Producer` and `Artist` associated with a `Song` instance in several ways:
 
 **Method 1: Chaining Method Calls**
 
