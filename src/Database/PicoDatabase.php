@@ -112,7 +112,69 @@ class PicoDatabase //NOSONAR
         $database->databaseConnection = $pdo;
         $database->databaseType = $database->getDbType($pdo->getAttribute(PDO::ATTR_DRIVER_NAME));
         $database->connected = true;
+        $database->databaseCredentials = $database->getDatabaseCredentialsFromPdo($pdo);
         return $database;
+    }
+
+    /**
+     * Get PDO connection details, including driver, host, port, database name, and schema.
+     *
+     * This function retrieves information about the PDO connection, such as the database driver, host, port, 
+     * database name, and schema based on the type of database (e.g., MySQL, PostgreSQL, SQLite).
+     *
+     * It uses the PDO connection's attributes and queries the database if necessary to obtain the schema name.
+     *
+     * @param PDO $pdo The PDO connection object.
+     * @return SecretObject Returns a SecretObject containing the connection details (driver, host, port, database name, schema).
+     * 
+     * @throws PDOException If there is an error with the PDO query or connection.
+     */
+    private function getDatabaseCredentialsFromPdo($pdo)
+    {
+        // Get the driver name (e.g., mysql, pgsql, sqlite)
+        $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+
+        // Get the connection status, which includes the DSN (Data Source Name)
+        $dsn = $pdo->getAttribute(PDO::ATTR_CONNECTION_STATUS);
+        $dsnParts = parse_url($dsn);
+
+        // Extract the host from the DSN (if available)
+        $host = isset($dsnParts['host']) ? $dsnParts['host'] : null;
+
+        // Extract the port from the DSN (if available)
+        $port = isset($dsnParts['port']) ? $dsnParts['port'] : null;
+
+        // Get the database name from the DSN (usually found at the end of the DSN after host and port)
+        $databaseName = isset($dsnParts['path']) ? ltrim($dsnParts['path'], '/') : null;
+
+        $dbType = $this->getDbType($driver);
+        if ($dbType == PicoDatabaseType::DATABASE_TYPE_PGSQL) {
+            // For PostgreSQL, fetch the current schema using a query
+            $stmt = $pdo->query('SELECT current_schema()');
+            $schema = $stmt->fetchColumn(); // Fetch the schema name
+        }
+        elseif ($dbType == PicoDatabaseType::DATABASE_TYPE_MYSQL || $dbType == PicoDatabaseType::DATABASE_TYPE_MARIADB) {
+            // For MySQL, the schema is the same as the database name
+            $schema = $databaseName; // MySQL schema is the database name
+        }
+        elseif ($dbType ==PicoDatabaseType::DATABASE_TYPE_SQLITE) {
+            // For SQLite, there is no concept of schema, so set it to null
+            $schema = null;
+        } else {
+            // For other drivers, set schema to null (or handle it as needed)
+            $schema = null;
+        }
+
+        // Create and populate the SecretObject with the connection details
+        $databaseCredentials = new SecretObject();
+        $databaseCredentials->setDriver($driver);
+        $databaseCredentials->setHost($host);
+        $databaseCredentials->setPort($port);
+        $databaseCredentials->setDatabaseName($databaseName);
+        $databaseCredentials->setDatabaseSchema($schema);
+
+        // Return the populated SecretObject containing the connection details
+        return $databaseCredentials;
     }
 
     /**
@@ -236,11 +298,18 @@ class PicoDatabase //NOSONAR
     /**
      * Determine the database type based on the provided database type string.
      *
-     * This method checks the input string for common database type identifiers (SQLite, PostgreSQL, 
-     * MariaDB, MySQL) and returns the corresponding constant from the PicoDatabaseType class.
+     * This method evaluates the given string to identify common database type names
+     * (e.g., SQLite, PostgreSQL, MariaDB, MySQL) and returns the corresponding 
+     * constant from the `PicoDatabaseType` class that represents the type of database.
+     * The function performs case-insensitive string matching using `stripos` to check for
+     * keywords like "sqlite", "postgre", "pgsql", "maria", and defaults to MySQL if no match is found.
      *
-     * @param string $databaseType The database type string to evaluate.
-     * @return string The corresponding database type constant from PicoDatabaseType.
+     * @param string $databaseType The database type string to evaluate, such as 'SQLite', 'PostgreSQL', 'MariaDB', or 'MySQL'.
+     * @return string The corresponding database type constant from `PicoDatabaseType`:
+     *                - `PicoDatabaseType::DATABASE_TYPE_SQLITE`
+     *                - `PicoDatabaseType::DATABASE_TYPE_PGSQL`
+     *                - `PicoDatabaseType::DATABASE_TYPE_MARIADB`
+     *                - `PicoDatabaseType::DATABASE_TYPE_MYSQL`
      */
     private function getDbType($databaseType) // NOSONAR
     {
@@ -298,6 +367,8 @@ class PicoDatabase //NOSONAR
     /**
      * Disconnect from the database.
      *
+     * This method sets the database connection to `null`, effectively closing the connection to the database.
+     *
      * @return self Returns the current instance for method chaining.
      */
     public function disconnect()
@@ -307,9 +378,11 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Set the time zone offset.
+     * Set the time zone offset for the database session.
      *
-     * @param string $timeZoneOffset Client time zone.
+     * This method sets the time zone offset for the current session, which can be useful for time-related operations.
+     *
+     * @param string $timeZoneOffset The time zone offset to set for the session (e.g., '+00:00', 'Europe/London').
      * @return self Returns the current instance for method chaining.
      */
     public function setTimeZoneOffset($timeZoneOffset)
@@ -320,9 +393,11 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Change the database.
+     * Switch to a different database.
      *
-     * @param string $databaseName Database name.
+     * This method changes the currently active database to the specified one.
+     *
+     * @param string $databaseName The name of the database to switch to.
      * @return self Returns the current instance for method chaining.
      */
     public function useDatabase($databaseName)
@@ -333,10 +408,13 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Set autocommit ON or OFF.
+     * Set autocommit mode for transactions.
      *
-     * @param bool $autocommit Flag autocommit.
-     * @return bool True if autocommit is set successfully, false otherwise.
+     * This method enables or disables autocommit mode for database transactions. When autocommit is off,
+     * you must explicitly call `commit()` or `rollback()` to finalize or revert the transaction.
+     *
+     * @param bool $autocommit Flag indicating whether autocommit should be enabled (`true`) or disabled (`false`).
+     * @return bool Returns `true` if the autocommit setting was successfully updated, `false` otherwise.
      */
     public function setAudoCommit($autocommit)
     {
@@ -345,9 +423,11 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Commit the transaction.
+     * Commit the current transaction.
      *
-     * @return bool True if the transaction was committed successfully, false otherwise.
+     * This method commits the transaction, making all changes made during the transaction permanent.
+     *
+     * @return bool Returns `true` if the transaction was successfully committed, `false` otherwise.
      */
     public function commit()
     {
@@ -355,9 +435,11 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Rollback the transaction.
+     * Rollback the current transaction.
      *
-     * @return bool True if the transaction was rolled back successfully, false otherwise.
+     * This method rolls back the transaction, undoing any changes made during the transaction.
+     *
+     * @return bool Returns `true` if the transaction was successfully rolled back, `false` otherwise.
      */
     public function rollback()
     {
@@ -365,9 +447,11 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Get the database connection.
+     * Get the current database connection.
      *
-     * @return PDO Represents a connection between PHP and a database server.
+     * This method returns the active PDO connection object, which can be used for executing queries directly.
+     *
+     * @return PDO The active PDO connection object representing the connection to the database server.
      */
     public function getDatabaseConnection()
     {
@@ -375,11 +459,14 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Execute a query.
+     * Execute a SQL query.
      *
-     * @param string $sql SQL to be executed.
-     * @param array|null $params Optional parameters for the SQL query.
-     * @return PDOStatement|false Returns the PDOStatement object if successful, or false on failure.
+     * This method executes a SQL query with optional parameters and returns the resulting PDO statement object.
+     *
+     * @param string $sql The SQL query to execute.
+     * @param array|null $params Optional parameters to bind to the query.
+     * @return PDOStatement|false Returns a `PDOStatement` object if the query was executed successfully, 
+     *                             or `false` if the execution failed.
      * @throws PDOException If an error occurs while executing the query.
      */
     public function query($sql, $params = null)
@@ -388,13 +475,15 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Fetch a result.
+     * Fetch a result from the database.
      *
-     * @param string $sql SQL to be executed.
-     * @param int $tentativeType Tentative type for fetch mode (e.g., PDO::FETCH_ASSOC).
-     * @param mixed $defaultValue Default value to return if no results found.
-     * @param array|null $params Optional parameters for the SQL query.
-     * @return array|object|stdClass|null Returns the fetched result as an array, object, or stdClass, or the default value if no results are found.
+     * This method executes a query and returns a single result. If no result is found, the default value is returned.
+     *
+     * @param string $sql SQL query to be executed.
+     * @param int $tentativeType The fetch mode to be used (e.g., PDO::FETCH_ASSOC).
+     * @param mixed $defaultValue The default value to return if no results are found.
+     * @param array|null $params Optional parameters to bind to the SQL query.
+     * @return array|object|stdClass|null Returns the fetched result (array, object, or stdClass), or the default value if no results are found.
      */
     public function fetch($sql, $tentativeType = PDO::FETCH_ASSOC, $defaultValue = null, $params = null)
     {
@@ -428,11 +517,13 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Check if a record exists.
+     * Check if a record exists in the database.
      *
-     * @param string $sql SQL to be executed.
-     * @param array|null $params Optional parameters for the SQL query.
-     * @return bool True if the record exists, false otherwise.
+     * This method executes a query and checks if any record is returned.
+     *
+     * @param string $sql SQL query to be executed.
+     * @param array|null $params Optional parameters to bind to the SQL query.
+     * @return bool Returns `true` if the record exists, `false` otherwise.
      * @throws NullPointerException If the database connection is null.
      */
     public function isRecordExists($sql, $params = null)
@@ -461,12 +552,14 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Fetch all results.
+     * Fetch all results from the database.
      *
-     * @param string $sql SQL to be executed.
-     * @param int $tentativeType Tentative type for fetch mode (e.g., PDO::FETCH_ASSOC).
-     * @param mixed $defaultValue Default value to return if no results found.
-     * @param array|null $params Optional parameters for the SQL query.
+     * This method executes a query and returns all matching results. If no results are found, the default value is returned.
+     *
+     * @param string $sql SQL query to be executed.
+     * @param int $tentativeType The fetch mode to be used (e.g., PDO::FETCH_ASSOC).
+     * @param mixed $defaultValue The default value to return if no results are found.
+     * @param array|null $params Optional parameters to bind to the SQL query.
      * @return array|null Returns an array of results or the default value if no results are found.
      */
     public function fetchAll($sql, $tentativeType = PDO::FETCH_ASSOC, $defaultValue = null, $params = null)
@@ -501,10 +594,12 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Execute a query without returning anything.
+     * Execute a SQL query without returning any results.
      *
-     * @param string $sql Query string to be executed.
-     * @param array|null $params Optional parameters for the SQL query.
+     * This method executes a query without expecting any result, typically used for non-SELECT queries (INSERT, UPDATE, DELETE).
+     *
+     * @param string $sql SQL query to be executed.
+     * @param array|null $params Optional parameters to bind to the SQL query.
      * @throws NullPointerException If the database connection is null.
      */
     public function execute($sql, $params = null)
@@ -524,11 +619,13 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Execute a query and return the statement.
+     * Execute a SQL query and return the statement object.
      *
-     * @param string $sql Query string to be executed.
-     * @param array|null $params Optional parameters for the SQL query.
-     * @return PDOStatement|false Returns the PDOStatement object if successful, or false on failure.
+     * This method executes a query and returns the PDOStatement object, which can be used to fetch results or retrieve row count.
+     *
+     * @param string $sql SQL query to be executed.
+     * @param array|null $params Optional parameters to bind to the SQL query.
+     * @return PDOStatement|false Returns the PDOStatement object if successful, or `false` on failure.
      * @throws NullPointerException If the database connection is null.
      * @throws PDOException If an error occurs while executing the query.
      */
@@ -551,11 +648,13 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Execute an insert query.
+     * Execute an insert query and return the statement.
      *
-     * @param string $sql Query string to be executed.
-     * @param array|null $params Optional parameters for the SQL query.
-     * @return PDOStatement|false Returns the PDOStatement object if successful, or false on failure.
+     * This method executes an insert query and returns the PDOStatement object.
+     *
+     * @param string $sql SQL query to be executed.
+     * @param array|null $params Optional parameters to bind to the SQL query.
+     * @return PDOStatement|false Returns the PDOStatement object if successful, or `false` on failure.
      */
     public function executeInsert($sql, $params = null)
     {
@@ -565,11 +664,13 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Execute an update query.
+     * Execute an update query and return the statement.
      *
-     * @param string $sql Query string to be executed.
-     * @param array|null $params Optional parameters for the SQL query.
-     * @return PDOStatement|false Returns the PDOStatement object if successful, or false on failure.
+     * This method executes an update query and returns the PDOStatement object.
+     *
+     * @param string $sql SQL query to be executed.
+     * @param array|null $params Optional parameters to bind to the SQL query.
+     * @return PDOStatement|false Returns the PDOStatement object if successful, or `false` on failure.
      */
     public function executeUpdate($sql, $params = null)
     {
@@ -579,11 +680,13 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Execute a delete query.
+     * Execute a delete query and return the statement.
      *
-     * @param string $sql Query string to be executed.
-     * @param array|null $params Optional parameters for the SQL query.
-     * @return PDOStatement|false Returns the PDOStatement object if successful, or false on failure.
+     * This method executes a delete query and returns the PDOStatement object.
+     *
+     * @param string $sql SQL query to be executed.
+     * @param array|null $params Optional parameters to bind to the SQL query.
+     * @return PDOStatement|false Returns the PDOStatement object if successful, or `false` on failure.
      */
     public function executeDelete($sql, $params = null)
     {
@@ -593,11 +696,13 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Execute a transaction query.
+     * Execute a transaction query and return the statement.
      *
-     * @param string $sql Query string to be executed.
-     * @param array|null $params Optional parameters for the SQL query.
-     * @return PDOStatement|false Returns the PDOStatement object if successful, or false on failure.
+     * This method executes a query as part of a transaction and returns the PDOStatement object.
+     *
+     * @param string $sql SQL query to be executed.
+     * @param array|null $params Optional parameters to bind to the SQL query.
+     * @return PDOStatement|false Returns the PDOStatement object if successful, or `false` on failure.
      */
     public function executeTransaction($sql, $params = null)
     {
@@ -607,11 +712,13 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Execute a callback query function.
+     * Execute a callback query function after executing the query.
      *
-     * @param string $query SQL to be executed.
-     * @param array|null $params Optional parameters for the SQL query.
-     * @param string|null $type Query type.
+     * This method calls the provided callback function after executing a query.
+     *
+     * @param string $query SQL query to be executed.
+     * @param array|null $params Optional parameters to bind to the SQL query.
+     * @param string|null $type Type of the query (e.g., INSERT, UPDATE, DELETE, etc.).
      */
     private function executeCallback($query, $params = null, $type = null)
     {
@@ -635,8 +742,10 @@ class PicoDatabase //NOSONAR
     /**
      * Execute a debug query function.
      *
-     * @param string $query SQL to be executed.
-     * @param array|null $params Optional parameters for the SQL query.
+     * This method calls a debug callback function if it is set.
+     *
+     * @param string $query SQL query to be executed.
+     * @param array|null $params Optional parameters to bind to the SQL query.
      */
     private function executeDebug($query, $params = null)
     {
@@ -662,7 +771,11 @@ class PicoDatabase //NOSONAR
     /**
      * Generate a unique 20-byte ID.
      *
-     * @return string 20 bytes unique identifier.
+     * This method generates a unique ID by concatenating a 13-character string
+     * from `uniqid()` with a 6-character random hexadecimal string, ensuring
+     * the resulting string is 20 characters in length.
+     *
+     * @return string A unique 20-byte identifier.
      */
     public function generateNewId()
     {
@@ -677,7 +790,11 @@ class PicoDatabase //NOSONAR
     /**
      * Get the last inserted ID.
      *
-     * @param string|null $name Sequence name (e.g., PostgreSQL).
+     * This method retrieves the ID of the last inserted record. Optionally,
+     * you can provide a sequence name (e.g., for PostgreSQL) to fetch the last
+     * inserted ID from a specific sequence.
+     *
+     * @param string|null $name The sequence name (e.g., PostgreSQL). Default is null.
      * @return string|false Returns the last inserted ID as a string, or false if there was an error.
      */
     public function lastInsertId($name = null)
@@ -686,9 +803,12 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Get the value of databaseCredentials.
+     * Get the value of database credentials.
      *
-     * @return SecretObject Returns the database credentials object.
+     * This method returns the object containing the database credentials used
+     * to establish the database connection.
+     *
+     * @return SecretObject The database credentials object.
      */
     public function getDatabaseCredentials()
     {
@@ -696,7 +816,10 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Get indication whether the database is connected or not.
+     * Check whether the database is connected.
+     *
+     * This method returns a boolean value indicating whether the database
+     * connection is currently active.
      *
      * @return bool Returns true if connected, false otherwise.
      */
@@ -706,9 +829,16 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Get the database type.
+     * Get the type of the database.
      *
-     * @return string Returns the type of the database (e.g., MySQL, PostgreSQL).
+     * This method returns the type of the database that is currently connected.
+     * The possible values are constants from the `PicoDatabaseType` class:
+     * - `PicoDatabaseType::DATABASE_TYPE_MYSQL`
+     * - `PicoDatabaseType::DATABASE_TYPE_MARIADB`
+     * - `PicoDatabaseType::DATABASE_TYPE_PGSQL`
+     * - `PicoDatabaseType::DATABASE_TYPE_SQLITE`
+     *
+     * @return string The type of the database.
      */
     public function getDatabaseType()
     {
