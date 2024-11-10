@@ -53,8 +53,8 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
      * It extracts the table name from the `@Table` annotation and processes each property 
      * to determine the column definitions from the `@Column` annotations.
      *
-     * @param MagicObject $entity The instance of the class whose properties will be used
-     *                             to generate the table structure.
+     * @param MagicObject $entity     The instance of the class whose properties will be used
+     *                                to generate the table structure.
      * @param bool $createIfNotExists If true, the query will include an "IF NOT EXISTS" clause.
      * @param bool $dropIfExists      Whether to add "DROP TABLE IF EXISTS" before the CREATE statement (default is false).
      * @return string The generated SQL CREATE TABLE query.
@@ -255,13 +255,13 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
      * including the option to include or exclude specific clauses such as "IF NOT EXISTS" and 
      * "DROP TABLE IF EXISTS". It also handles the definition of primary keys if present.
      *
-     * @param PicoTableInfo $tableInfo     The information about the table, including column details and primary keys.
-     * @param string        $tableName  The name of the table for which the structure is being generated.
-     * @param bool         $createIfNotExists Whether to add "IF NOT EXISTS" in the CREATE statement (default is false).
-     * @param bool         $dropIfExists      Whether to add "DROP TABLE IF EXISTS" before the CREATE statement (default is false).
-     * @param string|null  $engine            The storage engine to use for the table (optional, default is null).
-     * @param string|null  $charset           The character set to use for the table (optional, default is null).
-     * @return string                           The SQL statement to create the table, including column definitions and primary keys.
+     * @param PicoTableInfo $tableInfo         The information about the table, including column details and primary keys.
+     * @param string        $tableName         The name of the table for which the structure is being generated.
+     * @param bool          $createIfNotExists Whether to add "IF NOT EXISTS" in the CREATE statement (default is false).
+     * @param bool          $dropIfExists      Whether to add "DROP TABLE IF EXISTS" before the CREATE statement (default is false).
+     * @param string|null   $engine            The storage engine to use for the table (optional, default is null).
+     * @param string|null   $charset           The character set to use for the table (optional, default is null).
+     * @return string                          The SQL statement to create the table, including column definitions and primary keys.
      */
     public function dumpStructure($tableInfo, $tableName, $createIfNotExists = false, $dropIfExists = false, $engine = 'InnoDB', $charset = 'utf8mb4')
     {

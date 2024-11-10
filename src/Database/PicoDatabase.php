@@ -734,19 +734,25 @@ class PicoDatabase //NOSONAR
 
 
     /**
-     * Get callback function when executing queries that modify data.
+     * Get the callback function to be executed when modifying data with queries.
      *
-     * @return callable|null
-     */ 
+     * This function returns the callback that is invoked when executing queries 
+     * that modify data (e.g., `INSERT`, `UPDATE`, `DELETE`).
+     *
+     * @return callable|null The callback function, or null if no callback is set.
+     */
     public function getCallbackExecuteQuery()
     {
         return $this->callbackExecuteQuery;
     }
 
     /**
-     * Set callback function when executing queries that modify data.
+     * Set the callback function to be executed when modifying data with queries.
      *
-     * @param callable|null  $callbackExecuteQuery  Callback function when executing queries that modify data.
+     * This method sets the callback to be invoked when executing queries 
+     * that modify data (e.g., `INSERT`, `UPDATE`, `DELETE`).
+     *
+     * @param callable|null $callbackExecuteQuery The callback function to set, or null to unset the callback.
      * @return self Returns the current instance for method chaining.
      */ 
     public function setCallbackExecuteQuery($callbackExecuteQuery)
@@ -757,21 +763,27 @@ class PicoDatabase //NOSONAR
     }
 
     /**
-     * Get callback function when executing any query.
+     * Get the callback function to be executed when executing any query.
      *
-     * @return callable|null
-     */ 
+     * This function returns the callback that is invoked for any type of query, 
+     * whether it's a read (`SELECT`) or modify (`INSERT`, `UPDATE`, `DELETE`).
+     *
+     * @return callable|null The callback function, or null if no callback is set.
+     */
     public function getCallbackDebugQuery()
     {
         return $this->callbackDebugQuery;
     }
 
     /**
-     * Set callback function when executing any query.
+     * Set the callback function to be executed when executing any query.
      *
-     * @param callable|null  $callbackDebugQuery  Callback function when executing any query.
+     * This method sets the callback to be invoked for any type of query, 
+     * whether it's a read (`SELECT`) or modify (`INSERT`, `UPDATE`, `DELETE`).
+     *
+     * @param callable|null $callbackDebugQuery The callback function to set, or null to unset the callback.
      * @return self Returns the current instance for method chaining.
-     */ 
+     */
     public function setCallbackDebugQuery($callbackDebugQuery)
     {
         $this->callbackDebugQuery = $callbackDebugQuery;
