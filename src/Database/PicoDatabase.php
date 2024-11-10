@@ -95,6 +95,27 @@ class PicoDatabase //NOSONAR
     protected $callbackDebugQuery = null;
 
     /**
+     * Creates a PicoDatabase instance from an existing PDO connection.
+     *
+     * This static method accepts a PDO connection object, initializes a new 
+     * PicoDatabase instance, and sets up the database connection and type.
+     * It also marks the database as connected and returns the configured 
+     * PicoDatabase object.
+     *
+     * @param PDO $pdo The PDO connection object representing an active connection to the database.
+     * @return PicoDatabase Returns a new instance of the PicoDatabase class, 
+     *         with the PDO connection and database type set.
+     */
+    public static function fromPdo($pdo)
+    {
+        $database = new self(new SecretObject());
+        $database->databaseConnection = $pdo;
+        $database->databaseType = $database->getDbType($pdo->getAttribute(PDO::ATTR_DRIVER_NAME));
+        $database->connected = true;
+        return $database;
+    }
+
+    /**
      * Constructor to initialize the PicoDatabase object.
      *
      * @param SecretObject $databaseCredentials Database credentials.

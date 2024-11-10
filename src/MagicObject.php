@@ -144,10 +144,24 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Constructor.
      *
-     * Initializes the object with provided data and database connection.
+     * Initializes the object with the provided data and optionally connects to a database.
+     * The constructor can accept different types of data to populate the object and can 
+     * also accept a PDO connection or a PicoDatabase instance to set up the database connection.
      *
-     * @param self|array|stdClass|object|null $data Initial data to populate the object.
-     * @param PicoDatabase|null $database Database connection instance.
+     * @param self|array|stdClass|object|null $data Initial data to populate the object. This can be:
+     *        - `self`: An instance of the same class to clone data.
+     *        - `array`: An associative array of data, which will be camel-cased.
+     *        - `stdClass`: A standard object to populate the properties.
+     *        - `object`: A generic object to populate the properties.
+     *        - `null`: No data, leaving the object empty.
+     * 
+     * @param PicoDatabase|PDO|null $database A database connection instance, either:
+     *        - `PicoDatabase`: An already instantiated PicoDatabase object.
+     *        - `PDO`: A PDO connection object, which will be converted into a PicoDatabase instance using `PicoDatabase::fromPdo()`.
+     *        - `null`: No database connection.
+     * 
+     * @throws InvalidAnnotationException If the annotations are invalid or cannot be parsed.
+     * @throws InvalidQueryInputException If an error occurs while parsing the key-value pair annotations.
      */
     public function __construct($data = null, $database = null)
     {
@@ -173,9 +187,16 @@ class MagicObject extends stdClass // NOSONAR
             }
             $this->loadData($data);
         }
-        if($database != null && $database instanceof PicoDatabase)
+        if($database != null)
         {
-            $this->_database = $database;
+            if($database instanceof PicoDatabase)
+            {
+                $this->_database = $database;
+            }
+            else if($database instanceof PDO)
+            {
+                $this->_database = PicoDatabase::fromPdo($database);
+            }
         }
     }
 
