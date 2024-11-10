@@ -73,7 +73,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
         $query = "";
         if($dropIfExists)
         {
-            $query .= "-- DROP TABLE IF EXISTS `$tableName`;\r\n\r\n";
+            $query .= "-- DROP TABLE IF EXISTS $tableName;\r\n\r\n";
         }
         $query .= "CREATE TABLE$condition $tableName (\n";
     
@@ -269,7 +269,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
         $columns = array();
         if($dropIfExists)
         {
-            $query[] = "-- DROP TABLE IF EXISTS `$tableName`;";
+            $query[] = "-- DROP TABLE IF EXISTS $tableName;";
             $query[] = "";
         }
         $createStatement = "";
@@ -282,7 +282,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
 
         $autoIncrementKeys = $this->getAutoIncrementKey($tableInfo);
 
-        $query[] = "$createStatement `$tableName` (";
+        $query[] = "$createStatement $tableName (";
 
         foreach($tableInfo->getColumns() as $column)
         {
@@ -295,10 +295,10 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
         if(isset($pk) && is_array($pk) && !empty($pk))
         {
             $query[] = "";
-            $query[] = "ALTER TABLE `$tableName`";
+            $query[] = "ALTER TABLE $tableName";
             foreach($pk as $primaryKey)
             {
-                $query[] = "\tADD PRIMARY KEY (`$primaryKey[name]`)";
+                $query[] = "\tADD PRIMARY KEY ($primaryKey[name])";
             }
             $query[] = ";";
         }
@@ -308,7 +308,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
             if(isset($autoIncrementKeys) && is_array($autoIncrementKeys) && in_array($column[parent::KEY_NAME], $autoIncrementKeys))
             {
                 $query[] = "";
-                $query[] = "ALTER TABLE `$tableName` \r\n\tMODIFY ".trim($this->createColumn($column), " \r\n\t ")." AUTO_INCREMENT";
+                $query[] = "ALTER TABLE $tableName \r\n\tMODIFY ".trim($this->createColumn($column), " \r\n\t ")." AUTO_INCREMENT";
                 $query[] = ";";
             }
         }
@@ -335,7 +335,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
     {
         $col = array();
         $col[] = "\t";
-        $col[] = "`".$column[parent::KEY_NAME]."`";
+        $col[] = "".$column[parent::KEY_NAME]."";
         $col[] = $column['type'];
         if(isset($column['nullable']) && strtolower(trim($column['nullable'])) == 'true')
         {
