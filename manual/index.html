@@ -9187,7 +9187,7 @@ fclose($fp);</code></pre>
 <li><strong>Artist</strong> entity is stored in <strong>Database 2</strong>.</li>
 </ul>
 <h3>Entity Definitions</h3>
-<p>Here are the definitions for the Album, Artist, and Song classes:</p>
+<p>Here are the definitions for the <code>Album</code>, <code>Artist</code>, <code>Producer</code>, and <code>Song</code> classes:</p>
 <p><strong>Album Class</strong></p>
 <pre><code class="language-php">class Album
 {
@@ -9303,7 +9303,7 @@ $album = new Album(null, $database1);
 $producer = new Producer(null, $database1);
 $artist = new Artist(null, $database2);</code></pre>
 <h3>Setting Database Entities</h3>
-<p>You can set the database entities for Album and Artist associated with a Song instance in several ways:</p>
+<p>You can set the database entities for <code>Album</code>, <code>Producer</code> and <code>Artist</code> associated with a <code>Song</code> instance in several ways:</p>
 <p><strong>Method 1: Chaining Method Calls</strong></p>
 <pre><code class="language-php">$song-&gt;databaseEntity($album)-&gt;databaseEntity($producer)-&gt;databaseEntity($artist);</code></pre>
 <p><strong>Method 2: Using a DatabaseEntity Instance</strong></p>
