@@ -12131,11 +12131,11 @@ This implementation offers a straightforward way to manage file uploads in PHP, 
 
 ## Resumable File Download
 
-### Namespace:
+### Namespace
 
 `MagicObject\File`
 
-### Description:
+### Description
 
 The `PicoDownloadFile` class is designed to facilitate efficient file downloading in PHP, supporting **partial content** (range requests) for large files. It ensures that requested files exist, handles errors gracefully, and enables downloading in chunks to minimize server load and bandwidth consumption, particularly for large files.
 
@@ -12218,7 +12218,7 @@ if($finished && file_exists($path))
 }
 ```
 
-### Error Handling:
+### Error Handling
 
 -   **404 - File Not Found**: If the file does not exist at the specified path, a 404 error is returned.
 -   **416 - Range Not Satisfiable**: If an invalid byte range is requested (e.g., the start byte is larger than the end byte), a 416 error is returned.

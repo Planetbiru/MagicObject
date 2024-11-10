@@ -10684,9 +10684,9 @@ else
 
 <article class="article" id="part27">
 <h2>Resumable File Download</h2>
-<h3>Namespace:</h3>
+<h3>Namespace</h3>
 <p><code>MagicObject\File</code></p>
-<h3>Description:</h3>
+<h3>Description</h3>
 <p>The <code>PicoDownloadFile</code> class is designed to facilitate efficient file downloading in PHP, supporting <strong>partial content</strong> (range requests) for large files. It ensures that requested files exist, handles errors gracefully, and enables downloading in chunks to minimize server load and bandwidth consumption, particularly for large files.</p>
 <p>The class supports the following:</p>
 <ul>
@@ -10743,7 +10743,7 @@ if($finished &amp;&amp; file_exists($path))
 {
     unlink($path); // Delete file when finish
 }</code></pre>
-<h3>Error Handling:</h3>
+<h3>Error Handling</h3>
 <ul>
 <li><strong>404 - File Not Found</strong>: If the file does not exist at the specified path, a 404 error is returned.</li>
 <li><strong>416 - Range Not Satisfiable</strong>: If an invalid byte range is requested (e.g., the start byte is larger than the end byte), a 416 error is returned.</li>
