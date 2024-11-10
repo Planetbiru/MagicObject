@@ -150,7 +150,7 @@ $artist = new Artist(null, $database2);
 
 ### Setting Database Entities
 
-You can set the database entities for `Album`, `Producer` and `Artist` associated with a `Song` instance in several ways:
+You can set the database entities for `Album`, `Producer`, and `Artist` associated with a `Song` instance in several ways:
 
 **Method 1: Chaining Method Calls**
 
