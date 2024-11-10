@@ -749,7 +749,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 		}
 		else if ($this->isSqlite())
 		{
-			$this->buffer .= "last_insert_rowid()";
+			$this->buffer .= "LAST_INSERT_ROWID()";
 		}
 		return $this;
 	}
