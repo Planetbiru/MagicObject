@@ -2672,7 +2672,7 @@ public function query($sql, $params = null)
 -   `array|null $params`: Optional parameters for the SQL query.
 **Returns**: PDOStatement object or `false` on failure.
 
-##### Fetch a Single Result
+#### Fetch a Single Result
 
 ```php
 public function fetch($sql, $tentativeType = PDO::FETCH_ASSOC, $defaultValue = null, $params = null)
