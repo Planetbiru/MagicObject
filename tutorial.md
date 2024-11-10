@@ -12018,7 +12018,7 @@ If an operation fails, `PicoSqlite` may throw exceptions or return false. It is 
 ### Conclusion
 
 `PicoSqlite` provides an efficient way to interact with SQLite databases. Its straightforward API allows developers to perform common database operations with minimal code. For more advanced database operations, consider extending the class or using additional PDO features.
-## Upload File
+## File Upload
 
 ### Overview
 
