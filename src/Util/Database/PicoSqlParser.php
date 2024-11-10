@@ -26,12 +26,12 @@ namespace MagicObject\Util\Database;
 class PicoSqlParser
 {
     // Constant definitions for keys in the parsed table information
-    const KEY_COLUMN_NAME = 'Column Name';
-    const KEY_PRIMARY_KEY = 'Primary Key';
-    const KEY_TYPE = 'Type';
-    const KEY_LENGTH = 'Length';
-    const KEY_NULLABLE = 'Nullable';
-    const KEY_DEFAULT = 'Default';
+    const KEY_COLUMN_NAME = 'Field';
+    const KEY_PRIMARY_KEY = 'Key';
+    const KEY_TYPE        = 'Type';
+    const KEY_LENGTH      = 'Length';
+    const KEY_NULLABLE    = 'Nullable';
+    const KEY_DEFAULT     = 'Default';
     
     /**
      * List of valid SQL data types supported by this parser.
@@ -232,6 +232,7 @@ class PicoSqlParser
      */
     public function parseAll($sql)
     {
+        $sql = str_replace("`", "", $sql);
         $inf = [];
         $rg_tb = '/(create\s+table\s+if\s+not\s+exists|create\s+table)\s+(?<tb>.*)\s+\(/i';
         
@@ -265,4 +266,5 @@ class PicoSqlParser
     {
         return $this->tableInfo;
     }
+
 }
