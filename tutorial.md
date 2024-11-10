@@ -10511,7 +10511,7 @@ You can set the database entities for Album and Artist associated with a Song in
 **Method 1: Chaining Method Calls**
 
 ```php
-$song->databaseEntity($album)->->databaseEntity($producer)->databaseEntity($artist);
+$song->databaseEntity($album)->databaseEntity($producer)->databaseEntity($artist);
 ```
 
 **Method 2: Using a DatabaseEntity Instance**

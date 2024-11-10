@@ -9305,7 +9305,7 @@ $artist = new Artist(null, $database2);</code></pre>
 <h3>Setting Database Entities</h3>
 <p>You can set the database entities for Album and Artist associated with a Song instance in several ways:</p>
 <p><strong>Method 1: Chaining Method Calls</strong></p>
-<pre><code class="language-php">$song-&gt;databaseEntity($album)-&gt;-&gt;databaseEntity($producer)-&gt;databaseEntity($artist);</code></pre>
+<pre><code class="language-php">$song-&gt;databaseEntity($album)-&gt;databaseEntity($producer)-&gt;databaseEntity($artist);</code></pre>
 <p><strong>Method 2: Using a DatabaseEntity Instance</strong></p>
 <pre><code class="language-php">$databaseEntity = new DatabaseEntity();
 $databaseEntity-&gt;add($album, $database1);
