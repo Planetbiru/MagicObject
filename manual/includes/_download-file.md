@@ -1,5 +1,5 @@
 
-## Resumable File Download using PicoDownloadFile
+## Resumable File Download
 
 ### Namespace:
 

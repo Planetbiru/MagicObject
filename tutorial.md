@@ -12107,7 +12107,7 @@ else
 
 This implementation offers a straightforward way to manage file uploads in PHP, abstracting complexities for developers. By using methods like `getAll()` and `isMultiple()`, developers can seamlessly handle both types of uploads without needing to write separate logic for each scenario. This approach not only improves code maintainability but also enhances the developer experience.
 
-## Resumable File Download using PicoDownloadFile
+## Resumable File Download
 
 ### Namespace:
 
