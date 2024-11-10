@@ -2421,6 +2421,24 @@ This implementation provides a robust framework for session management in a PHP 
 -   **Callbacks**: Support for custom callback functions for query execution and debugging.
 -   **Unique ID Generation**: Generate unique identifiers for database records.
 
+### Database Support
+
+MagicObject supports the following databases:
+
+1. **MySQL**
+    One of the most popular open-source relational databases, known for its speed, reliability, and ease of use. MySQL is widely used in web applications and offers strong performance, security features, and support for SQL standards.
+
+2. **MariaDB**
+    A fork of MySQL, created by the original developers of MySQL after concerns over Oracle’s acquisition of MySQL. MariaDB is designed to maintain compatibility with MySQL while adding new features and optimizations. It is fully open-source and highly regarded for its performance and stability.
+
+3. **PostgreSQL**
+    A powerful, open-source relational database system known for its robustness, SQL compliance, and extensive feature set, including ACID compliance, JSON support, and advanced indexing mechanisms.
+
+4. **SQLite**
+    A lightweight, serverless, self-contained SQL database engine that is highly portable. It is often used for embedded systems or small-scale applications due to its minimal setup and resource usage. Despite its simplicity, SQLite supports a wide range of SQL features and is widely used in mobile apps and other local storage scenarios.
+
+MagicObject’s compatibility with these databases enables flexible, scalable, and efficient data management across different platforms and environments.
+
 ### Installation
 
 To use the `PicoDatabase` class, ensure you have PHP with PDO support. Include the class file in your project, and you can instantiate it with your database credentials.

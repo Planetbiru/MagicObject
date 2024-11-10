@@ -2082,6 +2082,27 @@ $sessions-&gt;startSession();</code></pre>
 <li><strong>Callbacks</strong>: Support for custom callback functions for query execution and debugging.</li>
 <li><strong>Unique ID Generation</strong>: Generate unique identifiers for database records.</li>
 </ul>
+<h3>Database Support</h3>
+<p>MagicObject supports the following databases:</p>
+<ol>
+<li>
+<p><strong>MySQL</strong>
+One of the most popular open-source relational databases, known for its speed, reliability, and ease of use. MySQL is widely used in web applications and offers strong performance, security features, and support for SQL standards.</p>
+</li>
+<li>
+<p><strong>MariaDB</strong>
+A fork of MySQL, created by the original developers of MySQL after concerns over Oracle’s acquisition of MySQL. MariaDB is designed to maintain compatibility with MySQL while adding new features and optimizations. It is fully open-source and highly regarded for its performance and stability.</p>
+</li>
+<li>
+<p><strong>PostgreSQL</strong>
+A powerful, open-source relational database system known for its robustness, SQL compliance, and extensive feature set, including ACID compliance, JSON support, and advanced indexing mechanisms.</p>
+</li>
+<li>
+<p><strong>SQLite</strong>
+A lightweight, serverless, self-contained SQL database engine that is highly portable. It is often used for embedded systems or small-scale applications due to its minimal setup and resource usage. Despite its simplicity, SQLite supports a wide range of SQL features and is widely used in mobile apps and other local storage scenarios.</p>
+</li>
+</ol>
+<p>MagicObject’s compatibility with these databases enables flexible, scalable, and efficient data management across different platforms and environments.</p>
 <h3>Installation</h3>
 <p>To use the <code>PicoDatabase</code> class, ensure you have PHP with PDO support. Include the class file in your project, and you can instantiate it with your database credentials.</p>
 <pre><code class="language-php">use MagicObject\Database\PicoDatabase;
