@@ -144,19 +144,14 @@ class NativeQueryUtil
     {
         $className = trim(explode("[", $returnType)[0]);
 
-        switch ($className) {
-            case 'stdClass':
-                return $stmt->fetchAll(PDO::FETCH_OBJ);
-
-            case 'MagicObject':
-                return $this->mapRowsToMagicObject($stmt);
-
-            default:
-                if (class_exists($className)) {
-                    return $this->mapRowsToClass($stmt, $className);
-                }
-
-                throw new InvalidReturnTypeException("Invalid return type for array of $className");
+        if ($className === 'stdClass') {
+            return $stmt->fetchAll(PDO::FETCH_OBJ);
+        } elseif ($className === 'MagicObject') {
+            return $this->mapRowsToMagicObject($stmt);
+        } elseif (class_exists($className)) {
+            return $this->mapRowsToClass($stmt, $className);
+        } else {
+            throw new InvalidReturnTypeException("Invalid return type for array of $className");
         }
     }
 
