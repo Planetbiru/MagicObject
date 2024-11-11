@@ -729,7 +729,6 @@ class MagicObject extends stdClass // NOSONAR
     {
         // Retrieve caller trace information
         $trace = debug_backtrace();
-        $nativeQueryUtil = new NativeQueryUtil();
 
         // Get parameters from the caller function
         $callerParamValues = isset($trace[1]['args']) ? $trace[1]['args'] : [];
@@ -741,7 +740,10 @@ class MagicObject extends stdClass // NOSONAR
         // Use reflection to get annotations from the caller function
         $reflection = new ReflectionMethod($callerClassName, $callerFunctionName);
         $docComment = $reflection->getDocComment();
-        
+
+        $nativeQueryUtil = new NativeQueryUtil();
+
+        // Extract query string and return type from docblock annotations
         $queryString = $nativeQueryUtil->extractQueryString($docComment);
         $returnType = $nativeQueryUtil->extractReturnType($docComment, $callerClassName);    
 
@@ -751,43 +753,41 @@ class MagicObject extends stdClass // NOSONAR
         $params = [];
 
         try {
+            // Apply query parameters (pagination, sorting, etc.)
             $queryString = $nativeQueryUtil->applyQueryParameters($this->_database->getDatabaseType(), $queryString, $callerParams, $callerParamValues);
 
             // Get database connection
             $pdo = $this->_database->getDatabaseConnection();
             $stmt = $pdo->prepare($queryString);
 
-            // Automatically bind each parameter
+            // Bind parameters to the prepared statement
             foreach ($callerParamValues as $index => $paramValue) {
-                if(isset($callerParams[$index]) && !($paramValue instanceof PicoPageable) && !($paramValue instanceof PicoSortable))
-                {
+                if (isset($callerParams[$index]) && !($paramValue instanceof PicoPageable) && !($paramValue instanceof PicoSortable)) {
                     // Format parameter name according to the query
                     $paramName = $callerParams[$index]->getName();
-                    if(!is_array($paramValue))
-                    {
-                        $maped = $nativeQueryUtil->mapToPdoParamType($paramValue);
-                        $paramType = $maped->type;
-                        $paramValue = $maped->value;
+                    if (!is_array($paramValue)) {
+                        $mapped = $nativeQueryUtil->mapToPdoParamType($paramValue);
+                        $paramType = $mapped->type;
+                        $paramValue = $mapped->value;
                         $params[$paramName] = $paramValue;
-                        $stmt->bindValue(":".$paramName, $paramValue, $paramType);
+                        $stmt->bindValue(":" . $paramName, $paramValue, $paramType);
                     }
                 }
             }
-            
-            // Debug query
+
+            // Debug query before execution
             $nativeQueryUtil->debugQuery($this->_database, $stmt, $params);
 
             // Execute the query
             $stmt->execute();
 
+            // Handle the return value based on the specified return type
             return $nativeQueryUtil->handleReturnObject($stmt, $returnType);          
         } 
-        catch (PDOException $e) 
-        {
+        catch (PDOException $e) {
             // Handle database errors with logging
             throw new PDOException($e->getMessage(), $e->getCode(), $e);
         }
-        return null;
     }
 
     /**
