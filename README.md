@@ -119,7 +119,7 @@ Additionally, MagicObject 2.1 allows users to parse table structures directly fr
 These utilities not only enhance efficiency but also provide a robust foundation for database development, allowing users to focus on building applications rather than wrestling with database compatibility issues. With MagicObject 2.1, database management becomes more intuitive and accessible, empowering developers to harness the full potential of their data.
 
 
-# **Introducing PDO Support in MagicObject 2.7**
+# **PDO Support in MagicObject 2.7**
 
 ## **Overview**
 
@@ -136,6 +136,15 @@ While PDO is now an option for initializing **MagicObject**, it is used only in 
 ## **How PDO Support Works**
 
 In **MagicObject 2.7**, when you pass a **PDO** connection object to the constructor, it is automatically converted into a **PicoDatabase** instance using the `PicoDatabase::fromPdo()` static method. This ensures that even though PDO is used to establish the initial connection, the object will still operate using **PicoDatabase** for all subsequent database operations. The constructor of **MagicObject** ensures that the database connection is properly initialized and the type of database is correctly detected based on the PDO driver.
+
+# **Pageable and Sortable in Native Query in MagicObject 2.7**
+
+In **MagicObject version 2.7**, support for **pageable** and **sortable** functionality has been added to native queries. Previously, native queries did not support pagination and sorting directly. Instead, users had to manually include `SORT BY` and `LIMIT OFFSET` clauses in their queries, which made them less flexible. This approach was problematic because each Database Management System (DBMS) has its own syntax for writing queries, making it cumbersome to adapt queries for different platforms.
+
+With the introduction of pageable and sortable support in version 2.7, users can now easily pass **pagination** parameters using the `PicoPageable` type and **sorting** parameters using the `PicoSortable` type directly into their native queries. These parameters can be placed anywhere within the query, but it is recommended to position them either at the beginning or the end of the query for optimal readability and organization.
+
+This enhancement makes native queries more flexible and easier to maintain, as the logic for pagination and sorting is handled automatically, without requiring manual intervention for each DBMS. As a result, users can now write cleaner, more efficient, and database-agnostic native queries.
+
 
 
 # Tutorial

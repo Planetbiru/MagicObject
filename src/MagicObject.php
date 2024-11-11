@@ -777,14 +777,23 @@ class MagicObject extends stdClass // NOSONAR
         }
 
         $params = [];
-
+        $pageable = null;
+        $sortable = null;
         try {
             // Get database connection
             $pdo = $this->_database->getDatabaseConnection();
             
             // Replace array
             foreach ($callerParamValues as $index => $paramValue) {
-                if (isset($callerParams[$index])) {
+                if($paramValue instanceof PicoPageable)
+                {
+                    $pageable = $paramValue;
+                }
+                else if($paramValue instanceof PicoSortable)
+                {
+                    $sortable = $paramValue;
+                }
+                else if (isset($callerParams[$index])) {
                     // Format parameter name according to the query
                     $paramName = $callerParams[$index]->getName();
                     if(is_array($paramValue))
@@ -793,21 +802,35 @@ class MagicObject extends stdClass // NOSONAR
                     }
                 }
             }
+            $queryBuilder = new PicoDatabaseQueryBuilder($this->_database->getDatabaseType());
+            $queryString = $queryBuilder->addLimitOffset($queryString, $pageable, $sortable);
 
             $stmt = $pdo->prepare($queryString);
+
 
             // Automatically bind each parameter
             foreach ($callerParamValues as $index => $paramValue) {
                 if (isset($callerParams[$index])) {
-                    // Format parameter name according to the query
-                    $paramName = $callerParams[$index]->getName();
-                    if(!is_array($paramValue))
+                    if($paramValue instanceof PicoPageable)
                     {
-                        $maped = $this->mapToPdoParamType($paramValue);
-                        $paramType = $maped->type;
-                        $paramValue = $maped->value;
-                        $params[$paramName] = $paramValue;
-                        $stmt->bindValue(":".$paramName, $paramValue, $paramType);
+                        // skip
+                    }
+                    else if($paramValue instanceof PicoSortable)
+                    {
+                        // skip
+                    }
+                    else
+                    {
+                        // Format parameter name according to the query
+                        $paramName = $callerParams[$index]->getName();
+                        if(!is_array($paramValue))
+                        {
+                            $maped = $this->mapToPdoParamType($paramValue);
+                            $paramType = $maped->type;
+                            $paramValue = $maped->value;
+                            $params[$paramName] = $paramValue;
+                            $stmt->bindValue(":".$paramName, $paramValue, $paramType);
+                        }
                     }
                 }
             }

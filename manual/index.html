@@ -8603,6 +8603,10 @@ of the specified class will be created for each row fetched.</li>
 <p>If there is an error executing the database query, a <strong>PDOException</strong> will be thrown.</p>
 <p>Native query must be a function of a class that extends from the MagicObject class. In its definition, this method must call <code>$this-&gt;executeNativeQuery()</code>. <code>MagicObject::executeNativeQuery()</code> will analyze the docblock, parameters, and return type to process the given query. For ease and flexibility in writing code, the <code>MagicObject::executeNativeQuery()</code> function call does not pass parameters. Instead, the <code>MagicObject::executeNativeQuery()</code> function takes parameters from the calling function. Thus, changes to the parameters of the calling function do not require changes to the function definition.</p>
 <p>Native queries can be created on entities used by the application. If in the previous version the entity only contained properties, then in version 2.0, the entity can also contain functions for native queries. However, entities in versions 1 and 2 both support functions but functions with native queries are only supported in version 2.0.</p>
+<h3>Pagination and Sorting</h3>
+<p>In <strong>MagicObject version 2.7</strong>, support for <strong>pageable</strong> and <strong>sortable</strong> functionality has been added to native queries. Previously, native queries did not support pagination and sorting directly. Instead, users had to manually include <code>SORT BY</code> and <code>LIMIT OFFSET</code> clauses in their queries, which made them less flexible. This approach was problematic because each Database Management System (DBMS) has its own syntax for writing queries, making it cumbersome to adapt queries for different platforms.</p>
+<p>With the introduction of pageable and sortable support in version 2.7, users can now easily pass <strong>pagination</strong> parameters using the <code>PicoPageable</code> type and <strong>sorting</strong> parameters using the <code>PicoSortable</code> type directly into their native queries. These parameters can be placed anywhere within the query, but it is recommended to position them either at the beginning or the end of the query for optimal readability and organization.</p>
+<p>This enhancement makes native queries more flexible and easier to maintain, as the logic for pagination and sorting is handled automatically, without requiring manual intervention for each DBMS. As a result, users can now write cleaner, more efficient, and database-agnostic native queries.</p>
 <h3>Debug Query</h3>
 <p>MagicObject checks if the database connection has a debugging function for queries. If available, it sends the executed query along with the parameter values to this function, aiding users in identifying errors during query definition and execution.</p>
 <p><strong>Example:</strong></p>
@@ -8874,6 +8878,28 @@ class Supervisor extends MagicObject
         // Call parent method to execute the query
         return $this-&gt;executeNativeQuery();
     }
+
+    /**
+     * Native query 13
+     *
+     * This method will return a prepared statement for further operations if necessary.
+     *
+     * @param PicoPagebale $pageable
+     * @param PicoSortable $sortable
+     * @param bool $aktif The active status to filter results.
+     * @return MagicObject[]
+     * @query("
+      SELECT supervisor.* 
+      FROM supervisor 
+      WHERE supervisor.supervisor_id in :supervisorId 
+      AND supervisor.aktif = :aktif
+     ")
+     */
+    public function native13($pageable, $sortable, $aktif)
+    {
+        // Call parent method to execute the query
+        return $this-&gt;executeNativeQuery();
+    }
 }
 
 $obj = new Supervisor(null, $database);
@@ -8926,7 +8952,25 @@ print_r($native11);
 echo "Alamat: " . $native8-&gt;getTelepon() . "\r\n";
 echo "Alamat: " . $native9[0]-&gt;getTelepon() . "\r\n";
 echo "Alamat: " . $native10-&gt;getTelepon() . "\r\n";
-echo "Alamat: " . $native11[0]-&gt;getTelepon() . "\r\n";</code></pre>
+echo "Alamat: " . $native11[0]-&gt;getTelepon() . "\r\n";
+
+$sortable = new PicoSortable();
+$sortable-&gt;addSortable(new PicoSort("nama", PicoSort::ORDER_TYPE_ASC));
+$pageable = new PicoPageable(new PicoPage(3, 20));
+
+try
+{
+    $native13 = $obj-&gt;native13($pageable, $sortable, true);
+    echo "\r\nnative13:\r\n";
+    foreach($native13 as $sup)
+    {
+        echo $sup."\r\n\r\n";
+    }
+}
+catch(Exception $e)
+{
+    echo $e-&gt;getMessage();
+}</code></pre>
 <p>For the purpose of exporting large amounts of data, use the PDOStatement return type. PDOStatement allows users to read one by one and process it immediately, allowing PHP to release memory from the previous process. PHP does not need to store very large data in a variable.</p>
 <p>Example 12 shows how to use array parameters.</p>
 <p>For example:</p>
