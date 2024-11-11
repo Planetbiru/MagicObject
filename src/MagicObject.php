@@ -484,6 +484,16 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
+     * Check if database is connected or not
+     *
+     * @return bool
+     */
+    private function _databaseConnected()
+    {
+        return $this->_database != null && $this->_database->isConnected();
+    }
+
+    /**
      * Set the database connection.
      *
      * @param PicoDatabase $database Database connection
@@ -1284,7 +1294,7 @@ class MagicObject extends stdClass // NOSONAR
                 $obj->set($key, $value);
             }
         }
-        $upperCamel = $this->isUpperCamel();
+        $upperCamel = $this->_upperCamel();
         if($upperCamel)
         {
             return json_decode(json_encode($this->valueArrayUpperCamel()));
@@ -1359,7 +1369,7 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @return bool True if the naming strategy is upper camel case; otherwise, false
      */
-    protected function isUpperCamel()
+    protected function _upperCamel()
     {
         return isset($this->_classParams[self::JSON])
             && isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY])
@@ -1454,16 +1464,6 @@ class MagicObject extends stdClass // NOSONAR
     public function listAll($specification = null, $pageable = null, $sortable = null, $passive = false, $subqueryMap = null)
     {
         return $this->findAll($specification, $pageable, $sortable, $passive, $subqueryMap);
-    }
-
-    /**
-     * Check if database is connected or not
-     *
-     * @return bool
-     */
-    private function _databaseConnected()
-    {
-        return $this->_database != null && $this->_database->isConnected();
     }
 
     /**
@@ -2534,7 +2534,7 @@ class MagicObject extends stdClass // NOSONAR
                 $obj->set($key, $value);
             }
         }
-        $upperCamel = $this->isUpperCamel();
+        $upperCamel = $this->_upperCamel();
         if($upperCamel)
         {
             $value = $this->valueArrayUpperCamel();
