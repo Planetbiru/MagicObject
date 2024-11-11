@@ -2,7 +2,6 @@
 
 namespace MagicObject;
 
-use DateTime;
 use Exception;
 use PDOException;
 use PDOStatement;
