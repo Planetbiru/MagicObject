@@ -802,11 +802,14 @@ class MagicObject extends stdClass // NOSONAR
                     }
                 }
             }
-            $queryBuilder = new PicoDatabaseQueryBuilder($this->_database->getDatabaseType());
-            $queryString = $queryBuilder->addPaginationAndSorting($queryString, $pageable, $sortable);
+
+            if(isset($pageable) || isset($sortable))
+            {
+                $queryBuilder = new PicoDatabaseQueryBuilder($this->_database->getDatabaseType());
+                $queryString = $queryBuilder->addPaginationAndSorting($queryString, $pageable, $sortable);
+            }
 
             $stmt = $pdo->prepare($queryString);
-
 
             // Automatically bind each parameter
             foreach ($callerParamValues as $index => $paramValue) {

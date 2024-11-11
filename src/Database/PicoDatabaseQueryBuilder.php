@@ -890,7 +890,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 				// PostgeSQL and SQLite
 				$queryString .= "\r\nLIMIT $limit OFFSET $offset";
 			}
-			else
+			else if($this->isMySql())
 			{
 				// MariaDB and MySQL
 				$queryString .= "\r\nLIMIT $offset, $limit";
