@@ -749,11 +749,10 @@ class MagicObject extends stdClass // NOSONAR
         $params = [];
 
         try {
-            // Get database connection
-            $pdo = $this->_database->getDatabaseConnection();
-            
             $queryString = $this->applyQueryParameters($queryString, $callerParams, $callerParamValues);
 
+            // Get database connection
+            $pdo = $this->_database->getDatabaseConnection();
             $stmt = $pdo->prepare($queryString);
 
             // Automatically bind each parameter
