@@ -11,7 +11,7 @@ use MagicObject\SecretObject;
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 $databaseCredential = new SecretObject();
-$databaseCredential->loadYamlFile(dirname(dirname(__DIR__)) . "/test.yml.txt", false, true, true);
+$databaseCredential->loadYamlFile(dirname(dirname(__DIR__)) . "/test.yml", false, true, true);
 $databaseCredential->getDatabase()->setDatabaseName("sipro");
 $database = new PicoDatabase($databaseCredential->getDatabase(), null, function($sql){
     echo $sql.";\r\n\r\n";
@@ -275,7 +275,7 @@ class Supervisor extends MagicObject
 
 $obj = new Supervisor(null, $database);
 
-/*
+
 $native1 = $obj->native1(1, true);
 
 $native2 = $obj->native2(1, true);
@@ -325,7 +325,7 @@ echo "Alamat: " . $native8->getTelepon() . "\r\n";
 echo "Alamat: " . $native9[0]->getTelepon() . "\r\n";
 echo "Alamat: " . $native10->getTelepon() . "\r\n";
 echo "Alamat: " . $native11[0]->getTelepon() . "\r\n";
-*/
+
 
 $sortable = new PicoSortable();
 $sortable->addSortable(new PicoSort("nama", PicoSort::ORDER_TYPE_ASC));
