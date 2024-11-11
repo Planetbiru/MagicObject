@@ -809,7 +809,27 @@ class MagicObject extends stdClass // NOSONAR
                 }
             }
         }
-
+        
+        foreach ($callerParamValues as $index => $paramValue) {
+            if (isset($callerParams[$index])) {
+                if($paramValue instanceof PicoPageable || $paramValue instanceof PicoSortable)
+                {
+                    // skip
+                }
+                else
+                {
+                    // Format parameter name according to the query
+                    $paramName = $callerParams[$index]->getName();
+                    if(!is_array($paramValue))
+                    {
+                        $maped = $this->mapToPdoParamType($paramValue);
+                        $paramType = $maped->type;
+                        $paramValue = $maped->value;
+                        $params[$paramName] = $paramValue;
+                    }
+                }
+            }
+        }
         return $params;
     }
 
