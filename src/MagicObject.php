@@ -774,12 +774,8 @@ class MagicObject extends stdClass // NOSONAR
                 }
             }
             
-            // Send query to logger
-            $debugFunction = $this->_database->getCallbackDebugQuery();
-            if(isset($debugFunction) && is_callable($debugFunction))
-            {
-                call_user_func($debugFunction, PicoDatabaseUtil::getFinalQuery($stmt, $params));
-            }
+            // Debug query
+            $nativeQueryUtil->debugQuery($this->_database, $stmt, $params);
 
             // Execute the query
             $stmt->execute();
