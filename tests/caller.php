@@ -321,10 +321,10 @@ print_r($native11);
 
 // For the MagicObject return type, users can utilize the features of the MagicObject except for interacting with the database again because native queries are designed for a different purpose.
 
-echo "Alamat: " . $native8->getTelepon() . "\r\n";
-echo "Alamat: " . $native9[0]->getTelepon() . "\r\n";
-echo "Alamat: " . $native10->getTelepon() . "\r\n";
-echo "Alamat: " . $native11[0]->getTelepon() . "\r\n";
+echo "Telepon: " . $native8->getTelepon() . "\r\n";
+echo "Telepon: " . $native9[0]->getTelepon() . "\r\n";
+echo "Telepon: " . $native10->getTelepon() . "\r\n";
+echo "Telepon: " . $native11[0]->getTelepon() . "\r\n";
 
 
 $sortable = new PicoSortable();
