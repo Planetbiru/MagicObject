@@ -765,7 +765,7 @@ class MagicObject extends stdClass // NOSONAR
                     $paramName = $callerParams[$index]->getName();
                     if(!is_array($paramValue))
                     {
-                        $maped = $this->mapToPdoParamType($paramValue);
+                        $maped = $nativeQueryUtil->mapToPdoParamType($paramValue);
                         $paramType = $maped->type;
                         $paramValue = $maped->value;
                         $params[$paramName] = $paramValue;
