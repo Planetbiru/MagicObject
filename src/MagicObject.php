@@ -803,7 +803,7 @@ class MagicObject extends stdClass // NOSONAR
                 }
             }
             $queryBuilder = new PicoDatabaseQueryBuilder($this->_database->getDatabaseType());
-            $queryString = $queryBuilder->addLimitOffset($queryString, $pageable, $sortable);
+            $queryString = $queryBuilder->addPaginationAndSorting($queryString, $pageable, $sortable);
 
             $stmt = $pdo->prepare($queryString);
 

@@ -847,10 +847,10 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	/**
 	 * Adds pagination and sorting clauses to a native query string.
 	 * 
-	 * This function appends the appropriate `ORDER BY` and `LIMIT OFFSET` 
+	 * This function appends the appropriate `ORDER BY` and `LIMIT $limit OFFSET $offset` or `LIMIT $offset, $limit`
 	 * clauses to the provided SQL query string based on the given pagination and sorting parameters.
 	 * It supports various database management systems (DBMS) and adjusts the query syntax 
-	 * accordingly (e.g., for PostgreSQL, SQLite, MySQL, etc.).
+	 * accordingly (e.g., for PostgreSQL, SQLite, MySQL, MariaDB, etc.).
 	 *
 	 * @param string $queryString The original SQL query string to which pagination and sorting will be added.
 	 * @param PicoPageable|null $pageable The pagination parameters, or `null` if pagination is not required.
@@ -858,7 +858,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	 * 
 	 * @return string The modified SQL query string with added pagination and sorting clauses.
 	 */
-	public function addLimitOffset($queryString, $pageable, $sortable)
+	public function addPaginationAndSorting($queryString, $pageable, $sortable)
 	{
 		if(!isset($pageable) && !isset($sortable))
 		{
