@@ -16,6 +16,7 @@ use MagicObject\Database\PicoSort;
 use MagicObject\Database\PicoSortable;
 use MagicObject\Database\PicoSpecification;
 use MagicObject\Database\PicoTableInfo;
+use MagicObject\Exceptions\FileNotFoundException;
 use MagicObject\Exceptions\FindOptionException;
 use MagicObject\Exceptions\InvalidAnnotationException;
 use MagicObject\Exceptions\InvalidQueryInputException;
@@ -421,50 +422,73 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
-     * Load data from a JSON file.
+     * Loads data from a JSON file and processes it based on the provided options.
      *
-     * @param string $path File path to the JSON file
-     * @param bool $systemEnv Replace all environment variable values
-     * @param bool $asObject Result as an object instead of an array
-     * @param bool $recursive Convert all objects to MagicObject
+     * This method reads the contents of a JSON file, decodes it, and applies transformations 
+     * such as replacing environment variables, camelizing the keys, and recursively converting objects 
+     * into MagicObject instances if necessary.
+     *
+     * @param string $path The file path to the JSON file.
+     * @param bool $systemEnv Whether to replace system environment variables in the data (default: `false`).
+     * @param bool $asObject Whether to return the result as an object instead of an associative array (default: `false`).
+     * @param bool $recursive Whether to recursively convert all objects into MagicObject instances (default: `false`).
+     * 
      * @return self Returns the current instance for method chaining.
+     * 
+     * @throws FileNotFoundException If the specified JSON file does not exist.
      */
     public function loadJsonFile($path, $systemEnv = false, $asObject = false, $recursive = false)
     {
-        $data = json_decode(file_get_contents($path));
-        if(isset($data) && !empty($data))
-        {
+        // Check if the file exists
+        if (!file_exists($path)) {
+            throw new FileNotFoundException("Specified file not found [{$path}]");
+        }
+
+        // Decode the JSON file contents as an associative array
+        $data = json_decode(file_get_contents($path), true); // true to decode as associative array
+
+        // If data is valid and not empty, process it
+        if (!empty($data)) {
+            // Replace Pico environment variables in the data
             $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
-            if($systemEnv)
-            {
+
+            // If systemEnv is true, replace system environment variables
+            if ($systemEnv) {
                 $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
             }
+
+            // Camelize the data keys (e.g., 'user_name' to 'userName')
             $data = PicoArrayUtil::camelize($data);
-            if($asObject)
-            {
-                // convert to object
-                $obj = json_decode(json_encode((object) $data), false);
-                if($recursive)
-                {
-                    $this->loadData(PicoObjectParser::parseRecursiveObject($obj));
-                }
-                else
-                {
-                    $this->loadData($obj);
-                }
-            }
-            else
-            {
-                if($recursive)
-                {
-                    $this->loadData(PicoObjectParser::parseRecursiveObject($data));
-                }
-                else
-                {
-                    $this->loadData($data);
-                }
-            }
+
+            // Load the processed data (object or array, recursively if needed)
+            return $this->loadJsonData($data, $asObject, $recursive);
         }
+
+        return $this;
+    }
+
+    /**
+     * Loads processed JSON data and optionally converts it to objects or parses recursively.
+     *
+     * @param mixed $data The processed data to load (array or object).
+     * @param bool $asObject Whether to return the result as an object.
+     * @param bool $recursive Whether to recursively convert all objects into MagicObject instances.
+     * 
+     * @return self Returns the current instance for method chaining.
+     */
+    private function loadJsonData($data, $asObject, $recursive)
+    {
+        if ($asObject) {
+            // Convert data to object
+            $data = json_decode(json_encode($data), false); // Convert array to object
+        }
+
+        // Load data, applying recursion if needed
+        $dataToLoad = $recursive ? PicoObjectParser::parseRecursiveObject($data) : $data;
+
+        // Call the loadData method to process the data
+        $this->loadData($dataToLoad);
+
         return $this;
     }
 
@@ -1562,9 +1586,9 @@ class MagicObject extends stdClass // NOSONAR
         $startTime = microtime(true);
         try
         {
-            $pageData = new PicoPageData(array(), $startTime);
             if($this->_databaseConnected())
             {
+                $pageData = new PicoPageData(array(), $startTime);
                 $persist = new PicoDatabasePersistence($this->_database, $this);
                 if($findOption & self::FIND_OPTION_NO_FETCH_DATA)
                 {
@@ -1652,10 +1676,10 @@ class MagicObject extends stdClass // NOSONAR
     {
         $startTime = microtime(true);
         try
-        {
-            $pageData = new PicoPageData(array(), $startTime);
+        {    
             if($this->_databaseConnected())
             {
+                $pageData = new PicoPageData(array(), $startTime);
                 $persist = new PicoDatabasePersistence($this->_database, $this);
                 if($findOption & self::FIND_OPTION_NO_FETCH_DATA)
                 {
