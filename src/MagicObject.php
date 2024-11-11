@@ -729,25 +729,27 @@ class MagicObject extends stdClass // NOSONAR
         // Retrieve caller trace information
         $trace = debug_backtrace();
 
-        // Get parameters from the caller function
+        // Extract the caller's parameters
         $callerParamValues = isset($trace[1]['args']) ? $trace[1]['args'] : [];
         
-        // Get the name of the caller function and class
+        // Get the caller's function and class names
         $callerFunctionName = $trace[1]['function'];
         $callerClassName = $trace[1]['class'];
 
-        // Use reflection to get annotations from the caller function
+         // Use reflection to retrieve docblock annotations from the caller function
         $reflection = new ReflectionMethod($callerClassName, $callerFunctionName);
+        
+        // Get parameter information from the caller function
+        $callerParams = $reflection->getParameters();
+
+        // Get the docblock comment for the caller function
         $docComment = $reflection->getDocComment();
 
         $nativeQueryUtil = new NativeQueryUtil();
 
-        // Extract query string and return type from docblock annotations
+        // Extract the query string and return type from the docblock
         $queryString = $nativeQueryUtil->extractQueryString($docComment);
         $returnType = $nativeQueryUtil->extractReturnType($docComment, $callerClassName);    
-
-        // Get parameter information from the caller function
-        $callerParams = $reflection->getParameters();
         
         $params = [];
 
@@ -755,36 +757,38 @@ class MagicObject extends stdClass // NOSONAR
             // Apply query parameters (pagination, sorting, etc.)
             $queryString = $nativeQueryUtil->applyQueryParameters($this->_database->getDatabaseType(), $queryString, $callerParams, $callerParamValues);
 
-            // Get database connection
+            // Prepare the query using the database connection
             $pdo = $this->_database->getDatabaseConnection();
             $stmt = $pdo->prepare($queryString);
 
-            // Bind parameters to the prepared statement
+            // Bind the parameters to the prepared statement
             foreach ($callerParamValues as $index => $paramValue) {
                 if (isset($callerParams[$index]) && !($paramValue instanceof PicoPageable) && !($paramValue instanceof PicoSortable)) {
-                    // Format parameter name according to the query
+                    // Bind the parameter name and type to the statement
                     $paramName = $callerParams[$index]->getName();
                     if (!is_array($paramValue)) {
                         $mapped = $nativeQueryUtil->mapToPdoParamType($paramValue);
                         $paramType = $mapped->type;
                         $paramValue = $mapped->value;
+
+                        // Debugging: store parameter values for query inspection
                         $params[$paramName] = $paramValue;
                         $stmt->bindValue(":" . $paramName, $paramValue, $paramType);
                     }
                 }
             }
 
-            // Debug query before execution
+            // Log the query for debugging
             $nativeQueryUtil->debugQuery($this->_database, $stmt, $params);
 
             // Execute the query
             $stmt->execute();
 
-            // Handle the return value based on the specified return type
+            // Handle and return the result based on the specified return type
             return $nativeQueryUtil->handleReturnObject($stmt, $returnType);          
         } 
         catch (PDOException $e) {
-            // Handle database errors with logging
+            // Log and rethrow the exception if a database error occurs
             throw new PDOException($e->getMessage(), $e->getCode(), $e);
         }
     }
