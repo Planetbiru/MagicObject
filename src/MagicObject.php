@@ -814,11 +814,7 @@ class MagicObject extends stdClass // NOSONAR
             // Automatically bind each parameter
             foreach ($callerParamValues as $index => $paramValue) {
                 if (isset($callerParams[$index])) {
-                    if($paramValue instanceof PicoPageable)
-                    {
-                        // skip
-                    }
-                    else if($paramValue instanceof PicoSortable)
+                    if($paramValue instanceof PicoPageable || $paramValue instanceof PicoSortable)
                     {
                         // skip
                     }
