@@ -731,10 +731,10 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Executes a database query based on the parameters and annotations from the caller function.
      *
-     * This method uses reflection to retrieve the query string from the caller's docblock,
-     * bind the parameters, and execute the query against the database.
+     * This method uses reflection to extract the query string and return type from the caller's 
+     * docblock, binds the provided parameters, and executes the query against the database.
      *
-     * It analyzes the parameters and return type of the caller function, enabling dynamic query
+     * It analyzes the parameters and return type of the caller function to enable dynamic query 
      * execution tailored to the specified return type. Supported return types include:
      * - `void`: Returns null.
      * - `int` or `integer`: Returns the number of affected rows.
@@ -743,20 +743,22 @@ class MagicObject extends stdClass // NOSONAR
      * - `array`: Returns all results as an associative array.
      * - `string`: Returns the JSON-encoded results.
      * - `PDOStatement`: Returns the prepared statement for further operations if needed.
-     * - `MagicObject` and its derived classes: If the return type is a class name or an array of class names,
-     *   instances of that class will be created for each row fetched.
+     * - `MagicObject` and its derived classes: If the return type is a class name or an array of 
+     *   class names, instances of that class will be created for each row fetched.
+     * - `MagicObject[]` and its derived classes: If the return type is an array of class names, 
+     *   instances of the corresponding class will be created for each row fetched.
      *
-     * @return mixed Returns the result based on the return type of the caller function:
+     * @return mixed The result based on the return type of the caller function:
      *               - null if the return type is void.
      *               - integer for the number of affected rows if the return type is int.
      *               - object for a single result if the return type is object.
      *               - an array of associative arrays for multiple results if the return type is array.
      *               - a JSON string if the return type is string.
      *               - instances of a specified class if the return type matches a class name.
-     * 
+     *
      * @throws PDOException If there is an error executing the database query.
-     * @throws InvalidQueryInputException If there is no query to be executed.
-     * @throws InvalidReturnTypeException If the return type specified is invalid.
+     * @throws InvalidQueryInputException If there is no query to be executed or if the input is invalid.
+     * @throws InvalidReturnTypeException If the return type specified in the docblock is invalid or unrecognized.
      */
     protected function executeNativeQuery()
     {
