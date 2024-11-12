@@ -745,8 +745,8 @@ class MagicObject extends stdClass // NOSONAR
      * - `PDOStatement`: Returns the prepared statement for further operations if needed.
      * - `MagicObject` and its derived classes: If the return type is a class name or an array of 
      *   class names, instances of that class will be created for each row fetched.
-     * - `MagicObject[]` and its derived classes: If the return type is an array of class names, 
-     *   instances of the corresponding class will be created for each row fetched.
+     * - `MagicObject[]` and its derived classes: Instances of the corresponding class will be 
+     *   created for each row fetched.
      *
      * @return mixed The result based on the return type of the caller function:
      *               - null if the return type is void.
