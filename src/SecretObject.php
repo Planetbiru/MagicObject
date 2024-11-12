@@ -18,12 +18,24 @@ use stdClass;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Secret object
- * 
- * This class provides mechanisms for managing properties with encryption 
- * and decryption capabilities, using annotations to specify which properties
- * should be secured.
- * 
+ * SecretObject class
+ *
+ * This class provides mechanisms to manage properties that require encryption 
+ * and decryption during their lifecycle. It uses annotations to specify which 
+ * properties should be encrypted or decrypted when they are set or retrieved. 
+ * These annotations help identify when to apply encryption or decryption, 
+ * either before saving (SET) or before fetching (GET).
+ *
+ * The class supports flexibility in data initialization, allowing data to be 
+ * passed as an array, an object, or even left empty. Additionally, a secure 
+ * callback function can be provided to handle key generation for encryption 
+ * and decryption operations.
+ *
+ * Key features:
+ * - Encryption and decryption of object properties based on annotations.
+ * - Support for customizing property naming strategies.
+ * - Option to provide a secure function for key generation.
+ *
  * @author Kamshory
  * @package MagicObject
  * @link https://github.com/Planetbiru/MagicObject
