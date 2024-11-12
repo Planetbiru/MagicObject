@@ -65,7 +65,7 @@ While PDO is now an option for initializing **MagicObject**, it is used only in 
 
 In **MagicObject 2.7**, when you pass a **PDO** connection object to the constructor, it is automatically converted into a **PicoDatabase** instance using the `PicoDatabase::fromPdo()` static method. This ensures that even though PDO is used to establish the initial connection, the object will still operate using **PicoDatabase** for all subsequent database operations. The constructor of **MagicObject** ensures that the database connection is properly initialized and the type of database is correctly detected based on the PDO driver.
 
-### Pageable and Sortable in Native Query in MagicObject 2.7
+### Pageable and Sortable in Native Query
 
 In **MagicObject version 2.7**, support for **pageable** and **sortable** functionality has been added to native queries. Previously, native queries did not support pagination and sorting directly. Instead, users had to manually include `SORT BY` and `LIMIT OFFSET` clauses in their queries, which made them less flexible. This approach was problematic because each Database Management System (DBMS) has its own syntax for writing queries, making it cumbersome to adapt queries for different platforms.
 
