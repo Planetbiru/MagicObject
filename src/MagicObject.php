@@ -946,6 +946,100 @@ class MagicObject extends stdClass // NOSONAR
             throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
         }
     }
+    
+    /**
+     * Starts a database transaction.
+     *
+     * This method begins a new database transaction. It delegates the actual transaction 
+     * initiation to the `transactionalCommand` method, passing the "start" command.
+     *
+     * @return self The current instance of the class for method chaining.
+     * 
+     * @throws NoDatabaseConnectionException If there is no active database connection.
+     * @throws PDOException If there is an error while starting the transaction.
+     */
+    public function startTransaction()
+    {
+        $this->transactionalCommand("start");
+        return $this;
+    }
+
+    /**
+     * Commits the current database transaction.
+     *
+     * This method commits the current transaction. If successful, it makes all database
+     * changes made during the transaction permanent. It delegates to the `transactionalCommand` method 
+     * with the "commit" command.
+     *
+     * @return self The current instance of the class for method chaining.
+     * 
+     * @throws NoDatabaseConnectionException If there is no active database connection.
+     * @throws PDOException If there is an error during the commit process.
+     */
+    public function commit()
+    {
+        $this->transactionalCommand("commit");
+        return $this;
+    }
+
+    /**
+     * Rolls back the current database transaction.
+     *
+     * This method rolls back the current transaction, undoing all database changes made
+     * during the transaction. It calls the `transactionalCommand` method with the "rollback" command.
+     *
+     * @return self The current instance of the class for method chaining.
+     * 
+     * @throws NoDatabaseConnectionException If there is no active database connection.
+     * @throws PDOException If there is an error during the rollback process.
+     */
+    public function rollback()
+    {
+        $this->transactionalCommand("rollback");
+        return $this;
+    }
+
+    /**
+     * Executes a transactional SQL command (start, commit, or rollback).
+     *
+     * This method executes a SQL command to manage the state of a database transaction.
+     * It checks the type of command (`start_transaction`, `commit`, or `rollback`) and
+     * delegates the corresponding SQL generation to the `PicoDatabaseQueryBuilder` class.
+     * The SQL statement is then executed on the active database connection.
+     *
+     * @param string $command The transactional command to execute. Possible values are:
+     *                        - "start" to begin a new transaction.
+     *                        - "commit" to commit the current transaction.
+     *                        - "rollback" to rollback the current transaction.
+     * 
+     * @return void
+     * 
+     * @throws NoDatabaseConnectionException If there is no active database connection.
+     * @throws PDOException If there is an error while executing the transactional command.
+     */
+    private function transactionalCommand($command)
+    {
+        if ($this->_databaseConnected()) {
+            try {
+                $queryBuilder = new PicoDatabaseQueryBuilder($this->_database);
+                $sql = null;
+                if ($command == "start") {
+                    $sql = $queryBuilder->startTransaction();
+                } elseif ($command == "commit") {
+                    $sql = $queryBuilder->commit();
+                } elseif ($command == "rollback") {
+                    $sql = $queryBuilder->rollback();
+                }
+                if (isset($sql)) {
+                    $this->_database->execute($sql);
+                }
+            } catch (Exception $e) {
+                throw new PDOException($e);
+            }
+        } else {
+            throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
+        }
+    }
 
     /**
      * Get MagicObject with WHERE specification.
