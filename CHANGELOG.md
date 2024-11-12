@@ -97,9 +97,9 @@ These updates significantly improve the flexibility and efficiency of **MagicObj
 
 # MagicObject Version 2.7
 
-**MagicObject 2.7** brings a set of powerful updates to improve database interaction, query flexibility, and transaction management. The main highlights of this release include support for PDO connections, enhanced native query capabilities with pagination and sorting, and new transactional methods for improved data management.
+## What's New
 
-## Key Updates in MagicObject 2.7
+**MagicObject 2.7** brings a set of powerful updates to improve database interaction, query flexibility, and transaction management. The main highlights of this release include support for PDO connections, enhanced native query capabilities with pagination and sorting, and new transactional methods for improved data management.
 
 ### 1. PDO Support
 
