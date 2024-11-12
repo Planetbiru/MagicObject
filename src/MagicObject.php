@@ -240,7 +240,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         // Parse without sections
         $data = PicoIniUtil::parseIniString($rawData);
-        if(isset($data) && !empty($data))
+        if($this->_notNullAndNotEmpty($data))
         {
             $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
             if($systemEnv)
@@ -264,7 +264,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         // Parse without sections
         $data = PicoIniUtil::parseIniFile($path);
-        if(isset($data) && !empty($data))
+        if($this->_notNullAndNotEmpty($data))
         {
             $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
             if($systemEnv)
@@ -289,7 +289,7 @@ class MagicObject extends stdClass // NOSONAR
     public function loadYamlString($rawData, $systemEnv = false, $asObject = false, $recursive = false)
     {
         $data = Yaml::parse($rawData);
-        if(isset($data) && !empty($data))
+        if($this->_notNullAndNotEmpty($data))
         {
             $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
             if($systemEnv)
@@ -337,7 +337,7 @@ class MagicObject extends stdClass // NOSONAR
     public function loadYamlFile($path, $systemEnv = false, $asObject = false, $recursive = false)
     {
         $data = Yaml::parseFile($path);
-        if(isset($data) && !empty($data))
+        if($this->_notNullAndNotEmpty($data))
         {
             $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
             if($systemEnv)
@@ -385,7 +385,7 @@ class MagicObject extends stdClass // NOSONAR
     public function loadJsonString($rawData, $systemEnv = false, $asObject = false, $recursive = false)
     {
         $data = json_decode($rawData);
-        if(isset($data) && !empty($data))
+        if($this->_notNullAndNotEmpty($data))
         {
             $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
             if($systemEnv)
@@ -764,13 +764,14 @@ class MagicObject extends stdClass // NOSONAR
     {
         // Retrieve caller trace information
         $trace = debug_backtrace();
+        $traceCaller = $trace[1];
 
         // Extract the caller's parameters
-        $callerParamValues = isset($trace[1]['args']) ? $trace[1]['args'] : [];
+        $callerParamValues = isset($traceCaller['args']) ? $traceCaller['args'] : [];
         
         // Get the caller's function and class names
-        $callerFunctionName = $trace[1]['function'];
-        $callerClassName = $trace[1]['class'];
+        $callerFunctionName = $traceCaller['function'];
+        $callerClassName = $traceCaller['class'];
 
          // Use reflection to retrieve docblock annotations from the caller function
         $reflection = new ReflectionMethod($callerClassName, $callerFunctionName);
@@ -1518,6 +1519,20 @@ class MagicObject extends stdClass // NOSONAR
             && isset($this->_classParams[self::JSON]['prettify'])
             && strcasecmp($this->_classParams[self::JSON]['prettify'], 'true') == 0
             ;
+    }
+
+    /**
+     * Checks if the provided parameter is an array.
+     *
+     * This function verifies if the given parameter is set and is of type array. It is a helper method 
+     * used to validate the type of data before performing any operations on it that require an array.
+     *
+     * @param mixed $params The parameter to check.
+     * @return bool Returns `true` if the parameter is set and is an array, otherwise returns `false`.
+     */
+    private function _isArray($params)
+    {
+        return isset($params) && is_array($params);
     }
 
     /**
@@ -2398,7 +2413,7 @@ class MagicObject extends stdClass // NOSONAR
             $var = lcfirst(substr($method, 3));
             return isset($this->{$var}) ? $this->{$var} : null;
         }
-        else if (strncasecmp($method, "set", 3) === 0 && isset($params) && is_array($params) && !empty($params) && !$this->_readonly) {
+        else if (strncasecmp($method, "set", 3) === 0 && $this->_isArray($params) && !empty($params) && !$this->_readonly) {
             $var = lcfirst(substr($method, 3));
             $this->{$var} = $params[0];
             $this->modifyNullProperties($var, $params[0]);
@@ -2409,21 +2424,21 @@ class MagicObject extends stdClass // NOSONAR
             $this->removeValue($var);
             return $this;
         }
-        else if (strncasecmp($method, "push", 4) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
+        else if (strncasecmp($method, "push", 4) === 0 && $this->_isArray($params) && !$this->_readonly) {
             $var = lcfirst(substr($method, 4));
-            return $this->push($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+            return $this->push($var, $this->_isArray($params) && isset($params[0]) ? $params[0] : null);
         }
-        else if (strncasecmp($method, "append", 6) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
+        else if (strncasecmp($method, "append", 6) === 0 && $this->_isArray($params) && !$this->_readonly) {
             $var = lcfirst(substr($method, 6));
-            return $this->append($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+            return $this->append($var, $this->_isArray($params) && isset($params[0]) ? $params[0] : null);
         }
-        else if (strncasecmp($method, "unshift", 7) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
+        else if (strncasecmp($method, "unshift", 7) === 0 && $this->_isArray($params) && !$this->_readonly) {
             $var = lcfirst(substr($method, 7));
-            return $this->unshift($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+            return $this->unshift($var, $this->_isArray($params) && isset($params[0]) ? $params[0] : null);
         }
-        else if (strncasecmp($method, "prepend", 7) === 0 && isset($params) && is_array($params) && !$this->_readonly) {
+        else if (strncasecmp($method, "prepend", 7) === 0 && $this->_isArray($params) && !$this->_readonly) {
             $var = lcfirst(substr($method, 7));
-            return $this->prepend($var, isset($params) && is_array($params) && isset($params[0]) ? $params[0] : null);
+            return $this->prepend($var, $this->_isArray($params) && isset($params[0]) ? $params[0] : null);
         }
         else if (strncasecmp($method, "pop", 3) === 0) {
             $var = lcfirst(substr($method, 3));
