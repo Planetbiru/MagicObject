@@ -240,7 +240,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         // Parse without sections
         $data = PicoIniUtil::parseIniString($rawData);
-        if($this->_notNullAndNotEmpty($data))
+        if($this->_isNotNullAndNotEmpty($data))
         {
             $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
             if($systemEnv)
@@ -264,7 +264,7 @@ class MagicObject extends stdClass // NOSONAR
     {
         // Parse without sections
         $data = PicoIniUtil::parseIniFile($path);
-        if($this->_notNullAndNotEmpty($data))
+        if($this->_isNotNullAndNotEmpty($data))
         {
             $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
             if($systemEnv)
@@ -289,7 +289,7 @@ class MagicObject extends stdClass // NOSONAR
     public function loadYamlString($rawData, $systemEnv = false, $asObject = false, $recursive = false)
     {
         $data = Yaml::parse($rawData);
-        if($this->_notNullAndNotEmpty($data))
+        if($this->_isNotNullAndNotEmpty($data))
         {
             $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
             if($systemEnv)
@@ -337,7 +337,7 @@ class MagicObject extends stdClass // NOSONAR
     public function loadYamlFile($path, $systemEnv = false, $asObject = false, $recursive = false)
     {
         $data = Yaml::parseFile($path);
-        if($this->_notNullAndNotEmpty($data))
+        if($this->_isNotNullAndNotEmpty($data))
         {
             $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
             if($systemEnv)
@@ -385,7 +385,7 @@ class MagicObject extends stdClass // NOSONAR
     public function loadJsonString($rawData, $systemEnv = false, $asObject = false, $recursive = false)
     {
         $data = json_decode($rawData);
-        if($this->_notNullAndNotEmpty($data))
+        if($this->_isNotNullAndNotEmpty($data))
         {
             $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
             if($systemEnv)
@@ -1541,7 +1541,7 @@ class MagicObject extends stdClass // NOSONAR
      * @param mixed $value The value to check
      * @return bool True if the value is not null and not empty; otherwise, false
      */
-    private function _notNullAndNotEmpty($value)
+    private function _isNotNullAndNotEmpty($value)
     {
         return $value != null && !empty($value);
     }
@@ -1917,7 +1917,7 @@ class MagicObject extends stdClass // NOSONAR
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             $result = $persist->find($params);
-            if($this->_notNullAndNotEmpty($result))
+            if($this->_isNotNullAndNotEmpty($result))
             {
                 $this->loadData($result);
                 return $this;
@@ -2063,7 +2063,7 @@ class MagicObject extends stdClass // NOSONAR
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             $result = $persist->findOneWithPrimaryKeyValue($primaryKeyVal, $subqueryMap);
-            if($this->_notNullAndNotEmpty($result))
+            if($this->_isNotNullAndNotEmpty($result))
             {
                 $this->loadData($result);
                 return $this;
@@ -2095,7 +2095,7 @@ class MagicObject extends stdClass // NOSONAR
         {
             $persist = new PicoDatabasePersistence($this->_database, $this);
             $result = $persist->findOneBy($method, $params, $sortable);
-            if($this->_notNullAndNotEmpty($result))
+            if($this->_isNotNullAndNotEmpty($result))
             {
                 $this->loadData($result);
                 return $this;
@@ -2218,11 +2218,11 @@ class MagicObject extends stdClass // NOSONAR
      * @param bool $passive Flag indicating whether the objects are passive.
      * @return array An array of objects.
      */
-    private function toArrayObject($result, $passive = false) // NOSONAR
+    private function toArrayObject($result, $passive = false)
     {
         $instance = array();
         $index = 0;
-        if(isset($result) && is_array($result))
+        if($this->_isArray($result))
         {
             foreach($result as $value)
             {
