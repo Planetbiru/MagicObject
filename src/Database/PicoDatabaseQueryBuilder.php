@@ -98,7 +98,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
      */
     public function isPgSql()
     {
-        return strcasecmp($this->databaseType, PicoDatabaseType::DATABASE_TYPE_POSTGRESQL) == 0;
+        return strcasecmp($this->databaseType, PicoDatabaseType::DATABASE_TYPE_PGSQL) == 0;
     }
 
 	/**
@@ -642,7 +642,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 			stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_SQLITE) !== false) {
 			return str_replace(["\r", "\n"], ["\\r", "\\n"], addslashes($query));
 		}
-		if (stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_POSTGRESQL) !== false) {
+		if (stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_PGSQL) !== false) {
 			return str_replace(["\r", "\n"], ["\\r", "\\n"], $this->replaceQuote($query));
 		}
 		return $query;
@@ -842,6 +842,62 @@ class PicoDatabaseQueryBuilder // NOSONAR
 			$buffer = $query;
 		}
 		return $buffer;
+	}
+
+	/**
+	 * Adds pagination and sorting clauses to a native query string.
+	 * 
+	 * This function appends the appropriate `ORDER BY` and `LIMIT $limit OFFSET $offset` or `LIMIT $offset, $limit`
+	 * clauses to the provided SQL query string based on the given pagination and sorting parameters.
+	 * It supports various database management systems (DBMS) and adjusts the query syntax 
+	 * accordingly (e.g., for PostgreSQL, SQLite, MySQL, MariaDB, etc.).
+	 *
+	 * @param string $queryString The original SQL query string to which pagination and sorting will be added.
+	 * @param PicoPageable|null $pageable The pagination parameters, or `null` if pagination is not required.
+	 * @param PicoSortable|null $sortable The sorting parameters, or `null` if sorting is not required.
+	 * 
+	 * @return string The modified SQL query string with added pagination and sorting clauses.
+	 */
+	public function addPaginationAndSorting($queryString, $pageable, $sortable)
+	{
+		if(!isset($pageable) && !isset($sortable))
+		{
+			return $queryString;
+		}
+
+		$queryString = rtrim($queryString, " \r\n\t; ");
+
+		if(isset($sortable))
+		{
+			foreach($sortable->getSortable() as $sort)
+			{
+				$columnName = $sort->getSortBy();
+				$sortType = $sort->getSortType();             				
+				$sorts[] = $columnName . " " . $sortType;           
+			}
+			if(!empty($sorts))
+			{
+				$queryString .= "\r\nORDER BY ".implode(", ", $sorts);
+			}
+		}
+		if(isset($pageable))
+		{
+			$limitOffset = $pageable->getOffsetLimit();
+			$limit = $limitOffset->getLimit();
+			$offset = $limitOffset->getOffset();
+			if($this->isPgSql() || $this->isSqlite())
+			{
+				// PostgeSQL and SQLite
+				$queryString .= "\r\nLIMIT $limit OFFSET $offset";
+			}
+			else if($this->isMySql())
+			{
+				// MariaDB and MySQL
+				$queryString .= "\r\nLIMIT $offset, $limit";
+			}
+		}
+		
+		return $queryString;
 	}
 
 	/**

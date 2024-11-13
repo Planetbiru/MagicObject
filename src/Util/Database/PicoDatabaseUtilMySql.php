@@ -76,8 +76,8 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
      */
     public function dumpStructure($tableInfo, $tableName, $createIfNotExists = false, $dropIfExists = false, $engine = 'InnoDB', $charset = 'utf8mb4')
     {
-        $query = array();
-        $columns = array();
+        $query = [];
+        $columns = [];
         if($dropIfExists)
         {
             $query[] = "-- DROP TABLE IF EXISTS `$tableName`;";
@@ -144,7 +144,7 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
      */
     public function createColumn($column)
     {
-        $col = array();
+        $col = [];
         $col[] = "\t";
         $col[] = "`".$column[parent::KEY_NAME]."`";
         $col[] = $column['type'];
@@ -208,7 +208,7 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
     public function dumpRecord($columns, $tableName, $record)
     {
         $value = $record->valueArray();
-        $rec = array();
+        $rec = [];
         foreach($value as $key=>$val)
         {
             if(isset($columns[$key]))
@@ -242,7 +242,7 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
         $sql = "SHOW COLUMNS FROM $tableName";
         $result = $database->fetchAll($sql, PDO::FETCH_ASSOC);
 
-        $columns = array();
+        $columns = [];
         foreach($result as $row)
         {
             $columns[$row['Field']] = $row['Type'];
@@ -273,7 +273,7 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
             $databaseTarget->connect();
             $tables = $config->getTable();
 
-            $existingTables = array();
+            $existingTables = [];
             foreach($tables as $tb)
             {
                 $existingTables[] = $tb->getTarget();
