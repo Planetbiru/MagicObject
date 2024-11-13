@@ -370,11 +370,20 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
      */
     public function fixDefaultValue($defaultValue, $type)
     {
-        if(strtolower($defaultValue) == 'true' || strtolower($defaultValue) == 'false' || strtolower($defaultValue) == 'null')
+        if(strtolower($defaultValue) == 'true' 
+        || strtolower($defaultValue) == 'false' 
+        || strtolower($defaultValue) == 'null'
+        )
         {
             return $defaultValue;
         }
-        if(stripos($type, 'enum') !== false || stripos($type, 'char') !== false || stripos($type, 'text') !== false || stripos($type, 'int') !== false || stripos($type, 'float') !== false || stripos($type, 'double') !== false)
+        if(stripos($type, 'enum') !== false 
+        || stripos($type, 'char') !== false 
+        || stripos($type, 'text') !== false 
+        || stripos($type, 'int') !== false 
+        || stripos($type, 'float') !== false 
+        || stripos($type, 'double') !== false
+        )
         {
             return "'".$defaultValue."'";
         }
@@ -402,17 +411,25 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
             {
                 $type = $columns[$name];
                 
-                if(strtolower($type) == 'tinyint(1)' || strtolower($type) == 'boolean' || strtolower($type) == 'bool')
+                if(strtolower($type) == 'tinyint(1)' 
+                || strtolower($type) == 'boolean' 
+                || strtolower($type) == 'bool'
+                )
                 {
                     // Process boolean types
                     $data = $this->fixBooleanData($data, $name, $value);
                 }
-                else if(stripos($type, 'integer') !== false || stripos($type, 'int(') !== false)
+                else if(stripos($type, 'integer') !== false 
+                || stripos($type, 'int(') !== false
+                )
                 {
                     // Process integer types
                     $data = $this->fixIntegerData($data, $name, $value);
                 }
-                else if(stripos($type, 'float') !== false || stripos($type, 'double') !== false || stripos($type, 'decimal') !== false)
+                else if(stripos($type, 'float') !== false 
+                || stripos($type, 'double') !== false 
+                || stripos($type, 'decimal') !== false
+                )
                 {
                     // Process float types
                     $data = $this->fixFloatData($data, $name, $value);
