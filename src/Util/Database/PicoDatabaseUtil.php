@@ -109,7 +109,7 @@ class PicoDatabaseUtil
      */
     public static function valuesFromParams($params)
     {
-        $ret = array();
+        $ret = [];
         if(self::isArray($params))
         {
             foreach($params as $param)

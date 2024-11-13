@@ -441,6 +441,32 @@ class PicoDatabase //NOSONAR
     }
 
     /**
+     * Determines the database driver based on the provided database type.
+     *
+     * This function takes a string representing the database type and returns 
+     * the corresponding database driver constant from the `PicoDatabaseType` class.
+     * It supports SQLite, PostgreSQL, and MySQL/MariaDB types.
+     *
+     * @param string $databaseType The type of the database (e.g., 'sqlite', 'postgres', 'pgsql', 'mysql', 'mariadb').
+     * 
+     * @return string The corresponding database driver constant, one of:
+     *                - `sqlite`
+     *                - `pgsql`
+     *                - `mysql`
+     */
+    private function getDbDriver($databaseType)
+    {
+        if (stripos($databaseType, 'sqlite') !== false) {
+            return PicoDatabaseType::DATABASE_TYPE_SQLITE;
+        } else if (stripos($databaseType, 'postgre') !== false || stripos($databaseType, 'pgsql') !== false) {
+            return PicoDatabaseType::DATABASE_TYPE_PGSQL;
+        } else {
+            return PicoDatabaseType::DATABASE_TYPE_MYSQL;
+        }
+    }
+
+
+    /**
      * Create a connection string.
      *
      * @param bool $withDatabase Flag to select the database when connected.
@@ -464,12 +490,12 @@ class PicoDatabase //NOSONAR
                 $emptyValue .= $emptyName ? "{database_name}" : "";
                 throw new InvalidDatabaseConfiguration("Invalid database configuration. $emptyValue. Please check your database configuration!");
             }
-            return $this->databaseCredentials->getDriver() . ':host=' . $this->databaseCredentials->getHost() . '; port=' . ((int) $this->databaseCredentials->getPort()) . '; dbname=' . $this->databaseCredentials->getDatabaseName();
+            return $this->getDbDriver($this->databaseCredentials->getDriver()) . ':host=' . $this->databaseCredentials->getHost() . '; port=' . ((int) $this->databaseCredentials->getPort()) . '; dbname=' . $this->databaseCredentials->getDatabaseName();
         } else {
             if ($invalidParam1) {
                 throw new InvalidDatabaseConfiguration("Invalid database configuration. $emptyValue. Please check your database configuration!");
             }
-            return $this->databaseCredentials->getDriver() . ':host=' . $this->databaseCredentials->getHost() . '; port=' . ((int) $this->databaseCredentials->getPort());
+            return $this->getDbDriver($this->databaseCredentials->getDriver()) . ':host=' . $this->databaseCredentials->getHost() . '; port=' . ((int) $this->databaseCredentials->getPort());
         }
     }
 

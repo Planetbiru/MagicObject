@@ -96,7 +96,7 @@ class PicoSqlParser
         preg_match($rg_tb, $sql, $result);
         $tableName = $result['tb'];
 
-        $fld_list = [];
+        $fldList = [];
         $primaryKey = null;
         $columnList = [];
 
@@ -132,7 +132,7 @@ class PicoSqlParser
                     {
                         $def = null;
                     }
-                    $fld_list[] = [
+                    $fldList[] = [
                         self::KEY_COLUMN_NAME => $columnName,
                         self::KEY_TYPE => trim($rg_fld2_result['ftype']),
                         self::KEY_LENGTH => $length,
@@ -148,7 +148,7 @@ class PicoSqlParser
             }
 
             if ($primaryKey !== null) {
-                foreach ($fld_list as &$column) //NOSONAR
+                foreach ($fldList as &$column) //NOSONAR
                 {
                     if ($column[self::KEY_COLUMN_NAME] === $primaryKey) {
                         $column[self::KEY_PRIMARY_KEY] = true;
@@ -160,7 +160,7 @@ class PicoSqlParser
                 $x = preg_replace('/(PRIMARY|UNIQUE) KEY\s+[a-zA-Z_0-9\s]+/', '', $f);
                 $x = str_replace(['(', ')'], '', $x);
                 $pkeys = array_map('trim', explode(',', $x));
-                foreach ($fld_list as &$column) {
+                foreach ($fldList as &$column) {
                     if ($this->inArray($pkeys, $column[self::KEY_COLUMN_NAME])) {
                         $column[self::KEY_PRIMARY_KEY] = true;
                     }
@@ -169,7 +169,7 @@ class PicoSqlParser
         }
         return [
             'tableName' => $tableName, 
-            'columns' => $fld_list, 
+            'columns' => $fldList, 
             'primaryKey' => $primaryKey
         ];
     }
