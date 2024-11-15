@@ -898,8 +898,7 @@ class PicoDatabase //NOSONAR
             else
             {
                 call_user_func($this->callbackDebugQuery, $query);
-            }
-            
+            }           
         }
     }
 
