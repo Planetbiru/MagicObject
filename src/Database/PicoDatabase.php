@@ -735,22 +735,13 @@ class PicoDatabase //NOSONAR
      *
      * @param string $sql SQL query to be executed.
      * @param array|null $params Optional parameters to bind to the SQL query.
+     * @return PDOStatement|false Returns the PDOStatement object if successful, or `false` on failure.
      * @throws NullPointerException If the database connection is null.
+     * @throws PDOException If an error occurs while executing the query.
      */
     public function execute($sql, $params = null)
     {
-        if ($this->databaseConnection == null) {
-            throw new NullPointerException(self::DATABASE_NONECTION_IS_NULL);
-        }
-        
-        $this->executeDebug($sql, $params);
-        $stmt = $this->databaseConnection->prepare($sql);
-        
-        try {
-            $stmt->execute($params);
-        } catch (PDOException $e) {
-            // Handle exception as needed
-        }
+        return $this->executeQuery($sql, $params);
     }
 
     /**
