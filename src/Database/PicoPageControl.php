@@ -128,18 +128,30 @@ class PicoPageControl
     /**
      * Sets custom navigation symbols for pagination buttons.
      *
-     * @param string|null $prev Button symbol for the previous page (optional).
-     * @param string|null $next Button symbol for the next page (optional).
-     * @param string|null $first Button symbol for the first page (optional).
-     * @param string|null $last Button symbol for the last page (optional).
+     * This method allows you to define custom symbols for navigation buttons,
+     * including the previous, next, first, and last page buttons. Only non-null
+     * values will be assigned to their respective properties.
+     *
+     * @param string|null $prev The symbol to display for the "previous" page button (optional).
+     * @param string|null $next The symbol to display for the "next" page button (optional).
+     * @param string|null $first The symbol to display for the "first" page button (optional).
+     * @param string|null $last The symbol to display for the "last" page button (optional).
      * @return self Returns the current instance for method chaining.
      */
     public function setNavigation($prev = null, $next = null, $first = null, $last = null)
     {
-        $this->prev = $prev;
-        $this->next = $next;
-        $this->first = $first;
-        $this->last = $last;
+        if (isset($prev)) {
+            $this->prev = $prev;
+        }
+        if (isset($next)) {
+            $this->next = $next;
+        }
+        if (isset($first)) {
+            $this->first = $first;
+        }
+        if (isset($last)) {
+            $this->last = $last;
+        }
         return $this;
     }
 
