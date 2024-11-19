@@ -344,7 +344,7 @@ class PicoPageControl
      *
      * @return self Returns the current instance for method chaining.
      */
-    public function applyPaginationConfig($paginationConfig)
+    public function setPaginationConfig($paginationConfig)
     {
         return $this
             ->setNavigation(
