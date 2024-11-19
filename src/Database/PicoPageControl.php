@@ -2,6 +2,7 @@
 
 namespace MagicObject\Database;
 use MagicObject\Pagination\PicoPagination;
+use MagicObject\SecretObject;
 
 /**
  * Class PicoPageControl
@@ -324,6 +325,39 @@ class PicoPageControl
         $this->formatStepOne = $stepOneFormat;
         $this->formatStartEnd = $startEndFormat;
         return $this;
+    }
+
+    /**
+     * Applies the pagination configuration to the current instance.
+     *
+     * This method accepts a configuration object, typically sourced from a Yaml file, 
+     * and applies its settings to the pagination control. The object contains the following properties:
+     *
+     * @param SecretObject $paginationConfig The configuration object containing pagination settings.
+     *   - `button_prev`: Symbol for the "previous" button.
+     *   - `button_next`: Symbol for the "next" button.
+     *   - `button_first`: Symbol for the "first" button.
+     *   - `button_last`: Symbol for the "last" button.
+     *   - `template_page_number`: Format for page number buttons.
+     *   - `template_step_one`: Format for step-one navigation buttons.
+     *   - `template_start_end`: Format for start/end navigation buttons.
+     *
+     * @return self Returns the current instance for method chaining.
+     */
+    public function applyPaginationConfig($paginationConfig)
+    {
+        return $this
+            ->setNavigation(
+                $paginationConfig->getButtonPrev(),
+                $paginationConfig->getButtonNext(),
+                $paginationConfig->getButtonFirst(),
+                $paginationConfig->getButtonLast()
+            )
+            ->setButtonFormat(
+                $paginationConfig->getTemplatePageNumber(),
+                $paginationConfig->getTemplateStepOne(),
+                $paginationConfig->getTemplateStartEnd()
+            );
     }
 
     /**
