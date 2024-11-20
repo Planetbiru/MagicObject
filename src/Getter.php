@@ -33,10 +33,14 @@ class Getter extends stdClass
     
     /**
      * Class parameters that configure behavior such as JSON output formatting.
+     * 
+     * The property name starts with an underscore to prevent child classes 
+     * from overriding its value.
      *
      * @var array
      */
-    private $_classParams = array(); //NOSONAR
+    private $_classParams = array(); // NOSONAR
+
 
     /**
      * Constructor that initializes class parameters based on annotations.

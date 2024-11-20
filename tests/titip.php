@@ -28,7 +28,7 @@
      * @throws InvalidQueryInputException If there is no query to be executed.
      * @throws InvalidReturnTypeException If the return type specified is invalid.
      */
-    protected function executeNativeQuery() //NOSONAR
+    protected function executeNativeQuery() // NOSONAR
     {
         // Retrieve caller trace information
         $trace = debug_backtrace();

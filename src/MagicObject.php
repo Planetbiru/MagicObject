@@ -78,20 +78,29 @@ class MagicObject extends stdClass // NOSONAR
 
     /**
      * Indicates whether the object is read-only.
-     *
+     * 
+     * The property name starts with an underscore to prevent child classes 
+     * from overriding its value.
+     * 
      * @var bool
      */
     private $_readonly = false; // NOSONAR
 
     /**
      * Database connection instance.
+     * 
+     * The property name starts with an underscore to prevent child classes 
+     * from overriding its value.
      *
      * @var PicoDatabase
      */
     private $_database; // NOSONAR
-    
+
     /**
-     * Class containing a database entity
+     * Class containing a database entity.
+     * 
+     * The property name starts with an underscore to prevent child classes 
+     * from overriding its value.
      *
      * @var PicoDatabaseEntity|null
      */
@@ -99,6 +108,9 @@ class MagicObject extends stdClass // NOSONAR
 
     /**
      * Class parameters.
+     * 
+     * The property name starts with an underscore to prevent child classes 
+     * from overriding its value.
      *
      * @var array
      */
@@ -106,6 +118,9 @@ class MagicObject extends stdClass // NOSONAR
 
     /**
      * List of null properties.
+     * 
+     * The property name starts with an underscore to prevent child classes 
+     * from overriding its value.
      *
      * @var array
      */
@@ -113,6 +128,9 @@ class MagicObject extends stdClass // NOSONAR
 
     /**
      * Property labels.
+     * 
+     * The property name starts with an underscore to prevent child classes 
+     * from overriding its value.
      *
      * @var array
      */
@@ -120,6 +138,9 @@ class MagicObject extends stdClass // NOSONAR
 
     /**
      * Table information instance.
+     * 
+     * The property name starts with an underscore to prevent child classes 
+     * from overriding its value.
      *
      * @var PicoTableInfo|null
      */
@@ -127,10 +148,14 @@ class MagicObject extends stdClass // NOSONAR
 
     /**
      * Database persistence instance.
+     * 
+     * The property name starts with an underscore to prevent child classes 
+     * from overriding its value.
      *
      * @var PicoDatabasePersistence|null
      */
     private $_persistProp = null; // NOSONAR
+
 
     /**
      * Retrieves the list of null properties.

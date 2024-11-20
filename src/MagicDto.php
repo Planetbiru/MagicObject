@@ -38,6 +38,9 @@ class MagicDto extends stdClass // NOSONAR
 
     /**
      * Class parameters.
+     * 
+     * The property name starts with an underscore to prevent child classes 
+     * from overriding its value.
      *
      * @var array
      */
@@ -45,10 +48,14 @@ class MagicDto extends stdClass // NOSONAR
 
     /**
      * Data source.
+     * 
+     * The property name starts with an underscore to prevent child classes 
+     * from overriding its value.
      *
      * @var mixed
      */
-    private $_dataSource = null; //NOSONAR
+    private $_dataSource = null; // NOSONAR
+
 
     /**
      * Constructor.

@@ -108,7 +108,7 @@ class ExtendedReflectionClass extends ReflectionClass {
      * @param string $source The source code to be tokenized.
      * @return array An array of use statements, including aliases.
      */
-	private function tokenizeSource($source) //NOSONAR
+	private function tokenizeSource($source) // NOSONAR
 	{
 		$tokens = token_get_all($source);
 
