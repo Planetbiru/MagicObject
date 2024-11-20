@@ -43,7 +43,7 @@ use PDO;
  * @package MagicObject\Util\Database
  * @link https://github.com/Planetbiru/MagicObject
  */
-class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabaseUtilInterface //NOSONAR
+class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabaseUtilInterface // NOSONAR
 {
 
     /**

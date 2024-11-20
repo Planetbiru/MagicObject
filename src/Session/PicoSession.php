@@ -25,14 +25,14 @@ class PicoSession
      *
      * @var boolean
      */
-    private $_sessionState = self::SESSION_NOT_STARTED; //NOSONAR
+    private $_sessionState = self::SESSION_NOT_STARTED; // NOSONAR
 
     /**
      * The instance of the object.
      *
      * @var self
      */
-    private static $_instance; //NOSONAR
+    private static $_instance; // NOSONAR
 
     /**
      * Constructor to initialize session configuration.

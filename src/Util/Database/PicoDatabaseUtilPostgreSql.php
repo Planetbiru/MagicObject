@@ -44,7 +44,7 @@ use PDO;
  * @package MagicObject\Util\Database
  * @link https://github.com/Planetbiru/MagicObject
  */
-class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDatabaseUtilInterface //NOSONAR
+class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDatabaseUtilInterface // NOSONAR
 {
 
     /**

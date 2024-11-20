@@ -37,7 +37,7 @@ use stdClass;
  * @package MagicObject\Database
  * @link https://github.com/Planetbiru/MagicObject
  */
-class PicoDatabase //NOSONAR
+class PicoDatabase // NOSONAR
 {
     const QUERY_INSERT = "insert";
     const QUERY_UPDATE = "update";

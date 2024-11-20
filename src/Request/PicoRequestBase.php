@@ -18,7 +18,7 @@ use stdClass;
  * @package MagicObject\Database
  * @link https://github.com/Planetbiru/Request
  */
-class PicoRequestBase extends stdClass //NOSONAR
+class PicoRequestBase extends stdClass // NOSONAR
 {
     /**
      * Class parameters parsed from annotations.
@@ -284,7 +284,7 @@ class PicoRequestBase extends stdClass //NOSONAR
      * @param bool $nullIfEmpty Flag to return null if the value is empty.
      * @return mixed
      */
-    public function filterValueSingle($val, $filter = PicoFilterConstant::FILTER_DEFAULT, $escapeSQL = false, $nullIfEmpty = false) //NOSONAR
+    public function filterValueSingle($val, $filter = PicoFilterConstant::FILTER_DEFAULT, $escapeSQL = false, $nullIfEmpty = false) // NOSONAR
     {
         // add filter
         if($filter == PicoFilterConstant::FILTER_SANITIZE_EMAIL)
@@ -610,7 +610,7 @@ class PicoRequestBase extends stdClass //NOSONAR
      * @param array $params Parameters passed to the method.
      * @return mixed|null The result of the method call, or null if the method is not recognized.
      */
-    public function __call($method, $params) //NOSONAR
+    public function __call($method, $params) // NOSONAR
     {
         if (strncasecmp($method, "countable", 9) === 0)
         {
