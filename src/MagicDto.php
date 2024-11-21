@@ -44,7 +44,7 @@ class MagicDto extends stdClass // NOSONAR
      *
      * @var array
      */
-    private $_classParams = []; // NOSONAR
+    private $_classParams = array(); // NOSONAR
 
     /**
      * Data source.
