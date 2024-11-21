@@ -448,10 +448,6 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Loads data from a JSON file and processes it based on the provided options.
      *
-     * This method reads the contents of a JSON file, decodes it, and applies transformations 
-     * such as replacing environment variables, camelizing the keys, and recursively converting objects 
-     * into MagicObject instances if necessary.
-     *
      * @param string $path The file path to the JSON file.
      * @param bool $systemEnv Whether to replace system environment variables in the data (default: `false`).
      * @param bool $asObject Whether to return the result as an object instead of an associative array (default: `false`).
