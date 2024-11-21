@@ -25,7 +25,7 @@
      *               - instances of a specified class if the return type matches a class name.
      * 
      * @throws PDOException If there is an error executing the database query.
-     * @throws InvalidQueryInputException If there is no query to be executed.
+     * @throws InvalidAnnotationException If the annotations are invalid or cannot be parsed.
      * @throws InvalidReturnTypeException If the return type specified is invalid.
      */
     protected function executeNativeQuery() // NOSONAR
@@ -56,7 +56,7 @@
             $queryString = $matches ? $matches[1] : '';
             if(empty($queryString))
             {
-                throw new InvalidQueryInputException("No query found.\r\n".$docComment);
+                throw new InvalidAnnotationException("No query found.\r\n".$docComment);
             }
         }
 

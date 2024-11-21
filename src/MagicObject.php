@@ -187,7 +187,6 @@ class MagicObject extends stdClass // NOSONAR
      *        - `null`: No database connection.
      * 
      * @throws InvalidAnnotationException If the annotations are invalid or cannot be parsed.
-     * @throws InvalidQueryInputException If an error occurs while parsing the key-value pair annotations.
      */
     public function __construct($data = null, $database = null)
     {
@@ -200,7 +199,7 @@ class MagicObject extends stdClass // NOSONAR
                 $vals = $jsonAnnot->parseKeyValue($paramValue);
                 $this->_classParams[$paramName] = $vals;
             }
-            catch(InvalidQueryInputException $e)
+            catch(InvalidAnnotationException $e)
             {
                 throw new InvalidAnnotationException("Invalid annotation @".$paramName);
             }

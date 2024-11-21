@@ -54,7 +54,7 @@ class PicoRequestBase extends stdClass // NOSONAR
      * Constructor to initialize the request handler and process class annotations.
      *
      * @param bool $forceScalar Indicates whether to accept only scalar values for data input.
-     * @throws InvalidAnnotationException If there are invalid annotations in the class.
+     * @throws InvalidAnnotationException If the annotations are invalid or cannot be parsed.
      */
     public function __construct($forceScalar = false)
     {
