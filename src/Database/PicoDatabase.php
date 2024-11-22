@@ -188,7 +188,7 @@ class PicoDatabase // NOSONAR
         else {
             // For other drivers, set schema and time zone to null (or handle it as needed)
             $schema = null;
-            $timezone = null;
+            $timezone = date_default_timezone_get();
         }
 
         // Create and populate the SecretObject with the connection details
