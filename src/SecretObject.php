@@ -3,7 +3,6 @@
 namespace MagicObject;
 
 use MagicObject\Exceptions\InvalidAnnotationException;
-use MagicObject\Exceptions\InvalidQueryInputException;
 use MagicObject\Util\PicoEnvironmentVariable;
 use MagicObject\Secret\PicoSecret;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
@@ -177,8 +176,7 @@ class SecretObject extends stdClass // NOSONAR
      *
      * @return void
      *
-     * @throws InvalidAnnotationException If an invalid annotation is encountered 
-     *                                    while processing class parameters or properties.
+     * @throws InvalidAnnotationException If the annotations are invalid or cannot be parsed.
      */
     private function _objectInfo()
     {
@@ -192,7 +190,7 @@ class SecretObject extends stdClass // NOSONAR
             try {
                 $vals = $reflexClass->parseKeyValue($paramValue);
                 $this->_classParams[$paramName] = $vals;
-            } catch (InvalidQueryInputException $e) {
+            } catch (InvalidAnnotationException $e) {
                 throw new InvalidAnnotationException("Invalid annotation @" . $paramName);
             }
         }
@@ -552,7 +550,7 @@ class SecretObject extends stdClass // NOSONAR
         $iv = substr($ivHashCiphertext, 0, 16);
         $hash = substr($ivHashCiphertext, 16, 32);
         $ciphertext = substr($ivHashCiphertext, 48);
-        if (!hash_equals(hash_hmac('sha256', $ciphertext . $iv, $key, true), $hash))
+        if (!$hash || !hash_equals(hash_hmac('sha256', $ciphertext . $iv, $key, true), $hash))
         {
             return null;
         }

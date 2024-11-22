@@ -156,7 +156,6 @@ class MagicObject extends stdClass // NOSONAR
      */
     private $_persistProp = null; // NOSONAR
 
-
     /**
      * Retrieves the list of null properties.
      *
@@ -187,7 +186,6 @@ class MagicObject extends stdClass // NOSONAR
      *        - `null`: No database connection.
      * 
      * @throws InvalidAnnotationException If the annotations are invalid or cannot be parsed.
-     * @throws InvalidQueryInputException If an error occurs while parsing the key-value pair annotations.
      */
     public function __construct($data = null, $database = null)
     {
@@ -200,7 +198,7 @@ class MagicObject extends stdClass // NOSONAR
                 $vals = $jsonAnnot->parseKeyValue($paramValue);
                 $this->_classParams[$paramName] = $vals;
             }
-            catch(InvalidQueryInputException $e)
+            catch(InvalidAnnotationException $e)
             {
                 throw new InvalidAnnotationException("Invalid annotation @".$paramName);
             }
@@ -239,13 +237,16 @@ class MagicObject extends stdClass // NOSONAR
             if($data instanceof self)
             {
                 $values = $data->value();
-                foreach ($values as $key => $value) {
+                foreach ($values as $key => $value) 
+                {
                     $key2 = PicoStringUtil::camelize(str_replace("-", "_", $key));
                     $this->set($key2, $value, true);
                 }
             }
-            else if (is_array($data) || is_object($data)) {
-                foreach ($data as $key => $value) {
+            else if (is_array($data) || is_object($data)) 
+            {
+                foreach ($data as $key => $value) 
+                {
                     $key2 = PicoStringUtil::camelize(str_replace("-", "_", $key));
                     $this->set($key2, $value, true);
                 }
@@ -449,10 +450,6 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Loads data from a JSON file and processes it based on the provided options.
      *
-     * This method reads the contents of a JSON file, decodes it, and applies transformations 
-     * such as replacing environment variables, camelizing the keys, and recursively converting objects 
-     * into MagicObject instances if necessary.
-     *
      * @param string $path The file path to the JSON file.
      * @param bool $systemEnv Whether to replace system environment variables in the data (default: `false`).
      * @param bool $asObject Whether to return the result as an object instead of an associative array (default: `false`).
@@ -473,12 +470,14 @@ class MagicObject extends stdClass // NOSONAR
         $data = json_decode(file_get_contents($path), true); // true to decode as associative array
 
         // If data is valid and not empty, process it
-        if (!empty($data)) {
+        if (!empty($data)) 
+        {
             // Replace Pico environment variables in the data
             $data = PicoEnvironmentVariable::replaceValueAll($data, $data, true);
 
             // If systemEnv is true, replace system environment variables
-            if ($systemEnv) {
+            if ($systemEnv) 
+            {
                 $data = PicoEnvironmentVariable::replaceSysEnvAll($data, true);
             }
 
@@ -503,7 +502,8 @@ class MagicObject extends stdClass // NOSONAR
      */
     private function loadJsonData($data, $asObject, $recursive)
     {
-        if ($asObject) {
+        if ($asObject) 
+        {
             // Convert data to object
             $data = json_decode(json_encode($data), false); // Convert array to object
         }
@@ -586,13 +586,18 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function databaseEntity($databaseEntity = null)
     {
-        if ($databaseEntity !== null) {
-            if ($databaseEntity instanceof PicoDatabaseEntity) {
+        if ($databaseEntity !== null) 
+        {
+            if ($databaseEntity instanceof PicoDatabaseEntity) 
+            {
                 $this->_databaseEntity = $databaseEntity;
-            } elseif ($databaseEntity instanceof MagicObject) {
+            } elseif ($databaseEntity instanceof MagicObject) 
+            {
                 $db = $databaseEntity->currentDatabase();
-                if (isset($db) && $db->isConnected()) {
-                    if (!isset($this->_databaseEntity)) {
+                if (isset($db) && $db->isConnected()) 
+                {
+                    if (!isset($this->_databaseEntity)) 
+                    {
                         $this->_databaseEntity = new PicoDatabaseEntity();
                         // Set default database connection
                         $this->_databaseEntity->setDefaultDatabase($this->_database);
@@ -813,7 +818,7 @@ class MagicObject extends stdClass // NOSONAR
         $queryString = $nativeQueryUtil->extractQueryString($docComment);
         $returnType = $nativeQueryUtil->extractReturnType($docComment, $callerClassName);    
         
-        $params = [];
+        $params = array();
 
         try {
             // Apply query parameters (pagination, sorting, etc.)
@@ -1397,7 +1402,8 @@ class MagicObject extends stdClass // NOSONAR
     {
         $parentProps = $this->propertyList(true, true);
         $value = new stdClass;
-        foreach ($this as $key => $val) {
+        foreach ($this as $key => $val) 
+        {
             if(!in_array($key, $parentProps))
             {
                 $value->{$key} = $val;
@@ -1736,7 +1742,6 @@ class MagicObject extends stdClass // NOSONAR
                     $result = $persist->findAll($specification, $pageable, $sortable, $subqueryMap);
                     $stmt = null;
                 }
-
                 if($pageable != null && $pageable instanceof PicoPageable)
                 {
                     $match = $this->countData($persist, $specification, $pageable, $sortable, $findOption, $result);

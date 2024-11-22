@@ -3,7 +3,6 @@
 namespace MagicObject;
 
 use MagicObject\Exceptions\InvalidAnnotationException;
-use MagicObject\Exceptions\InvalidQueryInputException;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\PicoStringUtil;
 use ReflectionClass;
@@ -55,7 +54,7 @@ class Getter extends stdClass
             {
                 $vals = $jsonAnnot->parseKeyValue($paramValue);
             }
-            catch(InvalidQueryInputException $e)
+            catch(InvalidAnnotationException $e)
             {
                 throw new InvalidAnnotationException("Invalid annotation @".$paramName);
             }

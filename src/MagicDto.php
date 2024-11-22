@@ -6,7 +6,6 @@ use DateTime;
 use DOMDocument;
 use InvalidArgumentException;
 use MagicObject\Exceptions\InvalidAnnotationException;
-use MagicObject\Exceptions\InvalidQueryInputException;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\ClassUtil\PicoObjectParser;
 use MagicObject\Util\PicoDateTimeUtil;
@@ -44,7 +43,7 @@ class MagicDto extends stdClass // NOSONAR
      *
      * @var array
      */
-    private $_classParams = []; // NOSONAR
+    private $_classParams = array(); // NOSONAR
 
     /**
      * Data source.
@@ -76,7 +75,7 @@ class MagicDto extends stdClass // NOSONAR
                 $vals = $jsonAnnot->parseKeyValue($paramValue);
                 $this->_classParams[$paramName] = $vals;
             }
-            catch(InvalidQueryInputException $e)
+            catch(InvalidAnnotationException $e)
             {
                 throw new InvalidAnnotationException("Invalid annotation @".$paramName);
             }
