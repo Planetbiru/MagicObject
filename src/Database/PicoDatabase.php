@@ -188,42 +188,50 @@ class PicoDatabase // NOSONAR
     /**
      * Retrieves the timezone offset from the database.
      *
-     * This function detects the database type (MySQL or PostgreSQL) from the given PDO connection
+     * This function detects the database type (MySQL, MariaDB, or PostgreSQL) from the given PDO connection
      * and executes the appropriate query to determine the timezone offset from UTC. It returns the
-     * offset as a string in the format "+HH:MM" or "-HH:MM".
+     * offset as a string in the format "+HH:MM" or "-HH:MM". If the database type is unsupported or
+     * an error occurs, it defaults to "00:00".
      *
      * @param PDO $pdo The PDO connection object.
-     * @return string The timezone offset as a string (e.g., "+08:00", "-05:30"), or an error message.
+     * @return string The timezone offset as a string (e.g., "+08:00", "-05:30"), or "00:00" on failure.
      */
     private static function getTimeZoneOffset($pdo)
     {
+        $defaultValue = '00:00';
         try {
-            // Detect the database type
-            $dbType = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+            // Detect the database driver
+            $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+
+            // Map the driver to a recognized database type
+            $dbType = self::getDbType($driver);
 
             // Prepare the query based on the database type
-            if (stripos($dbType, 'mysql') !== false || stripos($dbType, 'mariadb') !== false) {
-                // Query to retrieve timezone offset in MySQL
-                $query = "SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP()) AS offset";
-            } elseif (stripos($dbType, 'pgsql') !== false) {
+            if ($dbType === PicoDatabaseType::DATABASE_TYPE_PGSQL) {
                 // Query to retrieve timezone offset in PostgreSQL
                 $query = "SELECT (EXTRACT(TIMEZONE FROM NOW()) / 3600)::TEXT || ':00' AS offset";
+            } elseif (
+                $dbType === PicoDatabaseType::DATABASE_TYPE_MYSQL ||
+                $dbType === PicoDatabaseType::DATABASE_TYPE_MARIADB
+            ) {
+                // Query to retrieve timezone offset in MySQL or MariaDB
+                $query = "SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP()) AS offset";
             } else {
-                return '00:00';
+                // Return default offset for unsupported database types
+                return $defaultValue;
             }
 
-            // Execute the query
+            // Execute the query and fetch the result
             $stmt = $pdo->query($query);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Return the offset value
-            return $result['offset'];
+            // Return the offset value if available
+            return isset($result['offset']) ? $result['offset'] : $defaultValue;
         } catch (Exception $e) {
-            // Handle errors and return the error message
-            return '00:00';
+            // Handle any exceptions and return the default offset
+            return $defaultValue;
         }
     }
-
 
     /**
      * Converts a timezone offset string to a PHP timezone name.
