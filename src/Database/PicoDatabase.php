@@ -234,14 +234,19 @@ class PicoDatabase // NOSONAR
     }
 
     /**
-     * Converts a timezone offset string to a PHP timezone name.
+     * Converts a timezone offset string to a corresponding PHP timezone name.
      *
-     * This method takes an offset string (e.g., "+08:00" or "-05:30"), calculates the total offset 
-     * in seconds, and attempts to find the corresponding PHP timezone name. If no matching timezone 
-     * is found, it falls back to returning a UTC-based timezone string.
+     * This method takes a timezone offset string (e.g., "+08:00" or "-05:30") and computes
+     * the total offset in seconds. It then attempts to map the offset to a standard PHP 
+     * timezone name. If no matching timezone is found, it falls back to returning a 
+     * UTC-based timezone string in the same offset format.
+     *
+     * Examples:
+     * - Input: "+07:00" -> Output: "Asia/Jakarta" (if mapping exists).
+     * - Input: "-05:30" -> Output: "UTC-05:30" (fallback if no mapping exists).
      *
      * @param string $offset The timezone offset string (e.g., "+08:00", "-05:30").
-     * @return string The PHP timezone name, or a fallback UTC offset string.
+     * @return string The corresponding PHP timezone name, or a fallback UTC offset string (e.g., "UTC+08:00").
      */
     private static function convertOffsetToTimeZone($offset)
     {
@@ -271,7 +276,7 @@ class PicoDatabase // NOSONAR
             return $timeZone;
         } catch (Exception $e) {
             // Handle any exceptions by returning an error message
-            return "Error: " . $e->getMessage();
+            return "UTC+00:00";
         }
     }
 
