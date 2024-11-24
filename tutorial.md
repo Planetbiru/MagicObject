@@ -1331,7 +1331,7 @@ class ConfigSecret2 extends SecretObject
 }
 
 $secret1 = new ConfigSecret1(null, function(){
-    return bin2hex("This is your secure key for Scrt");
+    return bin2hex("You secret here");
 });
 
 $yaml1 = "
@@ -1415,7 +1415,7 @@ vocal_guide_instrument: piano
 ";
 
 $secret2 = new ConfigSecret2(null, function(){
-    return bin2hex("This is your secure key for Scrt");
+    return bin2hex("You secret here");
 });$secret2->loadYamlString($yaml2, false, true, true);
 
 echo $secret2->dumpYaml(null, 4);
