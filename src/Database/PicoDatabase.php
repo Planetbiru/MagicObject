@@ -245,8 +245,8 @@ class PicoDatabase // NOSONAR
      * - Input: "+07:00" -> Output: "Asia/Jakarta" (if mapping exists).
      * - Input: "-05:30" -> Output: "UTC-05:30" (fallback if no mapping exists).
      *
-     * @param string $offset The timezone offset string (e.g., "+08:00", "-05:30").
-     * @return string The corresponding PHP timezone name, or a fallback UTC offset string (e.g., "UTC+08:00").
+     * @param string $offset The timezone offset string (e.g., "+07:00", "-05:30").
+     * @return string The corresponding PHP timezone name, or a fallback UTC offset string (e.g., "UTC+07:00").
      */
     private static function convertOffsetToTimeZone($offset)
     {
