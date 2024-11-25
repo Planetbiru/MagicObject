@@ -121,16 +121,20 @@ class TextConverter
      */
     private function prepareMap()
     {
+        $maps = array();
+
         $maps[] = $this->arrayMapAssoc(function ($k, $v) {
-            return [chr($k), chr($v)];
+            return array(chr($k), chr($v));
         }, $this->mapChrChr);
 
         $maps[] = $this->arrayMapAssoc(function ($k, $v) {
-            return [chr($k), $v];
+            return array(chr($k), $v);
         }, $this->mapChrString);
 
-        return array_merge([], ...$maps);
+        // Use call_user_func_array to merge arrays for PHP 5.4 compatibility
+        return call_user_func_array('array_merge', $maps);
     }
+
 
     /**
      * Maps an associative array using a callback function.
