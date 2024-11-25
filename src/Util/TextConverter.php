@@ -27,7 +27,7 @@ class TextConverter
     /**
      * @var array $mapChrChr Mapping of character codes to corresponding character codes.
      */
-    private $mapChrChr = [
+    private $mapChrChr = array(
         0x8A => 0xA9,
         0x8C => 0xA6,
         0x8D => 0xAB,
@@ -43,12 +43,12 @@ class TextConverter
         0x9A => 0xB9,
         0xBE => 0xB5,
         0x9E => 0xBE
-    ];
+    );
 
     /**
      * @var array $mapChrString Mapping of character codes to HTML entities.
      */
-    private $mapChrString = [
+    private $mapChrString = array(
         0x80 => '&euro;',
         0x82 => '&sbquo;',
         0x84 => '&bdquo;',
@@ -75,7 +75,7 @@ class TextConverter
         0xB6 => '&para;',
         0xB7 => '&middot;',
         0xBB => '&raquo;'
-    ];
+    );
 
     /**
      * TextConverter constructor.

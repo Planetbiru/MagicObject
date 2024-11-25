@@ -419,7 +419,7 @@ class PicoDatabaseUtil
             if (!$isAppending) {
                 if (!empty($currentQuery)) {
                     // Store the previous query and reset for the next one
-                    $queries[] = ['query' => rtrim($currentQuery, self::INLINE_TRIM), 'delimiter' => $delimiter];
+                    $queries[] = array('query' => rtrim($currentQuery, self::INLINE_TRIM), 'delimiter' => $delimiter);
                 }
                 $currentQuery = '';
                 $isAppending = true;
@@ -436,7 +436,7 @@ class PicoDatabaseUtil
 
         // Add the last query if any
         if (!empty($currentQuery)) {
-            $queries[] = ['query' => rtrim($currentQuery, self::INLINE_TRIM), 'delimiter' => $delimiter];
+            $queries[] = array('query' => rtrim($currentQuery, self::INLINE_TRIM), 'delimiter' => $delimiter);
         }
 
         return $queries;

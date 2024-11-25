@@ -708,7 +708,7 @@ class PicoDatabaseUtilBase // NOSONAR
         $query = preg_replace('/--.*?\n|\/\*.*?\*\//s', '', $mariadbQuery); // NOSONAR
         
         // Replace MariaDB data types with PostgreSQL data types
-        $replacements = [
+        $replacements = array(
             'int' => 'INTEGER',
             'tinyint(1)' => 'BOOLEAN', // MariaDB TINYINT(1) as BOOLEAN
             'tinyint' => 'SMALLINT',
@@ -729,7 +729,7 @@ class PicoDatabaseUtilBase // NOSONAR
             'longtext' => 'TEXT', // No direct equivalent
             'json' => 'JSONB', // Use JSONB for better performance in PostgreSQL
             // Add more type conversions as needed
-        ];
+        );
 
         $query = str_ireplace(array_keys($replacements), array_values($replacements), $query);
 
@@ -767,7 +767,7 @@ class PicoDatabaseUtilBase // NOSONAR
         $query = preg_replace('/--.*?\n|\/\*.*?\*\//s', '', $postgresqlQuery); // NOSONAR
         
         // Replace PostgreSQL data types with MySQL data types
-        $replacements = [
+        $replacements = array(
             'bigserial' => 'BIGINT AUTO_INCREMENT',
             'serial' => 'INT AUTO_INCREMENT',
             'character varying' => 'VARCHAR', // Added handling for character varying
@@ -786,7 +786,7 @@ class PicoDatabaseUtilBase // NOSONAR
             'json' => 'JSON',
             'bytea' => 'BLOB', // Added handling for bytea
             // Add more type conversions as needed
-        ];
+        );
     
         $query = str_ireplace(array_keys($replacements), array_values($replacements), $query);
     

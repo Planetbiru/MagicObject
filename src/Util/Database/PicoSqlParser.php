@@ -132,14 +132,14 @@ class PicoSqlParser
                     {
                         $def = null;
                     }
-                    $fldList[] = [
+                    $fldList[] = array(
                         self::KEY_COLUMN_NAME => $columnName,
                         self::KEY_TYPE => trim($rg_fld2_result['ftype']),
                         self::KEY_LENGTH => $length,
                         self::KEY_PRIMARY_KEY => $is_pk,
                         self::KEY_NULLABLE => $nullable,
                         self::KEY_DEFAULT => $def
-                    ];
+                    );
                     $columnList[] = $columnName;
                 }
             } elseif (stripos($f, 'primary') !== false && stripos($f, 'key') !== false) {
@@ -167,11 +167,11 @@ class PicoSqlParser
                 }
             }
         }
-        return [
+        return array(
             'tableName' => $tableName, 
             'columns' => $fldList, 
             'primaryKey' => $primaryKey
-        ];
+        );
     }
 
     /**
