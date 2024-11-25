@@ -158,7 +158,7 @@ class PicoSqlParser
 
             if (preg_match($rg_pk2, $f) && preg_match($rg_pk, $f)) {
                 $x = preg_replace('/(PRIMARY|UNIQUE) KEY\s+[a-zA-Z_0-9\s]+/', '', $f);
-                $x = str_replace(['(', ')'], '', $x);
+                $x = str_replace(array('(', ')'), '', $x);
                 $pkeys = array_map('trim', explode(',', $x));
                 foreach ($fldList as &$column) {
                     if ($this->inArray($pkeys, $column[self::KEY_COLUMN_NAME])) {
