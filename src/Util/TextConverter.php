@@ -135,7 +135,6 @@ class TextConverter
         return call_user_func_array('array_merge', $maps);
     }
 
-
     /**
      * Maps an associative array using a callback function.
      *
