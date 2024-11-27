@@ -303,6 +303,7 @@ class PicoDatabaseDump
             $columns = $tableInfo->getColumns();
             $res = array_merge($res, array_keys($columns));
         }
+        $res = array_unique($res);
         return $res;
     }
 
