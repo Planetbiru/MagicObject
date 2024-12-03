@@ -270,7 +270,6 @@ class PicoEntityGenerator
         );
     }
 
-
     /**
      * Generate the entity class and save it to a file.
      *
