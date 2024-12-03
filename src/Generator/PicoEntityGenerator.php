@@ -215,35 +215,61 @@ class PicoEntityGenerator
     }
 
     /**
-     * Get a mapping of database types to PHP types.
+     * Get a mapping of database types to PHP types for PostgreSQL and SQLite.
      *
      * @return array Associative array of type mappings
      */
     protected function getTypeMap()
     {
         return array(
-            "double" => "float",
-            "float" => "float",
-            "bigint" => "int",
-            "smallint" => "int",
-            "tinyint(1)" => "bool",
-            "tinyint" => "int",
-            "int" => "int",
-            "varchar" => "string",
-            "char" => "string",
-            "tinytext" => "string",
-            "mediumtext" => "string",
-            "longtext" => "string",
-            "text" => "string",
-            "enum" => "string",
-            "bool" => "bool",
-            "boolean" => "bool",
-            "timestamp" => "string",
-            "datetime" => "string",
-            "date" => "string",
-            "time" => "string"
+            // Numeric types
+            "double" => "float",            // PostgreSQL: double precision
+            "float" => "float",             // PostgreSQL: float
+            "bigint" => "int",              // PostgreSQL: bigint
+            "smallint" => "int",            // PostgreSQL: smallint
+            "tinyint(1)" => "bool",         // MySQL-style, use boolean for tinyint(1)
+            "tinyint" => "int",             // PostgreSQL/SQLite: tinyint, handled as INT
+            "int" => "int",                 // PostgreSQL/SQLite: integer
+            "serial" => "int",              // PostgreSQL: auto-increment integer (equivalent to INT)
+
+            // String types
+            "varchar" => "string",          // PostgreSQL: variable-length string
+            "char" => "string",             // PostgreSQL: fixed-length string
+            "text" => "string",             // PostgreSQL/SQLite: unlimited length string
+            "varchar(255)" => "string",     // PostgreSQL: same as varchar without length
+            "citext" => "string",           // PostgreSQL: case-insensitive text (equivalent to string)
+            
+            // MySQL-style text types (these types are similar to `text`)
+            "tinytext" => "string",         // MySQL: tinytext
+            "mediumtext" => "string",       // MySQL: mediumtext
+            "longtext" => "string",         // MySQL: longtext
+
+            // Boolean types
+            "bool" => "bool",               // PostgreSQL: boolean
+            "boolean" => "bool",            // PostgreSQL: boolean (same as bool)
+
+            // Date/Time types
+            "timestamp" => "string",        // PostgreSQL: timestamp (datetime)
+            "datetime" => "string",         // PostgreSQL/SQLite: datetime
+            "date" => "string",             // PostgreSQL/SQLite: date
+            "time" => "string",             // PostgreSQL/SQLite: time
+            "timestamp with time zone" => "string", // PostgreSQL: timestamp with time zone
+
+            // SQLite-specific types
+            "integer" => "int",             // SQLite: integer
+            "real" => "float",              // SQLite: real (floating-point)
+            "text" => "string",             // SQLite: text (string)
+            "blob" => "resource",           // SQLite: blob (binary data)
+            
+            // SQLite's special handling
+            "BOOLEAN" => "bool",            // SQLite: boolean (same as PostgreSQL)
+            
+            // Special cases
+            "json" => "array",              // PostgreSQL: JSON type, mapped to PHP array
+            "jsonb" => "array",             // PostgreSQL: JSONB (binary JSON), mapped to PHP array
         );
     }
+
 
     /**
      * Generate the entity class and save it to a file.
