@@ -185,9 +185,9 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
             $typeMapping = array(
                 'varchar' => "NVARCHAR($length)",
                 'tinyint(1)' => 'BOOLEAN',
-                'float' => 'FLOAT',
+                'float' => 'REAL',
                 'text' => 'TEXT',
-                'longtext' => 'LONGTEXT',
+                'longtext' => 'TEXT',
                 'date' => 'DATE',
                 'timestamp' => 'TIMESTAMP',
                 'blob' => 'BLOB',
