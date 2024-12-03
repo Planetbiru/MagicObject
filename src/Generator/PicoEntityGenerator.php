@@ -215,7 +215,7 @@ class PicoEntityGenerator
     }
 
     /**
-     * Get a mapping of database types to PHP types for PostgreSQL and SQLite.
+     * Get a mapping of database types to PHP types for MySQL, PostgreSQL and SQLite.
      *
      * @return array Associative array of type mappings
      */
