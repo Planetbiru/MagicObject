@@ -185,13 +185,21 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
      */
     public function fixDefaultValue($defaultValue, $type)
     {
-        if(strtolower($defaultValue) == 'true' || strtolower($defaultValue) == 'false' || strtolower($defaultValue) == 'null')
+        if(stripos($type, 'bool') !== false || stripos($type, 'tinyint(1)') !== false)
+        {
+            return $defaultValue != 0 ? 'true' : 'false';
+        }
+        else if(strtolower($defaultValue) == 'true' || strtolower($defaultValue) == 'false' || strtolower($defaultValue) == 'null')
         {
             return $defaultValue;
         }
-        if(stripos($type, 'enum') !== false || stripos($type, 'char') !== false || stripos($type, 'text') !== false || stripos($type, 'int') !== false || stripos($type, 'float') !== false || stripos($type, 'double') !== false)
+        else if(stripos($type, 'enum') !== false || stripos($type, 'char') !== false || stripos($type, 'text') !== false)
         {
             return "'".$defaultValue."'";
+        }
+        else if(stripos($type, 'int') !== false || stripos($type, 'decimal') !== false || stripos($type, 'float') !== false || stripos($type, 'double') !== false)
+        {
+            return $defaultValue * 1;
         }
         return $defaultValue;
     }

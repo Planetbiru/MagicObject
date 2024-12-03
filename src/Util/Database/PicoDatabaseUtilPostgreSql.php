@@ -303,18 +303,23 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
      */
     public function fixDefaultValue($defaultValue, $type)
     {
-        if(stripos($type, 'bool') === 0)
+        if(stripos($type, 'bool') !== false)
         {
             return $defaultValue != 0 ? 'true' : 'false';
         }
-        if (strtolower($defaultValue) == 'true' || strtolower($defaultValue) == 'false' || strtolower($defaultValue) == 'null') {
+        else if (strtolower($defaultValue) == 'true' || strtolower($defaultValue) == 'false' || strtolower($defaultValue) == 'null') {
             return $defaultValue;
-        }
-        
-        if (stripos($type, 'varchar') !== false || stripos($type, 'char') !== false || stripos($type, 'text') !== false) {
+        }     
+        else if (stripos($type, 'enum') !== false || stripos($type, 'varchar') !== false || stripos($type, 'char') !== false || stripos($type, 'text') !== false) {
             return "'" . addslashes($defaultValue) . "'";
         }
-
+        else if(stripos($type, 'int') !== false 
+        || stripos($type, 'real') !== false 
+        || stripos($type, 'float') !== false 
+        || stripos($type, 'double') !== false)
+        {
+            return $defaultValue + 0;
+        }
         return $defaultValue;
     }
 
