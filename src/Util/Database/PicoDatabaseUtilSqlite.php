@@ -377,6 +377,9 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
         } elseif (stripos($typeCheck, 'int(') === 0) {
             // Convert 'int()' to uppercase (MySQL int type conversion)
             $type = strtoupper($type);
+        } elseif (stripos($typeCheck, 'bigint(') === 0) {
+            // Convert 'bigint()' to INTEGER
+            $type = 'INTEGER';
         } else {
             // For all other types, check the predefined map
             foreach ($map as $key => $val) {
@@ -604,4 +607,20 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
         return $stmt->fetch() !== false;
     }
     
+    /**
+     * Converts a MySQL column type to its equivalent SQLite column type.
+     *
+     * This method uses the `mysqlToSqliteType` function to convert a MySQL column type 
+     * to the appropriate SQLite column type. It helps facilitate database migration or 
+     * compatibility between MySQL and SQLite.
+     *
+     * @param string $columnType The MySQL column type to be converted.
+     * @return string The equivalent SQLite column type.
+     * @throws InvalidArgumentException If the column type is not recognized or unsupported.
+     */
+    public function getColumnType($columnType)
+    {
+        return $this->mysqlToSqliteType($columnType);
+    }
+
 }
