@@ -68,9 +68,22 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
         {
             $schema = "public";
         }
-        $sql = "SELECT column_name, data_type, is_nullable, column_default 
-                FROM information_schema.columns 
-                WHERE table_schema = '$schema' AND table_name = '$tableName'";
+        $sql = "SELECT 
+        column_name AS \"Field\", 
+        data_type AS \"Type\", 
+        is_nullable AS \"Null\", 
+        CASE 
+            WHEN column_default IS NOT NULL THEN 'DEFAULT' 
+            ELSE '' 
+        END AS \"Key\", 
+        column_default AS \"Default\", 
+        CASE 
+            WHEN is_identity = 'YES' THEN 'AUTO_INCREMENT' 
+            ELSE '' 
+        END AS \"Extra\"
+        FROM information_schema.columns
+        WHERE table_name = '$tableName'
+        AND table_schema = '$schema'";
         return $database->fetchAll($sql);
     }
 
@@ -451,6 +464,22 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
             }
         }
         return $data;
+    }
+
+    /**
+     * Converts the given column type from MySQL format to PostgreSQL format.
+     *
+     * This method calls the `convertMySqlToPostgreSql` function to perform the conversion of 
+     * the column type from MySQL to PostgreSQL syntax. The method provides an abstraction layer 
+     * for converting column types, ensuring compatibility when migrating between MySQL and PostgreSQL.
+     *
+     * @param string $columnType The MySQL column type to be converted.
+     * @return string The equivalent PostgreSQL column type.
+     * @throws InvalidArgumentException If the column type is not recognized or unsupported.
+     */
+    public function getColumnType($columnType)
+    {
+        return $this->convertMySqlToPostgreSql($columnType);
     }
 
 }

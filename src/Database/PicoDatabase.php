@@ -371,8 +371,8 @@ class PicoDatabase // NOSONAR
      * Connect to the RDMS (Relational Database Management System).
      *
      * Establishes a connection to an RDMS database using the provided credentials and optionally selects 
-     * a specific database based on the provided flag. Sets the time zone for the connection and handles 
-     * schema settings for PostgreSQL.
+     * a specific database based on the provided flag. Sets the time zone, charset, and handles schema settings 
+     * for PostgreSQL.
      *
      * @param bool $withDatabase Flag to select the database when connected (default is true).
      * @return bool True if the connection is successful, false if it fails.
@@ -385,25 +385,49 @@ class PicoDatabase // NOSONAR
         $timeZoneOffset = date("P");
         try {
             $connectionString = $this->constructConnectionString($withDatabase);
+            $charset = $this->databaseCredentials->getCharset();
+           
             if (!$this->databaseCredentials->issetUsername()) {
                 throw new InvalidDatabaseConfiguration("Database username may not be empty. Please check your database configuration!");
             }
-            $initialQueries = "SET time_zone = '$timeZoneOffset';";
+            
+            // Initial queries to set timezone and charset
+            $initialQueries = "SET time_zone = '$timeZoneOffset'; ";
+            if(isset($charset) && !empty($charset)) {
+                $charset = addslashes($charset);
+                $initialQueries .= "SET NAMES '$charset'; ";
+            }
+
+            // Set schema for PostgreSQL
             if ($this->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_PGSQL &&
                 $this->databaseCredentials->getDatabaseSchema() != null && 
                 $this->databaseCredentials->getDatabaseSchema() != "") {
-                $initialQueries .= "SET search_path TO " . $this->databaseCredentials->getDatabaseSchema();
+                $initialQueries .= "SET search_path TO " . $this->databaseCredentials->getDatabaseSchema() . ";";
             }
+
+            // Additional options for PDO
+            $pdoOptions = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            ];
+
+            // Additional options specific to MySQL/MariaDB
+            if ($this->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_MYSQL ||
+                $this->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_MARIADB) {
+                $pdoOptions[PDO::MYSQL_ATTR_INIT_COMMAND] = $initialQueries;
+            }
+
             $this->databaseConnection = new PDO(
                 $connectionString,
                 $this->databaseCredentials->getUsername(),
                 $this->databaseCredentials->getPassword(),
-                [
-                    PDO::MYSQL_ATTR_INIT_COMMAND => $initialQueries,
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::MYSQL_ATTR_FOUND_ROWS => true
-                ]
+                $pdoOptions
             );
+
+            // Execute initial queries for PostgreSQL
+            if ($this->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_PGSQL) {
+                $this->databaseConnection->exec($initialQueries);
+            }
+
             $connected = true;
             $this->connected = $connected;
         } catch (Exception $e) {
@@ -472,7 +496,6 @@ class PicoDatabase // NOSONAR
             return PicoDatabaseType::DATABASE_TYPE_MYSQL;
         }
     }
-
 
     /**
      * Create a connection string.
@@ -994,7 +1017,6 @@ class PicoDatabase // NOSONAR
         $val->connected = $this->connected;
         return json_encode($val);
     }
-
 
     /**
      * Get the callback function to be executed when modifying data with queries.
