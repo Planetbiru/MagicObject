@@ -178,13 +178,13 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
 
         // Check for auto-increment primary key
         if (is_array($autoIncrementKeys) && in_array($columnName, $autoIncrementKeys)) {
-            $sqlType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
+            $sqlType = 'INTEGER PRIMARY KEY';
             $pKeyArrUsed[] = $columnName; // Add to used primary keys
         } else {
             // Default mapping of column types to SQL types
             $typeMapping = array(
-                'varchar' => "VARCHAR($length)",
-                'tinyint(1)' => 'TINYINT(1)',
+                'varchar' => "NVARCHAR($length)",
+                'tinyint(1)' => 'BOOLEAN',
                 'float' => 'FLOAT',
                 'text' => 'TEXT',
                 'longtext' => 'LONGTEXT',
@@ -202,7 +202,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
                     $sqlType !== 'LONGTEXT' && $sqlType !== 'DATE' && $sqlType !== 'TIMESTAMP' && 
                     $sqlType !== 'BLOB') 
                 {
-                    $sqlType = 'VARCHAR(255)'; // Fallback type for unknown types
+                    $sqlType = 'NVARCHAR(255)'; // Fallback type for unknown types
                 }
             }
         }
