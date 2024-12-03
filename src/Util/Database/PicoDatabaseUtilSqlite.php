@@ -466,6 +466,10 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
      */
     public function fixDefaultValue($defaultValue, $type)
     {
+        if(stripos($type, 'bool') === 0)
+        {
+            return $defaultValue != 0 ? 'true' : 'false';
+        }
         if(strtolower($defaultValue) == 'true' 
         || strtolower($defaultValue) == 'false' 
         || strtolower($defaultValue) == 'null'
