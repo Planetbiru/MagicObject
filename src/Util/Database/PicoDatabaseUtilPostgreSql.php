@@ -494,9 +494,14 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
         {
             return 'BOOLEAN';
         }
-        else if(stripos($columnType, 'biginteger(') === 0 || stripos($columnType, 'smallinteger(') === 0 || stripos($columnType, 'integer(') === 0 || stripos($columnType, 'bigint(') === 0 || stripos($columnType, 'smallint(') === 0 || stripos($columnType, 'int(') === 0)
+        else if(stripos($columnType, 'biginteger(') === 0 
+        || stripos($columnType, 'smallinteger') === 0 
+        || stripos($columnType, 'integer') === 0 
+        || stripos($columnType, 'bigint') === 0 
+        || stripos($columnType, 'smallint') === 0 
+        || stripos($columnType, 'int') === 0)
         {
-            $type = 'INTEGER';
+            return 'INTEGER';
         }
         $type = $this->convertMySqlToPostgreSql($columnType);
         if (stripos($type, 'enum(') === 0) {
