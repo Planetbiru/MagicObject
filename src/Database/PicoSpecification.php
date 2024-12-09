@@ -59,6 +59,29 @@ class PicoSpecification // NOSONAR
     }
 
     /**
+     * Creates and returns an instance of the class with an optional PicoPredicate condition.
+     *
+     * This static method creates a new instance of the class and, if the provided parameters 
+     * are set, adds a PicoPredicate condition using the given field and value.
+     *
+     * @param string|null $field The name of the field to be used in the predicate. 
+     *                            If null, no predicate is added.
+     * @param mixed|null  $value The value to compare against the field in the predicate. 
+     *                            If null, no predicate is added.
+     * 
+     * @return self A new instance of the class with the optionally added predicate.
+     */
+    public static function getInstanceOf($field = null, $value = null)
+    {
+        $instance = new self;
+        if(isset($field))
+        {
+            $instance->addAnd(new PicoPredicate($field, $value));
+        }
+        return $instance;
+    }
+
+    /**
      * Checks if a real join table is required based on the specifications.
      *
      * @return bool True if a join is required, false otherwise.
