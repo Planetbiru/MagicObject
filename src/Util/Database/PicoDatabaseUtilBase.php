@@ -820,5 +820,78 @@ class PicoDatabaseUtilBase // NOSONAR
         
         return $query;
     }
+    
+    /**
+     * Checks if the given value is a native value (true, false, or null).
+     *
+     * This function checks if the provided `$defaultValue` is a string representing
+     * one of the native values: "true", "false", or "null".
+     *
+     * @param string $defaultValue The value to check.
+     * @return bool True if the value is "true", "false", or "null", false otherwise.
+     */
+    public static function isNativeValue($defaultValue)
+    {
+        return strtolower($defaultValue) == 'true' 
+            || strtolower($defaultValue) == 'false' 
+            || strtolower($defaultValue) == 'null';
+    }
+
+    /**
+     * Checks if the given type is a boolean type.
+     *
+     * This function checks if the provided `$type` contains the word "bool", 
+     * indicating it is a boolean type (e.g., bool, boolean).
+     *
+     * @param string $type The type to check.
+     * @return bool True if the type contains "bool", false otherwise.
+     */
+    public static function isTypeBoolean($type)
+    {
+        return stripos($type, 'bool') !== false;
+    }
+
+    /**
+     * Checks if the given type is a text-based type.
+     *
+     * This function checks if the provided `$type` contains the word "enum", "varchar", 
+     * "char", or "text", indicating it is a text-based type (e.g., enum, varchar, char, text).
+     *
+     * @param string $type The type to check.
+     * @return bool True if the type contains "enum", "varchar", "char", or "text", false otherwise.
+     */
+    public static function isTypeText($type)
+    {
+        return stripos($type, 'enum') !== false || stripos($type, 'varchar') !== false || stripos($type, 'char') !== false || stripos($type, 'text') !== false;
+    }
+
+    /**
+     * Checks if the given type is an integer type.
+     *
+     * This function checks if the provided `$type` contains the word "int",
+     * indicating it is an integer type (e.g., int, integer).
+     *
+     * @param string $type The type to check.
+     * @return bool True if the type contains "int", false otherwise.
+     */
+    public static function isTypeInteger($type)
+    {
+        return stripos($type, 'int') !== false;
+    }
+
+    /**
+     * Checks if the given type is a float type.
+     *
+     * This function checks if the provided `$type` contains any of the words
+     * "decimal", "float", "double", or "real", indicating it is a floating-point type.
+     *
+     * @param string $type The type to check.
+     * @return bool True if the type contains "decimal", "float", "double", or "real", false otherwise.
+     */
+    public static function isTypeFloat($type)
+    {
+        return stripos($type, 'decimal') !== false || stripos($type, 'float') !== false || stripos($type, 'double') !== false || stripos($type, 'real') !== false;
+    }
+
 
 }

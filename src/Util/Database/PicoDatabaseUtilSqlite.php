@@ -350,8 +350,11 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
             'float' => 'REAL',          // MySQL 'float' maps to SQLite 'REAL'
             'double' => 'REAL',         // MySQL 'double' maps to SQLite 'REAL'
             'decimal' => 'NUMERIC',     // MySQL 'decimal' maps to SQLite 'NUMERIC'
-            'text' => 'TEXT',           // MySQL 'text' maps to SQLite 'TEXT'
+            'tinytext' => 'TEXT',       // MySQL 'tinytext' maps to SQLite 'TEXT'
+            'smalltext' => 'TEXT',      // MySQL 'smalltext' maps to SQLite 'TEXT'
+            'mediumtext' => 'TEXT',     // MySQL 'mediumtext' maps to SQLite 'TEXT'
             'longtext' => 'TEXT',       // MySQL 'longtext' maps to SQLite 'TEXT'
+            'text' => 'TEXT',           // MySQL 'text' maps to SQLite 'TEXT'
             'date' => 'TEXT',           // MySQL 'date' maps to SQLite 'TEXT'
             'datetime' => 'TEXT',       // MySQL 'datetime' maps to SQLite 'TEXT'
             'timestamp' => 'TEXT'       // MySQL 'timestamp' maps to SQLite 'TEXT'
@@ -478,29 +481,24 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
      */
     public function fixDefaultValue($defaultValue, $type)
     {
-        if(stripos($type, 'bool') !== false)
+        if(self::isTypeBoolean($type))
         {
             return $defaultValue != 0 ? 'true' : 'false';
         }
-        else if(strtolower($defaultValue) == 'true' 
-        || strtolower($defaultValue) == 'false' 
-        || strtolower($defaultValue) == 'null'
-        )
+        else if(self::isNativeValue($defaultValue))
         {
             return $defaultValue;
         }
-        else if(stripos($type, 'char') !== false 
-        || stripos($type, 'text') !== false 
-        )
+        else if(self::isTypeText($type))
         {
             return "'".$defaultValue."'";
         }
-        else if(stripos($type, 'int') !== false)
+        else if(self::isTypeInteger($type))
         {
             $defaultValue = preg_replace('/[^\d]/', '', $defaultValue);
             return (int)$defaultValue;
         }
-        else if(stripos($type, 'decimal') !== false || stripos($type, 'float') !== false || stripos($type, 'double') !== false || stripos($type, 'real') !== false)
+        else if(self::isTypeFloat($type))
         {
             $defaultValue = preg_replace('/[^\d.]/', '', $defaultValue);
             return (float)$defaultValue;
