@@ -3032,20 +3032,20 @@ class Album extends MagicObject
 
 **@Entity**
 
-`@Entity` Indicates that the class represents an entity.
+`@Entity` indicates that the class represents an entity.
 
 **@JSON**
 
-`@JSON` Configures how the object will be serialized.
+`@JSON` configures how the object will be serialized.
 
 Attributes:
 1. `property-naming-strategy`
 
 Allowed value:
 
-- `SNAKE_CASE` all properties will be snake case when `__toString()` method called.
-- `CAMEL_CASE` all properties will be camel case when `__toString()` method called.
-- `UPPER_CAMEL_CASE` all properties will be camel case with capitalize first character when `__toString()` method called.
+- `SNAKE_CASE`: All properties will be snake case when `__toString()` method called.
+- `CAMEL_CASE`: All properties will be camel case when `__toString()` method called.
+- `UPPER_CAMEL_CASE`: All properties will be camel case with capitalize first character when `__toString()` method called.
 
 Default: `CAMEL_CASE`
 
@@ -3053,43 +3053,43 @@ Default: `CAMEL_CASE`
 
 Allowed value:
 
-- `true` JSON string will be prettified
-- `false` JSON string will not be prettified
+- `true`: JSON string will be prettified
+- `false`: JSON string will not be prettified
 
 Default: `false`
 
 **@Table**
 
-`@Table` Provides caching configuration.
+`@Table` provides table information.
 
 Attributes:
 `name`
 
-`name` is the table name of the entity.
+`name` The name of the table associated with the entity.
 
 **@Cache**
 
-`@Cache` Specifies the namespace of the class.
+`@Cache` provides caching configuration.
 
 Attributes:
 `enable`
 
-`enable` is option to enable or disable cache.
+`enable` Option to enable or disable caching.
 
 Allowed value:
 
-- `true` Cache is enabled
-- `false` Cache is disabled
+- `true`: Cache is enabled
+- `false`: Cache is disabled
 
 Default: `false`
 
 **@package**
 
-`@package` is parameter for namespace.
+`@package` specifies the namespace of the class.
 
 PHP does not provide a native method to retrieve a class's namespace. Earlier versions of MagicObject attempted to obtain this information by reading the PHP script, a method that proved both unsafe and inefficient.
 
-With the addition of package annotations to each entity, MagicObject now offers a safer and more efficient way to join entities. However, if a package annotation is not available on an entity, version 2.1 will still revert to the old method.
+With the addition of the `@package` annotation to each entity, MagicObject now offers a safer and more efficient way to associate entities. However, if a `@package` annotation is not available on an entity, version 2.1 will still revert to the old method.
 
 ### Property Parameters
 

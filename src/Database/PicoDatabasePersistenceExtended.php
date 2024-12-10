@@ -171,7 +171,7 @@ class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
      *
      * @return string The JSON representation of the object.
      */
-    public function toString()
+    public function __toString()
     {
         return json_encode($this->map);
     }
