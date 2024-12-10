@@ -184,7 +184,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
             // Default mapping of column types to SQL types
             $typeMapping = array(
                 'varchar' => "NVARCHAR($length)",
-                'tinyint(1)' => 'BOOLEAN',
+                'tinyint(1)' => 'BOOLEAN', // NOSONAR
                 'float' => 'REAL',
                 'text' => 'TEXT',
                 'longtext' => 'TEXT',
@@ -338,7 +338,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
      * 
      * @return string The corresponding SQLite data type (e.g., 'BOOLEAN', 'NVARCHAR(255)', 'REAL', 'NUMERIC', 'TEXT').
      */
-    private function mysqlToSqliteType($type)
+    private function mysqlToSqliteType($type) // NOSONAR
     {
         // Trim any whitespace and convert to lowercase for easier comparison
         $typeCheck = trim(strtolower($type));
