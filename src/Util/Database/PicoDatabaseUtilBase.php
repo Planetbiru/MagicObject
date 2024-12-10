@@ -24,7 +24,7 @@ class PicoDatabaseUtilBase // NOSONAR
     {
         $autoIncrement = $tableInfo->getAutoIncrementKeys();
         $autoIncrementKeys = array();
-        if(is_array($autoIncrement) && !empty($autoIncrement))
+        if(self::isArray($autoIncrement) && !empty($autoIncrement))
         {
             foreach($autoIncrement as $col)
             {
@@ -68,7 +68,7 @@ class PicoDatabaseUtilBase // NOSONAR
      */
     private function isArrayMagicObject($data)
     {
-        return is_array($data) && isset($data[0]) && $data[0] instanceof MagicObject;
+        return self::isArray($data) && isset($data[0]) && $data[0] instanceof MagicObject;
     }
     
     /**
@@ -247,7 +247,7 @@ class PicoDatabaseUtilBase // NOSONAR
     public function processDataMapping($data, $columns, $maps = null)
     {
         // Check if mappings are provided and are in array format
-        if(isset($maps) && is_array($maps))
+        if(self::isArray($maps))
         {
             foreach($maps as $map)
             {
@@ -337,19 +337,6 @@ class PicoDatabaseUtilBase // NOSONAR
             $tables[] = $tableInfo;
         }
         return $tables;
-    }
-
-    /**
-     * Checks if the provided array is not empty.
-     *
-     * This method verifies that the input is an array and contains at least one element.
-     *
-     * @param array $array The array to be checked.
-     * @return bool True if the array is not empty; otherwise, false.
-     */
-    public function isNotEmpty($array)
-    {
-        return $array != null && is_array($array) && !empty($array);
     }
 
     /**
@@ -832,9 +819,7 @@ class PicoDatabaseUtilBase // NOSONAR
      */
     public static function isNativeValue($defaultValue)
     {
-        return strtolower($defaultValue) == 'true' 
-            || strtolower($defaultValue) == 'false' 
-            || strtolower($defaultValue) == 'null';
+        return strtolower($defaultValue) == 'true' || strtolower($defaultValue) == 'false' || strtolower($defaultValue) == 'null';
     }
 
     /**
@@ -906,4 +891,16 @@ class PicoDatabaseUtilBase // NOSONAR
         return isset($value) && is_array($value);
     }
 
+    /**
+     * Checks if the provided array is not empty.
+     *
+     * This method verifies that the input is an array and contains at least one element.
+     *
+     * @param array $array The array to be checked.
+     * @return bool True if the array is not empty; otherwise, false.
+     */
+    public function isNotEmpty($array)
+    {
+        return self::isArray($array) && !empty($array);
+    }
 }
