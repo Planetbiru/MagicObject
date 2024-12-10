@@ -893,5 +893,17 @@ class PicoDatabaseUtilBase // NOSONAR
         return stripos($type, 'decimal') !== false || stripos($type, 'float') !== false || stripos($type, 'double') !== false || stripos($type, 'real') !== false;
     }
 
+    /**
+     * Checks if the given value is an array.
+     *
+     * This function checks if the provided `$value` is set and is an array.
+     *
+     * @param mixed $value The value to check.
+     * @return bool True if the value is an array, false otherwise.
+     */
+    public static function isArray($value)
+    {
+        return isset($value) && is_array($value);
+    }
 
 }

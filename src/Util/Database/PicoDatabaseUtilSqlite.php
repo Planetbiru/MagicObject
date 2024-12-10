@@ -84,7 +84,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
 
         $pKeyArr = array();
         $pKeyArrUsed = array();
-        if(isset($pKeys) && is_array($pKeys) && !empty($pKeys))
+        if(self::isArray($pKeys) && !empty($pKeys))
         {
             $pkVals = array_values($pKeys);
             foreach($pkVals as $pk)
@@ -177,7 +177,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
         $sqlType = '';
 
         // Check for auto-increment primary key
-        if (is_array($autoIncrementKeys) && in_array($columnName, $autoIncrementKeys)) {
+        if (self::isArray($autoIncrementKeys) && in_array($columnName, $autoIncrementKeys)) {
             $sqlType = 'INTEGER PRIMARY KEY';
             $pKeyArrUsed[] = $columnName; // Add to used primary keys
         } else {
@@ -276,22 +276,19 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
             $query[] = "";
         }
         $createStatement = "";
-
         $createStatement = "CREATE TABLE";
         if($createIfNotExists)
         {
             $createStatement .= " IF NOT EXISTS";
         }
 
-        $autoIncrementKeys = $this->getAutoIncrementKey($tableInfo);
-
         $query[] = "$createStatement $tableName (";
 
         $cols = $tableInfo->getColumns();
 
-
         $pk = $tableInfo->getPrimaryKeys();
-        if(isset($pk) && is_array($pk) && !empty($pk))
+        
+        if(self::isArray($pk) && !empty($pk))
         {
             foreach($pk as $prop=>$primaryKey)
             {
@@ -299,9 +296,10 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
             }
         }
 
+        $autoIncrementKeys = $this->getAutoIncrementKey($tableInfo);
         foreach($tableInfo->getColumns() as $k=>$column)
         {
-            if(isset($autoIncrementKeys) && is_array($autoIncrementKeys) && in_array($column[parent::KEY_NAME], $autoIncrementKeys))
+            if(self::isArray($autoIncrementKeys) && in_array($column[parent::KEY_NAME], $autoIncrementKeys))
             {
                 $cols[$k]['auto_increment'] = true;
             }
