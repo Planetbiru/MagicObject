@@ -481,29 +481,30 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
      */
     public function fixDefaultValue($defaultValue, $type)
     {
+        $result = $defaultValue;
         if(self::isTypeBoolean($type))
         {
-            return $defaultValue != 0 ? 'true' : 'false';
+            $result = $defaultValue != 0 ? 'true' : 'false';
         }
         else if(self::isNativeValue($defaultValue))
         {
-            return $defaultValue;
+            $result = $defaultValue;
         }
         else if(self::isTypeText($type))
         {
-            return "'".$defaultValue."'";
+            $result = "'".$defaultValue."'";
         }
         else if(self::isTypeInteger($type))
         {
             $defaultValue = preg_replace('/[^\d]/', '', $defaultValue);
-            return (int)$defaultValue;
+            $result = (int)$defaultValue;
         }
         else if(self::isTypeFloat($type))
         {
             $defaultValue = preg_replace('/[^\d.]/', '', $defaultValue);
-            return (float)$defaultValue;
+            $result = (float)$defaultValue;
         }
-        return $defaultValue;
+        return $result;
     }
 
     /**
