@@ -167,12 +167,6 @@ class SecretObject extends stdClass // NOSONAR
      * Analyzes the class's parameters and properties to determine which should be 
      * encrypted or decrypted based on annotations.
      *
-     * This method uses reflection to retrieve the class's parameters and properties. 
-     * It then parses annotations associated with these members to identify which 
-     * properties should undergo encryption or decryption during specific stages 
-     * (before storage or before retrieval). The appropriate lists of properties 
-     * are populated accordingly.
-     *
      * @return void
      *
      * @throws InvalidAnnotationException If the annotations are invalid or cannot be parsed.
@@ -220,10 +214,6 @@ class SecretObject extends stdClass // NOSONAR
 
     /**
      * Generates a secure key for encryption and decryption.
-     *
-     * This method checks for a user-defined secure key generation function. If a valid
-     * function is provided, it calls that function to generate the key. Otherwise, it 
-     * returns a concatenation of predefined random keys.
      *
      * @return string The secure key for encryption/decryption.
      */
@@ -322,9 +312,6 @@ class SecretObject extends stdClass // NOSONAR
     /**
      * Set a value for the specified property.
      *
-     * This method sets the value of a property and applies encryption or decryption
-     * if necessary based on the defined property rules.
-     *
      * @param string $var The name of the property.
      * @param mixed $value The value to set.
      * @return self
@@ -345,9 +332,6 @@ class SecretObject extends stdClass // NOSONAR
 
     /**
      * Get the value of the specified property.
-     *
-     * This method retrieves the value of a property and applies encryption or decryption
-     * if necessary based on the defined property rules.
      *
      * @param string $var The name of the property.
      * @return mixed The value of the property.
@@ -1126,9 +1110,6 @@ class SecretObject extends stdClass // NOSONAR
     /**
      * Modify null properties.
      *
-     * This method keeps track of properties that have been set to null, allowing for 
-     * tracking changes to properties.
-     *
      * @param string $propertyName The name of the property.
      * @param mixed $propertyValue The value of the property.
      * @return self Returns the current instance for method chaining.
@@ -1163,9 +1144,6 @@ class SecretObject extends stdClass // NOSONAR
 
     /**
      * Encrypt values recursively.
-     *
-     * This method encrypts each string value in the provided array. 
-     * Nested arrays are also processed.
      *
      * @param array $array The array of values to be encrypted.
      * @return array The array with encrypted values.

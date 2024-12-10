@@ -220,11 +220,6 @@ class MagicDto extends stdClass // NOSONAR
     /**
      * Formats a DateTime object according to specified JSON format parameters.
      *
-     * This method checks if the provided DateTime object is set and, if so, retrieves 
-     * formatting parameters from the property's annotations. If a 'JsonFormat' 
-     * parameter is present, its pattern is used; otherwise, a default format 
-     * of 'Y-m-d H:i:s' is applied.
-     *
      * @param DateTime|null $dateTime The DateTime object to format.
      * @param object $class The class instance from which the property originates.
      * @param string $property The name of the property being processed.
@@ -313,11 +308,6 @@ class MagicDto extends stdClass // NOSONAR
     /**
      * Handles the case where the property is a self-instance.
      *
-     * This method retrieves the value from the data source based on the provided
-     * source or property name. If the source indicates a nested property, it 
-     * retrieves that value instead. It constructs an instance of the specified 
-     * class type and returns its stringified value.
-     *
      * @param string|null $source The source to extract the value from.
      * @param string $var The variable type (class name) to instantiate.
      * @param string $propertyName The name of the property to fall back on.
@@ -373,10 +363,6 @@ class MagicDto extends stdClass // NOSONAR
     /**
      * Handles the case where the property is an instance of MagicObject.
      *
-     * This method retrieves the value from the data source and checks if it 
-     * is an instance of MagicObject or its derivatives. If so, it returns 
-     * the stringified value; otherwise, it returns a JSON-encoded version.
-     *
      * @param string|null $source The source to extract the value from.
      * @param string $propertyName The name of the property.
      * @return mixed The handled value for the MagicObject instance.
@@ -397,9 +383,6 @@ class MagicDto extends stdClass // NOSONAR
     /**
      * Handles the case where the property is an instance of DateTime.
      *
-     * This method retrieves the value from the data source and parses it into
-     * a DateTime object, either from the source or a nested value.
-     *
      * @param string|null $source The source to extract the value from.
      * @param string $propertyName The name of the property.
      * @return DateTime|null The handled DateTime value or null if not applicable.
@@ -417,9 +400,6 @@ class MagicDto extends stdClass // NOSONAR
     /**
      * Handles the default case when retrieving property values.
      *
-     * This method delegates the handling of standard class properties to 
-     * another method.
-     *
      * @param string|null $source The source to extract the value from.
      * @param string $key The key of the property.
      * @return mixed The handled default value.
@@ -431,9 +411,6 @@ class MagicDto extends stdClass // NOSONAR
 
     /**
      * Handles the stdClass when retrieving property values.
-     *
-     * This method retrieves the value from the data source based on the given 
-     * source or key, accounting for nested properties if necessary.
      *
      * @param string|null $source The source to extract the value from.
      * @param string $key The key of the property.
@@ -464,9 +441,6 @@ class MagicDto extends stdClass // NOSONAR
 
     /**
      * Retrieves nested values from the data source based on a specified source string.
-     *
-     * This method splits the source string by the "->" delimiter to navigate through
-     * nested properties in the data source, returning the final nested value found.
      *
      * @param string $source The source string indicating the path to the value.
      * @return mixed The nested value retrieved from the data source, or null if not found.
@@ -622,10 +596,6 @@ class MagicDto extends stdClass // NOSONAR
 
     /**
      * Recursively converts an object or an array of objects to their string representation.
-     *
-     * This method traverses through an object or an array of objects of the same class
-     * and calls their respective stringify methods, if applicable. The final output 
-     * is the stringified representation of the object or array.
      *
      * @param self|array $value The object or array of objects to stringify.
      * @return mixed The stringified object or array.
@@ -830,10 +800,6 @@ class MagicDto extends stdClass // NOSONAR
 
     /**
      * Check if a method is overridden in a child class.
-     *
-     * This method uses reflection to determine if a given method is overridden in the specified child class.
-     * It compares the methods of the child class with those of its parent class, checking if the method
-     * is present in both classes but has been redefined in the child class.
      *
      * @param string $childClass The child class name or instance to check for method override.
      * @param string $methodName The name of the method to check for overriding.

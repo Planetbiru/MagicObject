@@ -1079,11 +1079,6 @@ class MagicObject extends stdClass // NOSONAR
     /**
      * Executes a transactional SQL command (start, commit, or rollback).
      *
-     * This method executes a SQL command to manage the state of a database transaction.
-     * It checks the type of command (`start_transaction`, `commit`, or `rollback`) and
-     * delegates the corresponding SQL generation to the `PicoDatabaseQueryBuilder` class.
-     * The SQL statement is then executed on the active database connection.
-     *
      * @param string $command The transactional command to execute. Possible values are:
      *                        - "start" to begin a new transaction.
      *                        - "commit" to commit the current transaction.
@@ -1144,9 +1139,6 @@ class MagicObject extends stdClass // NOSONAR
 
     /**
      * Modify properties with null values.
-     *
-     * This method tracks properties that are assigned a null value, storing them in a `_nullProperties` array. 
-     * If a property is set to null, it is added to the `_nullProperties` array; if it's set to a non-null value, it is removed from the array.
      *
      * @param string $propertyName The name of the property to check and modify.
      * @param mixed $propertyValue The value to be assigned to the property.
@@ -1635,9 +1627,6 @@ class MagicObject extends stdClass // NOSONAR
 
     /**
      * Checks if the provided parameter is an array.
-     *
-     * This function verifies if the given parameter is set and is of type array. It is a helper method 
-     * used to validate the type of data before performing any operations on it that require an array.
      *
      * @param mixed $params The parameter to check.
      * @return bool Returns `true` if the parameter is set and is an array, otherwise returns `false`.

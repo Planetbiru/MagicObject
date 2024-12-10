@@ -3512,9 +3512,6 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Selects all matching records from the database.
      *
-     * This method constructs and executes a select query to retrieve all records that match 
-     * the specified filtering criteria. It returns an array of results.
-     *
      * @param PicoTableInfo|null $info The table information. If null, fetched internally.
      * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
      * @param string|null $where The where clause for the query. If null, fetched internally.
@@ -3582,9 +3579,6 @@ class PicoDatabasePersistence // NOSONAR
 
     /**
      * Prepares a query to select data without executing it.
-     *
-     * This method constructs a select query using the specified table information and 
-     * filtering criteria without executing it, allowing for further modifications if needed.
      *
      * @param PicoTableInfo|null $info The table information. If null, fetched internally.
      * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
@@ -3660,9 +3654,6 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Updates a record in the database based on primary keys.
      *
-     * This method constructs and executes an update query using the provided table information 
-     * and filtering criteria.
-     *
      * @param PicoTableInfo|null $info The table information. If null, fetched internally.
      * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
      * @param string|null $where The where clause for the query. If null, fetched internally.
@@ -3677,9 +3668,6 @@ class PicoDatabasePersistence // NOSONAR
 
     /**
      * Prepares an update query without executing it.
-     *
-     * This method constructs an update query using the specified table information and filtering criteria,
-     * returning the query builder for further modifications.
      *
      * @param PicoTableInfo|null $info The table information. If null, fetched internally.
      * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
@@ -3752,9 +3740,6 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Deletes a record from the database based on primary keys.
      *
-     * This method constructs and executes a delete query using the provided table 
-     * information and filtering criteria.
-     *
      * @param PicoTableInfo|null $info The table information. If null, fetched internally.
      * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.
      * @param string|null $where The where clause for the query. If null, fetched internally.
@@ -3768,9 +3753,6 @@ class PicoDatabasePersistence // NOSONAR
 
     /**
      * Prepares a delete query without executing it.
-     *
-     * This method constructs a delete query using the specified table information and 
-     * filtering criteria, returning the query builder for further modifications.
      *
      * @param PicoTableInfo|null $info The table information. If null, fetched internally.
      * @param PicoDatabaseQueryBuilder|null $queryBuilder The query builder. If null, created internally.

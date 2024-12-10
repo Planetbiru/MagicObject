@@ -341,9 +341,6 @@ class PicoDatabase // NOSONAR
     /**
      * Connect to SQLite database.
      *
-     * Establishes a connection to an SQLite database using the specified file path in the credentials.
-     * Throws an exception if the database path is not set or is empty.
-     *
      * @return bool True if the connection is successful, false if it fails.
      * @throws InvalidDatabaseConfiguration If the database path is empty.
      * @throws PDOException If the connection fails with an error.
@@ -369,15 +366,6 @@ class PicoDatabase // NOSONAR
     
     /**
      * Connect to the RDMS (Relational Database Management System).
-     *
-     * Establishes a connection to an RDMS database using the provided credentials. Optionally, a specific 
-     * database is selected based on the provided flag. This method also configures the time zone, character set, 
-     * and schema settings (for PostgreSQL) after the connection is established.
-     *
-     * - The time zone is set based on the current offset (`date("P")`), or a configured value.
-     * - For PostgreSQL, the client encoding (charset) is set using `SET CLIENT_ENCODING`, and the schema is set 
-     *   using `SET search_path`.
-     * - For MySQL, the time zone and charset are set using `SET time_zone` and `SET NAMES`.
      *
      * @param bool $withDatabase Flag to specify whether to select a database upon connection (default is true).
      *                            If true, the database is selected; otherwise, only the connection is made.
@@ -510,10 +498,6 @@ class PicoDatabase // NOSONAR
 
     /**
      * Determines the database driver based on the provided database type.
-     *
-     * This function takes a string representing the database type and returns 
-     * the corresponding database driver constant from the `PicoDatabaseType` class.
-     * It supports SQLite, PostgreSQL, and MySQL/MariaDB types.
      *
      * @param string $databaseType The type of the database (e.g., 'sqlite', 'postgres', 'pgsql', 'mysql', 'mariadb').
      * 
