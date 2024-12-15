@@ -149,6 +149,9 @@ These methods are designed to work seamlessly with an active database connection
 
 4.  **Option to Prettify Serialize for `SecretObject`**  
     A new option has been added to allow `SecretObject` to be serialized with pretty formatting. This makes it easier to read and inspect serialized `SecretObject` data, especially useful during development or debugging. The `prettify` flag can be enabled when serializing the object, ensuring the output is more human-readable with proper indentation.
+
+5.  **Dynamic Query Template for Native Queries**
+    MagicObject now supports dynamic query templates for native SQL queries. This feature allows developers to build SQL queries dynamically, providing flexibility and improving code reusability. The dynamic query template can be customized to suit specific use cases, making it easier to construct complex queries while maintaining cleaner and more maintainable code.
     
-5.  **Updated Documentation**  
+6.  **Updated Documentation**  
     The documentation has been updated to reflect the latest changes in MagicObject. This includes clarifications, examples, and explanations to assist developers in understanding and utilizing the library effectively.

@@ -5,6 +5,7 @@ namespace MagicObject\Util\Database;
 use DateTime;
 use MagicObject\Database\PicoDatabase;
 use MagicObject\Database\PicoDatabaseQueryBuilder;
+use MagicObject\Database\PicoDatabaseQueryTemplate;
 use MagicObject\Database\PicoPageable;
 use MagicObject\Database\PicoSortable;
 use MagicObject\Database\PicoSqlJson;
@@ -261,37 +262,67 @@ class NativeQueryUtil
     }
 
     /**
-     * Extracts the query string from the docblock of the caller function.
+     * Extracts the query string from the docblock or caller's parameters.
      *
-     * The method looks for the `@query` annotation in the docblock and extracts the query string.
-     * It tries to handle different formats for the annotation, throwing an exception if no query is found.
+     * This method first checks the caller's parameters for a `PicoDatabaseQueryTemplate` object.
+     * If found, it extracts the query string from it. If not, it looks for the `@query` annotation
+     * in the docblock and returns the extracted query string.
      *
      * @param string $docComment The docblock comment of the caller function.
-     * @return string The SQL query string extracted from the `@query` annotation.
-     * @throws InvalidQueryInputException If no query string is found in the docblock.
+     * @param array $callerParamValues The parameters passed to the caller function.
+     * @return string The extracted SQL query string.
+     * @throws InvalidQueryInputException If no query string is found.
      */
-    public function extractQueryString($docComment)
+    public function extractQueryString($docComment, $callerParamValues)
     {
-        // Get the query from the @query annotation
-        preg_match('/@query\s*\("([^"]+)"\)/', $docComment, $matches);
-        $queryString = $matches ? $matches[1] : '';
+        $queryString = $this->getQueryStringFromCallerParams($callerParamValues);
         
-        // Trim the query string of whitespace and line breaks
-        $queryString = trim($queryString, " \r\n\t ");
+        if(empty($queryString))
+        {
+            // Get the query from the @query annotation
+            preg_match('/@query\s*\("([^"]+)"\)/', $docComment, $matches);
+            $queryString = $matches ? $matches[1] : '';
+            
+            // Trim the query string of whitespace and line breaks
+            $queryString = trim($queryString, " \r\n\t ");
+        }
         
         if (empty($queryString)) {
             // Try reading the query in another way
             preg_match('/@query\s*\(\s*"(.*?)"\s*\)/s', $docComment, $matches);
             $queryString = $matches ? $matches[1] : '';
-            
-            if (empty($queryString)) {
-                throw new InvalidQueryInputException("No query found.\r\n" . $docComment);
-            }
         }
-        
+        if (empty($queryString)) {
+            throw new InvalidQueryInputException("No query found.\r\n" . $docComment);
+        }
         return $queryString;
     }
 
+    /**
+     * Extracts the query string from the caller's parameters.
+     *
+     * This method looks for a `PicoDatabaseQueryTemplate` object in the caller's parameters
+     * and returns the query string representation of that object.
+     *
+     * @param array $callerParamValues The parameters passed to the caller function.
+     * @return string The SQL query string or an empty string if no valid object is found.
+     */
+    private function getQueryStringFromCallerParams($callerParamValues)
+    {
+        $queryString = "";
+        if(isset($callerParamValues) && is_array($callerParamValues) && !empty($callerParamValues))
+        {
+            foreach($callerParamValues as $param)
+            {
+                if($param instanceof PicoDatabaseQueryTemplate)
+                {
+                    $queryString = (string) $param;
+                    break;
+                }
+            }
+        }
+        return $queryString;
+    }
 
     /**
      * Maps PHP types to the corresponding PDO parameter types.

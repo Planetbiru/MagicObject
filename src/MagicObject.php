@@ -848,7 +848,7 @@ class MagicObject extends stdClass // NOSONAR
         $nativeQueryUtil = new NativeQueryUtil();
 
         // Extract the query string and return type from the docblock
-        $queryString = $nativeQueryUtil->extractQueryString($docComment);
+        $queryString = $nativeQueryUtil->extractQueryString($docComment, $callerParamValues);
         $returnType = $nativeQueryUtil->extractReturnType($docComment, $callerClassName);    
         
         $params = array();

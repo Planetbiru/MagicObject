@@ -9233,6 +9233,95 @@ while($row = $stmt-&gt;fetch(PDO::FETCH_ASSOC))
     generateData($fp, $map, $row, $iteration);
 }
 fclose($fp);</code></pre>
+<h3>Dynamic Query Template for Native Query</h3>
+<p>MagicObject version 2.11 introduces a new feature for native queries called the dynamic query template, which allows users to dynamically pass a query template to the native query method.</p>
+<p><strong>Example 4</strong></p>
+<pre><code class="language-php">&lt;?php
+
+use MagicObject\Database\PicoPageable;
+use MagicObject\Database\PicoSortable;
+use MagicObject\MagicObject;
+
+class SupervisorExport extends MagicObject
+{
+    /**
+     * Exports active supervisors based on the given active status.
+     *
+     * @param bool $aktif The active status filter (true for active, false for inactive).
+     * @param PicoPageable $pageable Pagination details.
+     * @param PicoSortable $sortable Sorting details.
+     * @return PDOStatement The result of the executed query.
+     * @query("
+           SELECT supervisor.* 
+           FROM supervisor 
+           WHERE supervisor.aktif = :aktif
+      ")
+    */
+    public function exportActive($aktif, $pageable, $sortable)
+    {
+        // Call parent method to execute the query
+        return $this-&gt;executeNativeQuery();
+    }
+}</code></pre>
+<p>In certain cases, developers need to dynamically insert a query template. This cannot be done with the above method. Therefore, MagicObject provides a way to pass the query template as a parameter. Since every parameter besides <code>PicoPageable</code> and <code>PicoSortable</code> is considered as a value for the query, MagicObject uses the <code>PicoDatabaseQueryTemplate</code> data type to pass the query template within the parameter. With this, the native query method definition becomes as follows:</p>
+<pre><code class="language-php">&lt;?php
+
+use MagicObject\Database\PicoDatabaseQueryBuilder;
+use MagicObject\Database\PicoDatabaseQueryTemplate;
+use MagicObject\Database\PicoPage;
+use MagicObject\Database\PicoPageable;
+use MagicObject\Database\PicoSort;
+use MagicObject\Database\PicoSortable;
+use MagicObject\MagicObject;
+
+class SupervisorExport extends MagicObject
+{
+    /**
+     * Exports active supervisors based on the given active status.
+     *
+     * @param bool $aktif The active status filter (true for active, false for inactive).
+     * @param PicoPageable $pageable Pagination details.
+     * @param PicoSortable $sortable Sorting details.
+     * @param PicoDatabaseQueryTemplate $template Query template.
+     * @return PDOStatement The result of the executed query.
+    */
+    public function exportActive($aktif, $pageable, $sortable, $template)
+    {
+        // Call parent method to execute the query
+        return $this-&gt;executeNativeQuery();
+    }
+}</code></pre>
+<p>To call this method, use the following approach:</p>
+<pre><code class="language-php">&lt;?php
+$explort = new SupervisorExport(null, $database);
+
+$aktif = true;
+$sortable = new PicoSortable();
+$sortable-&gt;add(new PicoSort('name', PicoSort::ORDER_TYPE_ASC));
+$pageable = new PicoPageable(new PicoPage(1, 1), $sortable);
+
+$builder = new PicoDatabaseQueryBuilder($database);
+$builder-&gt;newQuery()
+    -&gt;select("supervisor.*")
+    -&gt;from("supervisor")
+    -&gt;where("supervisor.aktif = :aktif");
+
+$template = new PicoDatabaseQueryTemplate($builder);
+$result = $explort-&gt;exportActive($aktif, $pageable, $sortable, $template);</code></pre>
+<p>In the example above, the <code>PicoDatabaseQueryTemplate</code> object is initialized using a <code>PicoDatabaseQueryBuilder</code> object.</p>
+<pre><code class="language-php">&lt;?php
+$explort = new SupervisorExport(null, $database);
+
+$aktif = true;
+$sortable = new PicoSortable();
+$sortable-&gt;add(new PicoSort('name', PicoSort::ORDER_TYPE_ASC));
+$pageable = new PicoPageable(new PicoPage(1, 1), $sortable);
+
+$builder = "SELECT supervisor.* FROM supervisor WHERE supervisor.aktif = :aktif";
+
+$template = new PicoDatabaseQueryTemplate($builder);
+$result = $explort-&gt;exportActive($aktif, $pageable, $sortable, $template);</code></pre>
+<p>In the example above, the <code>PicoDatabaseQueryTemplate</code> object is initialized using a string.</p>
 <h3>Best Practices</h3>
 <ol>
 <li><strong>Utilize Prepared Statements</strong>: Always prefer using prepared statements for security against SQL injection.</li>
