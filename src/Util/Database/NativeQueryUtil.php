@@ -56,7 +56,7 @@ class NativeQueryUtil
         foreach ($callerParamValues as $index => $paramValue) {
             if($paramValue instanceof PicoDatabaseQueryTemplate)
             {
-                continue;
+                // Do nothing
             }
             else if($paramValue instanceof PicoPageable)
             {
