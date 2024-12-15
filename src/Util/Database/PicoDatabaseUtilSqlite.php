@@ -431,7 +431,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
         $col[] = "" . $column[MagicObject::KEY_NAME] . "";  // Column name
         
         // Handle primary key and auto-increment columns
-        if (isset($column[self::KEY_PRIMARY_KEY]) && isset($column[MagicObject::KEY_AUTO_INCREMENT]) && $column[self::KEY_PRIMARY_KEY] && $column[MagicObject::KEY_AUTO_INCREMENT]) {
+        if (isset($column[self::KEY_PRIMARY_KEY]) && isset($column[self::KEY_AUTO_INCREMENT]) && $column[self::KEY_PRIMARY_KEY] && $column[self::KEY_AUTO_INCREMENT]) {
             $columnType = 'INTEGER';  // Use INTEGER for auto-incrementing primary keys in SQLite
             $col[] = $columnType;
             $col[] = 'PRIMARY KEY';

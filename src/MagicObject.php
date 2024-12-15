@@ -65,7 +65,6 @@ class MagicObject extends stdClass // NOSONAR
     const KEY_TYPE = "type";
     const KEY_LENGTH = "length";
     const KEY_DEFAULT_VALUE = "defaultValue";
-    const KEY_AUTO_INCREMENT = "auto_increment";
 
     // Format constants
     const JSON = 'JSON';
@@ -79,6 +78,8 @@ class MagicObject extends stdClass // NOSONAR
     const FIND_OPTION_DEFAULT = 0;
     const FIND_OPTION_NO_COUNT_DATA = 1;
     const FIND_OPTION_NO_FETCH_DATA = 2;
+
+    const SNAKE_CASE = 'SNAKE_CASE';
 
     /**
      * Indicates whether the object is read-only.
@@ -1585,9 +1586,9 @@ class MagicObject extends stdClass // NOSONAR
         return isset($this->_classParams[self::JSON])
             && (
                 isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY]) &&
-                strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY], 'SNAKE_CASE') == 0
+                strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY], self::SNAKE_CASE) == 0
             || isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY_CAMEL]) && 
-                strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY_CAMEL], 'SNAKE_CASE') == 0
+                strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY_CAMEL], self::SNAKE_CASE) == 0
             );
     }
 
@@ -1601,9 +1602,9 @@ class MagicObject extends stdClass // NOSONAR
         return isset($this->_classParams[self::YAML])
             && (
                 isset($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY]) &&
-                strcasecmp($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY], 'SNAKE_CASE') == 0
+                strcasecmp($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY], self::SNAKE_CASE) == 0
             || isset($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY_CAMEL]) && 
-                strcasecmp($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY_CAMEL], 'SNAKE_CASE') == 0
+                strcasecmp($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY_CAMEL], self::SNAKE_CASE) == 0
             );
     }
 
