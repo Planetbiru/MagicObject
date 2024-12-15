@@ -9,7 +9,7 @@ MagicObject is a powerful library for developing applications in PHP with ease. 
 1. **Dynamic Object Creation**: Easily create objects at runtime.
 2. **Setters and Getters**: Simplify property management with automatic methods.
 3. **Multi-Level Objects**: Support for nested objects.
-4. **Entity Access**: Streamline interactions with entities.
+4. **ORM**: Object-Relational Mapping support for easier interactions with databases.
 5. **Filtering and Pagination**: Built-in methods for managing data display.
 6. **Native Query**: Defining native queries for a function will increase flexibility and resource efficiency in accessing the database.
 7. **Multiple Database Connection**: MagicObject supports the configuration of multiple database connections, allowing applications to interact with different databases simultaneously.
@@ -30,6 +30,8 @@ MagicObject is a powerful library for developing applications in PHP with ease. 
 This library provides a versatile toolkit for building robust PHP applications!
 
 # Installation
+
+## Installing MagicObject
 
 To install MagicObject, run:
 
@@ -55,9 +57,94 @@ Or if Composer is not installed:
 php composer.phar remove planetbiru/magic-object
 ```
 
-o install Composer on your system or download the latest `composer.phar`, visit https://getcomposer.org/download/ 
+## Installing Composer
+
+To install Composer on your system or download the latest `composer.phar`, visit https://getcomposer.org/download/ 
 
 To see available versions of MagicObject, visit https://packagist.org/packages/planetbiru/magic-object
+
+
+
+## Installing MagicObject on PHP 5
+
+This guide walks you through the steps to install **MagicObject** using Composer on a PHP project, particularly if you're working with a PHP version that might not meet the platform requirements for the package.
+
+### Prerequisites:
+
+-   PHP installed on your system (PHP 5.x or higher)
+-   Composer installed globally or locally in your project
+
+----------
+
+### Steps to Install MagicObject
+
+#### 1. **Navigate to Your Project Directory**
+
+Open your terminal and navigate to your PHP project folder:
+
+```bash
+cd /path/to/your/project
+```
+
+Make sure you're in the correct directory where your PHP project resides.
+
+#### 2. **Install MagicObject Using Composer**
+
+Run the following command to require **MagicObject** in your project:
+
+```bash
+composer require planetbiru/magic-object
+```
+
+This command will:
+
+-   Add `planetbiru/magic-object` as a dependency to your `composer.json` file.
+-   Download and install the MagicObject package into your `vendor/` directory.
+
+#### 3. **Update Dependencies with Ignored Platform Requirements**
+
+If you're using a PHP version or configuration that doesn't meet the platform requirements specified by MagicObject, you can use the `--ignore-platform-reqs` flag to bypass those checks during the installation process:
+
+```bash
+composer update --ignore-platform-reqs
+```
+
+This command will:
+
+-   Update all dependencies listed in `composer.json`.
+-   Ignore platform-specific checks like PHP version or missing extensions, allowing you to proceed with the installation.
+
+#### 4. **Autoload Composer in Your PHP Script**
+
+After the installation completes, include Composer's autoloader in your PHP scripts to make MagicObject available for use:
+
+```bash
+require 'vendor/autoload.php';
+```
+
+This ensures that all your dependencies, including MagicObject, are loaded automatically.
+
+#### 5. **Verify Installation**
+
+Check that MagicObject is installed by verifying its presence in the `vendor` directory:
+
+```bash
+ls vendor/planetbiru/magic-object
+```
+
+You should see the MagicObject files in the `vendor/planetbiru/magic-object` folder.
+
+#### 6. **Start Using MagicObject**
+
+You can now start using MagicObject in your PHP application. Example usage:
+
+```php
+use MagicObject\MagicObject;
+
+$object = new MagicObject();
+```
+
+Replace this with your specific use cases as needed.
 
 # Advantages
 

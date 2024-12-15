@@ -657,7 +657,7 @@ use MagicObject\MagicObject;
  * Ensure to include the appropriate "use" statement if related entities are defined in a different namespace.
  * 
  * For detailed guidance on using the MagicObject ORM, refer to the official tutorial:
- * @link https://github.com/Planetbiru/MagicObject/blob/main/tutorial.md#entity
+ * @link https://github.com/Planetbiru/MagicObject/blob/main/tutorial.md#orm
  * 
  * @package '.$this->baseNamespace.'
  * @Entity
