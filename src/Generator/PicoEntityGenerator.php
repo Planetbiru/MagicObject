@@ -183,7 +183,7 @@ class PicoEntityGenerator
      * @param bool $prettifyLabel Whether to replace 'Id' with 'ID' and 'Ip' with 'IP'
      * @return string Formatted property name (e.g., 'User ID', 'User IP')
      */
-    protected function getPropertyName($name, $prettifyLabel)
+    protected function getPropertyName($name, $prettifyLabel = true)
     {
         $arr = explode("_", $name);
         foreach ($arr as $k => $v) {
@@ -351,15 +351,12 @@ class PicoEntityGenerator
     }
 
     /**
-     * Returns a mapping of database column types to MySQL equivalents.
+     * Get a mapping of database column types to MySQL equivalents.
      *
-     * This method provides a conversion map from various database column types 
-     * (such as those from PostgreSQL or SQLite) to MySQL-compatible column types.
-     * The mapping is useful for normalizing column types when migrating data 
-     * between different database systems or for general type compatibility.
+     * Provides a conversion map from various database column types to MySQL-compatible 
+     * column types, useful for data migrations or type compatibility.
      *
-     * @return array An associative array where keys are column types from other databases 
-     *               and values are the corresponding MySQL column types.
+     * @return array Associative array with column types from other databases mapped to MySQL types.
      */
     public function getColumnMap()
     {
@@ -424,16 +421,13 @@ class PicoEntityGenerator
     }
 
     /**
-     * Returns a mapping of database column types to the target database type equivalents.
+     * Get a mapping of database column types to target database equivalents.
      *
-     * This method provides a conversion map from various database column types 
-     * (such as those from PostgreSQL or SQLite) to the target database column types.
-     * The mapping is useful for normalizing column types when migrating data 
-     * between different database systems or for general type compatibility.
+     * Converts column types from one database (MySQL, PostgreSQL, SQLite) to another, 
+     * supporting data migrations and compatibility.
      *
      * @param string $targetDb The target database type ('mysql', 'postgresql', or 'sqlite').
-     * @return array An associative array where keys are column types from other databases 
-     *               and values are the corresponding target database column types.
+     * @return array Associative array of column types from other databases mapped to the target database types.
      */
     public function getColumnMapByType($targetDb)
     {
@@ -625,13 +619,12 @@ class PicoEntityGenerator
     /**
      * Generates an entity class based on database table metadata and saves it to a file.
      *
-     * This method creates a PHP class that maps to a database table, including properties for each column,
-     * and writes the class to a specified file. It supports annotations for ORM operations, such as `@Entity`,
-     * `@Table`, and `@JSON`. The method also handles non-updatable columns and prettifies the property names
-     * if specified.
+     * This method creates a PHP class that maps to a database table, including properties for each column.
+     * It supports ORM annotations (e.g., `@Entity`, `@Table`, `@JSON`) and handles non-updatable columns. 
+     * Optionally, it can prettify property names for human readability.
      *
      * @param string[]|null $nonupdatables List of non-updatable columns, or null if none.
-     * @param bool $prettifyLabel Whether to convert column names to human-readable labels (default is true).
+     * @param bool $prettifyLabel Whether to prettify column names into human-readable labels (default is true).
      * @return int|false The number of bytes written to the file, or false on failure.
      */
     public function generate($nonupdatables = null, $prettifyLabel = true)
