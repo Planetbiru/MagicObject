@@ -56,6 +56,7 @@ class MagicObject extends stdClass // NOSONAR
     
     // Property naming strategy
     const PROPERTY_NAMING_STRATEGY = "property-naming-strategy";
+    const PROPERTY_NAMING_STRATEGY_CAMEL = "propertyNamingStrategy";
     
     // Key constants
     const KEY_PROPERTY_TYPE = "propertyType";
@@ -1582,9 +1583,12 @@ class MagicObject extends stdClass // NOSONAR
     protected function _snakeJson()
     {
         return isset($this->_classParams[self::JSON])
-            && isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY])
-            && strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY], 'SNAKE_CASE') == 0
-            ;
+            && (
+                isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY]) &&
+                strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY], 'SNAKE_CASE') == 0
+            || isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY_CAMEL]) && 
+                strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY_CAMEL], 'SNAKE_CASE') == 0
+            );
     }
 
     /**
@@ -1595,9 +1599,12 @@ class MagicObject extends stdClass // NOSONAR
     protected function _snakeYaml()
     {
         return isset($this->_classParams[self::YAML])
-            && isset($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY])
-            && strcasecmp($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY], 'SNAKE_CASE') == 0
-            ;
+            && (
+                isset($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY]) &&
+                strcasecmp($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY], 'SNAKE_CASE') == 0
+            || isset($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY_CAMEL]) && 
+                strcasecmp($this->_classParams[self::YAML][self::PROPERTY_NAMING_STRATEGY_CAMEL], 'SNAKE_CASE') == 0
+            );
     }
 
     /**
@@ -1608,9 +1615,12 @@ class MagicObject extends stdClass // NOSONAR
     protected function _upperCamel()
     {
         return isset($this->_classParams[self::JSON])
-            && isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY])
-            && strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY], 'UPPER_CAMEL_CASE') == 0
-            ;
+            && (
+                isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY]) &&
+                strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY], 'UPPER_CAMEL_CASE') == 0
+            || isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY_CAMEL]) && 
+                strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY_CAMEL], 'UPPER_CAMEL_CASE') == 0
+            );
     }
 
     /**
