@@ -14,30 +14,19 @@ use PDO;
 /**
  * Class PicoDatabaseUtilMySql
  *
- * This class extends the PicoDatabaseUtilBase and implements the PicoDatabaseUtilInterface specifically 
- * for MySQL database operations. It provides specialized utility methods tailored to leverage MySQL's 
- * features and syntax while ensuring compatibility with the general database utility interface.
+ * Provides utility methods for MySQL database operations, extending PicoDatabaseUtilBase 
+ * and implementing PicoDatabaseUtilInterface. This class includes functions for retrieving 
+ * column information, generating CREATE TABLE statements, dumping data to SQL insert statements, 
+ * facilitating data imports, and ensuring data integrity during the import process.
  *
- * Key functionalities include:
+ * Key features:
+ * - Retrieve column info from MySQL tables.
+ * - Generate CREATE TABLE statements.
+ * - Convert data to SQL INSERT statements.
+ * - Facilitate data import between databases.
+ * - Ensure data integrity during imports.
  *
- * - **Retrieve and display column information for tables:** Methods to fetch detailed column data, 
- *   including types and constraints, from MySQL tables.
- * - **Generate SQL statements to create tables based on existing structures:** Automated generation 
- *   of CREATE TABLE statements to replicate existing table schemas.
- * - **Dump data from various sources into SQL insert statements:** Convert data from different formats 
- *   into valid SQL INSERT statements for efficient data insertion.
- * - **Facilitate the import of data between source and target databases:** Streamlined processes for 
- *   transferring data, including handling pre and post-import scripts to ensure smooth operations.
- * - **Ensure data integrity by fixing types during the import process:** Validation and correction of 
- *   data types to match MySQL's requirements, enhancing data quality during imports.
- *
- * This class is designed for developers who are working with MySQL databases and need a robust set of tools 
- * to manage database operations efficiently. By adhering to the PicoDatabaseUtilInterface, it provides 
- * a consistent API for database utilities while taking advantage of MySQL-specific features.
- *
- * Usage:
- * To use this class, instantiate it with a MySQL database connection and utilize its methods to perform 
- * various database tasks, ensuring efficient data management and manipulation.
+ * Designed for developers working with MySQL to streamline database management tasks.
  *
  * @author Kamshory
  * @package MagicObject\Util\Database
