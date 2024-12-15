@@ -185,7 +185,7 @@ class Album extends MagicObject
 /**
  * AcuanPengawasan is entity of table acuan_pengawasan. You can join this entity to other entity using annotation JoinColumn. 
  * Don't forget to add "use" statement if the entity is outside the namespace.
- * @link https://github.com/Planetbiru/MagicObject/blob/main/tutorial.md#entity
+ * @link https://github.com/Planetbiru/MagicObject/blob/main/tutorial.md#orm
  * 
  * @package Sipro\Entity\Data
  * @Entity

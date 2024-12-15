@@ -20,9 +20,9 @@ The library simplifies property management with **automatic setters and getters*
 
 Support for **multi-level objects** enables developers to create nested structures seamlessly. This capability is essential for representing complex data models that mirror real-world relationships.
 
-### Entity Access
+### Object-Relational Mapping
 
-MagicObject streamlines interactions with entities, making it easier to manage and manipulate data models. This feature is particularly beneficial in applications with multiple entities, as it promotes organized and efficient access.
+MagicObject streamlines interactions with databases through **ORM (Object-Relational Mapping)**, making it easier to manage and manipulate data models. This feature is particularly beneficial in applications with complex relationships between entities, as it promotes organized and efficient access.
 
 ### Filtering and Pagination
 

@@ -9,7 +9,7 @@ MagicObject is a powerful library for developing applications in PHP with ease. 
 1. **Dynamic Object Creation**: Easily create objects at runtime.
 2. **Setters and Getters**: Simplify property management with automatic methods.
 3. **Multi-Level Objects**: Support for nested objects.
-4. **Entity Access**: Streamline interactions with entities.
+4. **ORM**: Object-Relational Mapping support for easier interactions with databases.
 5. **Filtering and Pagination**: Built-in methods for managing data display.
 6. **Native Query**: Defining native queries for a function will increase flexibility and resource efficiency in accessing the database.
 7. **Multiple Database Connection**: MagicObject supports the configuration of multiple database connections, allowing applications to interact with different databases simultaneously.

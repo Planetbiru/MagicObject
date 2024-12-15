@@ -20,9 +20,9 @@ The library simplifies property management with **automatic setters and getters*
 
 Support for **multi-level objects** enables developers to create nested structures seamlessly. This capability is essential for representing complex data models that mirror real-world relationships.
 
-### Entity Access
+### Object-Relational Mapping
 
-MagicObject streamlines interactions with entities, making it easier to manage and manipulate data models. This feature is particularly beneficial in applications with multiple entities, as it promotes organized and efficient access.
+MagicObject streamlines interactions with databases through **ORM (Object-Relational Mapping)**, making it easier to manage and manipulate data models. This feature is particularly beneficial in applications with complex relationships between entities, as it promotes organized and efficient access.
 
 ### Filtering and Pagination
 
@@ -2820,12 +2820,13 @@ In **MagicObject 2.7**, when you pass a **PDO** connection object to the constru
 
 Version 2.7 of **MagicObject** introduces an important enhancement by allowing PDO connections to be used alongside **PicoDatabase**. This update provides greater flexibility for developers, allowing them to work with traditional PDO connections if they choose, while still benefiting from the advanced features of **MagicObject** for database interactions. This change aligns with the goal of making **MagicObject** more accessible to a wider range of developers, whether they are just starting with **MagicObject** or are looking to transition from an existing PDO-based application.
 
-## Entity
+## Object-Relational Mapping (ORM)
 
-Entity is class to access database. Entity is derived from MagicObject. Some annotations required to activated all entity features. 
+ORM (Object-Relational Mapping) is a class used to access the database. ORM is derived from MagicObject. Some annotations are required to activate all ORM features.
 
-MagicObject version 2.7 introduces new features for transactional database management, namely `startTransaction()`, `commit()`, and `rollback()`. These functions allow entities to directly initiate and manage transactions within their scope. The `startTransaction()` function begins a new transaction, while `commit()` ensures that all changes made during the transaction are permanently saved to the database. On the other hand, `rollback()` can be used to revert any changes made during the transaction in case of an error or interruption. These functions require an active database connection to operate, providing a streamlined way for entities to manage data consistency and integrity within their transactions.
+MagicObject version 2.7 introduces new features for transactional database management, namely `startTransaction()`, `commit()`, and `rollback()`. These functions allow ORMs to directly initiate and manage transactions within their scope. The `startTransaction()` function begins a new transaction, while `commit()` ensures that all changes made during the transaction are permanently saved to the database. On the other hand, `rollback()` can be used to revert any changes made during the transaction in case of an error or interruption. These functions require an active database connection to operate, providing a streamlined way for ORMs to manage data consistency and integrity within their transactions.
 
+This revision aligns with your request, replacing "Entity" with "ORM" and maintaining the context around database management and transactional features.
 
 **Constructor**
 
@@ -3226,8 +3227,6 @@ try
     $album1->setName("Album 1");
     $album1->setAdminCreate("USER1");
     $album1->setDuration(300);
-  
-  
   
     // other way to create object
     // create object from stdClass or other object with match property (snake case or camel case)

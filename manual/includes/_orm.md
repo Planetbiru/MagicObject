@@ -1,9 +1,10 @@
-## Entity
+## Object-Relational Mapping (ORM)
 
-Entity is class to access database. Entity is derived from MagicObject. Some annotations required to activated all entity features. 
+ORM (Object-Relational Mapping) is a class used to access the database. ORM is derived from MagicObject. Some annotations are required to activate all ORM features.
 
-MagicObject version 2.7 introduces new features for transactional database management, namely `startTransaction()`, `commit()`, and `rollback()`. These functions allow entities to directly initiate and manage transactions within their scope. The `startTransaction()` function begins a new transaction, while `commit()` ensures that all changes made during the transaction are permanently saved to the database. On the other hand, `rollback()` can be used to revert any changes made during the transaction in case of an error or interruption. These functions require an active database connection to operate, providing a streamlined way for entities to manage data consistency and integrity within their transactions.
+MagicObject version 2.7 introduces new features for transactional database management, namely `startTransaction()`, `commit()`, and `rollback()`. These functions allow ORMs to directly initiate and manage transactions within their scope. The `startTransaction()` function begins a new transaction, while `commit()` ensures that all changes made during the transaction are permanently saved to the database. On the other hand, `rollback()` can be used to revert any changes made during the transaction in case of an error or interruption. These functions require an active database connection to operate, providing a streamlined way for ORMs to manage data consistency and integrity within their transactions.
 
+This revision aligns with your request, replacing "Entity" with "ORM" and maintaining the context around database management and transactional features.
 
 **Constructor**
 
@@ -404,8 +405,6 @@ try
     $album1->setName("Album 1");
     $album1->setAdminCreate("USER1");
     $album1->setDuration(300);
-  
-  
   
     // other way to create object
     // create object from stdClass or other object with match property (snake case or camel case)
