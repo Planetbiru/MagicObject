@@ -15,30 +15,19 @@ use PDO;
 /**
  * Class PicoDatabaseUtilPostgreSql
  *
- * This class extends the PicoDatabaseUtilBase and implements the PicoDatabaseUtilInterface specifically 
- * for PostgreSQL database operations. It provides specialized utility methods tailored to leverage PostgreSQL's 
- * features and syntax while ensuring compatibility with the general database utility interface.
+ * Provides utility methods for PostgreSQL database operations, extending PicoDatabaseUtilBase 
+ * and implementing PicoDatabaseUtilInterface. It includes functions for retrieving column information, 
+ * generating CREATE TABLE statements, dumping data to SQL insert statements, importing data, and 
+ * ensuring data integrity during imports.
  *
- * Key functionalities include:
+ * Key features:
+ * - Retrieve column info from PostgreSQL tables.
+ * - Generate CREATE TABLE statements.
+ * - Convert data to SQL INSERT statements.
+ * - Facilitate data import between databases.
+ * - Fix data types for integrity during imports.
  *
- * - **Retrieve and display column information for tables:** Methods to fetch detailed column data, 
- *   including types and constraints, from PostgreSQL tables.
- * - **Generate SQL statements to create tables based on existing structures:** Automated generation 
- *   of CREATE TABLE statements to replicate existing table schemas.
- * - **Dump data from various sources into SQL insert statements:** Convert data from different formats 
- *   into valid SQL INSERT statements for efficient data insertion.
- * - **Facilitate the import of data between source and target databases:** Streamlined processes for 
- *   transferring data, including handling pre and post-import scripts to ensure smooth operations.
- * - **Ensure data integrity by fixing types during the import process:** Validation and correction of 
- *   data types to match PostgreSQL's requirements, enhancing data quality during imports.
- *
- * This class is designed for developers who are working with PostgreSQL databases and need a robust set of tools 
- * to manage database operations efficiently. By adhering to the PicoDatabaseUtilInterface, it provides 
- * a consistent API for database utilities while taking advantage of PostgreSQL-specific features.
- *
- * Usage:
- * To use this class, instantiate it with a PostgreSQL database connection and utilize its methods to perform 
- * various database tasks, ensuring efficient data management and manipulation.
+ * Designed for developers working with PostgreSQL to manage database tasks efficiently.
  *
  * @author Kamshory
  * @package MagicObject\Util\Database
