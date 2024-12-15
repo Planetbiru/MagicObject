@@ -70,7 +70,13 @@ Integrating with **PHP sessions** allows MagicObject to maintain state effective
 
 ### Object Labeling
 
-Enhancing object identification through **object labeling** improves the clarity of code and debugging processes. Labels allow developers to categorize and reference objects more easily.
+**Object labeling** refers to the metadata or description of an entity's properties, making it easier to identify and manage them. For example, an entity like "Client" might have properties such as **Name**, **Address**, and **Phone**. The labels here would be:
+
+-   **Name** is the label for the "name" field,
+-   **Address** is the label for the "address" field,
+-   **Phone** is the label for the "phone" field.
+
+These labels can **easily be modified** to meet specific needs without changing the field names themselves. For example, you could display "Full Name" instead of "Name" or "Contact Number" instead of "Phone" without altering the underlying database schema or object structure.
 
 ### Multi-Language Support
 
