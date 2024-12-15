@@ -17,6 +17,12 @@ use MagicObject\Util\PicoStringUtil;
  */
 class PicoEntityGenerator
 {
+    const TYPE_CHARACTER_VARYING = "character varying";
+    const TYPE_TINYINT_1 = "tinyint(1)";
+    const TYPE_VARCHAR_255 = "varchar(255)";
+    const TYPE_TIMESTAMP_WITH_TIME_ZONE = "timestamp with time zone";
+    const TYPE_TIMESTAMP_WITHOUT_TIME_ZONE = "timestamp without time zone";
+
     /**
      * Database connection instance.
      *
@@ -285,7 +291,7 @@ class PicoEntityGenerator
             "float" => "float",              // PostgreSQL: float
             "bigint" => "int",               // PostgreSQL: bigint
             "smallint" => "int",             // PostgreSQL: smallint
-            "tinyint(1)" => "bool",          // MySQL-style, use boolean for tinyint(1)
+            self::TYPE_TINYINT_1 => "bool",          // MySQL-style, use boolean for tinyint(1)
             "tinyint" => "int",              // PostgreSQL/SQLite: tinyint, handled as INT
             "int" => "int",                  // PostgreSQL/SQLite: integer
             "serial" => "int",               // PostgreSQL: auto-increment integer (equivalent to INT)
@@ -297,10 +303,10 @@ class PicoEntityGenerator
             // String types
             "nvarchar" => "string",          // SQLite: variable-length string
             "varchar" => "string",           // PostgreSQL: variable-length string
-            "character varying" => "string", // PostgreSQL: character varying (same as varchar)
+            self::TYPE_CHARACTER_VARYING => "string", // PostgreSQL: character varying (same as varchar)
             "char" => "string",              // PostgreSQL: fixed-length string
             "text" => "string",              // PostgreSQL/SQLite: unlimited length string
-            "varchar(255)" => "string",      // PostgreSQL: same as varchar without length
+            self::TYPE_VARCHAR_255 => "string",      // PostgreSQL: same as varchar without length
             "citext" => "string",            // PostgreSQL: case-insensitive text (equivalent to string)
             
             // MySQL-style text types (these types are similar to `text`)
@@ -318,8 +324,8 @@ class PicoEntityGenerator
             "datetime" => "string",          // PostgreSQL/SQLite: datetime
             "date" => "string",              // PostgreSQL/SQLite: date
             "time" => "string",              // PostgreSQL/SQLite: time
-            "timestamp with time zone" => "string", // PostgreSQL: timestamp with time zone
-            "timestamp without time zone" => "string", // PostgreSQL: timestamp without time zone
+            self::TYPE_TIMESTAMP_WITH_TIME_ZONE => "string", // PostgreSQL: timestamp with time zone
+            self::TYPE_TIMESTAMP_WITHOUT_TIME_ZONE => "string", // PostgreSQL: timestamp without time zone
             "date" => "string",              // PostgreSQL/SQLite: date
             "time" => "string",              // PostgreSQL/SQLite: time
             "interval" => "string",          // PostgreSQL: interval (for durations)
@@ -372,7 +378,7 @@ class PicoEntityGenerator
             "float" => "float",              // MySQL: FLOAT
             "bigint" => "bigint",            // MySQL: BIGINT
             "smallint" => "smallint",        // MySQL: SMALLINT
-            "tinyint(1)" => "tinyint",    // MySQL-style, use boolean for tinyint(1)
+            self::TYPE_TINYINT_1 => "tinyint",    // MySQL-style, use boolean for tinyint(1)
             "tinyint" => "tinyint",          // MySQL: TINYINT
             "int" => "int",                  // MySQL: INT
             "serial" => "int",               // MySQL: auto-increment integer (equivalent to INT)
@@ -384,10 +390,10 @@ class PicoEntityGenerator
             // String types
             "nvarchar" => "varchar",         // SQLite: VARCHAR
             "varchar" => "varchar",          // MySQL: VARCHAR
-            "character varying" => "varchar", // MySQL: CHARACTER VARYING (same as VARCHAR)
+            self::TYPE_CHARACTER_VARYING => "varchar", // MySQL: CHARACTER VARYING (same as VARCHAR)
             "char" => "char",                // MySQL: CHAR
             "text" => "text",                // MySQL: TEXT
-            "varchar(255)" => "varchar",     // MySQL: VARCHAR with specific length (equivalent to varchar)
+            self::TYPE_VARCHAR_255 => "varchar",     // MySQL: VARCHAR with specific length (equivalent to varchar)
             "citext" => "text",              // MySQL: case-insensitive text (MySQL does not have direct CITEXT type)
             
             // MySQL-style text types
@@ -396,16 +402,16 @@ class PicoEntityGenerator
             "longtext" => "longtext",        // MySQL: LONGTEXT
 
             // Boolean types
-            "bool" => "tinyint(1)",          // MySQL: BOOLEAN (stored as TINYINT(1))
-            "boolean" => "tinyint(1)",       // MySQL: BOOLEAN (same as TINYINT(1))
+            "bool" => self::TYPE_TINYINT_1,          // MySQL: BOOLEAN (stored as TINYINT(1))
+            "boolean" => self::TYPE_TINYINT_1,       // MySQL: BOOLEAN (same as TINYINT(1))
 
             // Date/Time types
             "timestamp" => "timestamp",      // MySQL: TIMESTAMP
             "datetime" => "datetime",        // MySQL: DATETIME
             "date" => "date",                // MySQL: DATE
             "time" => "time",                // MySQL: TIME
-            "timestamp with time zone" => "timestamp", // MySQL does not support time zone, use regular timestamp
-            "timestamp without time zone" => "timestamp", // Same for MySQL (no time zone info)
+            self::TYPE_TIMESTAMP_WITH_TIME_ZONE => "timestamp", // MySQL does not support time zone, use regular timestamp
+            self::TYPE_TIMESTAMP_WITHOUT_TIME_ZONE => "timestamp", // Same for MySQL (no time zone info)
             "year" => "year",                // MySQL: YEAR type
 
             // MySQL-specific types
@@ -450,7 +456,7 @@ class PicoEntityGenerator
                 "float" => "float",
                 "bigint" => "bigint",
                 "smallint" => "smallint",
-                "tinyint(1)" => "bool",
+                self::TYPE_TINYINT_1 => "bool",
                 "tinyint" => "tinyint",
                 "int" => "int",
                 "serial" => "int",
@@ -462,10 +468,10 @@ class PicoEntityGenerator
                 // String types
                 "nvarchar" => "varchar",
                 "varchar" => "varchar",
-                "character varying" => "varchar",
+                self::TYPE_CHARACTER_VARYING => "varchar",
                 "char" => "char",
                 "text" => "text",
-                "varchar(255)" => "varchar",
+                self::TYPE_VARCHAR_255 => "varchar",
                 "citext" => "text",
                 
                 // MySQL-style text types
@@ -474,16 +480,16 @@ class PicoEntityGenerator
                 "longtext" => "longtext",
                 
                 // Boolean types
-                "bool" => "tinyint(1)",
-                "boolean" => "tinyint(1)",
+                "bool" => self::TYPE_TINYINT_1,
+                "boolean" => self::TYPE_TINYINT_1,
                 
                 // Date/Time types
                 "timestamp" => "timestamp",
                 "datetime" => "datetime",
                 "date" => "date",
                 "time" => "time",
-                "timestamp with time zone" => "timestamp",
-                "timestamp without time zone" => "timestamp",
+                self::TYPE_TIMESTAMP_WITH_TIME_ZONE => "timestamp",
+                self::TYPE_TIMESTAMP_WITHOUT_TIME_ZONE => "timestamp",
                 "year" => "year",
                 
                 // MySQL-specific types
@@ -510,7 +516,7 @@ class PicoEntityGenerator
                 "float" => "real",
                 "bigint" => "bigint",
                 "smallint" => "smallint",
-                "tinyint(1)" => "boolean",
+                self::TYPE_TINYINT_1 => "boolean",
                 "tinyint" => "smallint",
                 "int" => "integer",
                 "serial" => "serial",
@@ -522,10 +528,10 @@ class PicoEntityGenerator
                 // String types
                 "nvarchar" => "varchar",
                 "varchar" => "varchar",
-                "character varying" => "varchar",
+                self::TYPE_CHARACTER_VARYING => "varchar",
                 "char" => "char",
                 "text" => "text",
-                "varchar(255)" => "varchar",
+                self::TYPE_VARCHAR_255 => "varchar",
                 "citext" => "citext",
                 
                 // PostgreSQL-style text types
@@ -542,8 +548,8 @@ class PicoEntityGenerator
                 "datetime" => "timestamp",
                 "date" => "date",
                 "time" => "time",
-                "timestamp with time zone" => "timestamptz",
-                "timestamp without time zone" => "timestamp",
+                self::TYPE_TIMESTAMP_WITH_TIME_ZONE => "timestamptz",
+                self::TYPE_TIMESTAMP_WITHOUT_TIME_ZONE => "timestamp",
                 "year" => "date",
                 
                 // PostgreSQL-specific types
@@ -570,7 +576,7 @@ class PicoEntityGenerator
                 "float" => "real",
                 "bigint" => "integer",
                 "smallint" => "integer",
-                "tinyint(1)" => "integer",
+                self::TYPE_TINYINT_1 => "integer",
                 "tinyint" => "integer",
                 "int" => "integer",
                 "serial" => "integer",
@@ -582,10 +588,10 @@ class PicoEntityGenerator
                 // String types
                 "nvarchar" => "text",
                 "varchar" => "text",
-                "character varying" => "text",
+                self::TYPE_CHARACTER_VARYING => "text",
                 "char" => "text",
                 "text" => "text",
-                "varchar(255)" => "text",
+                self::TYPE_VARCHAR_255 => "text",
                 "citext" => "text",
                 
                 // SQLite-style text types
@@ -602,8 +608,8 @@ class PicoEntityGenerator
                 "datetime" => "datetime",
                 "date" => "date",
                 "time" => "time",
-                "timestamp with time zone" => "datetime",
-                "timestamp without time zone" => "datetime",
+                self::TYPE_TIMESTAMP_WITH_TIME_ZONE => "datetime",
+                self::TYPE_TIMESTAMP_WITHOUT_TIME_ZONE => "datetime",
                 "year" => "integer",
                 
                 // SQLite-specific types
