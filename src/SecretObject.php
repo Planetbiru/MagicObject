@@ -47,7 +47,7 @@ class SecretObject extends stdClass // NOSONAR
     const KEY_NAME = "name";
     const KEY_VALUE = "value";
     const KEY_PROPERTY_TYPE = "propertyType";
-    const KEY_DEFAULT_VALUE = "default_value";
+    const KEY_DEFAULT_VALUE = "defaultValue";
     const ANNOTATION_ENCRYPT_IN = "EncryptIn";
     const ANNOTATION_DECRYPT_IN = "DecryptIn";
     const ANNOTATION_ENCRYPT_OUT = "EncryptOut";

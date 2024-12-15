@@ -330,7 +330,7 @@ Attributes:
 - `type`
 - `length`
 - `nullable`
-- `default_value`
+- `defaultValue`
 - `insertable`
 - `updatable`
 
@@ -342,7 +342,7 @@ Attributes:
 
 `nullable` indicate that column value can be `null` or not. Available value of `nullable` is `true` and `false`. 
 
-`default_value` is default value of the column.
+`defaultValue` is default value of the column.
 
 `insertable` indicate that column will exists on `INSERT` statement. Available value of `insertable` is `true` and `false`. 
 

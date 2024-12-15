@@ -166,7 +166,7 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
      *                      - string name: The name of the column.
      *                      - string type: The data type of the column (e.g., VARCHAR, INT).
      *                      - bool|string nullable: Indicates if the column allows NULL values (true or 'true' for NULL; otherwise, NOT NULL).
-     *                      - mixed default_value: The default value for the column (optional).
+     *                      - mixed defaultValue: The default value for the column (optional).
      *
      * @return string The SQL column definition formatted as a string, suitable for inclusion in a CREATE TABLE statement.
      */

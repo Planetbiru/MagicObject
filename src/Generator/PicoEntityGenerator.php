@@ -138,7 +138,7 @@ class PicoEntityGenerator
         }
 
         if (!empty($columnDefault)) {
-            $attrs[] = "default_value=\"" . $columnDefault . "\"";
+            $attrs[] = "defaultValue=\"" . $columnDefault . "\"";
         }
         if (!empty($columnNull)) {
             $val = stripos($columnNull, "YES") === 0 ? "true" : "false";
