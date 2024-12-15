@@ -86,28 +86,19 @@ class PicoEntityGenerator
     }
 
     /**
-     * Create a property with appropriate documentation based on database metadata.
+     * Generates a PHP property with a docblock based on database column metadata.
      *
-     * This method generates a PHP property with a docblock, including annotations for the column attributes 
-     * such as whether it is a primary key, auto-increment, nullable, default value, and more. It uses the 
-     * given database column information (from the `information_schema.columns` table or equivalent) to 
-     * generate a properly documented property for a PHP class.
+     * This method creates a property for a PHP class, including annotations such as `@Id`, `@GeneratedValue`,
+     * `@NotNull`, and `@Column`, derived from the given database column details. It supports column attributes
+     * like primary key, auto-increment, nullable, and default value, and provides type mappings based on the
+     * provided database-to-PHP type mappings.
      *
-     * The generated property includes:
-     * - Annotations like `@Id`, `@GeneratedValue`, `@NotNull`, `@Column`, etc.
-     * - Data type mapping based on the provided type and column map.
-     * - Support for non-updatable columns and special column properties like `auto_increment` or `nullable`.
-     * 
-     * @param array $typeMap Mapping of database types to PHP types (e.g., 'int' => 'integer').
-     * @param array $columnMap Mapping of database column types to MySQL column types (e.g., 'int' => 'INTEGER').
-     * @param array $row Data row from the database, typically fetched from `information_schema.columns`. It contains 
-     *                   information such as the column name, type, key, nullability, default value, and additional properties.
-     * @param string[]|null $nonupdatables List of column names that are non-updatable, or null if none. This is used 
-     *                                      to mark certain columns as non-updatable via the `@Column` annotation.
-     * @param bool $prettifyLabel Whether to modify column names to human-readable labels (default is true).
-     * @return string PHP code for the property with a docblock, including column attributes and annotations, ready to be 
-     *                inserted into a class. The code will follow the format of annotations like `@Column`, `@Id`, and 
-     *                other relevant attributes depending on the database column's characteristics.
+     * @param array $typeMap Database-to-PHP type mappings (e.g., 'int' => 'integer').
+     * @param array $columnMap Database column-to-type mappings (e.g., 'int' => 'INTEGER').
+     * @param array $row Column metadata from the database (e.g., from `information_schema.columns`).
+     * @param string[]|null $nonupdatables List of non-updatable columns, or null if none.
+     * @param bool $prettifyLabel Whether to convert column names to human-readable labels (default is true).
+     * @return string PHP code for the property with a docblock, ready to be inserted into a class.
      */
     protected function createProperty($typeMap, $columnMap, $row, $nonupdatables = null, $prettifyLabel = true)
     {
@@ -632,12 +623,18 @@ class PicoEntityGenerator
     }
 
     /**
-     * Generate the entity class and save it to a file.
+     * Generates an entity class based on database table metadata and saves it to a file.
      *
-     * @param string[]|null $nonupdatables Non-updateable columns
-     * @return int Number of bytes written to the file, or false on failure
+     * This method creates a PHP class that maps to a database table, including properties for each column,
+     * and writes the class to a specified file. It supports annotations for ORM operations, such as `@Entity`,
+     * `@Table`, and `@JSON`. The method also handles non-updatable columns and prettifies the property names
+     * if specified.
+     *
+     * @param string[]|null $nonupdatables List of non-updatable columns, or null if none.
+     * @param bool $prettifyLabel Whether to convert column names to human-readable labels (default is true).
+     * @return int|false The number of bytes written to the file, or false on failure.
      */
-    public function generate($nonupdatables = null)
+    public function generate($nonupdatables = null, $prettifyLabel = true)
     {
         $typeMap = $this->getTypeMap();
         $columnMap = $this->getColumnMap();
@@ -653,13 +650,11 @@ class PicoEntityGenerator
         }
 
         $rows = PicoColumnGenerator::getColumnList($this->database, $tableName);
-        error_log("ROWS");
-        error_log(print_r($rows, true));
 
         $attrs = array();
         if (is_array($rows)) {
             foreach ($rows as $row) {
-                $prop = $this->createProperty($typeMap, $columnMap, $row, $nonupdatables);
+                $prop = $this->createProperty($typeMap, $columnMap, $row, $nonupdatables, $prettifyLabel);
                 $attrs[] = $prop;
             }
         }
