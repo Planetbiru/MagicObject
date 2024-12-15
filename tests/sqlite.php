@@ -165,7 +165,7 @@ class Album extends MagicObject
     /**
      * Active
      * 
-     * @Column(name="active", type="tinyint(1)", length=1, default_value="1", nullable=true)
+     * @Column(name="active", type="tinyint(1)", length=1, defaultValue="1", nullable=true)
      * @DefaultColumn(value="1")
      * @var boolean
      */
@@ -174,7 +174,7 @@ class Album extends MagicObject
     /**
      * As Draft
      * 
-     * @Column(name="as_draft", type="tinyint(1)", length=1, default_value="1", nullable=true)
+     * @Column(name="as_draft", type="tinyint(1)", length=1, defaultValue="1", nullable=true)
      * @DefaultColumn(value="1")
      * @var boolean
      */
@@ -236,7 +236,7 @@ class AcuanPengawasan extends MagicObject
 	/**
 	 * Aktif
 	 * 
-	 * @Column(name="aktif", type="tinyint(1)", length=1, default_value="1", nullable=true)
+	 * @Column(name="aktif", type="tinyint(1)", length=1, defaultValue="1", nullable=true)
 	 * @DefaultColumn(value="1")
 	 * @Label(content="Aktif")
 	 * @var boolean

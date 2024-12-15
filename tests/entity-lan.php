@@ -171,7 +171,7 @@ class EntityAlbum extends MagicObject
 	/**
 	 * Blocked
 	 * 
-	 * @Column(name="blocked", type="tinyint(1)", length=1, default_value="1", nullable=true)
+	 * @Column(name="blocked", type="tinyint(1)", length=1, defaultValue="1", nullable=true)
 	 * @DefaultColumn(value="1")
 	 * @Label(content="Blocked")
 	 * @var boolean
@@ -181,7 +181,7 @@ class EntityAlbum extends MagicObject
 	/**
 	 * Hacked
 	 * 
-	 * @Column(name="hacked", type="tinyint(1)", length=1, default_value="null", nullable=true)
+	 * @Column(name="hacked", type="tinyint(1)", length=1, defaultValue="null", nullable=true)
 	 * @DefaultColumn(value="1")
 	 * @Label(content="Hacked")
 	 * @var boolean
@@ -191,7 +191,7 @@ class EntityAlbum extends MagicObject
 	/**
 	 * Active
 	 * 
-	 * @Column(name="active", type="tinyint(1)", length=1, default_value="1", nullable=true)
+	 * @Column(name="active", type="tinyint(1)", length=1, defaultValue="1", nullable=true)
 	 * @DefaultColumn(value="1")
 	 * @Label(content="Active")
 	 * @var boolean
@@ -201,7 +201,7 @@ class EntityAlbum extends MagicObject
 	/**
 	 * As Draft
 	 * 
-	 * @Column(name="as_draft", type="tinyint(1)", length=1, default_value="1", nullable=true)
+	 * @Column(name="as_draft", type="tinyint(1)", length=1, defaultValue="1", nullable=true)
 	 * @DefaultColumn(value="1")
 	 * @var boolean
 	 */
