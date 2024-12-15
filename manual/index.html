@@ -8595,7 +8595,7 @@ require_once "inc/footer.php";
 <li><code>DateTime</code></li>
 <li><code>array</code> of <code>string</code>, <code>int</code>, <code>bool</code> and <code>DateTime</code></li>
 </ol>
-<p>For columns with data type <code>DATETIME</code> and <code>TIMESTAMP</code>, users can use either <code>string</code> or <code>DateTime</code> parameters. <code>DateTime</code> will be first converted to 'Y-md H:i:s' format automatically by MagicObject. Don't forget to define DateTimeZone for DateTime object. Also note the time resolution for the <code>in</code> and <code>=</code> criteria.</p>
+<p>For columns with data type <code>DATETIME</code> and <code>TIMESTAMP</code>, users can use either <code>string</code> or <code>DateTime</code> parameters. <code>DateTime</code> will be first converted to 'Y-m-d H:i:s' format automatically by MagicObject. Don't forget to define DateTimeZone for DateTime object. Also note the time resolution for the <code>in</code> and <code>=</code> criteria.</p>
 <h3>Return Type</h3>
 <p>This method executes a database query using the parameters and annotations defined in the caller function.
 It leverages reflection to access the query string specified in the caller's docblock, binds the relevant parameters,
