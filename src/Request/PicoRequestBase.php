@@ -20,6 +20,8 @@ use stdClass;
  */
 class PicoRequestBase extends stdClass // NOSONAR
 {
+    const JSON = 'JSON';
+    
     /**
      * Class parameters parsed from annotations.
      * 
@@ -720,19 +722,21 @@ class PicoRequestBase extends stdClass // NOSONAR
     }
 
     /**
-     * Check if the JSON naming strategy is set to snake case.
-     *
-     * This method determines if the property naming strategy for JSON serialization
-     * is using snake case by checking the relevant configuration in class parameters.
+     * Check if the JSON naming strategy is snake case.
      *
      * @return bool True if the naming strategy is snake case, false otherwise.
      */
     private function isSnake()
     {
-        return isset($this->_classParams['JSON'])
-            && isset($this->_classParams['JSON']['property-naming-strategy'])
-            && strcasecmp($this->_classParams['JSON']['property-naming-strategy'], 'SNAKE_CASE') == 0
-            ;
+        return isset($this->_classParams[self::JSON])
+            && (
+                isset($this->_classParams[self::JSON]['property-naming-strategy']) 
+                || isset($this->_classParams[self::JSON]['propertyNamingStrategy'])
+            )
+            && (
+                strcasecmp($this->_classParams[self::JSON]['property-naming-strategy'], 'SNAKE_CASE') == 0 
+                || strcasecmp($this->_classParams[self::JSON]['propertyNamingStrategy'], 'SNAKE_CASE') == 0
+            );
     }
 
     /**
