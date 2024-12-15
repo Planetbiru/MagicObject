@@ -1,5 +1,6 @@
 <?php
 
+use MagicObject\Database\PicoDatabase;
 use MagicObject\Database\PicoDatabaseQueryBuilder;
 use MagicObject\Database\PicoDatabaseQueryTemplate;
 use MagicObject\Database\PicoPage;
@@ -7,6 +8,17 @@ use MagicObject\Database\PicoPageable;
 use MagicObject\Database\PicoSort;
 use MagicObject\Database\PicoSortable;
 use MagicObject\MagicObject;
+use MagicObject\SecretObject;
+
+require_once dirname(__DIR__) . "/vendor/autoload.php";
+
+$databaseCredential = new SecretObject();
+$databaseCredential->loadYamlFile(dirname(dirname(__DIR__)) . "/test.yml.txt", false, true, true);
+$databaseCredential->getDatabase()->setDatabaseName("sipro");
+$database = new PicoDatabase($databaseCredential->getDatabase(), null, function($sql){
+    echo $sql.";\r\n\r\n";
+});
+$database->connect();
 
 class SupervisorExport extends MagicObject
 {
@@ -17,7 +29,7 @@ class SupervisorExport extends MagicObject
      * @param PicoPageable $pageable Pagination details.
      * @param PicoSortable $sortable Sorting details.
      * @param PicoDatabaseQueryTemplate $template Query template.
-     * @return PDOStatement The result of the executed query.
+     * @return stdClass The result of the executed query.
     */
     public function exportActive($aktif, $pageable, $sortable, $template)
     {
@@ -30,7 +42,7 @@ $explort = new SupervisorExport(null, $database);
 
 $aktif = true;
 $sortable = new PicoSortable();
-$sortable->add(new PicoSort('name', PicoSort::ORDER_TYPE_ASC));
+$sortable->add(new PicoSort('nama', PicoSort::ORDER_TYPE_ASC));
 $pageable = new PicoPageable(new PicoPage(1, 1), $sortable);
 
 $builder = new PicoDatabaseQueryBuilder($database);
@@ -41,3 +53,4 @@ $builder->newQuery()
 
 $template = new PicoDatabaseQueryTemplate($builder);
 $result = $explort->exportActive($aktif, $pageable, $sortable, $template);
+print_r($result);

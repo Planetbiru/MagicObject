@@ -10,6 +10,7 @@ use MagicObject\Database\PicoDatabaseEntity;
 use MagicObject\Database\PicoDatabasePersistence;
 use MagicObject\Database\PicoDatabasePersistenceExtended;
 use MagicObject\Database\PicoDatabaseQueryBuilder;
+use MagicObject\Database\PicoDatabaseQueryTemplate;
 use MagicObject\Database\PicoPageable;
 use MagicObject\Database\PicoPageData;
 use MagicObject\Database\PicoSort;
@@ -863,7 +864,7 @@ class MagicObject extends stdClass // NOSONAR
 
             // Bind the parameters to the prepared statement
             foreach ($callerParamValues as $index => $paramValue) {
-                if (isset($callerParams[$index]) && !($paramValue instanceof PicoPageable) && !($paramValue instanceof PicoSortable)) {
+                if (isset($callerParams[$index]) && !($paramValue instanceof PicoPageable) && !($paramValue instanceof PicoSortable) && !($paramValue instanceof PicoDatabaseQueryTemplate)) {
                     // Bind the parameter name and type to the statement
                     $paramName = $callerParams[$index]->getName();
                     if (!is_array($paramValue)) {

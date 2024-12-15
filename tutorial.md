@@ -10485,6 +10485,8 @@ class SupervisorExport extends MagicObject
 }
 ```
 
+Similar to `PicoPageable` and `PicoSortable`, parameters of type `PicoDatabaseQueryTemplate` can be placed anywhere.
+
 To call this method, use the following approach:
 
 
