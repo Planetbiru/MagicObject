@@ -38,14 +38,13 @@ and then runs the query against the database.
 By analyzing the parameters and return type of the calling function, this method enables dynamic query execution tailored to the parameters and return type specified in the @return annotation. Supported return types include:
 
 - **void**: The method will return `null`.
-- **int** or **integer**: It will return the number of affected rows.
-- **object** or **stdClass**: It will return a single result as an object.
-- **stdClass[]**: All results will be returned as an array of stdClass objects.
-- **array**: All results will be returned as an associative array.
-- **string**: The results will be JSON-encoded.
-- **PDOStatement**: The method can return a prepared statement for further operations if necessary.
-- **MagicObject** and its derived classes: If the return type is a class name or an array of class names, instances
-  of the specified class will be created for each row fetched.
+- **int** or **integer**: The method will return the number of affected rows.
+- **object** or **stdClass**: The method will return a single result as an object.
+- **stdClass[]**: The method will return all results as an array of `stdClass` objects, similar to `PDO::fetchAll(PDO::FETCH_OBJ)`.
+- **array**: The method will return all results as an associative array, similar to `PDO::fetchAll(PDO::FETCH_ASSOC)`.
+- **string**: The method will return the result as a JSON-encoded string.
+- **PDOStatement**: The method will return a prepared statement for further operations if necessary.
+- **MagicObject** and its derived classes: If the return type is a class name or an array of class names, instances of the specified class will be created for each row fetched.
 
 MagicObject also supports return types `self` and `self[]` which will represent the respective class.
 
