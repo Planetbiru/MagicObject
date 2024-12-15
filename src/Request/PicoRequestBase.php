@@ -793,11 +793,11 @@ class PicoRequestBase extends stdClass // NOSONAR
     public function __toString()
     {
         $obj = clone $this;
-        $json_flag = 0;
+        $jsonFlag = 0;
         if($this->isPretty())
         {
-            $json_flag |= JSON_PRETTY_PRINT;
+            $jsonFlag |= JSON_PRETTY_PRINT;
         }
-        return json_encode($obj->value($this->isSnake()), $json_flag);
+        return json_encode($obj->value($this->isSnake()), $jsonFlag);
     }
 }
