@@ -82,17 +82,28 @@ class PicoEntityGenerator
     /**
      * Create a property with appropriate documentation based on database metadata.
      *
-     * This method generates a PHP property with a docblock based on the given column information 
-     * from the database. It includes annotations for the column attributes such as whether it is 
-     * a primary key, auto-increment, nullable, etc.
+     * This method generates a PHP property with a docblock, including annotations for the column attributes 
+     * such as whether it is a primary key, auto-increment, nullable, default value, and more. It uses the 
+     * given database column information (from the `information_schema.columns` table or equivalent) to 
+     * generate a properly documented property for a PHP class.
      *
-     * @param array $typeMap Mapping of database types to PHP types
-     * @param array $columnMap Mapping of database column types to MySQL column types
-     * @param array $row Data row from the database, typically from information_schema.columns
-     * @param string[]|null $nonupdatables List of column names that are non-updatable, or null
-     * @return string PHP code for the property with a docblock, including column attributes and annotations
+     * The generated property includes:
+     * - Annotations like `@Id`, `@GeneratedValue`, `@NotNull`, `@Column`, etc.
+     * - Data type mapping based on the provided type and column map.
+     * - Support for non-updatable columns and special column properties like `auto_increment` or `nullable`.
+     * 
+     * @param array $typeMap Mapping of database types to PHP types (e.g., 'int' => 'integer').
+     * @param array $columnMap Mapping of database column types to MySQL column types (e.g., 'int' => 'INTEGER').
+     * @param array $row Data row from the database, typically fetched from `information_schema.columns`. It contains 
+     *                   information such as the column name, type, key, nullability, default value, and additional properties.
+     * @param string[]|null $nonupdatables List of column names that are non-updatable, or null if none. This is used 
+     *                                      to mark certain columns as non-updatable via the `@Column` annotation.
+     * @param bool $prettifyLabel Whether to modify column names to human-readable labels (default is true).
+     * @return string PHP code for the property with a docblock, including column attributes and annotations, ready to be 
+     *                inserted into a class. The code will follow the format of annotations like `@Column`, `@Id`, and 
+     *                other relevant attributes depending on the database column's characteristics.
      */
-    protected function createProperty($typeMap, $columnMap, $row, $nonupdatables = null)
+    protected function createProperty($typeMap, $columnMap, $row, $nonupdatables = null, $prettifyLabel = true)
     {
         $columnName = $row['Field'];
         $columnType = $row['Type'];
@@ -102,7 +113,7 @@ class PicoEntityGenerator
         $columnExtra = $row['Extra'];
 
         $propertyName = PicoStringUtil::camelize($columnName);
-        $description = $this->getPropertyName($columnName);
+        $description = $this->getPropertyName($columnName, $prettifyLabel);
         $columnType = $this->getColumnType($columnMap, $columnType);
         $type = $this->getDataType($typeMap, $columnType);
 
@@ -167,17 +178,23 @@ class PicoEntityGenerator
 
     /**
      * Get a descriptive name for the property based on the column name.
+     * The column name is converted to a formatted property name, where each part
+     * of the column name (split by underscores) is capitalized. Special cases such as 
+     * "Id" and "Ip" are handled to be formatted as "ID" and "IP", respectively.
      *
-     * @param string $name Original column name
-     * @return string Formatted property name
+     * @param string $name Original column name (e.g., 'user_id', 'user_ip')
+     * @param bool $prettifyLabel Whether to replace 'Id' with 'ID' and 'Ip' with 'IP'
+     * @return string Formatted property name (e.g., 'User ID', 'User IP')
      */
-    protected function getPropertyName($name)
+    protected function getPropertyName($name, $prettifyLabel)
     {
         $arr = explode("_", $name);
         foreach ($arr as $k => $v) {
-            $arr[$k] = ucfirst($v);
-            $arr[$k] = str_replace("Id", "ID", $arr[$k]);
-            $arr[$k] = str_replace("Ip", "IP", $arr[$k]);
+            $arr[$k] = ucwords($v);
+            if ($prettifyLabel) {
+                $arr[$k] = str_replace("Id", "ID", $arr[$k]);
+                $arr[$k] = str_replace("Ip", "IP", $arr[$k]);
+            }
         }
         return implode(" ", $arr);
     }
