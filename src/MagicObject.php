@@ -80,6 +80,7 @@ class MagicObject extends stdClass // NOSONAR
     const FIND_OPTION_NO_FETCH_DATA = 2;
 
     const SNAKE_CASE = 'SNAKE_CASE';
+    const UPPER_CAMEL_CASE = 'UPPER_CAMEL_CASE';
 
     /**
      * Indicates whether the object is read-only.
@@ -1618,9 +1619,9 @@ class MagicObject extends stdClass // NOSONAR
         return isset($this->_classParams[self::JSON])
             && (
                 isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY]) &&
-                strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY], 'UPPER_CAMEL_CASE') == 0
+                strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY], self::UPPER_CAMEL_CASE) == 0
             || isset($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY_CAMEL]) && 
-                strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY_CAMEL], 'UPPER_CAMEL_CASE') == 0
+                strcasecmp($this->_classParams[self::JSON][self::PROPERTY_NAMING_STRATEGY_CAMEL], self::UPPER_CAMEL_CASE) == 0
             );
     }
 
