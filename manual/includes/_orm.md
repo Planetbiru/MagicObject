@@ -218,7 +218,8 @@ class Album extends MagicObject
 `@JSON` configures how the object will be serialized.
 
 Attributes:
-1. `property-naming-strategy`
+
+1. `propertyNamingStrategy`
 
 Allowed value:
 

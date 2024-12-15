@@ -454,7 +454,8 @@ class MyObject extends MagicObject
 `@JSON` is parameter to inform how the object will be serialized.
 
 Attributes:
-1. `property-naming-strategy`
+
+1. `propertyNamingStrategy`
 
 Allowed value:
 
@@ -462,10 +463,9 @@ Allowed value:
 - `CAMEL_CASE` all properties will be camel case when `__toString()` method called.
 - `UPPER_CAMEL_CASE` all properties will be camel case with capitalize first character when `__toString()` method called.
 
-
 Default value: `CAMEL_CASE`
 
-1. `prettify`
+2. `prettify`
 
 Allowed value:
 
@@ -479,7 +479,7 @@ Default value: `false`
 `@Yaml` is parameter to inform how the object will be serialized.
 
 Attributes:
-1. `property-naming-strategy`
+1. `propertyNamingStrategy`
 
 Allowed value:
 
@@ -992,7 +992,8 @@ class PicoDatabaseCredentials extends SecretObject
 `@JSON` is parameter to inform how the object will be serialized.
 
 Attributes:
-`property-naming-strategy`
+
+1. `propertyNamingStrategy`
 
 Allowed value:
 
@@ -1014,7 +1015,7 @@ Default value: `false`
 `@JSON` is parameter to inform how the object will be serialized.
 
 Attributes:
-`property-naming-strategy`
+`propertyNamingStrategy`
 
 Allowed value:
 
@@ -3046,7 +3047,8 @@ class Album extends MagicObject
 `@JSON` configures how the object will be serialized.
 
 Attributes:
-1. `property-naming-strategy`
+
+1. `propertyNamingStrategy`
 
 Allowed value:
 

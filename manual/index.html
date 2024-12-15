@@ -362,7 +362,7 @@ class MyObject extends MagicObject
 <p><code>@JSON</code> is parameter to inform how the object will be serialized.</p>
 <p>Attributes:</p>
 <ol>
-<li><code>property-naming-strategy</code></li>
+<li><code>propertyNamingStrategy</code></li>
 </ol>
 <p>Allowed value:</p>
 <ul>
@@ -371,7 +371,7 @@ class MyObject extends MagicObject
 <li><code>UPPER_CAMEL_CASE</code> all properties will be camel case with capitalize first character when <code>__toString()</code> method called.</li>
 </ul>
 <p>Default value: <code>CAMEL_CASE</code></p>
-<ol>
+<ol start="2">
 <li><code>prettify</code></li>
 </ol>
 <p>Allowed value:</p>
@@ -384,7 +384,7 @@ class MyObject extends MagicObject
 <p><code>@Yaml</code> is parameter to inform how the object will be serialized.</p>
 <p>Attributes:</p>
 <ol>
-<li><code>property-naming-strategy</code></li>
+<li><code>propertyNamingStrategy</code></li>
 </ol>
 <p>Allowed value:</p>
 <ul>
@@ -823,8 +823,10 @@ class PicoDatabaseCredentials extends SecretObject
 <h3>Class Parameters</h3>
 <p><strong>@JSON</strong></p>
 <p><code>@JSON</code> is parameter to inform how the object will be serialized.</p>
-<p>Attributes:
-<code>property-naming-strategy</code></p>
+<p>Attributes:</p>
+<ol>
+<li><code>propertyNamingStrategy</code></li>
+</ol>
 <p>Allowed value:</p>
 <ul>
 <li><code>SNAKE_CASE</code> all properties will be snake case when <code>__toString()</code> method called.</li>
@@ -843,7 +845,7 @@ class PicoDatabaseCredentials extends SecretObject
 <p><strong>@Yaml</strong></p>
 <p><code>@JSON</code> is parameter to inform how the object will be serialized.</p>
 <p>Attributes:
-<code>property-naming-strategy</code></p>
+<code>propertyNamingStrategy</code></p>
 <p>Allowed value:</p>
 <ul>
 <li><code>SNAKE_CASE</code> all properties will be snake case when <code>dumpYaml()</code> method called.</li>
@@ -2620,7 +2622,7 @@ class Album extends MagicObject
 <p><code>@JSON</code> configures how the object will be serialized.</p>
 <p>Attributes:</p>
 <ol>
-<li><code>property-naming-strategy</code></li>
+<li><code>propertyNamingStrategy</code></li>
 </ol>
 <p>Allowed value:</p>
 <ul>
