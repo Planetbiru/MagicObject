@@ -132,3 +132,20 @@ This improvement enhances the flexibility of native queries, as the logic for pa
 -   **rollback()**: Rolls back the current transaction, undoing any changes made since the transaction began.
 
 These methods are designed to work seamlessly with an active database connection, allowing developers to handle transactions directly within the context of their application. Whether you're managing financial transactions or ensuring data consistency during batch processing, these functions streamline the management of transaction-based operations.
+
+
+# MagicObject Version 2.11
+
+## What's New
+
+1.  **Standardization of Annotation Attribute Naming with Camel Case Strategy**  
+    The annotation attributes in MagicObject have been standardized to follow the camel case naming convention, ensuring consistency and better readability throughout the codebase.
+    
+2.  **Refactoring of Methods with Constant Usage**  
+    To prevent duplication and errors in the code, several methods have been refactored to utilize constants. This improves maintainability and reduces the chances of mistakes during development.
+    
+3.  **Added `DROP TABLE IF EXISTS` and `CREATE TABLE IF NOT EXISTS` to SQL Code Generation**  
+    MagicObject now generates SQL code with `DROP TABLE IF EXISTS` and `CREATE TABLE IF NOT EXISTS` statements when creating tables from entities. This ensures that the table creation process is more robust, preventing errors when a table already exists.
+    
+4.  **Updated Documentation**  
+    The documentation has been updated to reflect the latest changes in MagicObject. This includes clarifications, examples, and explanations to assist developers in understanding and utilizing the library effectively.
