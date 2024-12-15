@@ -591,9 +591,10 @@ A tutorial is available here: https://github.com/Planetbiru/MagicObject/blob/mai
 # Applications Using MagicObject
 
 1. **Music Production Manager** https://github.com/kamshory/MusicProductionManager
-2. **AppBuilder** https://github.com/Planetbiru/AppBuilder
-3. **Koperasi-Simpan-Pinjam-Syariah** https://github.com/kamshory/Koperasi-Simpan-Pinjam-Syariah
-4. **Toserba Online** https://toserba-online.top/
+2. **MagicApp** https://github.com/Planetbiru/MagicApp
+3. **MagicAppBuilder** https://github.com/Planetbiru/MagicAppBuilder
+4. **Koperasi-Simpan-Pinjam-Syariah** https://github.com/kamshory/Koperasi-Simpan-Pinjam-Syariah
+5. **Toserba Online** https://toserba-online.top/
 
 # Credit
 
