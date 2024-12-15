@@ -167,11 +167,11 @@ class PicoDatabaseDump
      */
     public function updateQueryAlterTableDefaultValue($query, $entityColumn)
     {
-        if (isset($entityColumn['default_value'])) {
-            if ($entityColumn['default_value'] == 'NULL' || $entityColumn['default_value'] == 'null') {
+        if (isset($entityColumn[MagicObject::KEY_DEFAULT_VALUE])) {
+            if ($entityColumn[MagicObject::KEY_DEFAULT_VALUE] == 'NULL' || $entityColumn[MagicObject::KEY_DEFAULT_VALUE] == 'null') {
                 $query .= " DEFAULT NULL";
             } else {
-                $query .= " DEFAULT " . PicoDatabaseUtil::escapeValue($entityColumn['default_value'], true);
+                $query .= " DEFAULT " . PicoDatabaseUtil::escapeValue($entityColumn[MagicObject::KEY_DEFAULT_VALUE], true);
             }
         }
         return $query;

@@ -59,9 +59,12 @@ class MagicObject extends stdClass // NOSONAR
     
     // Key constants
     const KEY_PROPERTY_TYPE = "propertyType";
-    const KEY_DEFAULT_VALUE = "default_value";
     const KEY_NAME = "name";
     const KEY_VALUE = "value";
+    const KEY_TYPE = "type";
+    const KEY_LENGTH = "length";
+    const KEY_DEFAULT_VALUE = "defaultValue";
+    const KEY_AUTO_INCREMENT = "auto_increment";
 
     // Format constants
     const JSON = 'JSON';

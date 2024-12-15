@@ -63,7 +63,7 @@ class EntityAlbum extends MagicObject
     /**
 	 * Producer
 	 * 
-	 * @JoinColumn(name="producer_id")
+	 * @JoinColumn(name="producer_id", propertyColumnName="producer_id")
 	 * @Label(content="Producer")
 	 * @var Producer
 	 */
@@ -210,4 +210,5 @@ class EntityAlbum extends MagicObject
 }
 
 $lang = new PicoEntityLanguage(new EntityAlbum());
-echo $lang->getReleaseDateApa();
+//echo $lang->getReleaseDateApa();
+echo (new EntityAlbum())->tableInfo();
