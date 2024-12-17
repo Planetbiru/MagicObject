@@ -179,7 +179,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
                 'longtext' => 'TEXT',
                 'datetime' => 'DATETIME',
                 'date' => 'DATE',
-                'timestamp' => 'DATETIME',
+                'timestamp' => 'TIMESTAMP',
                 'time' => 'TIME',
                 'blob' => 'BLOB',
             );
@@ -349,7 +349,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
             'text' => 'TEXT',           // MySQL 'text' maps to SQLite 'TEXT'
             'datetime' => 'DATETIME',   // MySQL 'datetime' maps to SQLite 'DATETIME'
             'date' => 'DATE',           // MySQL 'date' maps to SQLite 'DATE'
-            'timestamp' => 'DATETIME',  // MySQL 'timestamp' maps to SQLite 'DATETIME'
+            'timestamp' => 'TIMESTAMP',  // MySQL 'timestamp' maps to SQLite 'DATETIME'
             'time' => 'TIME',           // MySQL 'time' maps to SQLite 'TIME'
         );
 
