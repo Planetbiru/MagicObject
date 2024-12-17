@@ -173,7 +173,6 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
             // Default mapping of column types to SQL types
             $typeMapping = array(
                 'varchar' => "NVARCHAR($length)",
-                'char' => "NVARCHAR($length)",
                 'tinyint(1)' => 'BOOLEAN', // NOSONAR
                 'float' => 'REAL',
                 'text' => 'TEXT',
@@ -348,7 +347,6 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
             'mediumtext' => 'TEXT',     // MySQL 'mediumtext' maps to SQLite 'TEXT'
             'longtext' => 'TEXT',       // MySQL 'longtext' maps to SQLite 'TEXT'
             'text' => 'TEXT',           // MySQL 'text' maps to SQLite 'TEXT'
-            'char' => 'CHAR',           // MySQL 'char' maps to SQLite 'CHAR'
             'datetime' => 'DATETIME',   // MySQL 'datetime' maps to SQLite 'DATETIME'
             'date' => 'DATE',           // MySQL 'date' maps to SQLite 'DATE'
             'timestamp' => 'DATETIME',  // MySQL 'timestamp' maps to SQLite 'DATETIME'
