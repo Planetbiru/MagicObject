@@ -68,7 +68,7 @@ class PicoEntityLanguage
      */
     private $_entityLanguage = ""; // NOSONAR
 
-    private $_defaultLabel = array();
+    private $_defaultLabel = array(); // NOSONAR
 
     /**
      * Constructor
