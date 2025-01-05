@@ -1044,7 +1044,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function startTransaction()
     {
-        $this->transactionalCommand("start");
+        $this->_database->startTransaction();
         return $this;
     }
 
@@ -1062,7 +1062,7 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function commit()
     {
-        $this->transactionalCommand("commit");
+        $this->_database->commit();
         return $this;
     }
 
@@ -1079,50 +1079,8 @@ class MagicObject extends stdClass // NOSONAR
      */
     public function rollback()
     {
-        $this->transactionalCommand("rollback");
+        $this->_database->rollback();
         return $this;
-    }
-
-    /**
-     * Executes a transactional SQL command (start, commit, or rollback).
-     *
-     * This method executes a SQL command to manage the state of a database transaction.
-     * It checks the type of command (`start_transaction`, `commit`, or `rollback`) and
-     * delegates the corresponding SQL generation to the `PicoDatabaseQueryBuilder` class.
-     * The SQL statement is then executed on the active database connection.
-     *
-     * @param string $command The transactional command to execute. Possible values are:
-     *                        - "start" to begin a new transaction.
-     *                        - "commit" to commit the current transaction.
-     *                        - "rollback" to rollback the current transaction.
-     * 
-     * @return void
-     * 
-     * @throws NoDatabaseConnectionException If there is no active database connection.
-     * @throws PDOException If there is an error while executing the transactional command.
-     */
-    private function transactionalCommand($command)
-    {
-        if ($this->_databaseConnected()) {
-            try {
-                $queryBuilder = new PicoDatabaseQueryBuilder($this->_database);
-                $sql = null;
-                if ($command == "start") {
-                    $sql = $queryBuilder->startTransaction();
-                } elseif ($command == "commit") {
-                    $sql = $queryBuilder->commit();
-                } elseif ($command == "rollback") {
-                    $sql = $queryBuilder->rollback();
-                }
-                if (isset($sql)) {
-                    $this->_database->execute($sql);
-                }
-            } catch (Exception $e) {
-                throw new PDOException($e);
-            }
-        } else {
-            throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
-        }
     }
 
     /**
