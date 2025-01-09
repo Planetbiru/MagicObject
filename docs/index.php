@@ -9,6 +9,12 @@ require_once dirname(__DIR__) . "/vendor/autoload.php";
  */
 class PhpDocScanner {
 
+    private $parsedown = null;
+    public function __construct()
+    {
+        $this->parsedown = new PicoParsedown();
+    }
+
     /**
      * Scans a directory recursively for PHP files up to a certain depth.
      *
@@ -94,19 +100,150 @@ class PhpDocScanner {
      * @param array $parsedDocblock The parsed docblock to display.
      */
     public function displayParsedDocblock($parsedDocblock) {
-        $parsedown = new PicoParsedown();
+        
         
         if ($parsedDocblock['description']) {
-            echo "<strong>Description:</strong><br>\n";
-            echo $parsedown->text($parsedDocblock['description']) . "\n";
+            echo "<div class=\"description-label\">Description:</div>\r\n";
+            echo $this->parsedown->text($parsedDocblock['description']) . "\n";
         }
 
-        if (!empty($parsedDocblock['tags'])) {
-            foreach ($parsedDocblock['tags'] as $tag) {
-                echo "<strong>@{$tag['tag']}:</strong> {$tag['description']}<br>\n";
+        $parameters = $this->parseParameters($parsedDocblock);
+        if(!empty($parameters))
+        {
+            echo "<h3>Parameters</h3>\r\n";
+            foreach($parameters as $parameter)
+            {
+                echo "<div class=\"parameter-name\">{$parameter['name']}</div>\r\n";
+                echo "<div class=\"parameter-description\">{$this->parsedown->text($parameter['description'])}</div>\r\n";
             }
-            echo "<br>\n";
         }
+
+        $returns = $this->parseReturns($parsedDocblock);
+        if(!empty($parameters))
+        {
+            echo "<h3>Return</h3>\r\n";
+            foreach($returns as $return)
+            {
+                echo "<div class=\"return-type\">{$return['type']}</div>\r\n";
+                echo "<div class=\"return-description\">{$this->parsedown->text($return['description'])}</div>\r\n";
+            }
+        }
+
+        $throws = $this->parseThrows($parsedDocblock);
+        if(!empty($throws))
+        {
+            echo "<h3>Throws</h3>\r\n";
+            foreach($throws as $throw)
+            {
+                echo "<div class=\"return-type\">{$throw['type']}</div>\r\n";
+                echo "<div class=\"return-description\">{$this->parsedown->text($throw['description'])}</div>\r\n";
+            }
+        }
+
+
+    }
+
+    private function parseParameters($parsedDocblock)
+    {
+        $list = [];
+        foreach ($parsedDocblock['tags'] as $tag) {
+            if($tag['tag'] == 'param')
+            {
+                $list[] = $tag['description'];
+            }
+        }
+        
+        $params = [];
+        if(!empty($list))
+        {
+            foreach($list as $line)
+            {
+                $desc = trim(preg_replace('/\s\s+/', ' ', $line));
+                $arr = explode(" ", $desc);
+                if(count($arr) > 1 && substr($arr[1], 0, 1) == '$')
+                {
+                    $param = $arr[1];
+                }
+                else
+                {
+                    $param = $arr[0];
+                }
+                $description = substr($line, strpos($line, $param) + strlen($param) + 1);
+                $params[] = [
+                    'name'=>$param,
+                    'description'=>$description
+                ];
+            }
+        }
+        return $params;
+    }
+
+    private function parseReturns($parsedDocblock)
+    {
+        $list = [];
+        foreach ($parsedDocblock['tags'] as $tag) {
+            if($tag['tag'] == 'return')
+            {
+                $list[] = $tag['description'];
+            }
+        }
+        $returns = [];
+        if(!empty($list))
+        {
+            foreach($list as $line)
+            {
+                $desc = trim(preg_replace('/\s\s+/', ' ', $line));
+                $arr = explode(" ", $desc);
+                if(count($arr) > 1 && substr($arr[1], 0, 1) == '$')
+                {
+                    $type = $arr[1];
+                }
+                else
+                {
+                    $type = $arr[0];
+                }
+                $description = substr($line, strpos($line, $type) + strlen($type) + 1);
+                $returns[] = [
+                    'type'=>$type,
+                    'description'=>$description
+                ];
+            }
+        }
+        return $returns;
+    }
+
+    private function parseThrows($parsedDocblock)
+    {
+        $list = [];
+        foreach ($parsedDocblock['tags'] as $tag) {
+            if($tag['tag'] == 'throws')
+            {
+                $list[] = $tag['description'];
+            }
+        }
+        $throws = [];
+        if(!empty($list))
+        {
+            foreach($list as $line)
+            {
+                $desc = trim(preg_replace('/\s\s+/', ' ', $line));
+                $arr = explode(" ", $desc);
+                if(count($arr) > 1 && substr($arr[1], 0, 1) == '$')
+                {
+                    $type = $arr[1];
+                }
+                else
+                {
+                    $type = $arr[0];
+                }
+                $description = substr($line, strpos($line, $type) + strlen($type) + 1);
+                $throws[] = [
+                    'type'=>$type,
+                    'description'=>$description
+                ];
+            }
+        }
+        return $throws;
     }
 
     /**
@@ -136,7 +273,6 @@ class PhpDocScanner {
             if ($classDocblock) {
                 $parsedClassDocblock = $this->parseDocblock($classDocblock);
                 echo "<div class='docblock'>\n";
-                echo "<strong>Class Docblock:</strong><br>\n";
                 $this->displayParsedDocblock($parsedClassDocblock);
                 echo "</div>\n";
             }
@@ -168,7 +304,7 @@ class PhpDocScanner {
                     $methodDocblock = $method->getDocComment();
                     if ($methodDocblock) {
                         $parsedMethodDocblock = $this->parseDocblock($methodDocblock);
-                        $params = $this->getMethodParams($parsedMethodDocblock);
+                        $params = $this->getMethodParams($parsedMethodDocblock, $method);
                         $paramsStr = implode(", ", $params);
 
                         $returns = $this->getMethodReturns($parsedMethodDocblock);
@@ -193,13 +329,48 @@ class PhpDocScanner {
                 }
             }
 
+            
+
+
         } catch (ReflectionException $e) {
             echo "Could not reflect on class {$fullClassName}: " . $e->getMessage() . "<br>\n";
         }
     }
 
-    private function getMethodParams($parsedMethodDocblock)
+    private function getParameterDefaults($method) {
+        $parameters = $method->getParameters();
+        $defaults = [];
+    
+        foreach ($parameters as $parameter) {
+            if ($parameter->isDefaultValueAvailable()) {
+                $defaults[$parameter->getName()] = $parameter->getDefaultValue();
+            } else {
+                $defaults[$parameter->getName()] = null;
+            }
+        }
+    
+        return $defaults;
+    }
+    
+
+    private function getMethodParams($parsedMethodDocblock, $method)
     {
+        // Get method parameters and their default values
+        $defaults = $this->getParameterDefaults($method);
+
+        $defaultValues = [];
+        if (!empty($defaults)) {
+
+            
+            foreach ($defaults as $paramName => $defaultValue) {
+                if ($defaultValue === null) {
+                    $defaultValues[$paramName] = null;
+                } else {
+                    $defaultValues[$paramName] = var_export($defaultValue, true);
+                }
+            }
+        }
+
         $params = [];
         if(isset($parsedMethodDocblock['tags']) && is_array($parsedMethodDocblock['tags']))
         {
@@ -209,19 +380,37 @@ class PhpDocScanner {
                 {
                     $description = trim(preg_replace('/\s\s+/', ' ', $tag['description']));
                     $arr = explode(" ", $description);
+
+                    
+
+
                     if(count($arr) > 1 && substr($arr[1], 0, 1) == '$')
                     {
-                        $param = $this->getParameterType($arr[0]).' <span class="parameter-name">'.$arr[1].'</span>';
+                        $param = ltrim($arr[1], '$');
+                        $defaultHtml = $this->getDefaultValueHtml($defaultValues, $param);
+                        $paramHtml = $this->getParameterType($arr[0]).' <span class="parameter-name">'.$arr[1].$defaultHtml.'</span>';
                     }
                     else
                     {
-                        $param = '<span class="parameter-name">'.$arr[0].'</span>';
+                        $param = ltrim($arr[0], '$');
+                        $defaultHtml = $this->getDefaultValueHtml($defaultValues, $param);
+                        $paramHtml = '<span class="parameter-name">'.$arr[0].$defaultHtml.'</span>';
                     }
-                    $params[] = $param;
+                    $params[] = $paramHtml;
                 }
             }
         }
         return $params;
+    }
+
+    private function getDefaultValueHtml($defaultValues, $param)
+    {
+        if(isset($defaultValues[$param]))
+        {
+            return ' <span class="parameter-equal-sign">=</span> <span class="parameter-default">'.$defaultValues[$param] . '</span>';
+        }
+        return "";
+        
     }
 
     private function getParameterType($type)
@@ -335,6 +524,12 @@ pre {
     .return-type
     {
         color: #00f;
+    }
+    .parameter-equal-sign{
+        color: #333333;
+    }
+    .parameter-default{
+        color: #936;
     }
 </style>
 
