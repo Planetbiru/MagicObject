@@ -2,8 +2,6 @@
 
 namespace MagicObject\Util\Image;
 
-namespace ByJG\ImageUtil;
-
 use GdImage;
 use MagicObject\Util\Image\ImageColor;
 
