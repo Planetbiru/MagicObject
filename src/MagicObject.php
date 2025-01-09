@@ -246,7 +246,7 @@ class MagicObject extends stdClass // NOSONAR
                 $values = $data->value();
                 foreach ($values as $key => $value) 
                 {
-                    $key2 = PicoStringUtil::camelize(str_replace("-", "_", $key));
+                    $key2 = PicoStringUtil::camelize($key);
                     $this->set($key2, $value, true);
                 }
             }
@@ -254,7 +254,7 @@ class MagicObject extends stdClass // NOSONAR
             {
                 foreach ($data as $key => $value) 
                 {
-                    $key2 = PicoStringUtil::camelize(str_replace("-", "_", $key));
+                    $key2 = PicoStringUtil::camelize($key);
                     $this->set($key2, $value, true);
                 }
             }
