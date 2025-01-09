@@ -41,8 +41,13 @@ class PicoStringUtil
      */
     public static function camelize($input, $glue = '_')
     {
-        $input = lcfirst($input);
-        return lcfirst(str_replace($glue, '', ucwords(trim($input), $glue)));
+        $str = str_replace([' ', '-'], $glue, $input);
+        $str = preg_replace('/_+/', $glue, $str);
+        $str = strtolower($str);
+        $str = preg_replace_callback('/_([a-z])/', function ($matches) {
+            return strtoupper($matches[1]);
+        }, $str);
+        return lcfirst($str);
     }
 
     /**
@@ -54,8 +59,8 @@ class PicoStringUtil
      */
     public static function upperCamelize($input, $glue = '_')
     {
-        $input = lcfirst($input);
-        return ucfirst(str_replace($glue, '', ucwords($input, $glue)));
+        $input = self::camelize($input, $glue);
+        return ucfirst($input);
     }
 
     /**
@@ -123,8 +128,11 @@ class PicoStringUtil
      */
     public static function snakeToTitle($input, $glue = '_')
     {
-        $input = lcfirst($input);
-        return ucwords(str_replace($glue, ' ', ucwords($input, $glue)));
+        $str = str_replace([' ', '-'], $glue, $input);
+        $str = preg_replace('/_+/', $glue, $str);
+        $words = explode($glue, $str);
+        $words = array_map('ucwords', $words);
+        return implode(' ', $words);
     }
 
     /**
