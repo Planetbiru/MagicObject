@@ -296,6 +296,11 @@ class PhpDocScanner {
 ?>
 
 <style>
+    .method, .property
+    {
+        border-bottom: 1px solid #dddddd;
+        margin-bottom: 10px;
+    }
     .property-declaratiopn, .method-declaratiopn {
     font-family: monospace;    /* Use a monospaced font like the default <pre> */
     white-space: pre;          /* Preserve whitespace and line breaks */
