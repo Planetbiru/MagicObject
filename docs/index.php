@@ -110,62 +110,144 @@ class PhpDocScanner {
     public function generateParsedDocblock($parsedDocblock, $heading = "h3") {   
         $output = '';
 
+        $output .= $this->displayPackages($parsedDocblock);
+        
+        $output .= $this->displayAuthors($parsedDocblock);
+
+        $output .= $this->displayLinks($parsedDocblock);
+
+        // Description section
+        
+        $output .= $this->displayDescription($parsedDocblock, $heading);
+
+        // Parameters section
+        $parameters = $this->parseParameters($parsedDocblock);
+        $output .= $this->displayParameters($parameters);
+
+        // Returns section
+        $returns = $this->parseReturns($parsedDocblock);
+        $output .= $this->displayReturns($returns);
+
+        // Throws section
+        $throws = $this->parseThrows($parsedDocblock);
+        $output .= $this->displayThrows($throws);
+
+        return $output;
+    }
+
+    /**
+     * Displays the description from the parsed docblock.
+     *
+     * This function checks if a description exists in the parsed docblock and formats it into an HTML element.
+     * It uses the `parsedown` library to convert Markdown descriptions into HTML.
+     *
+     * @param array $parsedDocblock The parsed docblock containing the description.
+     * @param string $heading The HTML heading tag to wrap the description.
+     * @return string The formatted HTML string with the description.
+     */
+    private function displayDescription($parsedDocblock, $heading)
+    {
+        $output = "";
+        if ($parsedDocblock['description']) {
+            $output .= "<$heading>Description</$heading>\r\n";
+            $output .= $this->parsedown->text(trim($parsedDocblock['description'])) . "\n";
+        }
+        return $output;
+    }
+
+    /**
+     * Displays the package information from the parsed docblock.
+     *
+     * This function checks if there is a 'package' tag in the parsed docblock and formats it into an HTML element.
+     *
+     * @param array $parsedDocblock The parsed docblock containing tags.
+     * @return string The formatted HTML string with the package information.
+     */
+    private function displayPackages($parsedDocblock)
+    {
+        $output = "";
         $packages = [];
         foreach ($parsedDocblock['tags'] as $tag) {
             if ($tag['tag'] == 'package') {
                 $packages[] = $tag['description'];
             }
         }
-        if(!empty($packages))
-        {
-            $output .= "<h4>Pckage</h3>\r\n";
+        if (!empty($packages)) {
+            $output .= "<h4>Package</h4>\r\n";
             $output .= $packages[0];
         }
+        return $output;
+    }
 
+    /**
+     * Displays the author information from the parsed docblock.
+     *
+     * This function checks if there are 'author' tags in the parsed docblock and formats them into an HTML list.
+     * It also converts email addresses to clickable mailto links.
+     *
+     * @param array $parsedDocblock The parsed docblock containing tags.
+     * @return string The formatted HTML string with the author information.
+     */
+    private function displayAuthors($parsedDocblock)
+    {
+        $output = "";
         $authors = [];
         foreach ($parsedDocblock['tags'] as $tag) {
             if ($tag['tag'] == 'author') {
                 $authors[] = $tag['description'];
             }
         }
-        if(!empty($authors))
-        {
-            $output .= "<h4>Authors</h3>\r\n";
+        if (!empty($authors)) {
+            $output .= "<h4>Authors</h4>\r\n";
             $output .= "<ol>\r\n";
-            foreach($authors as $author)
-            {
-                $output .= "<li>".$this->convertEmailToLink($author)."</li>\r\n";
+            foreach ($authors as $author) {
+                $output .= "<li>" . $this->convertEmailToLink($author) . "</li>\r\n";
             }
             $output .= "</ol>\r\n";
         }
+        return $output;
+    }
 
+    /**
+     * Displays the links from the parsed docblock.
+     *
+     * This function checks if there are 'link' tags in the parsed docblock and formats them into an HTML list.
+     * It also converts URLs to clickable links.
+     *
+     * @param array $parsedDocblock The parsed docblock containing tags.
+     * @return string The formatted HTML string with the links.
+     */
+    private function displayLinks($parsedDocblock)
+    {
+        $output = "";
         $links = [];
         foreach ($parsedDocblock['tags'] as $tag) {
             if ($tag['tag'] == 'link') {
                 $links[] = $tag['description'];
             }
         }
-        if(!empty($links))
-        {
-            $output .= "<h4>Links</h3>\r\n";
+        if (!empty($links)) {
+            $output .= "<h4>Links</h4>\r\n";
             $output .= "<ol>\r\n";
-            foreach($links as $link)
-            {
-                $output .= "<li>".$this->convertUrlToLink($link)."</li>\r\n";
+            foreach ($links as $link) {
+                $output .= "<li>" . $this->convertUrlToLink($link) . "</li>\r\n";
             }
             $output .= "</ol>\r\n";
         }
+        return $output;
+    }
 
-        // Description section
-        if ($parsedDocblock['description']) {
-            $output .= "<$heading>Description</$heading>\r\n";
-            $output .= $this->parsedown->text(trim($parsedDocblock['description'])) . "\n";
-        }
-
-        
-
-        // Parameters section
-        $parameters = $this->parseParameters($parsedDocblock);
+    /**
+     * Displays the parameters section from the parsed docblock.
+     *
+     * This function checks if there are parameters and displays their names and descriptions in an HTML format.
+     *
+     * @param array $parameters The list of parameters to display.
+     * @return string The formatted HTML string with the parameter details.
+     */
+    private function displayParameters($parameters)
+    {
+        $output = "";
         if (!empty($parameters)) {
             $output .= "<h3>Parameters</h3>\r\n";
             foreach ($parameters as $parameter) {
@@ -173,9 +255,20 @@ class PhpDocScanner {
                 $output .= "<div class=\"parameter-description\">{$this->parsedown->text(ltrim($parameter['description']))}</div>\r\n";
             }
         }
+        return $output;
+    }
 
-        // Returns section
-        $returns = $this->parseReturns($parsedDocblock);
+    /**
+     * Displays the return values section from the parsed docblock.
+     *
+     * This function checks if there are return values and displays their types and descriptions in an HTML format.
+     *
+     * @param array $returns The list of return values to display.
+     * @return string The formatted HTML string with the return values.
+     */
+    private function displayReturns($returns)
+    {
+        $output = "";
         if (!empty($returns)) {
             $output .= "<h3>Return</h3>\r\n";
             foreach ($returns as $return) {
@@ -183,9 +276,20 @@ class PhpDocScanner {
                 $output .= "<div class=\"return-description\">{$this->parsedown->text(ltrim($return['description']))}</div>\r\n";
             }
         }
+        return $output;
+    }
 
-        // Throws section
-        $throws = $this->parseThrows($parsedDocblock);
+    /**
+     * Displays the exceptions thrown section from the parsed docblock.
+     *
+     * This function checks if there are exceptions (throws) and displays their types and descriptions in an HTML format.
+     *
+     * @param array $throws The list of exceptions to display.
+     * @return string The formatted HTML string with the exceptions thrown.
+     */
+    private function displayThrows($throws)
+    {
+        $output = "";
         if (!empty($throws)) {
             $output .= "<h3>Throws</h3>\r\n";
             foreach ($throws as $throw) {
@@ -193,29 +297,46 @@ class PhpDocScanner {
                 $output .= "<div class=\"return-description\">{$this->parsedown->text($throw['description'])}</div>\r\n";
             }
         }
-
         return $output;
     }
 
-    private function convertEmailToLink($text) {
-        // Pola regex untuk mencari alamat email
+    /**
+     * Converts email addresses in the text to mailto links.
+     *
+     * This function finds email addresses using regex and converts them to clickable mailto links.
+     *
+     * @param string $text The text that may contain email addresses.
+     * @return string The text with email addresses converted to mailto links.
+     */
+    private function convertEmailToLink($text)
+    {
+        // Regex pattern to match email addresses
         $pattern = '/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/';
         
-        // Gantikan alamat email dengan tag <a>
+        // Replace the email addresses with <a> tag
         $replacement = '<a href="mailto:$1">$1</a>';
         
-        // Terapkan penggantian pada teks
+        // Apply the replacement to the text
         return preg_replace($pattern, $replacement, $text);
     }
 
-    private function convertUrlToLink($text) {
-        // Pola regex untuk mencari alamat web
+    /**
+     * Converts URLs in the text to clickable links.
+     *
+     * This function finds URLs using regex and converts them to clickable links with target="_blank".
+     *
+     * @param string $text The text that may contain URLs.
+     * @return string The text with URLs converted to clickable links.
+     */
+    private function convertUrlToLink($text)
+    {
+        // Regex pattern to match URLs
         $pattern = '/(https?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?)/';
         
-        // Gantikan alamat web dengan tag <a>
+        // Replace the URLs with <a> tag
         $replacement = '<a href="$1" target="_blank">$1</a>';
         
-        // Terapkan penggantian pada teks
+        // Apply the replacement to the text
         return preg_replace($pattern, $replacement, $text);
     }
 
@@ -360,11 +481,12 @@ class PhpDocScanner {
     /**
      * Retrieves docblocks for all classes, properties, and methods in a PHP file, including access levels.
      * 
-     * This function parses a PHP file, retrieves the class, property, and method docblocks, and displays them
+     * This function parses a PHP file, retrieves the class, property, and method docblocks, and returns them
      * along with other relevant information like access levels, types, and method parameters. It uses PHP reflection
      * to analyze the file and provides a structured HTML output for each element.
      *
      * @param string $file The PHP file to analyze.
+     * @return string The HTML output of all parsed docblocks and relevant information.
      */
     public function getAllDocblocks($file) {
         $fileContents = file_get_contents($file);
@@ -379,46 +501,51 @@ class PhpDocScanner {
         $className = basename($file, '.php');
         $fullClassName = $namespace ? $namespace . '\\' . $className : $className;
 
+        $output = ""; // Initialize the output string
+
         try {
             $reflection = new ReflectionClass($fullClassName);
             $classId = str_replace("\\", "-", $fullClassName);
-            echo "<div class=\"class-item\" id=\"$classId\">\r\n";
-            echo "<h1>{$fullClassName}</h1>\r\n";
+            $output .= "<div class=\"class-item\" id=\"$classId\">\r\n";
+            $output .= "<h1>{$fullClassName}</h1>\r\n";
             
-            echo "<h2>Declaration</h2>\r\n";
+            $output .= "<h2>Declaration</h2>\r\n";
             
-            $declataion = $this->getClassDeclaration($reflection);      
+            $declaration = $this->getClassDeclaration($reflection);      
             
-            echo "<div class=\"class-declaration\">$declataion</div>\r\n";
+            $output .= "<div class=\"class-declaration\">$declaration</div>\r\n";
+            
             // Class docblock
             $classDocblock = $reflection->getDocComment();
             
             if ($classDocblock) {
                 $parsedClassDocblock = $this->parseDocblock($classDocblock);
-                echo "<div class='docblock'>\r\n";
-                echo $this->generateParsedDocblock($parsedClassDocblock, "h2");
-                echo "</div>\r\n";
+                $output .= "<div class='docblock'>\r\n";
+                $output .= $this->generateParsedDocblock($parsedClassDocblock, "h2");
+                $output .= "</div>\r\n";
             }
             
+            // Constants
             $constants = $reflection->getConstants(); // NOSONAR
-            echo $this->displayConstant($constants);
+            $output .= $this->displayConstant($constants);
 
             // Property docblocks with access level
             $properties = $reflection->getProperties();
-            
-            echo $this->displayProperties($properties);
+            $output .= $this->displayProperties($properties);
 
             // Method docblocks with access level
             $methods = $reflection->getMethods();
-            
-            echo $this->displayMethods($methods);
+            $output .= $this->displayMethods($methods);
 
-            echo "</div>\r\n";
+            $output .= "</div>\r\n";
 
         } catch (ReflectionException $e) {
-            echo "Could not reflect on class {$fullClassName}: " . $e->getMessage() . "<br>\r\n";
+            $output .= "Could not reflect on class {$fullClassName}: " . $e->getMessage() . "<br>\r\n";
         }
+
+        return $output; // Return the accumulated output
     }
+
     
     /**
      * Displays constants and their values with formatted HTML output.
@@ -881,6 +1008,7 @@ class PhpDocScanner {
 
 }
 
+
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
@@ -914,7 +1042,7 @@ if (is_dir($srcDir)) {
     <div class="mainbar">
     <?php
     foreach ($files as $file) {
-        $docScanner->getAllDocblocks($file);
+        echo $docScanner->getAllDocblocks($file);
         
     }
     ?>
