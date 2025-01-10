@@ -10,6 +10,11 @@ require_once dirname(__DIR__) . "/vendor/autoload.php";
 class PhpDocScanner {
 
     private $parsedown = null;
+
+    /**
+     * Constructor for the class.
+     * Initializes the PicoParsedown object to be used within the class.
+     */
     public function __construct()
     {
         $this->parsedown = new PicoParsedown();
@@ -95,156 +100,157 @@ class PhpDocScanner {
     }
 
     /**
-     * Displays a parsed docblock with proper HTML formatting.
+     * Generates a parsed docblock with proper HTML formatting.
      *
      * @param array $parsedDocblock The parsed docblock to display.
+     * @return string The HTML-formatted docblock.
      */
-    public function displayParsedDocblock($parsedDocblock) {
-        
-        
+    public function generateParsedDocblock($parsedDocblock) {   
+        $output = '';
+
+        // Description section
         if ($parsedDocblock['description']) {
-            echo "<div class=\"description-label\">Description:</div>\r\n";
-            echo $this->parsedown->text($parsedDocblock['description']) . "\n";
+            $output .= "<h3>Description</h3>\r\n";
+            $output .= $this->parsedown->text($parsedDocblock['description']) . "\n";
         }
 
+        // Parameters section
         $parameters = $this->parseParameters($parsedDocblock);
-        if(!empty($parameters))
-        {
-            echo "<h3>Parameters</h3>\r\n";
-            foreach($parameters as $parameter)
-            {
-                echo "<div class=\"parameter-name\">{$parameter['name']}</div>\r\n";
-                echo "<div class=\"parameter-description\">{$this->parsedown->text($parameter['description'])}</div>\r\n";
+        if (!empty($parameters)) {
+            $output .= "<h3>Parameters</h3>\r\n";
+            foreach ($parameters as $parameter) {
+                $output .= "<div class=\"parameter-name\">{$parameter['name']}</div>\r\n";
+                $output .= "<div class=\"parameter-description\">{$this->parsedown->text($parameter['description'])}</div>\r\n";
             }
         }
 
+        // Returns section
         $returns = $this->parseReturns($parsedDocblock);
-        if(!empty($parameters))
-        {
-            echo "<h3>Return</h3>\r\n";
-            foreach($returns as $return)
-            {
-                echo "<div class=\"return-type\">{$return['type']}</div>\r\n";
-                echo "<div class=\"return-description\">{$this->parsedown->text($return['description'])}</div>\r\n";
+        if (!empty($returns)) {
+            $output .= "<h3>Return</h3>\r\n";
+            foreach ($returns as $return) {
+                $output .= "<div class=\"return-type\">{$return['type']}</div>\r\n";
+                $output .= "<div class=\"return-description\">{$this->parsedown->text($return['description'])}</div>\r\n";
             }
         }
 
+        // Throws section
         $throws = $this->parseThrows($parsedDocblock);
-        if(!empty($throws))
-        {
-            echo "<h3>Throws</h3>\r\n";
-            foreach($throws as $throw)
-            {
-                echo "<div class=\"return-type\">{$throw['type']}</div>\r\n";
-                echo "<div class=\"return-description\">{$this->parsedown->text($throw['description'])}</div>\r\n";
+        if (!empty($throws)) {
+            $output .= "<h3>Throws</h3>\r\n";
+            foreach ($throws as $throw) {
+                $output .= "<div class=\"return-type\">{$throw['type']}</div>\r\n";
+                $output .= "<div class=\"return-description\">{$this->parsedown->text($throw['description'])}</div>\r\n";
             }
         }
 
-
+        return $output;
     }
 
+
+    /**
+     * Parses the `param` tags from a parsed docblock and extracts the parameter names and descriptions.
+     *
+     * @param array $parsedDocblock The parsed docblock that contains the `param` tags.
+     * @return array An array of parameters, each containing 'name' and 'description'.
+     */
     private function parseParameters($parsedDocblock)
     {
         $list = [];
         foreach ($parsedDocblock['tags'] as $tag) {
-            if($tag['tag'] == 'param')
-            {
+            if ($tag['tag'] == 'param') {
                 $list[] = $tag['description'];
             }
         }
         
         $params = [];
-        if(!empty($list))
-        {
-            foreach($list as $line)
-            {
+        if (!empty($list)) {
+            foreach ($list as $line) {
                 $desc = trim(preg_replace('/\s\s+/', ' ', $line));
                 $arr = explode(" ", $desc);
-                if(count($arr) > 1 && substr($arr[1], 0, 1) == '$')
-                {
+                if (count($arr) > 1 && substr($arr[1], 0, 1) == '$') {
                     $param = $arr[1];
-                }
-                else
-                {
+                } else {
                     $param = $arr[0];
                 }
                 $description = substr($line, strpos($line, $param) + strlen($param) + 1);
                 $params[] = [
-                    'name'=>$param,
-                    'description'=>$description
+                    'name' => $param,
+                    'description' => $description
                 ];
             }
         }
         return $params;
     }
 
+    /**
+     * Parses the `return` tags from a parsed docblock and extracts the return type and description.
+     *
+     * @param array $parsedDocblock The parsed docblock that contains the `return` tags.
+     * @return array An array of return types, each containing 'type' and 'description'.
+     */
     private function parseReturns($parsedDocblock)
     {
         $list = [];
         foreach ($parsedDocblock['tags'] as $tag) {
-            if($tag['tag'] == 'return')
-            {
+            if ($tag['tag'] == 'return') {
                 $list[] = $tag['description'];
             }
         }
         $returns = [];
-        if(!empty($list))
-        {
-            foreach($list as $line)
-            {
+        if (!empty($list)) {
+            foreach ($list as $line) {
                 $desc = trim(preg_replace('/\s\s+/', ' ', $line));
                 $arr = explode(" ", $desc);
-                if(count($arr) > 1 && substr($arr[1], 0, 1) == '$')
-                {
+                if (count($arr) > 1 && substr($arr[1], 0, 1) == '$') {
                     $type = $arr[1];
-                }
-                else
-                {
+                } else {
                     $type = $arr[0];
                 }
                 $description = substr($line, strpos($line, $type) + strlen($type) + 1);
                 $returns[] = [
-                    'type'=>$type,
-                    'description'=>$description
+                    'type' => $type,
+                    'description' => $description
                 ];
             }
         }
         return $returns;
     }
 
+    /**
+     * Parses the `throws` tags from a parsed docblock and extracts the thrown exceptions and their descriptions.
+     *
+     * @param array $parsedDocblock The parsed docblock that contains the `throws` tags.
+     * @return array An array of thrown exceptions, each containing 'type' and 'description'.
+     */
     private function parseThrows($parsedDocblock)
     {
         $list = [];
         foreach ($parsedDocblock['tags'] as $tag) {
-            if($tag['tag'] == 'throws')
-            {
+            if ($tag['tag'] == 'throws') {
                 $list[] = $tag['description'];
             }
         }
         $throws = [];
-        if(!empty($list))
-        {
-            foreach($list as $line)
-            {
+        if (!empty($list)) {
+            foreach ($list as $line) {
                 $desc = trim(preg_replace('/\s\s+/', ' ', $line));
                 $arr = explode(" ", $desc);
-                if(count($arr) > 1 && substr($arr[1], 0, 1) == '$')
-                {
+                if (count($arr) > 1 && substr($arr[1], 0, 1) == '$') {
                     $type = $arr[1];
-                }
-                else
-                {
+                } else {
                     $type = $arr[0];
                 }
                 $description = substr($line, strpos($line, $type) + strlen($type) + 1);
                 $throws[] = [
-                    'type'=>$type,
-                    'description'=>$description
+                    'type' => $type,
+                    'description' => $description
                 ];
             }
         }
         return $throws;
     }
+
 
     /**
      * Retrieves docblocks for all classes, properties, and methods in a PHP file, including access levels.
@@ -273,23 +279,31 @@ class PhpDocScanner {
             if ($classDocblock) {
                 $parsedClassDocblock = $this->parseDocblock($classDocblock);
                 echo "<div class='docblock'>\n";
-                $this->displayParsedDocblock($parsedClassDocblock);
+                echo $this->generateParsedDocblock($parsedClassDocblock);
                 echo "</div>\n";
             }
 
             // Property docblocks with access level
             if(!empty($reflection->getProperties()))
             {
-                echo "<h2>Property</h2>\n";
+                echo "<h2>Properties</h2>\n";
                 foreach ($reflection->getProperties() as $property) {
                     $propertyDocblock = $property->getDocComment();
                     if ($propertyDocblock) {
                         $parsedPropertyDocblock = $this->parseDocblock($propertyDocblock);
                         $accessLevel = $this->getAccessLevel($property->getModifiers());
+                        if($property->hasType())
+                        {
+                            $propertyType = $property->getType();
+                        }
+                        else
+                        {
+                            $propertyType = $this->getPropertyType($parsedPropertyDocblock);
+                        }
                         echo "<div class='property'>\n";
-                        echo "<div class=\"property-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> \${$property->getName()}</div>\n";
+                        echo "<div class=\"property-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> <span class=\"property-type\">{$propertyType}</span> <span class=\"property-name\">\${$property->getName()}</span></div>\n";
                         echo "<div class='docblock'>\n";
-                        $this->displayParsedDocblock($parsedPropertyDocblock);
+                        echo $this->generateParsedDocblock($parsedPropertyDocblock);
                         echo "</div>\n";
                         echo "</div>\n";
                     }
@@ -299,7 +313,7 @@ class PhpDocScanner {
             // Method docblocks with access level
             if(!empty($reflection->getProperties()))
             {
-                echo "<h2>Method</h2>\n";
+                echo "<h2>Methods</h2>\n";
                 foreach ($reflection->getMethods() as $method) {
                     $methodDocblock = $method->getDocComment();
                     if ($methodDocblock) {
@@ -322,7 +336,7 @@ class PhpDocScanner {
                         echo "<div class='method'>\n";
                         echo "<div class=\"method-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> <span class=\"method-name\">{$method->getName()}</span>($paramsStr)$returnStr</div>\n";
                         echo "<div class='docblock'>\n";
-                        $this->displayParsedDocblock($parsedMethodDocblock);
+                        echo $this->generateParsedDocblock($parsedMethodDocblock);
                         echo "</div>\n";
                         echo "</div>\n";
                     }
@@ -337,7 +351,34 @@ class PhpDocScanner {
         }
     }
 
-    private function getParameterDefaults($method) {
+        /**
+     * Retrieves the property type from the parsed docblock by searching for the `var` tag.
+     *
+     * @param array $parsedPropertyDocblock The parsed docblock that contains the `var` tag.
+     * @return string The type of the property, or an empty string if not found.
+     */
+    private function getPropertyType($parsedPropertyDocblock)
+    {
+        $type = "";
+        if (isset($parsedPropertyDocblock['tags']) && is_array($parsedPropertyDocblock['tags'])) {
+            foreach ($parsedPropertyDocblock['tags'] as $tag) {
+                if ($tag['tag'] == 'var') {
+                    $type = trim(preg_replace('/\s\s+/', ' ', $tag['description']));
+                    break;
+                }
+            }
+        }
+        return $type;
+    }
+
+    /**
+     * Retrieves the default values for the parameters of a method.
+     *
+     * @param \ReflectionMethod $method The method whose parameters' default values are to be fetched.
+     * @return array An associative array where the keys are parameter names and the values are the default values.
+     */
+    private function getParameterDefaults($method)
+    {
         $parameters = $method->getParameters();
         $defaults = [];
     
@@ -351,8 +392,15 @@ class PhpDocScanner {
     
         return $defaults;
     }
-    
 
+    /**
+     * Parses the `param` tags from the parsed method docblock and retrieves the method parameters 
+     * with their default values and HTML representation.
+     *
+     * @param array $parsedMethodDocblock The parsed docblock that contains the `param` tags.
+     * @param \ReflectionMethod $method The method whose parameters are being parsed.
+     * @return array An array of HTML strings representing the parameters with types, names, and default values.
+     */
     private function getMethodParams($parsedMethodDocblock, $method)
     {
         // Get method parameters and their default values
@@ -360,8 +408,6 @@ class PhpDocScanner {
 
         $defaultValues = [];
         if (!empty($defaults)) {
-
-            
             foreach ($defaults as $paramName => $defaultValue) {
                 if ($defaultValue === null) {
                     $defaultValues[$paramName] = null;
@@ -372,29 +418,20 @@ class PhpDocScanner {
         }
 
         $params = [];
-        if(isset($parsedMethodDocblock['tags']) && is_array($parsedMethodDocblock['tags']))
-        {
-            foreach($parsedMethodDocblock['tags'] as $tag)
-            {
-                if($tag['tag'] == 'param')
-                {
+        if (isset($parsedMethodDocblock['tags']) && is_array($parsedMethodDocblock['tags'])) {
+            foreach ($parsedMethodDocblock['tags'] as $tag) {
+                if ($tag['tag'] == 'param') {
                     $description = trim(preg_replace('/\s\s+/', ' ', $tag['description']));
                     $arr = explode(" ", $description);
 
-                    
-
-
-                    if(count($arr) > 1 && substr($arr[1], 0, 1) == '$')
-                    {
+                    if (count($arr) > 1 && substr($arr[1], 0, 1) == '$') {
                         $param = ltrim($arr[1], '$');
                         $defaultHtml = $this->getDefaultValueHtml($defaultValues, $param);
-                        $paramHtml = $this->getParameterType($arr[0]).' <span class="parameter-name">'.$arr[1].$defaultHtml.'</span>';
-                    }
-                    else
-                    {
+                        $paramHtml = $this->getParameterType($arr[0]) . ' <span class="parameter-name">' . $arr[1] . $defaultHtml . '</span>';
+                    } else {
                         $param = ltrim($arr[0], '$');
                         $defaultHtml = $this->getDefaultValueHtml($defaultValues, $param);
-                        $paramHtml = '<span class="parameter-name">'.$arr[0].$defaultHtml.'</span>';
+                        $paramHtml = '<span class="parameter-name">' . $arr[0] . $defaultHtml . '</span>';
                     }
                     $params[] = $paramHtml;
                 }
@@ -403,65 +440,81 @@ class PhpDocScanner {
         return $params;
     }
 
+    /**
+     * Generates the HTML for displaying the default value of a parameter, if available.
+     *
+     * @param array $defaultValues An associative array of parameter default values.
+     * @param string $param The name of the parameter whose default value needs to be displayed.
+     * @return string The HTML string for the default value, or an empty string if no default value exists.
+     */
     private function getDefaultValueHtml($defaultValues, $param)
     {
-        if(isset($defaultValues[$param]))
-        {
-            return ' <span class="parameter-equal-sign">=</span> <span class="parameter-default">'.$defaultValues[$param] . '</span>';
+        if (isset($defaultValues[$param])) {
+            return ' <span class="parameter-equal-sign">=</span> <span class="parameter-default">' . $defaultValues[$param] . '</span>';
         }
         return "";
-        
     }
 
+    /**
+     * Generates HTML to represent the type of a parameter, including handling union types.
+     *
+     * @param string $type The type (or types) of the parameter, possibly containing union types (separated by '|').
+     * @return string The HTML string representing the parameter's type(s).
+     */
     private function getParameterType($type)
     {
         $arr = explode("|", $type);
         $types = [];
-        foreach($arr as $tp)
-        {
-            $types[] = '<span class="parameter-type">'.$tp.'</span>'; 
+        foreach ($arr as $tp) {
+            $types[] = '<span class="parameter-type">' . $tp . '</span>';
         }    
 
         return implode("|", $types);
     }
 
+    /**
+     * Generates HTML to represent the return type of a method, including handling union types.
+     *
+     * @param string $type The return type (or types), possibly containing union types (separated by '|').
+     * @return string The HTML string representing the return type(s).
+     */
     private function getReturnType($type)
     {
         $arr = explode("|", $type);
         $types = [];
-        foreach($arr as $tp)
-        {
-            $types[] = '<span class="return-type">'.$tp.'</span>'; 
+        foreach ($arr as $tp) {
+            $types[] = '<span class="return-type">' . $tp . '</span>';
         }    
 
         return implode("|", $types);
     }
 
+    /**
+     * Parses the `return` tags from the parsed method docblock and retrieves the return type(s).
+     *
+     * @param array $parsedMethodDocblock The parsed docblock that contains the `return` tags.
+     * @return array An array of HTML strings representing the return type(s).
+     */
     private function getMethodReturns($parsedMethodDocblock)
     {
-        $ewrurns = [];
-        if(isset($parsedMethodDocblock['tags']) && is_array($parsedMethodDocblock['tags']))
-        {
-            foreach($parsedMethodDocblock['tags'] as $tag)
-            {
-                if($tag['tag'] == 'return')
-                {
+        $returns = [];
+        if (isset($parsedMethodDocblock['tags']) && is_array($parsedMethodDocblock['tags'])) {
+            foreach ($parsedMethodDocblock['tags'] as $tag) {
+                if ($tag['tag'] == 'return') {
                     $description = trim(preg_replace('/\s\s+/', ' ', $tag['description']));
                     $arr = explode(" ", $description);
-                    if(!empty($arr))
-                    {
+                    if (!empty($arr)) {
                         $return = $this->getReturnType($arr[0]);
-                    }
-                    else
-                    {
+                    } else {
                         $return = 'void';
                     }
-                    $ewrurns[] = $return;
+                    $returns[] = $return;
                 }
             }
         }
-        return $ewrurns;
+        return $returns;
     }
+
 
     /**
      * Gets the access level (public, private, protected) based on the modifiers of a property or method.
@@ -482,73 +535,83 @@ class PhpDocScanner {
 
 }
 
-?>
+?><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MagicObject Documentation</title>
+    <style>
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+        .method, .property
+        {
+            border-bottom: 1px solid #dddddd;
+            margin-bottom: 10px;
+        }
+        .property-declaratiopn, .method-declaratiopn {
+        font-family: monospace;   
+        white-space: pre;          
+        overflow: auto;            
+        line-height: 1.5;          
+        font-size: 14px;           
+    }
+    pre {
+        font-family: monospace;   
+        white-space: pre;          
+        background-color: #f4f4f4; 
+        padding: 10px;             
+        border: 1px solid #ccc;   
+        overflow: auto;            
+        line-height: 1.5;          
+        font-size: 14px;           
+    }
+        .access-level{
+            color: #708;
+        }
+        .method-name{
+        }
 
-<style>
-    .method, .property
-    {
-        border-bottom: 1px solid #dddddd;
-        margin-bottom: 10px;
-    }
-    .property-declaratiopn, .method-declaratiopn {
-    font-family: monospace;    /* Use a monospaced font like the default <pre> */
-    white-space: pre;          /* Preserve whitespace and line breaks */
-    overflow: auto;            /* Ensure it scrolls if text overflows */
-    line-height: 1.5;          /* Spacing between lines */
-    font-size: 14px;           /* Adjust the font size */
-}
-pre {
-    font-family: monospace;    /* Use a monospaced font like the default <pre> */
-    white-space: pre;          /* Preserve whitespace and line breaks */
-    background-color: #f4f4f4; /* Light gray background */
-    padding: 10px;             /* Add padding to separate text from borders */
-    border: 1px solid #ccc;   /* Border to give it a distinct box */
-    overflow: auto;            /* Ensure it scrolls if text overflows */
-    line-height: 1.5;          /* Spacing between lines */
-    font-size: 14px;           /* Adjust the font size */
-}
-    .access-level{
-        color: #708;
-    }
-    .method-name{
-    }
+        .property-name, .parameter-name
+        {
+            color: #05a;
+        }
+        .property-type, .parameter-type
+        {
+            color: #00f;
+        }
+        .return-type
+        {
+            color: #00f;
+        }
+        .parameter-equal-sign{
+            color: #333333;
+        }
+        .parameter-default{
+            color: #936;
+        }
+    </style>
 
-    .parameter-name
-    {
-        color: #05a;
-    }
-    .parameter-type
-    {
-        color: #00f;
-    }
-    .return-type
-    {
-        color: #00f;
-    }
-    .parameter-equal-sign{
-        color: #333333;
-    }
-    .parameter-default{
-        color: #936;
-    }
-</style>
+</head>
+<body>
 
 <?php
 
-// Set the source directory
-$srcDir = dirname(__DIR__) . '/src'; // Adjust this as needed
+$srcDir = dirname(__DIR__) . '/src';
 
-// Check if the source directory exists
 if (is_dir($srcDir)) {
     $docScanner = new PhpDocScanner();
 
-    // Scan directory for PHP files
     $files = $docScanner->scanDirectory($srcDir);
-
-    // Process each file and display docblocks
     foreach ($files as $file) {
         $docScanner->getAllDocblocks($file);
     }
 } else {
     echo "The src directory was not found. Ensure this script is run from within the project repository.\n";
 }
+?>
+</body>
+</html>
