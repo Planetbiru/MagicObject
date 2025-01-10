@@ -1,64 +1,61 @@
-/* General body styles */
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
     display: flex;
     min-height: 100vh;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 14px;
     line-height: 1.45;
 }
 
-/* Page container */
 .page {
     display: flex;
     width: 100%;
 }
 
-/* Sidebar styles */
 .sidebar {
     width: 280px;
     height: 100vh;
-    overflow: scroll; /* Enable scrolling both horizontally and vertically */
+    overflow: scroll;
     background-color: #f4f4f4;
     box-sizing: border-box;
     position: sticky;
     top: 0;
 }
 
-/* Mainbar styles */
 .mainbar {
     flex: 1;
     height: 100vh;
-    overflow: auto; /* Enable scrolling both horizontally and vertically */
+    overflow: auto;
     padding: 20px;
     box-sizing: border-box;
 }
 
-.mainbar a{
+.mainbar a {
     color: #0070d3;
     text-decoration: none;
 }
-.mainbar a:hover{
+
+.mainbar a:hover {
     color: #0088ff;
 }
 
-.sidebar h3{
+.sidebar h3 {
     padding: 5px 16px;
+    margin: 0;
 }
 
-.sidebar ul{
+.sidebar ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
 }
-.sidebar ul > li{
+
+.sidebar ul>li {
     padding-left: 16px;
     margin: 0;
 }
 
-/* Optional: Styling for links in the table of contents */
 .sidebar a {
     display: block;
     padding: 0px;
@@ -71,13 +68,15 @@ body {
     color: #035e92;
 }
 
-/* Optional: Styling for page content in the main bar */
 .mainbar .content {
     margin-bottom: 20px;
 }
 
 
-h1, h2, h3, h4{
+h1,
+h2,
+h3,
+h4 {
     font-family: Arial, Helvetica, sans-serif;
     color: #333333;
 }
@@ -107,14 +106,16 @@ pre {
     line-height: 1.5;
     font-size: 14px;
 }
-.class-declaration{
+
+.class-declaration {
     white-space: pre-wrap;
 }
 
-.php-keyword{
-    color: #0088ff;
+.php-keyword {
+    color: #0079e1;
 }
-.php-comment{
+
+.php-comment {
     color: rgb(153, 43, 0);
 }
 
@@ -127,23 +128,23 @@ pre {
 }
 
 .property-name,
-.parameter-name, 
+.parameter-name,
 .constant-name {
     color: #00366c;
 }
 
 .property-type,
 .parameter-type,
-.return-type, .class-name {
-    color: #0067c1;
+.return-type,
+.class-name {
+    color: #005dae;
 }
-.parameter-type
 
-
-.parameter-equal-sign {
+.parameter-type .parameter-equal-sign {
     color: #333333;
 }
 
-.parameter-default, .constant-value {
+.parameter-default,
+.constant-value {
     color: #936;
 }

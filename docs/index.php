@@ -681,7 +681,7 @@ class PhpDocScanner {
     {
         if(!empty($params))
         {
-            $paramsStr = "<br>\r\n&nbsp;".implode(", <br>\r\n&nbsp;", $params)."<br>\r\n";
+            $paramsStr = "<br>\r\n&nbsp;&nbsp;".implode(", <br>\r\n&nbsp;&nbsp;", $params)."<br>\r\n";
         }
         else
         {
