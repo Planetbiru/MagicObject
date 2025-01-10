@@ -130,7 +130,7 @@ class PhpDocScanner {
         }
         if(!empty($authors))
         {
-            $output .= "<h4>Link</h3>\r\n";
+            $output .= "<h4>Authors</h3>\r\n";
             $output .= "<ol>\r\n";
             foreach($authors as $author)
             {
