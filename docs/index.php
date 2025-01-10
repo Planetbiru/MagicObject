@@ -546,6 +546,8 @@ class PhpDocScanner {
 </head>
 <body>
 
+<div class="page">
+
 <?php
 
 $srcDir = dirname(__DIR__) . '/src';
@@ -561,5 +563,6 @@ if (is_dir($srcDir)) {
     echo "The src directory was not found. Ensure this script is run from within the project repository.\n";
 }
 ?>
+</div>
 </body>
 </html>
