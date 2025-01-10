@@ -272,7 +272,7 @@ class PhpDocScanner {
 
         try {
             $reflection = new ReflectionClass($fullClassName);
-            echo "<h1>Class: {$fullClassName}</h1>\n";
+            echo "<h1>{$fullClassName}</h1>\n";
             
             // Class docblock
             $classDocblock = $reflection->getDocComment();
