@@ -105,12 +105,12 @@ class PhpDocScanner {
      * @param array $parsedDocblock The parsed docblock to display.
      * @return string The HTML-formatted docblock.
      */
-    public function generateParsedDocblock($parsedDocblock) {   
+    public function generateParsedDocblock($parsedDocblock, $heading = "h3") {   
         $output = '';
 
         // Description section
         if ($parsedDocblock['description']) {
-            $output .= "<h3>Description</h3>\r\n";
+            $output .= "<$heading>Description</$heading>\r\n";
             $output .= $this->parsedown->text($parsedDocblock['description']) . "\n";
         }
 
@@ -279,7 +279,7 @@ class PhpDocScanner {
             if ($classDocblock) {
                 $parsedClassDocblock = $this->parseDocblock($classDocblock);
                 echo "<div class='docblock'>\n";
-                echo $this->generateParsedDocblock($parsedClassDocblock);
+                echo $this->generateParsedDocblock($parsedClassDocblock, "h2");
                 echo "</div>\n";
             }
 
@@ -541,59 +541,7 @@ class PhpDocScanner {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MagicObject Documentation</title>
-    <style>
-        body{
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 14px;
-            line-height: 1.45;
-        }
-        .method, .property
-        {
-            border-bottom: 1px solid #dddddd;
-            margin-bottom: 10px;
-        }
-        .property-declaratiopn, .method-declaratiopn {
-        font-family: monospace;   
-        white-space: pre;          
-        overflow: auto;            
-        line-height: 1.5;          
-        font-size: 14px;           
-    }
-    pre {
-        font-family: monospace;   
-        white-space: pre;          
-        background-color: #f4f4f4; 
-        padding: 10px;             
-        border: 1px solid #ccc;   
-        overflow: auto;            
-        line-height: 1.5;          
-        font-size: 14px;           
-    }
-        .access-level{
-            color: #708;
-        }
-        .method-name{
-        }
-
-        .property-name, .parameter-name
-        {
-            color: #05a;
-        }
-        .property-type, .parameter-type
-        {
-            color: #00f;
-        }
-        .return-type
-        {
-            color: #00f;
-        }
-        .parameter-equal-sign{
-            color: #333333;
-        }
-        .parameter-default{
-            color: #936;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 
 </head>
 <body>

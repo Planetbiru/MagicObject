@@ -1,0 +1,62 @@
+body {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    line-height: 1.45;
+    color: #181818;
+}
+
+h1, h2, h3, h4{
+    font-family: Arial, Helvetica, sans-serif;
+    color: #333333;
+}
+
+.method,
+.property {
+    border-bottom: 1px solid #dddddd;
+    margin-bottom: 10px;
+}
+
+.property-declaratiopn,
+.method-declaratiopn {
+    font-family: monospace;
+    overflow: auto;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+pre {
+    font-family: monospace;
+    background-color: #f4f4f4;
+    padding: 10px;
+    border: 1px solid #ccc;
+    overflow: auto;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.access-level {
+    color: #9500aa;
+}
+
+.method-name {
+    color: #000000;
+}
+
+.property-name,
+.parameter-name {
+    color: #00366c;
+}
+
+.property-type,
+.parameter-type,
+.return-type {
+    color: #0067c1;
+}
+
+.parameter-equal-sign {
+    color: #333333;
+}
+
+.parameter-default {
+    color: #936;
+}
