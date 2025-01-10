@@ -334,7 +334,7 @@ class PhpDocScanner {
 
                         $accessLevel = $this->getAccessLevel($method->getModifiers());
                         echo "<div class='method'>\n";
-                        echo "<div class=\"method-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> <span class=\"method-name\">{$method->getName()}</span>($paramsStr)$returnStr</div>\n";
+                        echo "<div class=\"method-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> <span class=\"php-keyword\">function</span> <span class=\"method-name\">{$method->getName()}</span>($paramsStr)$returnStr<br>{<br>}</div>\n";
                         echo "<div class='docblock'>\n";
                         echo $this->generateParsedDocblock($parsedMethodDocblock);
                         echo "</div>\n";
