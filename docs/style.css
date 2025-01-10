@@ -36,6 +36,14 @@ body {
     box-sizing: border-box;
 }
 
+.mainbar a{
+    color: #0070d3;
+    text-decoration: none;
+}
+.mainbar a:hover{
+    color: #0088ff;
+}
+
 .sidebar h3{
     padding: 5px 16px;
 }

@@ -110,11 +110,59 @@ class PhpDocScanner {
     public function generateParsedDocblock($parsedDocblock, $heading = "h3") {   
         $output = '';
 
+        $packages = [];
+        foreach ($parsedDocblock['tags'] as $tag) {
+            if ($tag['tag'] == 'package') {
+                $packages[] = $tag['description'];
+            }
+        }
+        if(!empty($packages))
+        {
+            $output .= "<h4>Pckage</h3>\r\n";
+            $output .= $packages[0];
+        }
+
+        $authors = [];
+        foreach ($parsedDocblock['tags'] as $tag) {
+            if ($tag['tag'] == 'author') {
+                $authors[] = $tag['description'];
+            }
+        }
+        if(!empty($authors))
+        {
+            $output .= "<h4>Link</h3>\r\n";
+            $output .= "<ol>\r\n";
+            foreach($authors as $author)
+            {
+                $output .= "<li>".$this->convertEmailToLink($author)."</li>\r\n";
+            }
+            $output .= "</ol>\r\n";
+        }
+
+        $links = [];
+        foreach ($parsedDocblock['tags'] as $tag) {
+            if ($tag['tag'] == 'link') {
+                $links[] = $tag['description'];
+            }
+        }
+        if(!empty($links))
+        {
+            $output .= "<h4>Links</h3>\r\n";
+            $output .= "<ol>\r\n";
+            foreach($links as $link)
+            {
+                $output .= "<li>".$this->convertUrlToLink($link)."</li>\r\n";
+            }
+            $output .= "</ol>\r\n";
+        }
+
         // Description section
         if ($parsedDocblock['description']) {
             $output .= "<$heading>Description</$heading>\r\n";
             $output .= $this->parsedown->text(trim($parsedDocblock['description'])) . "\n";
         }
+
+        
 
         // Parameters section
         $parameters = $this->parseParameters($parsedDocblock);
@@ -147,6 +195,28 @@ class PhpDocScanner {
         }
 
         return $output;
+    }
+
+    private function convertEmailToLink($text) {
+        // Pola regex untuk mencari alamat email
+        $pattern = '/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/';
+        
+        // Gantikan alamat email dengan tag <a>
+        $replacement = '<a href="mailto:$1">$1</a>';
+        
+        // Terapkan penggantian pada teks
+        return preg_replace($pattern, $replacement, $text);
+    }
+
+    private function convertUrlToLink($text) {
+        // Pola regex untuk mencari alamat web
+        $pattern = '/(https?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?)/';
+        
+        // Gantikan alamat web dengan tag <a>
+        $replacement = '<a href="$1" target="_blank">$1</a>';
+        
+        // Terapkan penggantian pada teks
+        return preg_replace($pattern, $replacement, $text);
     }
 
 
@@ -289,6 +359,10 @@ class PhpDocScanner {
 
     /**
      * Retrieves docblocks for all classes, properties, and methods in a PHP file, including access levels.
+     * 
+     * This function parses a PHP file, retrieves the class, property, and method docblocks, and displays them
+     * along with other relevant information like access levels, types, and method parameters. It uses PHP reflection
+     * to analyze the file and provides a structured HTML output for each element.
      *
      * @param string $file The PHP file to analyze.
      */
@@ -346,6 +420,12 @@ class PhpDocScanner {
         }
     }
     
+    /**
+     * Displays constants and their values with formatted HTML output.
+     *
+     * @param array $constants Array of constants to display.
+     * @return string HTML string containing the constants and their values.
+     */
     private function displayConstant($constants)
     {
         $str = "";
@@ -361,6 +441,12 @@ class PhpDocScanner {
         return $str;
     }
     
+    /**
+     * Displays properties and their docblocks with formatted HTML output, including access levels.
+     *
+     * @param array $properties Array of property Reflection objects to display.
+     * @return string HTML string containing the properties and their docblocks.
+     */
     private function displayProperties($properties)
     {
         $str = "";
@@ -386,6 +472,12 @@ class PhpDocScanner {
         return $str;
     }
     
+    /**
+     * Displays methods and their docblocks with formatted HTML output, including access levels and parameters.
+     *
+     * @param array $methods Array of method Reflection objects to display.
+     * @return string HTML string containing the methods and their docblocks.
+     */
     private function displayMethods($methods)
     {
         $str = "";
@@ -397,29 +489,12 @@ class PhpDocScanner {
                 if ($methodDocblock) {
                     $parsedMethodDocblock = $this->parseDocblock($methodDocblock);
                     $params = $this->getMethodParams($parsedMethodDocblock, $method);
-                    if(!empty($params))
-                    {
-                        $paramsStr = "<br>\r\n&nbsp;".implode(", <br>\r\n&nbsp;", $params)."<br>\r\n";
-                    }
-                    else
-                    {
-                        $paramsStr = ""; 
-                    }
+                    $paramsStr = $this->getMethodParamsFinal($params);
                     $returns = $this->getMethodReturns($parsedMethodDocblock);
 
-                    if(!empty($returns))
-                    {
-                        $returnStr = " : ".implode(", ", $returns);
-                    }
-                    else
-                    {
-                        $returnStr = "";
-                    }
-                    $static = "";
-                    if($method->isStatic())
-                    {
-                        $static = "static";
-                    }
+                    $returnStr = $this->getMethodReturnsFinal($returns);
+                    
+                    $static = $this->getMethodStatic($method);
 
                     $accessLevel = $this->getAccessLevel($method->getModifiers());
                     $str .= "<div class='method'>\r\n";
@@ -432,6 +507,60 @@ class PhpDocScanner {
             }
         }
         return $str;
+    }
+
+    /**
+     * Retrieves the static modifier of a method, if any.
+     *
+     * @param ReflectionMethod $method The method Reflection object.
+     * @return string "static" if the method is static, otherwise an empty string.
+     */
+    private function getMethodStatic($method)
+    {
+        $static = "";
+        if($method->isStatic())
+        {
+            $static = "static";
+        }
+        return $static;
+    }
+
+    /**
+     * Returns a formatted string for method return types.
+     *
+     * @param array $returns Array of return types.
+     * @return string Formatted string representing return types.
+     */
+    private function getMethodReturnsFinal($returns)
+    {
+        if(!empty($returns))
+        {
+            $returnStr = " : ".implode(", ", $returns);
+        }
+        else
+        {
+            $returnStr = "";
+        }
+        return $returnStr;
+    }
+
+    /**
+     * Returns a formatted string for method parameters.
+     *
+     * @param array $params Array of method parameters.
+     * @return string Formatted string representing method parameters.
+     */
+    private function getMethodParamsFinal($params)
+    {
+        if(!empty($params))
+        {
+            $paramsStr = "<br>\r\n&nbsp;".implode(", <br>\r\n&nbsp;", $params)."<br>\r\n";
+        }
+        else
+        {
+            $paramsStr = ""; 
+        }
+        return $paramsStr;
     }
 
     /**
