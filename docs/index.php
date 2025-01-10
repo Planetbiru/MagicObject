@@ -8,6 +8,8 @@ require_once dirname(__DIR__) . "/vendor/autoload.php";
  * Class to scan PHP files in a directory recursively, parse docblocks, and display them.
  */
 class PhpDocScanner {
+    
+    const DUPLICATED_WHITESPACE_EXP = '/\s\s+/';
 
     private $parsedown = null;
 
@@ -166,7 +168,7 @@ class PhpDocScanner {
         $params = [];
         if (!empty($list)) {
             foreach ($list as $line) {
-                $desc = trim(preg_replace('/\s\s+/', ' ', $line));
+                $desc = trim(preg_replace(self::DUPLICATED_WHITESPACE_EXP, ' ', $line));
                 $arr = explode(" ", $desc);
                 if (count($arr) > 1 && (substr($arr[1], 0, 1) == '$' || substr($arr[1], 0, 2) == '&$')) {
                     $param = $arr[1];
@@ -200,7 +202,7 @@ class PhpDocScanner {
         $returns = [];
         if (!empty($list)) {
             foreach ($list as $line) {
-                $desc = trim(preg_replace('/\s\s+/', ' ', $line));
+                $desc = trim(preg_replace(self::DUPLICATED_WHITESPACE_EXP, ' ', $line));
                 $arr = explode(" ", $desc);
                 if (count($arr) > 1 && substr($arr[1], 0, 1) == '$') {
                     $type = $arr[1];
@@ -234,7 +236,7 @@ class PhpDocScanner {
         $throws = [];
         if (!empty($list)) {
             foreach ($list as $line) {
-                $desc = trim(preg_replace('/\s\s+/', ' ', $line));
+                $desc = trim(preg_replace(self::DUPLICATED_WHITESPACE_EXP, ' ', $line));
                 $arr = explode(" ", $desc);
                 if (count($arr) > 1 && substr($arr[1], 0, 1) == '$') {
                     $type = $arr[1];
@@ -306,108 +308,133 @@ class PhpDocScanner {
         try {
             $reflection = new ReflectionClass($fullClassName);
             $classId = str_replace("\\", "-", $fullClassName);
-            echo "<div class=\"class-item\" id=\"$classId\">\n";
-            echo "<h1>{$fullClassName}</h1>\n";
+            echo "<div class=\"class-item\" id=\"$classId\">\r\n";
+            echo "<h1>{$fullClassName}</h1>\r\n";
             
-            echo "<h2>Declaration</h2>\n";
+            echo "<h2>Declaration</h2>\r\n";
             
             $declataion = $this->getClassDeclaration($reflection);      
             
-            echo "<div class=\"class-declaration\">$declataion</div>\n";
+            echo "<div class=\"class-declaration\">$declataion</div>\r\n";
             // Class docblock
             $classDocblock = $reflection->getDocComment();
             
             if ($classDocblock) {
                 $parsedClassDocblock = $this->parseDocblock($classDocblock);
-                echo "<div class='docblock'>\n";
+                echo "<div class='docblock'>\r\n";
                 echo $this->generateParsedDocblock($parsedClassDocblock, "h2");
-                echo "</div>\n";
+                echo "</div>\r\n";
             }
             
-            
-            $constants = $reflection->getConstants();
-
-            if (!empty($constants)) {
-                echo "<h2>Constants</h2>\n";
-                foreach ($constants as $name => $value) {
-
-                    echo "<div class=\"php-constant\">";
-                    echo "<span class=\"constant-name\">$name</span> = <span class=\"constant-value\">" . nl2br(htmlspecialchars(var_export($value, true)))."</span>";
-                    echo "</div>";
-                }
-            }
+            $constants = $reflection->getConstants(); // NOSONAR
+            echo $this->displayConstant($constants);
 
             // Property docblocks with access level
             $properties = $reflection->getProperties();
-            if(!empty($properties))
-            {
-                echo "<h2>Properties</h2>\n";
-                foreach ($properties as $property) {
-                    $propertyDocblock = $property->getDocComment();
-                    if ($propertyDocblock) {
-                        $parsedPropertyDocblock = $this->parseDocblock($propertyDocblock);
-                        $accessLevel = $this->getAccessLevel($property->getModifiers());
-                        $propertyType = $this->getPropertyType($parsedPropertyDocblock);
-                        
-                        echo "<div class='property'>\n";
-                        echo "<div class=\"property-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> <span class=\"property-type\">{$propertyType}</span> <span class=\"property-name\">\${$property->getName()}</span></div>\n";
-                        echo "<div class='docblock'>\n";
-                        echo $this->generateParsedDocblock($parsedPropertyDocblock);
-                        echo "</div>\n";
-                        echo "</div>\n";
-                    }
-                }
-            }
+            
+            echo $this->displayProperties($properties);
 
             // Method docblocks with access level
             $methods = $reflection->getMethods();
-            if(!empty($methods))
-            {
-                echo "<h2>Methods</h2>\n";
-                foreach ($methods as $method) {
-                    $methodDocblock = $method->getDocComment();
-                    if ($methodDocblock) {
-                        $parsedMethodDocblock = $this->parseDocblock($methodDocblock);
-                        $params = $this->getMethodParams($parsedMethodDocblock, $method);
-                        $paramsStr = implode(", ", $params);
-
-                        $returns = $this->getMethodReturns($parsedMethodDocblock);
-
-                        if(!empty($returns))
-                        {
-                            $returnStr = " : ".implode(", ", $returns);
-                        }
-                        else
-                        {
-                            $returnStr = "";
-                        }
-                        $static = "";
-                        if($method->isStatic())
-                        {
-                            $static = "static";
-                        }
-
-                        $accessLevel = $this->getAccessLevel($method->getModifiers());
-                        echo "<div class='method'>\n";
-                        echo "<div class=\"method-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> <span class=\"access-level\">{$static}</span> <span class=\"php-keyword\">function</span> <span class=\"method-name\">{$method->getName()}</span>($paramsStr)$returnStr<br>{<br>}</div>\n";
-                        echo "<div class='docblock'>\n";
-                        echo $this->generateParsedDocblock($parsedMethodDocblock);
-                        echo "</div>\n";
-                        echo "</div>\n";
-                    }
-                }
-            }
-
             
+            echo $this->displayMethods($methods);
 
-            echo "</div>\n";
+            echo "</div>\r\n";
 
         } catch (ReflectionException $e) {
-            echo "Could not reflect on class {$fullClassName}: " . $e->getMessage() . "<br>\n";
+            echo "Could not reflect on class {$fullClassName}: " . $e->getMessage() . "<br>\r\n";
         }
     }
+    
+    private function displayConstant($constants)
+    {
+        $str = "";
+        if (!empty($constants)) {
+            $str .= "<h2>Constants</h2>\r\n";
+            foreach ($constants as $name => $value) {
 
-        /**
+                $str .= "<div class=\"php-constant\">";
+                $str .= "<span class=\"constant-name\">$name</span> = <span class=\"constant-value\">" . nl2br(htmlspecialchars(var_export($value, true)))."</span>";
+                $str .= "</div>";
+            }
+        }
+        return $str;
+    }
+    
+    private function displayProperties($properties)
+    {
+        $str = "";
+        if(!empty($properties))
+        {
+            $str .= "<h2>Properties</h2>\r\n";
+            foreach ($properties as $property) {
+                $propertyDocblock = $property->getDocComment();
+                if ($propertyDocblock) {
+                    $parsedPropertyDocblock = $this->parseDocblock($propertyDocblock);
+                    $accessLevel = $this->getAccessLevel($property->getModifiers());
+                    $propertyType = $this->getPropertyType($parsedPropertyDocblock);
+                    
+                    $str .= "<div class='property'>\r\n";
+                    $str .= "<div class=\"property-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> <span class=\"property-type\">{$propertyType}</span> <span class=\"property-name\">\${$property->getName()}</span></div>\r\n";
+                    $str .= "<div class='docblock'>\r\n";
+                    $str .= $this->generateParsedDocblock($parsedPropertyDocblock);
+                    $str .= "</div>\r\n";
+                    $str .= "</div>\r\n";
+                }
+            }
+        }
+        return $str;
+    }
+    
+    private function displayMethods($methods)
+    {
+        $str = "";
+        if(!empty($methods))
+        {
+            $str .= "<h2>Methods</h2>\r\n";
+            foreach ($methods as $method) {
+                $methodDocblock = $method->getDocComment();
+                if ($methodDocblock) {
+                    $parsedMethodDocblock = $this->parseDocblock($methodDocblock);
+                    $params = $this->getMethodParams($parsedMethodDocblock, $method);
+                    if(!empty($params))
+                    {
+                        $paramsStr = "<br>\r\n&nbsp;".implode(", <br>\r\n&nbsp;", $params)."<br>\r\n";
+                    }
+                    else
+                    {
+                        $paramsStr = ""; 
+                    }
+                    $returns = $this->getMethodReturns($parsedMethodDocblock);
+
+                    if(!empty($returns))
+                    {
+                        $returnStr = " : ".implode(", ", $returns);
+                    }
+                    else
+                    {
+                        $returnStr = "";
+                    }
+                    $static = "";
+                    if($method->isStatic())
+                    {
+                        $static = "static";
+                    }
+
+                    $accessLevel = $this->getAccessLevel($method->getModifiers());
+                    $str .= "<div class='method'>\r\n";
+                    $str .= "<div class=\"method-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> <span class=\"access-level\">{$static}</span> <span class=\"php-keyword\">function</span> <span class=\"method-name\">{$method->getName()}</span>($paramsStr)$returnStr<br>{<br>}</div>\r\n";
+                    $str .= "<div class='docblock'>\r\n";
+                    $str .= $this->generateParsedDocblock($parsedMethodDocblock);
+                    $str .= "</div>\r\n";
+                    $str .= "</div>\r\n";
+                }
+            }
+        }
+        return $str;
+    }
+
+    /**
      * Retrieves the property type from the parsed docblock by searching for the `var` tag.
      *
      * @param array $parsedPropertyDocblock The parsed docblock that contains the `var` tag.
@@ -419,7 +446,7 @@ class PhpDocScanner {
         if (isset($parsedPropertyDocblock['tags']) && is_array($parsedPropertyDocblock['tags'])) {
             foreach ($parsedPropertyDocblock['tags'] as $tag) {
                 if ($tag['tag'] == 'var') {
-                    $type = trim(preg_replace('/\s\s+/', ' ', $tag['description']));
+                    $type = trim(preg_replace(self::DUPLICATED_WHITESPACE_EXP, ' ', $tag['description']));
                     break;
                 }
             }
@@ -468,7 +495,7 @@ class PhpDocScanner {
         if (isset($parsedMethodDocblock['tags']) && is_array($parsedMethodDocblock['tags'])) {
             foreach ($parsedMethodDocblock['tags'] as $tag) {
                 if ($tag['tag'] == 'param') {
-                    $description = trim(preg_replace('/\s\s+/', ' ', $tag['description']));
+                    $description = trim(preg_replace(self::DUPLICATED_WHITESPACE_EXP, ' ', $tag['description']));
                     $arr = explode(" ", $description);
 
                     if (count($arr) > 1 && substr($arr[1], 0, 1) == '$') {
@@ -564,7 +591,7 @@ class PhpDocScanner {
         if (isset($parsedMethodDocblock['tags']) && is_array($parsedMethodDocblock['tags'])) {
             foreach ($parsedMethodDocblock['tags'] as $tag) {
                 if ($tag['tag'] == 'return') {
-                    $description = trim(preg_replace('/\s\s+/', ' ', $tag['description']));
+                    $description = trim(preg_replace(self::DUPLICATED_WHITESPACE_EXP, ' ', $tag['description']));
                     $arr = explode(" ", $description);
                     if (!empty($arr)) {
                         $return = $this->getReturnType($arr[0]);
@@ -586,14 +613,15 @@ class PhpDocScanner {
      * @return string The access level (public, private, or protected).
      */
     private function getAccessLevel($modifiers) {
+        $accessLevel = "";
         if ($modifiers & ReflectionMethod::IS_PUBLIC) {
-            return 'public';
+            $accessLevel = 'public';
         } elseif ($modifiers & ReflectionMethod::IS_PRIVATE) {
-            return 'private';
+            $accessLevel = 'private';
         } elseif ($modifiers & ReflectionMethod::IS_PROTECTED) {
-            return 'protected';
+            $accessLevel = 'protected';
         }
-        return 'Unknown';
+        return $accessLevel;
     }
     
     /**
@@ -602,7 +630,7 @@ class PhpDocScanner {
      * @param string $dir The directory to scan.
      * @param int $maxDepth The maximum depth of recursion. Default is PHP_INT_MAX.
      * @param int $currentDepth The current recursion depth. Used internally.
-     * @return array Nested array representing the directory structure with PHP files.
+     * @return array A nested array representing the directory structure with PHP files.
      */
     public function scanDirectoryToc($dir, $maxDepth = PHP_INT_MAX, $currentDepth = 0) {
         $structure = [];
@@ -643,6 +671,15 @@ class PhpDocScanner {
         return $structure;
     }
     
+    /**
+     * Creates a standard class object for directory or file.
+     *
+     * @param string $type The type of the item, either 'file' or 'dir'.
+     * @param string $pathname The full path to the file or directory.
+     * @param string $filename The name of the file or directory.
+     * @param array|null $child The child elements (subdirectories or files), if any.
+     * @return stdClass The created object with the provided data.
+     */
     private function createStdClass($type, $pathname, $filename, $child = null)
     {
         $result = new stdClass;
@@ -656,82 +693,60 @@ class PhpDocScanner {
         return $result;
     }
     
-    
-    // Fungsi untuk merender struktur direktori menjadi HTML
+    /**
+     * Renders the directory structure as HTML.
+     *
+     * @param array $structure The directory structure to render.
+     * @param string $baseDir The base directory for generating relative paths.
+     * @return string The rendered HTML representation of the directory structure.
+     */
     public function renderDirectoryStructure($structure, $baseDir) {
-        $html = "<ul>"; // Mulai dengan <ul>
+        $html = "<ul>"; // Start with <ul>
 
         foreach ($structure as $item) {
             if ($item->type == "file") {
-                $relativePath = "#MagicObject-".str_replace(["\\", "/", ".php"], ["-", "-", ""], $this->getRelativePath($item->pathname, $baseDir));
-                // Jika item adalah file, tampilkan sebagai <li>
-                $html .= "<li><a href=\"$relativePath\">" . basename($item->filename, ".php")."</a></li>";
+                // Generate relative path for file and display as <li>
+                $relativePath = "#MagicObject-" . str_replace(["\\", "/", ".php"], ["-", "-", ""], $this->getRelativePath($item->pathname, $baseDir));
+                $html .= "<li><a href=\"$relativePath\">" . basename($item->filename, ".php") . "</a></li>";
             } elseif ($item->type == "dir") {
-                // Jika item adalah subdirektori, tampilkan sebagai <li> dengan <ul> di dalamnya
-                $html .= "<li>".basename($item->pathname) . "";
-                // Rekursif untuk menampilkan file dan subdirektori dalam subdirektori
+                // Display directory as <li> with nested <ul> for contents
+                $html .= "<li>" . basename($item->pathname) . "";
+                // Recursively render subdirectories and files
                 if (isset($item->child) && !empty($item->child)) {
-                    $html .= $this->renderDirectoryStructure($item->child, $baseDir); // Menampilkan isi subdirektori
+                    $html .= $this->renderDirectoryStructure($item->child, $baseDir);
                 }
                 $html .= "</li>";
             }
         }
 
-        $html .= "</ul>"; // Tutup <ul>
+        $html .= "</ul>"; // Close the <ul>
 
         return $html;
     }
 
     /**
-     * Generates a nested <ul> <li> HTML list for the directory structure.
+     * Gets the relative path of a file or directory from a given base directory.
      *
-     * @param array $structure The nested directory structure.
-     * @param string $basePath The base path for creating links.
-     * @return string HTML string of the nested list.
+     * @param string $pathname The full path to the file or directory.
+     * @param string $basePath The base directory to compute the relative path from.
+     * @return string The relative path, or an empty string if the path is invalid.
      */
-    public function generateTOC($structure, $basePath) {
-        return $this->generateNestedList($structure, $basePath);
-    }
-    
-    /**
-     * Get file object
-     *
-     * @param mixed $value
-     * @return stdClass
-     */
-    private function getFileObject($value)
-    {
-        if(isset($value[0]))
-        {
-            $fileObject = $value[0];
-        }
-        else
-        {
-            $fileObject = $value;
-        }
-        if(is_array($fileObject))
-        {
-            $fileObject = array_values($fileObject);
-        }
-        return $fileObject;
-    }
-    
     private function getRelativePath($pathname, $basePath) {
-        // Pastikan bahwa kedua path adalah absolut
+        // Ensure both paths are absolute
         $realPathname = realpath($pathname);
         $realBasepath = realpath($basePath);
-    
-        // Pastikan kedua path valid
+
+        // Ensure both paths are valid
         if ($realPathname === false || $realBasepath === false) {
-            return ""; // Return false if either path is invalid
+            return ""; // Return empty string if either path is invalid
         }
-    
-        // Periksa apakah basepath adalah bagian dari pathname
+
+        // Check if basepath is part of the pathname
         if (strpos($realPathname, $realBasepath) === 0) {
-            // Ambil bagian setelah basepath
-            return substr($realPathname, strlen($realBasepath) + 1); // +1 untuk menghapus trailing DIRECTORY_SEPARATOR
+            // Return the part of the pathname after the basepath
+            return substr($realPathname, strlen($realBasepath) + 1); // +1 to remove trailing DIRECTORY_SEPARATOR
         } else {
-            return ""; // Jika basepath tidak ditemukan dalam pathname
+            return ""; // If basepath is not found in pathname
         }
     }
 

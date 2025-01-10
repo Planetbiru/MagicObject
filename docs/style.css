@@ -18,7 +18,7 @@ body {
 
 /* Sidebar styles */
 .sidebar {
-    width: 240px;
+    width: 280px;
     height: 100vh;
     overflow: scroll; /* Enable scrolling both horizontally and vertically */
     background-color: #f4f4f4;
