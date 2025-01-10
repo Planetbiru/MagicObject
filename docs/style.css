@@ -82,6 +82,7 @@ h1, h2, h3, h4{
 }
 
 .property-declaratiopn,
+.class-declaration,
 .method-declaratiopn {
     font-family: monospace;
     overflow: auto;
@@ -98,6 +99,16 @@ pre {
     line-height: 1.5;
     font-size: 14px;
 }
+.class-declaration{
+    white-space: pre-wrap;
+}
+
+.php-keyword{
+    color: #0088ff;
+}
+.php-comment{
+    color: rgb(153, 43, 0);
+}
 
 .access-level {
     color: #9500aa;
@@ -108,20 +119,23 @@ pre {
 }
 
 .property-name,
-.parameter-name {
+.parameter-name, 
+.constant-name {
     color: #00366c;
 }
 
 .property-type,
 .parameter-type,
-.return-type {
+.return-type, .class-name {
     color: #0067c1;
 }
+.parameter-type
+
 
 .parameter-equal-sign {
     color: #333333;
 }
 
-.parameter-default {
+.parameter-default, .constant-value {
     color: #936;
 }

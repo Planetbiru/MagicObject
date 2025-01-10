@@ -111,7 +111,7 @@ class PhpDocScanner {
         // Description section
         if ($parsedDocblock['description']) {
             $output .= "<$heading>Description</$heading>\r\n";
-            $output .= $this->parsedown->text($parsedDocblock['description']) . "\n";
+            $output .= $this->parsedown->text(trim($parsedDocblock['description'])) . "\n";
         }
 
         // Parameters section
@@ -120,7 +120,7 @@ class PhpDocScanner {
             $output .= "<h3>Parameters</h3>\r\n";
             foreach ($parameters as $parameter) {
                 $output .= "<div class=\"parameter-name\">{$parameter['name']}</div>\r\n";
-                $output .= "<div class=\"parameter-description\">{$this->parsedown->text($parameter['description'])}</div>\r\n";
+                $output .= "<div class=\"parameter-description\">{$this->parsedown->text(ltrim($parameter['description']))}</div>\r\n";
             }
         }
 
@@ -130,7 +130,7 @@ class PhpDocScanner {
             $output .= "<h3>Return</h3>\r\n";
             foreach ($returns as $return) {
                 $output .= "<div class=\"return-type\">{$return['type']}</div>\r\n";
-                $output .= "<div class=\"return-description\">{$this->parsedown->text($return['description'])}</div>\r\n";
+                $output .= "<div class=\"return-description\">{$this->parsedown->text(ltrim($return['description']))}</div>\r\n";
             }
         }
 
@@ -168,7 +168,7 @@ class PhpDocScanner {
             foreach ($list as $line) {
                 $desc = trim(preg_replace('/\s\s+/', ' ', $line));
                 $arr = explode(" ", $desc);
-                if (count($arr) > 1 && substr($arr[1], 0, 1) == '$') {
+                if (count($arr) > 1 && (substr($arr[1], 0, 1) == '$' || substr($arr[1], 0, 2) == '&$')) {
                     $param = $arr[1];
                 } else {
                     $param = $arr[0];
@@ -250,6 +250,39 @@ class PhpDocScanner {
         }
         return $throws;
     }
+    
+    private function getClassDeclaration($reflectionClass)
+    {
+        // Mendapatkan nama kelas
+        $className = $reflectionClass->getName();
+
+        // Mendapatkan nama kelas induk (parent class) jika ada
+        $parentClass = $reflectionClass->getParentClass();
+        $parentClassName = $parentClass ? $parentClass->getName() : null;
+
+        // Mendapatkan semua interfaces yang diimplementasikan oleh kelas
+        $interfaces = $reflectionClass->getInterfaces();
+        $interfaceNames = array_map(function($interface) {
+            return $interface->getName();
+        }, $interfaces);
+
+        // Menampilkan deklarasi kelas
+        $basename = basename($className);
+        $str = "<span class=\"php-keyword\">class</span> <span class=\"class-name\">$basename</span>";
+        
+        if(isset($parentClassName))
+        {
+            $str .= " <span class=\"php-keyword\">extends</span> <span class=\"class-name\">$parentClassName</span>";
+        }
+        
+        if (!empty($interfaceNames)) {
+            $str .= " <span class=\"php-keyword\">implements</span> <span class=\"class-name\">" . implode("</span>, <span class=\"class-name\">", $interfaceNames)."</span>";
+        }
+        $str .= "\r\n{\r\n";
+        $str .= "}";
+        
+        return $str;
+    }
 
 
     /**
@@ -275,6 +308,12 @@ class PhpDocScanner {
             $classId = str_replace("\\", "-", $fullClassName);
             echo "<div class=\"class-item\" id=\"$classId\">\n";
             echo "<h1>{$fullClassName}</h1>\n";
+            
+            echo "<h2>Declaration</h2>\n";
+            
+            $declataion = $this->getClassDeclaration($reflection);      
+            
+            echo "<div class=\"class-declaration\">$declataion</div>\n";
             // Class docblock
             $classDocblock = $reflection->getDocComment();
             
@@ -293,7 +332,7 @@ class PhpDocScanner {
                 foreach ($constants as $name => $value) {
 
                     echo "<div class=\"php-constant\">";
-                    echo "<span class=\"constant-name\">$name</span> = <span class=\"constant-value\">" . htmlspecialchars(var_export($value, true))."</span>";
+                    echo "<span class=\"constant-name\">$name</span> = <span class=\"constant-value\">" . nl2br(htmlspecialchars(var_export($value, true)))."</span>";
                     echo "</div>";
                 }
             }
@@ -423,16 +462,7 @@ class PhpDocScanner {
         // Get method parameters and their default values
         $defaults = $this->getParameterDefaults($method);
 
-        $defaultValues = [];
-        if (!empty($defaults)) {
-            foreach ($defaults as $paramName => $defaultValue) {
-                if ($defaultValue === null) {
-                    $defaultValues[$paramName] = null;
-                } else {
-                    $defaultValues[$paramName] = var_export($defaultValue, true);
-                }
-            }
-        }
+        $defaultValues = $this->getDefaultValues($defaults);
 
         $params = [];
         if (isset($parsedMethodDocblock['tags']) && is_array($parsedMethodDocblock['tags'])) {
@@ -455,6 +485,22 @@ class PhpDocScanner {
             }
         }
         return $params;
+    }
+    
+    private function getDefaultValues($defaults)
+    {
+        $defaultValues = [];
+        if (!empty($defaults)) {
+            foreach ($defaults as $paramName => $defaultValue) {
+                if ($defaultValue === null) {
+                    $defaultValues[$paramName] = null;
+                } else {
+                    $defaultValues[$paramName] = var_export($defaultValue, true);
+                }
+            }
+        }
+        
+        return $defaultValues;
     }
 
     /**
@@ -571,69 +617,69 @@ class PhpDocScanner {
             return $structure;
         }
 
-        // Scan files in the current directory
+        // Scan files in the current directory first (before subdirectories)
         $files = new DirectoryIterator($dir);
         foreach ($files as $file) {
             if ($file->isFile() && $file->getExtension() == 'php') {
                 $structure[] = $this->createStdClass(
+                    "file",
                     $file->getPathname(),
                     $file->getFilename()
                 ); // Add file name to structure
             }
         }
-
-        // Recursively scan subdirectories
-        $directoryIterator = new RecursiveDirectoryIterator($dir);
-        $iterator = new RecursiveIteratorIterator(
-            $directoryIterator,
-            RecursiveIteratorIterator::LEAVES_ONLY
-        );
-
-        foreach ($iterator as $file) {
-            if ($file->isFile() && $file->getExtension() == 'php') {
-                // Get relative path (remove base directory part)
-                $relativePath = substr($file->getRealPath(), strlen($dir) + 1);
-                $pathParts = explode(DIRECTORY_SEPARATOR, $relativePath);
-
-                // Add file to the structure
-                $this->addFileToStructure($structure, $pathParts, $file);
+        
+        foreach ($files as $file) {
+            if ($file->isDir() && $file->getBasename() != "." && $file->getBasename() != "..") {
+                $structure[] = $this->createStdClass(
+                    "dir", 
+                    $file->getPathname(),
+                    $file->getFilename(), 
+                    $this->scanDirectoryToc($file->getPathname(), $maxDepth = PHP_INT_MAX, $currentDepth + 1)
+            ); 
             }
         }
 
         return $structure;
     }
     
-    private function createStdClass($pathname, $filename)
+    private function createStdClass($type, $pathname, $filename, $child = null)
     {
         $result = new stdClass;
+        $result->type = $type;
         $result->pathname = $pathname;
         $result->filename = $filename;
+        if(isset($child))
+        {
+            $result->child = $child;
+        }
         return $result;
     }
+    
+    
+    // Fungsi untuk merender struktur direktori menjadi HTML
+    public function renderDirectoryStructure($structure, $baseDir) {
+        $html = "<ul>"; // Mulai dengan <ul>
 
-    /**
-     * Adds a file to the nested directory structure.
-     *
-     * @param array &$structure The current directory structure.
-     * @param array $pathParts The path parts of the file (relative path).
-     * @param SplFileInfo $file The file information.
-     */
-    private function addFileToStructure(&$structure, $pathParts, $file) {
-        $current = &$structure;
-
-        foreach ($pathParts as $part) {
-            // Check if the part is a directory, and if not, create it
-            if (!isset($current[$part])) {
-                $current[$part] = [];
+        foreach ($structure as $item) {
+            if ($item->type == "file") {
+                $relativePath = "#MagicObject-".str_replace(["\\", "/", ".php"], ["-", "-", ""], $this->getRelativePath($item->pathname, $baseDir));
+                // Jika item adalah file, tampilkan sebagai <li>
+                $html .= "<li><a href=\"$relativePath\">" . basename($item->filename, ".php")."</a></li>";
+            } elseif ($item->type == "dir") {
+                // Jika item adalah subdirektori, tampilkan sebagai <li> dengan <ul> di dalamnya
+                $html .= "<li>".basename($item->pathname) . "";
+                // Rekursif untuk menampilkan file dan subdirektori dalam subdirektori
+                if (isset($item->child) && !empty($item->child)) {
+                    $html .= $this->renderDirectoryStructure($item->child, $baseDir); // Menampilkan isi subdirektori
+                }
+                $html .= "</li>";
             }
-            $current = &$current[$part];
         }
 
-        // Add the file information (pathname, filename) to the directory structure
-        $current[] = $this->createStdClass(
-            $file->getPathname(),
-            $file->getFilename()
-        );
+        $html .= "</ul>"; // Tutup <ul>
+
+        return $html;
     }
 
     /**
@@ -645,56 +691,6 @@ class PhpDocScanner {
      */
     public function generateTOC($structure, $basePath) {
         return $this->generateNestedList($structure, $basePath);
-    }
-
-    /**
-     * Recursively generates nested <ul> <li> HTML list based on directory structure.
-     *
-     * @param array $structure The directory structure.
-     * @param string $basePath The base path for creating links.
-     * @return string HTML string of the nested list.
-     */
-    private function generateNestedList($structure, $basePath, $level = 0) {
-        $html = "<ul>";
-        foreach ($structure as $key => $value) {
-            if (is_array($value)) 
-            {
-                $fileObject = $this->getFileObject($value);
-                // If it's a directory, recursively create the list for subdirectories
-                if(is_object($fileObject))
-                {
-                    $relativePath = $this->getRelativePath($fileObject->pathname, $basePath);
-                    $documentLink = "#MagicObject-".str_replace(["\\", ".php"], ["-", ""], $relativePath);
-                    $className = basename($fileObject->filename, '.php');
-                }
-                else
-                {
-                    $documentLink = "";
-                    $className = "";
-                }
-                $html .= "<li>";
-                if(isset($fileObject) && is_object($fileObject) && $key != $fileObject->filename)
-                {
-                    $html .= $key;
-                }
-                $html .= "<a href=\"{$documentLink}\">{$className}</a>" . $this->generateNestedList($value, $basePath, $level + 1);
-                $html .= "</li>";
-                
-            }
-            else if($level == 0)
-            {
-                $fileObject = $value;
-                $relativePath = $this->getRelativePath($fileObject->pathname, $basePath);
-                $documentLink = "#MagicObject-".str_replace(["\\", ".php"], ["-", ""], $relativePath);
-                $className = basename($fileObject->filename, '.php');
-                $html .= "<li>";
-                $html .= "<a href=\"{$documentLink}\">{$className}</a>";
-                $html .= "</li>";
-            }
-        }
-        $html .= "</ul>";
-
-        return $html;
     }
     
     /**
@@ -768,16 +764,14 @@ if (is_dir($srcDir)) {
     <div class="sidebar">
     <h3>Table of Content</h3>
     <?php
-    echo $docScanner->generateTOC($structure, $srcDir);
+    echo $docScanner->renderDirectoryStructure($structure, $srcDir);
     ?>
     </div>
     <div class="mainbar">
     <?php
     foreach ($files as $file) {
-        //if(stripos($file, 'PicoWebsocketClient') !== false)
-        {
-            $docScanner->getAllDocblocks($file);
-        }
+        $docScanner->getAllDocblocks($file);
+        
     }
     ?>
     </div>

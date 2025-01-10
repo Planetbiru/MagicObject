@@ -31,15 +31,6 @@ use stdClass;
  */
 class DataTable extends SetterGetter
 {
-    /**
-     * Undocumented function
-     *
-     * @return void
-     */
-    public static function any()
-    {
-        
-    }
     const ANNOTATION_TABLE = "Table";
     const ANNOTATION_ATTRIBUTES = "Attributes";
     const CLASS_LIST = "ClassList";
