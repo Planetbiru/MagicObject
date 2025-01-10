@@ -112,7 +112,7 @@ pre {
 }
 
 .php-keyword {
-    color: #0079e1;
+    color: #218ae3;
 }
 
 .php-comment {
@@ -129,14 +129,14 @@ pre {
 
 .property-name,
 .parameter-name,
-.constant-name {
-    color: #00366c;
+.constant-name,
+.class-name {
+    color: #014e91;
 }
 
 .property-type,
 .parameter-type,
-.return-type,
-.class-name {
+.return-type {
     color: #005dae;
 }
 
@@ -145,6 +145,7 @@ pre {
 }
 
 .parameter-default,
+.property-default,
 .constant-value {
     color: #936;
 }

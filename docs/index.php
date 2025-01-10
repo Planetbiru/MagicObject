@@ -444,39 +444,51 @@ class PhpDocScanner {
         return $throws;
     }
     
+    /**
+     * Retrieves the class declaration, including the class name, its parent class (if any),
+     * and the interfaces it implements.
+     * 
+     * This function generates the class declaration in PHP syntax, displaying the class name, 
+     * its parent class (if it has one), and the interfaces that the class implements.
+     *
+     * @param ReflectionClass $reflectionClass The ReflectionClass object for the class being analyzed.
+     * @return string The formatted class declaration in PHP syntax.
+     */
     private function getClassDeclaration($reflectionClass)
     {
-        // Mendapatkan nama kelas
+        // Get the name of the class
         $className = $reflectionClass->getName();
 
-        // Mendapatkan nama kelas induk (parent class) jika ada
+        // Get the parent class name (if any)
         $parentClass = $reflectionClass->getParentClass();
         $parentClassName = $parentClass ? $parentClass->getName() : null;
 
-        // Mendapatkan semua interfaces yang diimplementasikan oleh kelas
+        // Get all interfaces implemented by the class
         $interfaces = $reflectionClass->getInterfaces();
         $interfaceNames = array_map(function($interface) {
             return $interface->getName();
         }, $interfaces);
 
-        // Menampilkan deklarasi kelas
+        // Initialize the class declaration string
         $basename = basename($className);
         $str = "<span class=\"php-keyword\">class</span> <span class=\"class-name\">$basename</span>";
         
-        if(isset($parentClassName))
-        {
+        // If the class has a parent class, include it in the declaration
+        if (isset($parentClassName)) {
             $str .= " <span class=\"php-keyword\">extends</span> <span class=\"class-name\">$parentClassName</span>";
         }
         
+        // If the class implements any interfaces, include them in the declaration
         if (!empty($interfaceNames)) {
-            $str .= " <span class=\"php-keyword\">implements</span> <span class=\"class-name\">" . implode("</span>, <span class=\"class-name\">", $interfaceNames)."</span>";
+            $str .= " <span class=\"php-keyword\">implements</span> <span class=\"class-name\">" . implode("</span>, <span class=\"class-name\">", $interfaceNames) . "</span>";
         }
+
+        // Close the class declaration and return the result
         $str .= "\r\n{\r\n";
         $str .= "}";
-        
+
         return $str;
     }
-
 
     /**
      * Retrieves docblocks for all classes, properties, and methods in a PHP file, including access levels.
@@ -561,7 +573,7 @@ class PhpDocScanner {
             foreach ($constants as $name => $value) {
 
                 $str .= "<div class=\"php-constant\">";
-                $str .= "<span class=\"constant-name\">$name</span> = <span class=\"constant-value\">" . nl2br(htmlspecialchars(var_export($value, true)))."</span>";
+                $str .= "<span class=\"php-keyword\">const</span> <span class=\"constant-name\">$name</span> = <span class=\"constant-value\">" . nl2br(htmlspecialchars(var_export($value, true)))."</span>;";
                 $str .= "</div>";
             }
         }
@@ -580,15 +592,23 @@ class PhpDocScanner {
         if(!empty($properties))
         {
             $str .= "<h2>Properties</h2>\r\n";
+            $defaultProperties = $this->getDefaultProperties($properties);
             foreach ($properties as $property) {
                 $propertyDocblock = $property->getDocComment();
                 if ($propertyDocblock) {
                     $parsedPropertyDocblock = $this->parseDocblock($propertyDocblock);
                     $accessLevel = $this->getAccessLevel($property->getModifiers());
                     $propertyType = $this->getPropertyType($parsedPropertyDocblock);
+                    $defaultValue = "";
+                    if(isset($defaultProperties) && isset($defaultProperties[$property->getName()]))
+                    {
+                    
+                        $defaultValue = " = <span class=\"property-default\">". var_export($defaultProperties[$property->getName()], true)."</span>";
+                        
+                    }
                     
                     $str .= "<div class='property'>\r\n";
-                    $str .= "<div class=\"property-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> <span class=\"property-type\">{$propertyType}</span> <span class=\"property-name\">\${$property->getName()}</span></div>\r\n";
+                    $str .= "<div class=\"property-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> <span class=\"property-type\">{$propertyType}</span> <span class=\"property-name\">\${$property->getName()}</span>$defaultValue;</div>\r\n";
                     $str .= "<div class='docblock'>\r\n";
                     $str .= $this->generateParsedDocblock($parsedPropertyDocblock);
                     $str .= "</div>\r\n";
@@ -597,6 +617,18 @@ class PhpDocScanner {
             }
         }
         return $str;
+    }
+
+    /**
+     * Retrieves the default values for all properties in a class.
+     *
+     * @param array $properties Array of property Reflection objects.
+     * @return array Associative array where keys are property names and values are their default values.
+     */
+    private function getDefaultProperties($properties)
+    {
+        $reflectionClass = new ReflectionClass($properties[0]->getDeclaringClass()->getName());
+        return $reflectionClass->getDefaultProperties();
     }
     
     /**

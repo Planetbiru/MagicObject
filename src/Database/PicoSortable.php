@@ -27,6 +27,13 @@ class PicoSortable
 
     /**
      * Constructor to initialize sortable criteria based on provided arguments.
+     * 
+     * **Example:**
+     * ```php
+     * $sortable = new PicoSortable(); // Without initialization
+     * // or
+     * $sortable = new PicoSortable("rank", "ASC", "name", "ASC"); // With initialization
+     * ```
      */
     public function __construct()
     {
