@@ -272,34 +272,44 @@ class PhpDocScanner {
 
         try {
             $reflection = new ReflectionClass($fullClassName);
+            $classId = str_replace("\\", "-", $fullClassName);
+            echo "<div class=\"class-item\" id=\"$classId\">\n";
             echo "<h1>{$fullClassName}</h1>\n";
-            
             // Class docblock
             $classDocblock = $reflection->getDocComment();
+            
             if ($classDocblock) {
                 $parsedClassDocblock = $this->parseDocblock($classDocblock);
                 echo "<div class='docblock'>\n";
                 echo $this->generateParsedDocblock($parsedClassDocblock, "h2");
                 echo "</div>\n";
             }
+            
+            
+            $constants = $reflection->getConstants();
+
+            if (!empty($constants)) {
+                echo "<h2>Constants</h2>\n";
+                foreach ($constants as $name => $value) {
+
+                    echo "<div class=\"php-constant\">";
+                    echo "<span class=\"constant-name\">$name</span> = <span class=\"constant-value\">" . htmlspecialchars(var_export($value, true))."</span>";
+                    echo "</div>";
+                }
+            }
 
             // Property docblocks with access level
-            if(!empty($reflection->getProperties()))
+            $properties = $reflection->getProperties();
+            if(!empty($properties))
             {
                 echo "<h2>Properties</h2>\n";
-                foreach ($reflection->getProperties() as $property) {
+                foreach ($properties as $property) {
                     $propertyDocblock = $property->getDocComment();
                     if ($propertyDocblock) {
                         $parsedPropertyDocblock = $this->parseDocblock($propertyDocblock);
                         $accessLevel = $this->getAccessLevel($property->getModifiers());
-                        if($property->hasType())
-                        {
-                            $propertyType = $property->getType();
-                        }
-                        else
-                        {
-                            $propertyType = $this->getPropertyType($parsedPropertyDocblock);
-                        }
+                        $propertyType = $this->getPropertyType($parsedPropertyDocblock);
+                        
                         echo "<div class='property'>\n";
                         echo "<div class=\"property-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> <span class=\"property-type\">{$propertyType}</span> <span class=\"property-name\">\${$property->getName()}</span></div>\n";
                         echo "<div class='docblock'>\n";
@@ -311,10 +321,11 @@ class PhpDocScanner {
             }
 
             // Method docblocks with access level
-            if(!empty($reflection->getProperties()))
+            $methods = $reflection->getMethods();
+            if(!empty($methods))
             {
                 echo "<h2>Methods</h2>\n";
-                foreach ($reflection->getMethods() as $method) {
+                foreach ($methods as $method) {
                     $methodDocblock = $method->getDocComment();
                     if ($methodDocblock) {
                         $parsedMethodDocblock = $this->parseDocblock($methodDocblock);
@@ -331,10 +342,15 @@ class PhpDocScanner {
                         {
                             $returnStr = "";
                         }
+                        $static = "";
+                        if($method->isStatic())
+                        {
+                            $static = "static";
+                        }
 
                         $accessLevel = $this->getAccessLevel($method->getModifiers());
                         echo "<div class='method'>\n";
-                        echo "<div class=\"method-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> <span class=\"php-keyword\">function</span> <span class=\"method-name\">{$method->getName()}</span>($paramsStr)$returnStr<br>{<br>}</div>\n";
+                        echo "<div class=\"method-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> <span class=\"access-level\">{$static}</span> <span class=\"php-keyword\">function</span> <span class=\"method-name\">{$method->getName()}</span>($paramsStr)$returnStr<br>{<br>}</div>\n";
                         echo "<div class='docblock'>\n";
                         echo $this->generateParsedDocblock($parsedMethodDocblock);
                         echo "</div>\n";
@@ -345,6 +361,7 @@ class PhpDocScanner {
 
             
 
+            echo "</div>\n";
 
         } catch (ReflectionException $e) {
             echo "Could not reflect on class {$fullClassName}: " . $e->getMessage() . "<br>\n";
@@ -532,6 +549,195 @@ class PhpDocScanner {
         }
         return 'Unknown';
     }
+    
+    /**
+     * Scans a directory recursively for PHP files up to a certain depth.
+     *
+     * @param string $dir The directory to scan.
+     * @param int $maxDepth The maximum depth of recursion. Default is PHP_INT_MAX.
+     * @param int $currentDepth The current recursion depth. Used internally.
+     * @return array Nested array representing the directory structure with PHP files.
+     */
+    public function scanDirectoryToc($dir, $maxDepth = PHP_INT_MAX, $currentDepth = 0) {
+        $structure = [];
+
+        // Avoid deeper scanning if depth exceeds the max limit
+        if ($currentDepth > $maxDepth) {
+            return $structure;
+        }
+
+        // Ensure directory is valid
+        if (!is_dir($dir)) {
+            return $structure;
+        }
+
+        // Scan files in the current directory
+        $files = new DirectoryIterator($dir);
+        foreach ($files as $file) {
+            if ($file->isFile() && $file->getExtension() == 'php') {
+                $structure[] = $this->createStdClass(
+                    $file->getPathname(),
+                    $file->getFilename()
+                ); // Add file name to structure
+            }
+        }
+
+        // Recursively scan subdirectories
+        $directoryIterator = new RecursiveDirectoryIterator($dir);
+        $iterator = new RecursiveIteratorIterator(
+            $directoryIterator,
+            RecursiveIteratorIterator::LEAVES_ONLY
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isFile() && $file->getExtension() == 'php') {
+                // Get relative path (remove base directory part)
+                $relativePath = substr($file->getRealPath(), strlen($dir) + 1);
+                $pathParts = explode(DIRECTORY_SEPARATOR, $relativePath);
+
+                // Add file to the structure
+                $this->addFileToStructure($structure, $pathParts, $file);
+            }
+        }
+
+        return $structure;
+    }
+    
+    private function createStdClass($pathname, $filename)
+    {
+        $result = new stdClass;
+        $result->pathname = $pathname;
+        $result->filename = $filename;
+        return $result;
+    }
+
+    /**
+     * Adds a file to the nested directory structure.
+     *
+     * @param array &$structure The current directory structure.
+     * @param array $pathParts The path parts of the file (relative path).
+     * @param SplFileInfo $file The file information.
+     */
+    private function addFileToStructure(&$structure, $pathParts, $file) {
+        $current = &$structure;
+
+        foreach ($pathParts as $part) {
+            // Check if the part is a directory, and if not, create it
+            if (!isset($current[$part])) {
+                $current[$part] = [];
+            }
+            $current = &$current[$part];
+        }
+
+        // Add the file information (pathname, filename) to the directory structure
+        $current[] = $this->createStdClass(
+            $file->getPathname(),
+            $file->getFilename()
+        );
+    }
+
+    /**
+     * Generates a nested <ul> <li> HTML list for the directory structure.
+     *
+     * @param array $structure The nested directory structure.
+     * @param string $basePath The base path for creating links.
+     * @return string HTML string of the nested list.
+     */
+    public function generateTOC($structure, $basePath) {
+        return $this->generateNestedList($structure, $basePath);
+    }
+
+    /**
+     * Recursively generates nested <ul> <li> HTML list based on directory structure.
+     *
+     * @param array $structure The directory structure.
+     * @param string $basePath The base path for creating links.
+     * @return string HTML string of the nested list.
+     */
+    private function generateNestedList($structure, $basePath, $level = 0) {
+        $html = "<ul>";
+        foreach ($structure as $key => $value) {
+            if (is_array($value)) 
+            {
+                $fileObject = $this->getFileObject($value);
+                // If it's a directory, recursively create the list for subdirectories
+                if(is_object($fileObject))
+                {
+                    $relativePath = $this->getRelativePath($fileObject->pathname, $basePath);
+                    $documentLink = "#MagicObject-".str_replace(["\\", ".php"], ["-", ""], $relativePath);
+                    $className = basename($fileObject->filename, '.php');
+                }
+                else
+                {
+                    $documentLink = "";
+                    $className = "";
+                }
+                $html .= "<li>";
+                if(isset($fileObject) && is_object($fileObject) && $key != $fileObject->filename)
+                {
+                    $html .= $key;
+                }
+                $html .= "<a href=\"{$documentLink}\">{$className}</a>" . $this->generateNestedList($value, $basePath, $level + 1);
+                $html .= "</li>";
+                
+            }
+            else if($level == 0)
+            {
+                $fileObject = $value;
+                $relativePath = $this->getRelativePath($fileObject->pathname, $basePath);
+                $documentLink = "#MagicObject-".str_replace(["\\", ".php"], ["-", ""], $relativePath);
+                $className = basename($fileObject->filename, '.php');
+                $html .= "<li>";
+                $html .= "<a href=\"{$documentLink}\">{$className}</a>";
+                $html .= "</li>";
+            }
+        }
+        $html .= "</ul>";
+
+        return $html;
+    }
+    
+    /**
+     * Get file object
+     *
+     * @param mixed $value
+     * @return stdClass
+     */
+    private function getFileObject($value)
+    {
+        if(isset($value[0]))
+        {
+            $fileObject = $value[0];
+        }
+        else
+        {
+            $fileObject = $value;
+        }
+        if(is_array($fileObject))
+        {
+            $fileObject = array_values($fileObject);
+        }
+        return $fileObject;
+    }
+    
+    private function getRelativePath($pathname, $basePath) {
+        // Pastikan bahwa kedua path adalah absolut
+        $realPathname = realpath($pathname);
+        $realBasepath = realpath($basePath);
+    
+        // Pastikan kedua path valid
+        if ($realPathname === false || $realBasepath === false) {
+            return ""; // Return false if either path is invalid
+        }
+    
+        // Periksa apakah basepath adalah bagian dari pathname
+        if (strpos($realPathname, $realBasepath) === 0) {
+            // Ambil bagian setelah basepath
+            return substr($realPathname, strlen($realBasepath) + 1); // +1 untuk menghapus trailing DIRECTORY_SEPARATOR
+        } else {
+            return ""; // Jika basepath tidak ditemukan dalam pathname
+        }
+    }
 
 }
 
@@ -556,9 +762,26 @@ if (is_dir($srcDir)) {
     $docScanner = new PhpDocScanner();
 
     $files = $docScanner->scanDirectory($srcDir);
+    
+    $structure = $docScanner->scanDirectoryToc($srcDir); // Replace with your directory path
+    ?>
+    <div class="sidebar">
+    <h3>Table of Content</h3>
+    <?php
+    echo $docScanner->generateTOC($structure, $srcDir);
+    ?>
+    </div>
+    <div class="mainbar">
+    <?php
     foreach ($files as $file) {
-        $docScanner->getAllDocblocks($file);
+        //if(stripos($file, 'PicoWebsocketClient') !== false)
+        {
+            $docScanner->getAllDocblocks($file);
+        }
     }
+    ?>
+    </div>
+    <?php
 } else {
     echo "The src directory was not found. Ensure this script is run from within the project repository.\n";
 }
