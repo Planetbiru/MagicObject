@@ -180,6 +180,9 @@ pre code {
     white-space: pre-wrap;
 }
 
+.hljs-meta{
+    color: #D50B1E;
+}
 
 .language-javascript {
     color: #f1e05a;
@@ -202,7 +205,7 @@ pre code {
 }
 
 .language-php .hljs-string {
-    color: #f20101;
+    color: #db0000;
 }
 
 .language-html {
