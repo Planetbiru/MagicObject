@@ -27,7 +27,7 @@ use stdClass;
  * - Fetching results in different formats (array, object, etc.).
  * - Generating unique IDs and retrieving the last inserted ID.
  * 
- * Example usage:
+ * **Example:**
  * ```php
  * $db = new PicoDatabase($credentials);
  * $db->connect();

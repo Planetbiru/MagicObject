@@ -10,7 +10,7 @@ use MagicObject\Util\Image\ImageColor;
  *
  * Represents a color with an alpha channel for transparency in images.
  *
- * Example:
+ * **Example:**
  * ```php
  * $color = new ImageColorAlpha(255, 0, 0, 50); // Red with 50% opacity
  * ```

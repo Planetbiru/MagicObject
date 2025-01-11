@@ -29,7 +29,7 @@ class PicoArrayUtil
      *
      * This method can process both associative arrays and objects.
      * 
-     * Example:
+     * **Example:**
      * ```php
      * <?php
      * $data = ['first_name' => 'John', 'last_name' => 'Doe'];
@@ -57,7 +57,7 @@ class PicoArrayUtil
      *
      * This method can process both associative arrays and objects.
      * 
-     * Example:
+     * **Example:**
      * ```php
      * <?php
      * $data = ['firstName' => 'John', 'lastName' => 'Doe'];

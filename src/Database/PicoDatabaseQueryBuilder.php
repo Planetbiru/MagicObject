@@ -7,6 +7,22 @@ namespace MagicObject\Database;
  * A query builder for constructing SQL statements programmatically. This class 
  * facilitates the creation of various SQL commands including SELECT, INSERT, 
  * UPDATE, and DELETE, while managing database-specific nuances.
+ * 
+ * **Example:**
+ * ```php
+ * $id = 100;
+ * $db = new PicoDatabase($credentials);
+ * $db->connect();
+ * $query = new PicoDatabaseQueryBuilder($db);
+ * $query
+ *     ->select("*")
+ *     ->from("client")
+ *     ->where("client_id = ?", $id)
+ * ;
+ * $data = $db->fetch($query);
+ * echo $data['client_id']."\r\n"; // Client ID
+ * echo $data['name']."\r\n"; // Client name 
+ * ```
  *
  * @author Kamshory
  * @package MagicObject\Database

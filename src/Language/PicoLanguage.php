@@ -74,7 +74,11 @@ class PicoLanguage
 
     /**
      * Magic method to set property values.
-     * Example: $instance->foo = 'bar';
+     * 
+     * **Example:** 
+     * ```php
+     * $instance->foo = 'bar';
+     * ```
      *
      * @param string $name Name of the property to set.
      * @param mixed $value Value to assign to the property.
@@ -87,7 +91,11 @@ class PicoLanguage
 
     /**
      * Magic method to get property values.
-     * Example: echo $instance->foo;
+     * 
+     * **Example:** 
+     * ```php
+     * echo $instance->foo;
+     * ```
      *
      * @param string $name Name of the property to get.
      * @return mixed The value stored in the property.
