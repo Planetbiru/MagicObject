@@ -146,13 +146,13 @@ class DataTable extends SetterGetter
                     $this->_tableInfo = null;
                 }
                 foreach ($values as $key => $value) {
-                    $key2 = PicoStringUtil::camelize(str_replace("-", "_", $key));
+                    $key2 = PicoStringUtil::camelize($key);
                     $this->set($key2, $value);
                     $this->_labels[$key2] = $data->label($key2);
                 }
             } elseif (is_array($data) || is_object($data)) {
                 foreach ($data as $key => $value) {
-                    $key2 = PicoStringUtil::camelize(str_replace("-", "_", $key));
+                    $key2 = PicoStringUtil::camelize($key);
                     $this->set($key2, $value);
                 }
             }

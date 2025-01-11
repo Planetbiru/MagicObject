@@ -41,7 +41,7 @@ class PicoStringUtil
      */
     public static function camelize($input, $glue = '_')
     {
-        $str = str_replace([' ', '-'], $glue, $input);
+        $str = str_replace(array(' ', '-'), $glue, $input);
         $str = preg_replace('/_+/', $glue, $str);
         $str = strtolower($str);
         $str = preg_replace_callback('/_([a-z])/', function ($matches) {

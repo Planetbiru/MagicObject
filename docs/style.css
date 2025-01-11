@@ -115,42 +115,47 @@ code {
     font-size: 14px;
     background-color: #EEE;
     border-radius: 2px;
-  }
+}
 
-  pre code{
+pre code {
     background-color: transparent;
     border-radius: 0;
     padding: 0;
-  }
+}
 
 .class-declaration {
     white-space: pre-wrap;
 }
 
-.php-keyword, .hljs-keyword {
+.php-keyword,
+.hljs-keyword {
     color: #218ae3;
 }
 
-.php-comment, .hljs-comment {
-    color: rgb(153, 43, 0);
+.php-comment,
+.hljs-comment {
+    color: rgb(1, 145, 37);
 }
 
 .access-level {
     color: #9500aa;
 }
 
-.method-name, .hljs-title.function_.invoke__ {
+.method-name,
+.hljs-title.function_.invoke__ {
     color: #00578a;
 }
 
-.property-identity, .method-identity{
+.property-identity,
+.method-identity {
     font-weight: bold;
 }
 
 .property-name,
 .parameter-name,
 .constant-name,
-.class-name, .hljs-title.class_ {
+.class-name,
+.hljs-title.class_ {
     color: #014e91;
 }
 
@@ -176,9 +181,8 @@ code {
 }
 
 
-/* Warna untuk JavaScript */
 .language-javascript {
-    color: #f1e05a; /* warna kuning untuk kata kunci */
+    color: #f1e05a;
 }
 
 .language-javascript .hljs-keyword {
@@ -186,25 +190,23 @@ code {
 }
 
 .language-javascript .hljs-string {
-    color: #6a8759; /* warna hijau untuk string */
+    color: #6a8759;
 }
 
 .language-javascript .hljs-function {
-    color: #f8f8f2; /* warna putih untuk fungsi */
+    color: #f8f8f2;
 }
 
-/* Warna untuk PHP */
 .language-php {
-    color: #4F5D95; /* warna biru untuk PHP */
+    color: #4F5D95;
 }
 
 .language-php .hljs-string {
     color: #f20101;
 }
 
-/* Warna untuk HTML */
 .language-html {
-    color: #e34c26; /* warna oranye untuk elemen HTML */
+    color: #e34c26;
 }
 
 .language-html .hljs-tag {
@@ -212,10 +214,9 @@ code {
 }
 
 .language-html .hljs-attribute {
-    color: #42a5f5;
+    color: #21649b;
 }
 
 .language-html .hljs-value {
-    color: #a8ff60;
+    color: #991f00;
 }
-

@@ -127,7 +127,7 @@ class PicoSession
      * 
      * **Example:** 
      * ```php
-     * $_instance->foo = 'bar';
+     * $sessions->foo = 'bar';
      * ```
      *
      * This magic method stores data in the PHP session.
@@ -146,7 +146,7 @@ class PicoSession
      * 
      * **Example:** 
      * ```php
-     * echo $_instance->foo;
+     * echo $sessions->foo;
      * ```
      *
      * This magic method retrieves data from the PHP session.

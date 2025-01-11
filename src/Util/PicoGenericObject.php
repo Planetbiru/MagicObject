@@ -57,7 +57,7 @@ class PicoGenericObject extends stdClass
         if($data != null && (is_array($data) || is_object($data)))
         {
             foreach ($data as $key => $value) {
-                $key2 = PicoStringUtil::camelize(str_replace("-", "_", $key));
+                $key2 = PicoStringUtil::camelize($key);
                 $this->set($key2, $value);
             }
         }

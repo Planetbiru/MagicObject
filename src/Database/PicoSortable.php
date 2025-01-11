@@ -256,7 +256,7 @@ class PicoSortable
         $sortable = new self;
         if (self::isArray($map)) {
             foreach ($map as $key => $value) {
-                if (PicoStringUtil::camelize($request->getOrderby()) == PicoStringUtil::camelize(str_replace("-", "_", $key))) {
+                if (PicoStringUtil::camelize($request->getOrderby()) == PicoStringUtil::camelize($key)) {
                     $sortable->add(new PicoSort($value, PicoSort::fixSortType($request->getOrdertype())));
                 }
             }

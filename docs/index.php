@@ -1125,6 +1125,7 @@ if (is_dir($srcDir)) {
 <script>
     // Menyorot kode setelah halaman dimuat
     hljs.highlightAll();
+
 </script>
 </body>
 </html>
