@@ -4,6 +4,11 @@ use MagicObject\Util\PicoParsedown;
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 
+/**
+ * Class to represent a replacement for null values.
+ * This class can be used in cases where you want to explicitly handle
+ * or replace null values in a more meaningful way.
+ */
 class PicoNull
 {
 
@@ -12,7 +17,8 @@ class PicoNull
 /**
  * Class to scan PHP files in a directory recursively, parse docblocks, and display them.
  */
-class PhpDocumentCreator {
+class PhpDocumentCreator // NOSONAR
+{
     
     const DUPLICATED_WHITESPACE_EXP = '/\s\s+/';
 
@@ -109,32 +115,28 @@ class PhpDocumentCreator {
     /**
      * Generates a parsed docblock with proper HTML formatting.
      *
-     * @param array $parsedDocblock The parsed docblock to display.
+     * This method takes a parsed docblock and converts it into an HTML string representation.
+     * It processes various docblock sections such as description, parameters, return types, 
+     * exceptions thrown, and additional metadata (like packages and authors).
+     *
+     * @param array $parsedDocblock The parsed docblock data to display.
+     * @param string $heading (optional) The HTML heading tag to use for the docblock's title (default is "h3").
      * @return string The HTML-formatted docblock.
      */
     public function generateParsedDocblock($parsedDocblock, $heading = "h3") {   
+
         $output = '';
 
-        $output .= $this->displayPackages($parsedDocblock);
-        
-        $output .= $this->displayAuthors($parsedDocblock);
-
-        $output .= $this->displayLinks($parsedDocblock);
-
-        // Description section
-        
-        $output .= $this->displayDescription($parsedDocblock, $heading);
-
-        // Parameters section
         $parameters = $this->parseParameters($parsedDocblock);
-        $output .= $this->displayParameters($parameters);
-
-        // Returns section
         $returns = $this->parseReturns($parsedDocblock);
-        $output .= $this->displayReturns($returns);
-
-        // Throws section
         $throws = $this->parseThrows($parsedDocblock);
+
+        $output .= $this->displayPackages($parsedDocblock);       
+        $output .= $this->displayAuthors($parsedDocblock);
+        $output .= $this->displayLinks($parsedDocblock);        
+        $output .= $this->displayDescription($parsedDocblock, $heading);
+        $output .= $this->displayParameters($parameters);
+        $output .= $this->displayReturns($returns);
         $output .= $this->displayThrows($throws);
 
         return $output;
@@ -345,7 +347,6 @@ class PhpDocumentCreator {
         return preg_replace($pattern, $replacement, $text);
     }
 
-
     /**
      * Parses the `param` tags from a parsed docblock and extracts the parameter names and descriptions.
      *
@@ -487,7 +488,7 @@ class PhpDocumentCreator {
         if (!empty($interfaceNames)) {
             $str .= " <span class=\"php-keyword\">implements</span> <span class=\"class-name\">" 
             . implode("</span>, <span class=\"class-name\">", $interfaceNames) 
-            . "</span>";
+            . "</span>"; // NOSONAR
         }
 
         // Close the class declaration and return the result
@@ -541,7 +542,7 @@ class PhpDocumentCreator {
                 $parsedClassDocblock = $this->parseDocblock($classDocblock);
                 $output .= "<div class=\"docblock\">\r\n";
                 $output .= $this->generateParsedDocblock($parsedClassDocblock, "h2");
-                $output .= "</div>\r\n";
+                $output .= "</div>\r\n"; // NOSONAR
             }
             
             // Constants
@@ -582,7 +583,7 @@ class PhpDocumentCreator {
                 $str .= "<div class=\"php-constant\">";
                 $str .= "<span class=\"php-keyword\">const</span> "
                     ."<span class=\"constant-name\">$name</span> = <span class=\"constant-value\">" 
-                    .str_replace([" (\n)", " (\r\n)"], "()", htmlspecialchars(var_export($value, true)))."</span>;";
+                    .str_replace(["(\n)", "(\r\n)"], "()", htmlspecialchars(var_export($value, true)))."</span>;";
                 $str .= "</div>";
             }
         }
@@ -612,8 +613,7 @@ class PhpDocumentCreator {
                     $propertyType = explode("|", $propertyType)[0];
                     $defaultValue = "";
                     if(isset($defaultProperties) && isset($defaultProperties[$property->getName()]))
-                    {
-                    
+                    {               
                         $defaultValue = " = <span class=\"property-default\">"
                         .str_replace([" (\n)", " (\r\n)"], "()", htmlspecialchars(var_export($defaultProperties[$property->getName()], true)))."</span>";
                         
@@ -822,6 +822,18 @@ class PhpDocumentCreator {
         return $params;
     }
     
+    /**
+     * Retrieves the default values for the given parameters.
+     *
+     * This method processes an array of parameter defaults and returns an associative array
+     * where the keys are the parameter names and the values are the default values. If a 
+     * parameter's default value is `null`, it is explicitly marked as `null`. If the value
+     * is an instance of the `PicoNull` class, it is represented as the string "null". Otherwise,
+     * the value is exported using `var_export()`.
+     *
+     * @param array $defaults An associative array where the keys are parameter names and the values are their default values.
+     * @return array An associative array of parameter names and their corresponding default values.
+     */
     private function getDefaultValues($defaults)
     {
         $defaultValues = [];
@@ -1060,7 +1072,6 @@ class PhpDocumentCreator {
 
 }
 
-
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1095,7 +1106,6 @@ if (is_dir($srcDir)) {
     <?php
 
     $rendered = [];
-
     foreach ($files as $file) {
         if(!in_array($file, $rendered))
         {
@@ -1107,7 +1117,7 @@ if (is_dir($srcDir)) {
     </div>
     <?php
 } else {
-    echo "The src directory was not found. Ensure this script is run from within the project repository.\n";
+    echo "The `$srcDir` directory was not found. Ensure this script is run from within the project repository.\n";
 }
 ?>
 </div>
