@@ -127,6 +127,10 @@ pre {
     color: #000000;
 }
 
+.property-identity, .method-identity{
+    font-weight: bold;
+}
+
 .property-name,
 .parameter-name,
 .constant-name,
@@ -148,4 +152,9 @@ pre {
 .property-default,
 .constant-value {
     color: #936;
+}
+
+.property-default,
+.constant-value {
+    white-space: pre-wrap;
 }

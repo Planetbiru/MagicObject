@@ -4,10 +4,15 @@ use MagicObject\Util\PicoParsedown;
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 
+class PicoNull
+{
+
+}
+
 /**
  * Class to scan PHP files in a directory recursively, parse docblocks, and display them.
  */
-class PhpDocScanner {
+class PhpDocumentCreator {
     
     const DUPLICATED_WHITESPACE_EXP = '/\s\s+/';
 
@@ -480,7 +485,9 @@ class PhpDocScanner {
         
         // If the class implements any interfaces, include them in the declaration
         if (!empty($interfaceNames)) {
-            $str .= " <span class=\"php-keyword\">implements</span> <span class=\"class-name\">" . implode("</span>, <span class=\"class-name\">", $interfaceNames) . "</span>";
+            $str .= " <span class=\"php-keyword\">implements</span> <span class=\"class-name\">" 
+            . implode("</span>, <span class=\"class-name\">", $interfaceNames) 
+            . "</span>";
         }
 
         // Close the class declaration and return the result
@@ -532,7 +539,7 @@ class PhpDocScanner {
             
             if ($classDocblock) {
                 $parsedClassDocblock = $this->parseDocblock($classDocblock);
-                $output .= "<div class='docblock'>\r\n";
+                $output .= "<div class=\"docblock\">\r\n";
                 $output .= $this->generateParsedDocblock($parsedClassDocblock, "h2");
                 $output .= "</div>\r\n";
             }
@@ -573,7 +580,9 @@ class PhpDocScanner {
             foreach ($constants as $name => $value) {
 
                 $str .= "<div class=\"php-constant\">";
-                $str .= "<span class=\"php-keyword\">const</span> <span class=\"constant-name\">$name</span> = <span class=\"constant-value\">" . nl2br(htmlspecialchars(var_export($value, true)))."</span>;";
+                $str .= "<span class=\"php-keyword\">const</span> "
+                    ."<span class=\"constant-name\">$name</span> = <span class=\"constant-value\">" 
+                    .str_replace([" (\n)", " (\r\n)"], "()", htmlspecialchars(var_export($value, true)))."</span>;";
                 $str .= "</div>";
             }
         }
@@ -593,23 +602,31 @@ class PhpDocScanner {
         {
             $str .= "<h2>Properties</h2>\r\n";
             $defaultProperties = $this->getDefaultProperties($properties);
-            foreach ($properties as $property) {
+            foreach ($properties as $index=>$property) {
+                $no = $index + 1;
                 $propertyDocblock = $property->getDocComment();
                 if ($propertyDocblock) {
                     $parsedPropertyDocblock = $this->parseDocblock($propertyDocblock);
                     $accessLevel = $this->getAccessLevel($property->getModifiers());
                     $propertyType = $this->getPropertyType($parsedPropertyDocblock);
+                    $propertyType = explode("|", $propertyType)[0];
                     $defaultValue = "";
                     if(isset($defaultProperties) && isset($defaultProperties[$property->getName()]))
                     {
                     
-                        $defaultValue = " = <span class=\"property-default\">". var_export($defaultProperties[$property->getName()], true)."</span>";
+                        $defaultValue = " = <span class=\"property-default\">"
+                        .str_replace([" (\n)", " (\r\n)"], "()", htmlspecialchars(var_export($defaultProperties[$property->getName()], true)))."</span>";
                         
                     }
-                    
-                    $str .= "<div class='property'>\r\n";
-                    $str .= "<div class=\"property-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> <span class=\"property-type\">{$propertyType}</span> <span class=\"property-name\">\${$property->getName()}</span>$defaultValue;</div>\r\n";
-                    $str .= "<div class='docblock'>\r\n";
+                    $str .= "<div class=\"property\">\r\n";
+                    $str .= "<div class=\"property-identity\">$no. <span class=\"property-label\">{$property->getName()}</span></div>\r\n";
+                    $str .= "<h3>Declaration</h3>\r\n";
+                    $str .= "<div class=\"property-declaratiopn\">"
+                        ."<span class=\"access-level\">{$accessLevel}</span> "
+                        ."<span class=\"property-type\">{$propertyType}</span> "
+                        ."<span class=\"property-name\">\${$property->getName()}</span>$defaultValue;"
+                        ."</div>\r\n";
+                    $str .= "<div class=\"docblock\">\r\n";
                     $str .= $this->generateParsedDocblock($parsedPropertyDocblock);
                     $str .= "</div>\r\n";
                     $str .= "</div>\r\n";
@@ -643,7 +660,8 @@ class PhpDocScanner {
         if(!empty($methods))
         {
             $str .= "<h2>Methods</h2>\r\n";
-            foreach ($methods as $method) {
+            foreach ($methods as $index => $method) {
+                $no = $index + 1;
                 $methodDocblock = $method->getDocComment();
                 if ($methodDocblock) {
                     $parsedMethodDocblock = $this->parseDocblock($methodDocblock);
@@ -657,6 +675,8 @@ class PhpDocScanner {
 
                     $accessLevel = $this->getAccessLevel($method->getModifiers());
                     $str .= "<div class='method'>\r\n";
+                    $str .= "<div class=\"method-identity\">$no. <span class=\"method-label\">{$method->getName()}</span></div>\r\n";
+                    $str .= "<h3>Declaration</h3>\r\n";
                     $str .= "<div class=\"method-declaratiopn\"><span class=\"access-level\">{$accessLevel}</span> <span class=\"access-level\">{$static}</span> <span class=\"php-keyword\">function</span> <span class=\"method-name\">{$method->getName()}</span>($paramsStr)$returnStr<br>{<br>}</div>\r\n";
                     $str .= "<div class='docblock'>\r\n";
                     $str .= $this->generateParsedDocblock($parsedMethodDocblock);
@@ -713,7 +733,7 @@ class PhpDocScanner {
     {
         if(!empty($params))
         {
-            $paramsStr = "<br>\r\n&nbsp;&nbsp;".implode(", <br>\r\n&nbsp;&nbsp;", $params)."<br>\r\n";
+            $paramsStr = "<br>\r\n&nbsp;&nbsp;&nbsp;&nbsp;".implode(", <br>\r\n&nbsp;&nbsp;&nbsp;&nbsp;", $params)."<br>\r\n";
         }
         else
         {
@@ -755,7 +775,7 @@ class PhpDocScanner {
     
         foreach ($parameters as $parameter) {
             if ($parameter->isDefaultValueAvailable()) {
-                $defaults[$parameter->getName()] = $parameter->getDefaultValue();
+                $defaults[$parameter->getName()] = $parameter->getDefaultValue() === null ? new PicoNull() : $parameter->getDefaultValue();
             } else {
                 $defaults[$parameter->getName()] = null;
             }
@@ -810,7 +830,7 @@ class PhpDocScanner {
                 if ($defaultValue === null) {
                     $defaultValues[$paramName] = null;
                 } else {
-                    $defaultValues[$paramName] = var_export($defaultValue, true);
+                    $defaultValues[$paramName] = $defaultValue instanceof PicoNull ? "null" : var_export($defaultValue, true);
                 }
             }
         }
@@ -1059,23 +1079,29 @@ class PhpDocScanner {
 $srcDir = dirname(__DIR__) . '/src';
 
 if (is_dir($srcDir)) {
-    $docScanner = new PhpDocScanner();
+    $docCreator = new PhpDocumentCreator();
 
-    $files = $docScanner->scanDirectory($srcDir);
+    $files = $docCreator->scanDirectory($srcDir);
     
-    $structure = $docScanner->scanDirectoryToc($srcDir); // Replace with your directory path
+    $structure = $docCreator->scanDirectoryToc($srcDir); // Replace with your directory path
     ?>
     <div class="sidebar">
     <h3>Table of Content</h3>
     <?php
-    echo $docScanner->renderDirectoryStructure($structure, $srcDir);
+    echo $docCreator->renderDirectoryStructure($structure, $srcDir);
     ?>
     </div>
     <div class="mainbar">
     <?php
+
+    $rendered = [];
+
     foreach ($files as $file) {
-        echo $docScanner->getAllDocblocks($file);
-        
+        if(!in_array($file, $rendered))
+        {
+            echo $docCreator->getAllDocblocks($file);
+        }
+        $rendered[] = $file;
     }
     ?>
     </div>
