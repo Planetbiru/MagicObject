@@ -127,6 +127,7 @@ class PicoSession
      * 
      * **Example:** 
      * ```php
+     * <?php
      * $sessions->foo = 'bar';
      * ```
      *
@@ -146,6 +147,7 @@ class PicoSession
      * 
      * **Example:** 
      * ```php
+     * <?php
      * echo $sessions->foo;
      * ```
      *

@@ -14,6 +14,7 @@ use MagicObject\Util\File\FileUtil;
  *
  * **Example:**
  * ```php
+ * <?php
  * $img = new Image('wheel.png');
  * $img->flip(1)->resize(120, 0)->save('wheel.jpg');
  * ```

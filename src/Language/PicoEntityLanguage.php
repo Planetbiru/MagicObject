@@ -270,6 +270,7 @@ class PicoEntityLanguage
      *
      * **Example:** 
      * ```php
+     * <?php
      * echo $instance->foo;
      * ```
      *

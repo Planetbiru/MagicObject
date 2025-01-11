@@ -18,6 +18,7 @@ namespace MagicObject\Util\Database;
  *
  * **Example:**
  * ```php
+ * <?php
  * $converter = new DatabaseTypeConverter();
  * $postgresqlSchema = $converter->mysqlToPostgresql($mysqlSchema);
  * ```

@@ -12,6 +12,7 @@ namespace MagicObject;
  * 
  * **Example**
  * ```php
+ * <?php
  * echo Txt::planetbiru(); // Will print "planetbiru"
  * echo Txt::of()->planetbiru; // Will print "planetbiru"
  * echo Txt::getInstance()->planetbiru; // Will print "planetbiru"

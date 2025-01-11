@@ -30,6 +30,7 @@ class PicoSortable
      * 
      * **Example:**
      * ```php
+     * <?php
      * $sortable = new PicoSortable(); // Without initialization
      * // or
      * $sortable = new PicoSortable("rank", "ASC", "name", "ASC"); // With initialization

@@ -77,6 +77,7 @@ class PicoLanguage
      * 
      * **Example:** 
      * ```php
+     * <?php
      * $instance->foo = 'bar';
      * ```
      *
@@ -94,6 +95,7 @@ class PicoLanguage
      * 
      * **Example:** 
      * ```php
+     * <?php
      * echo $instance->foo;
      * ```
      *

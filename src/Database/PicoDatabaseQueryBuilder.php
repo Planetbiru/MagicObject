@@ -10,6 +10,7 @@ namespace MagicObject\Database;
  * 
  * **Example:**
  * ```php
+ * <?php
  * $id = 100;
  * $db = new PicoDatabase($credentials);
  * $db->connect();

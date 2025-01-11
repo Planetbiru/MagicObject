@@ -12,6 +12,7 @@ use MagicObject\Util\Image\ImageColor;
  *
  * **Example:**
  * ```php
+ * <?php
  * $color = new ImageColorAlpha(255, 0, 0, 50); // Red with 50% opacity
  * ```
  *
