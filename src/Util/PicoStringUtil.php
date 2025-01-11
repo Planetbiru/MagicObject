@@ -43,7 +43,6 @@ class PicoStringUtil
     {
         $str = str_replace(array(' ', '-'), $glue, $input);
         $str = preg_replace('/_+/', $glue, $str);
-        $str = strtolower($str);
         $str = preg_replace_callback('/_([a-z])/', function ($matches) {
             return strtoupper($matches[1]);
         }, $str);
