@@ -1691,60 +1691,35 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
-     * Count the data based on the given specifications and options.
+     * Count the data based on specifications
      *
-     * This method calculates the number of records that match the provided
-     * filtering criteria, pagination, and sorting options. The counting behavior
-     * can be customized using the $findOption parameter. The method handles special
-     * cases for different database types (e.g., SQLite) where counting behavior
-     * might differ from other databases.
-     *
-     * @param PicoDatabasePersistence $persist The persistence object responsible for database interactions.
-     * @param PicoSpecification|null $specification The specification used to filter the records. Can be null if no filtering is applied.
-     * @param PicoPageable|string|null $pageable The pagination information, which can be a Pageable object or a string. Can be null.
-     * @param PicoSortable|string|null $sortable The sorting criteria, which can be a Sortable object or a string. Can be null.
-     * @param int $findOption The option to modify the count behavior (e.g., skip counting in certain cases). Default is 0.
-     * @param array|null $result The result set that may be passed in to avoid re-fetching data. Can be null.
-     * 
-     * @return int The total count of matching records based on the provided criteria. 
-     *             If no data is available or counting is disabled, returns 0 or 1 based on the database type.
+     * @param PicoDatabasePersistence $persist The persistence object
+     * @param PicoSpecification|null $specification The specification for filtering
+     * @param PicoPageable|string|null $pageable The pagination information
+     * @param PicoSortable|string|null $sortable The sorting criteria
+     * @param int $findOption The find option
+     * @param array|null $result The result set
+     * @return int The count of matching records
      */
     private function countData($persist, $specification, $pageable, $sortable, $findOption = 0, $result = null)
     {
         if($findOption & self::FIND_OPTION_NO_COUNT_DATA)
         {
-            // If counting is disabled through the $findOption flag, return the count from the provided result set
             if(isset($result) && is_array($result))
             {
-                $match = count($result);  // Count the elements in the result array
+                $match = count($result);
             }
             else
             {
-                $match = 0;  // Return 0 if the result is not available
-            }
-        }
-        // Handle special case for SQLite database
-        else if($this->_database->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE)
-        {
-            if(isset($result) && is_array($result))
-            {
-                $match = count($result);  // Count the result set if it's available
-            }
-            else
-            {
-                // SQLite cannot perform a count without fetching the data first, so we assume at least one match
-                $match = 1; 
+                $match = 0;
             }
         }
         else
         {
-            // For other databases, use the persistence object to count all records matching the criteria
             $match = $persist->countAll($specification, $pageable, $sortable);
         }
-        
-        return $match;  // Return the final count of matching records
+        return $match;
     }
-
 
     /**
      * Find one record based on specifications
@@ -1827,12 +1802,28 @@ class MagicObject extends stdClass // NOSONAR
                 }
                 if($pageable != null && $pageable instanceof PicoPageable)
                 {
-                    $match = $this->countData($persist, $specification, $pageable, $sortable, $findOption, $result);
+
+                    if($this->_database->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE)
+                    {
+                        $match = $pageable->getPage()->getOffset() + $pageable->getPage()->getPageSize() + 1;
+                    }
+                    else
+                    {
+                        $match = $this->countData($persist, $specification, $pageable, $sortable, $findOption, $result);
+                    }
+
                     $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable, $stmt, $this, $subqueryMap);
                 }
                 else
                 {
-                    $match = $this->countData($persist, $specification, $pageable, $sortable, $findOption, $result);
+                    if($this->_database->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE)
+                    {
+                        $match = isset($result) && is_array($result) ? count($result) : 1;
+                    }
+                    else
+                    {
+                        $match = $this->countData($persist, $specification, $pageable, $sortable, $findOption, $result);
+                    }
                     $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, null, $stmt, $this, $subqueryMap);
                 }
                 return $pageData->setFindOption($findOption);
@@ -1917,12 +1908,26 @@ class MagicObject extends stdClass // NOSONAR
                 }
                 if($pageable != null && $pageable instanceof PicoPageable)
                 {
-                    $match = $this->countData($persist, $specification, $pageable, $sortable, $findOption, $result);
+                    if($this->_database->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE)
+                    {
+                        $match = $pageable->getPage()->getOffset() + $pageable->getPage()->getPageSize() + 1;
+                    }
+                    else
+                    {
+                        $match = $this->countData($persist, $specification, $pageable, $sortable, $findOption, $result);
+                    }
                     $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, $pageable, $stmt, $this, $subqueryMap);
                 }
                 else
                 {
-                    $match = $this->countData($persist, $specification, $pageable, $sortable, $findOption, $result);
+                    if($this->_database->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE)
+                    {
+                        $match = isset($result) && is_array($result) ? count($result) : 1;
+                    }
+                    else
+                    {
+                        $match = $this->countData($persist, $specification, $pageable, $sortable, $findOption, $result);
+                    }
                     $pageData = new PicoPageData($this->toArrayObject($result, $passive), $startTime, $match, null, $stmt, $this, $subqueryMap);
                 }
                 return $pageData->setFindOption($findOption);
