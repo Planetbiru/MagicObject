@@ -7,6 +7,23 @@ namespace MagicObject\Database;
  * A query builder for constructing SQL statements programmatically. This class 
  * facilitates the creation of various SQL commands including SELECT, INSERT, 
  * UPDATE, and DELETE, while managing database-specific nuances.
+ * 
+ * **Example:**
+ * ```php
+ * <?php
+ * $id = 100;
+ * $db = new PicoDatabase($credentials);
+ * $db->connect();
+ * $query = new PicoDatabaseQueryBuilder($db);
+ * $query
+ *     ->select("*")
+ *     ->from("client")
+ *     ->where("client_id = ?", $id)
+ * ;
+ * $data = $db->fetch($query);
+ * echo $data['client_id']."\r\n"; // Client ID
+ * echo $data['name']."\r\n"; // Client name 
+ * ```
  *
  * @author Kamshory
  * @package MagicObject\Database
@@ -623,31 +640,33 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	 * Escape special characters in a SQL string.
 	 *
 	 * This method escapes special characters in a SQL query string to prevent SQL 
-	 * injection and ensure proper execution in different database systems. It handles 
-	 * MySQL, MariaDB, and PostgreSQL by applying appropriate escaping techniques. 
-	 * The method replaces newline characters and uses `addslashes` for other special 
-	 * characters in MySQL/MariaDB, while using a specific quote replacement for PostgreSQL.
+	 * injection and ensure proper execution across different database systems. 
+	 * It handles various database types (SQLite, MySQL/MariaDB, and PostgreSQL) 
+	 * by applying database-specific escaping techniques:
+	 * - For MySQL/MariaDB, it uses `addslashes` for special characters and escapes 
+	 *   newline characters.
+	 * - For PostgreSQL and SQLite, it uses a custom quote replacement function and escapes 
+	 *   newline characters.
 	 *
-	 * @param string $query The SQL query string to escape. This should be a 
-	 *                      valid SQL statement that may contain special characters 
-	 *                      needing to be escaped.
-	 * @return string The escaped SQL query. This string can be safely used in 
-	 *                database queries to avoid syntax errors and SQL injection 
+	 * @param string $query The SQL query string to escape. This should be a valid 
+	 *                      SQL statement that may contain special characters 
+	 *                      requiring escaping.
+	 * @return string The escaped SQL query string. This result can be safely used 
+	 *                in database queries to avoid syntax errors and SQL injection 
 	 *                vulnerabilities.
 	 */
 	public function escapeSQL($query)
 	{
-		if (stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_MYSQL) !== false ||
-			stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_MARIADB) !== false ||
-			stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_SQLITE) !== false) {
+		if (stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_MYSQL) !== false 
+			|| stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_MARIADB) !== false) {
 			return str_replace(array("\r", "\n"), array("\\r", "\\n"), addslashes($query));
 		}
-		if (stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_PGSQL) !== false) {
+		if (stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_PGSQL) !== false 
+			|| stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_SQLITE) !== false) {
 			return str_replace(array("\r", "\n"), array("\\r", "\\n"), $this->replaceQuote($query));
 		}
 		return $query;
 	}
-
 	
 	/**
 	 * Escape a value for SQL queries.
@@ -674,7 +693,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 			$result = "'" . $this->escapeSQL($value) . "'";
 		} elseif (is_bool($value)) {
 			// Boolean value
-			$result = $value ? 'TRUE' : 'FALSE';
+			$result = $this->createBoolean($value);
 		} elseif (is_numeric($value)) {
 			// Numeric value
 			$result = (string)$value;
@@ -686,6 +705,24 @@ class PicoDatabaseQueryBuilder // NOSONAR
 			$result = "'" . $this->escapeSQL((string)$value) . "'";
 		}
 		return $result;
+	}
+	
+	/**
+	 * Convert a value to its boolean representation for SQL.
+	 *
+	 * For SQLite, returns '1' for true and '0' for false.
+	 * For other databases, returns 'TRUE' for true and 'FALSE' for false.
+	 *
+	 * @param mixed $value The value to be converted.
+	 * @return string The boolean representation as a string.
+	 */
+	private function createBoolean($value)
+	{
+		if($this->isSqlite())
+		{
+			return $value ? '1' : '0';
+		}
+		return $value ? 'TRUE' : 'FALSE';
 	}
 
 	/**
