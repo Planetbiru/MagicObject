@@ -4,9 +4,6 @@ namespace MagicObject\Database;
 use DateTime;
 use Exception;
 use MagicObject\Exceptions\ClassNotFoundException;
-use PDO;
-use PDOException;
-use PDOStatement;
 use MagicObject\Exceptions\EmptyResultException;
 use MagicObject\Exceptions\EntityException;
 use MagicObject\Exceptions\InvalidAnnotationException;
@@ -21,7 +18,9 @@ use MagicObject\MagicObject;
 use MagicObject\Util\ClassUtil\ExtendedReflectionClass;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\ClassUtil\PicoEmptyParameter;
-use MagicObject\Util\Database\PicoDatabaseUtil;
+use PDO;
+use PDOException;
+use PDOStatement;
 use ReflectionProperty;
 
 /**
@@ -78,6 +77,8 @@ class PicoDatabasePersistence // NOSONAR
 
     const COMMA = ", ";
     const COMMA_RETURN = ", \r\n";
+    const INLINE_TRIM = " \r\n\t ";
+    const ALWAYS_TRUE = "(1=1)";
     
     /**
      * Database connection
@@ -355,7 +356,7 @@ class PicoDatabasePersistence // NOSONAR
         {
             if(strcasecmp($param, self::ANNOTATION_VAR) == 0 && isset($columns[$prop->name]))
             {
-                $type = explode(' ', trim($val, " \r\n\t "))[0];
+                $type = explode(' ', trim($val, self::INLINE_TRIM))[0];
                 $columns[$prop->name][self::KEY_PROPERTY_TYPE] = $type;
             }
             if(strcasecmp($param, self::SQL_DATE_TIME_FORMAT) == 0)
@@ -409,7 +410,7 @@ class PicoDatabasePersistence // NOSONAR
         {
             if(strcasecmp($param, self::ANNOTATION_VAR) == 0 && isset($joinColumns[$prop->name]))
             {
-                $type = explode(' ', trim($val, " \r\n\t "))[0];
+                $type = explode(' ', trim($val, self::INLINE_TRIM))[0];
                 $joinColumns[$prop->name][self::KEY_PROPERTY_TYPE] = $type;
                 $joinColumns[$prop->name][self::KEY_ENTITY_OBJECT] = true;
             }
@@ -1501,7 +1502,7 @@ class PicoDatabasePersistence // NOSONAR
     {
         $masterColumnMaps = $this->getColumnMap($info);   
         $arr = array();
-        $arr[] = "(1=1)";
+        $arr[] = self::ALWAYS_TRUE;
         if($specification != null && !$specification->isEmpty())
         {
             $specifications = $specification->getSpecifications();
@@ -1697,7 +1698,23 @@ class PicoDatabasePersistence // NOSONAR
      */
     private function trimWhere($where)
     {
-        return PicoDatabaseUtil::trimWhere($where);
+        $where = trim($where, self::INLINE_TRIM);
+        if($where != self::ALWAYS_TRUE)
+        {
+            if(stripos($where, self::ALWAYS_TRUE) === 0)
+            {
+                $where = trim(substr($where, 5), self::INLINE_TRIM);
+            }
+            if(stripos($where, "and ") === 0)
+            {
+                $where = substr($where, 4);
+            }
+            if(stripos($where, "or ") === 0)
+            {
+                $where = substr($where, 3);
+            }
+        }
+        return $where;
     }
 
     /**
