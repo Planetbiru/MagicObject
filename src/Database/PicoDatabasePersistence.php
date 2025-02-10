@@ -58,6 +58,7 @@ class PicoDatabasePersistence // NOSONAR
     const KEY_GENERATOR = "generator";
     const KEY_PROPERTY_TYPE = "propertyType";
     const KEY_VALUE = "value";
+    const KEY_TYPE = "type";
     const KEY_ENABLE = "enable";
     const KEY_ENTITY_OBJECT = "entityObject";
     
@@ -3211,6 +3212,8 @@ class PicoDatabasePersistence // NOSONAR
         {
             $columnName = $column[self::KEY_NAME];
             $value = $data[$columnName];
+            $value = $this->fixTimeZone($value, $column, $this->timeZoneSystem, $this->timeZone);
+            
             if(isset($typeMap[$columnName]))
             {
                 $result[$prop] = $this->fixData($value, $typeMap[$columnName]);
@@ -3392,6 +3395,7 @@ class PicoDatabasePersistence // NOSONAR
     {
         if(isset($column[self::KEY_PROPERTY_TYPE]) 
         && stripos($column[self::KEY_PROPERTY_TYPE], "timestamp") !== false 
+        && $timeZoneFrom != $timeZoneTo
         && $this->database->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE)
         {
             return PicoTimeZoneChanger::changeTimeZone($value, $timeZoneFrom, $timeZoneTo);
@@ -3449,7 +3453,7 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Selects records from the database based on the defined criteria.
+     * Selects record from the database based on the defined criteria.
      *
      * This method builds a query to retrieve records from the database using the
      * current table information, filters, specifications, and pagination settings.
