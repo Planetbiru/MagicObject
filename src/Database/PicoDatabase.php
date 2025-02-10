@@ -2,6 +2,8 @@
 
 namespace MagicObject\Database;
 
+use DateTime;
+use DateTimeZone;
 use Exception;
 use PDO;
 use PDOException;
@@ -645,11 +647,58 @@ class PicoDatabase // NOSONAR
         }
         else if($this->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_MARIADB || $this->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_MYSQL)
         {
-            $sql = "SET time_zone='$timeZoneOffset';";
+            $sql = "SET time_zone='$timeZoneOffset'";
             $this->execute($sql);
         }
         
         return $this;
+    }
+    
+    /**
+     * Set the time zone offset for the database session.
+     *
+     * This method sets the time zone offset for the current database session. This is useful for ensuring that 
+     * any time-related operations (such as querying and storing timestamps) are adjusted to the correct time zone.
+     * The method generates the appropriate SQL command based on the type of the database (e.g., PostgreSQL, MySQL, etc.)
+     * and executes it to apply the time zone setting.
+     *
+     * @param string $timeZoneOffset The time zone offset to set for the session. It can either be a valid UTC offset (e.g., '+00:00')
+     *                               or a named time zone (e.g., 'Europe/London').
+     * @return self Returns the current instance for method chaining.
+     */
+    public function setTimeZone($timezone)
+    {
+        return $this->setTimeZoneOffset(self::getTimeZoneOffsetFromString($timezone));
+    }
+    
+    /**
+     * Converts a timezone name (e.g., 'Asia/Jakarta') to its corresponding UTC offset (e.g., '+07:00' or '-03:00').
+     *
+     * This function will return the timezone offset without affecting the current PHP runtime timezone.
+     *
+     * @param string $timezone The name of the timezone, e.g., 'Asia/Jakarta'.
+     * @return string The UTC offset corresponding to the provided timezone, e.g., '+07:00' or '-03:00'.
+     */
+    public static function getTimeZoneOffsetFromString($timezone)
+    {
+        // Create a DateTimeZone object for the provided timezone
+        $zone = new DateTimeZone($timezone);
+        
+        // Get the current time in the given timezone
+        $now = new DateTime("now", $zone);
+        
+        // Get the offset in seconds from UTC
+        $offsetInSeconds = $zone->getOffset($now);
+
+        // Calculate hours and minutes from the offset in seconds
+        $hours = floor($offsetInSeconds / 3600);
+        $minutes = abs(floor(($offsetInSeconds % 3600) / 60));
+
+        // Format the offset to be positive or negative
+        $sign = $hours < 0 ? '-' : '+';
+
+        // Return the offset as a string in the format (+hh:mm or -hh:mm)
+        return $sign . str_pad(abs($hours), 2, '0', STR_PAD_LEFT) . ':' . str_pad($minutes, 2, '0', STR_PAD_LEFT);
     }
 
     /**
