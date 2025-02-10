@@ -14,6 +14,7 @@ namespace MagicObject\Database;
  * - MariaDB
  * - PostgreSQL
  * - SQLite
+ * - SQL Server
  *
  * @package MagicObject\Database
  * @author Kamshory

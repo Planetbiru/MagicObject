@@ -412,6 +412,10 @@ class PicoDatabase // NOSONAR
             else if ($this->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_MARIADB || $this->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_MYSQL) {
                 $this->connectMySql($connectionString, $timeZoneOffset, $charset);
             }
+            // Handle SQL Server-specific connection settings
+            else if ($this->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLSERVER) {
+                $this->connectSqlServer($connectionString);
+            }
             // If the database type is neither MySQL nor PostgreSQL, throw an exception
             else {
                 throw new PDOException("Unsupported database type: " . $this->getDatabaseType());
@@ -525,13 +529,53 @@ class PicoDatabase // NOSONAR
     }
     
     /**
+     * Establish a connection to a SQL Server database.
+     *
+     * This method sets up a connection to a SQL Server database and then establishes a PDO connection to the database.
+     *
+     * @param string $connectionString The connection string used to connect to the SQL Server database.
+     *
+     * @return void
+     *
+     * @throws PDOException If there is an error while establishing the connection or executing the initial queries.
+     */
+    private function connectSqlServer($connectionString)
+    {
+        $initialQueries = array();
+
+        // SQL Server connection setup
+        $this->databaseConnection = new PDO(
+            $connectionString,
+            $this->databaseCredentials->getUsername(),
+            $this->databaseCredentials->getPassword(),
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            ]
+        );
+
+        // Execute the initial queries (timezone, charset) in SQL Server
+        if (!empty($initialQueries)) {
+            foreach ($initialQueries as $initialQuery) {
+                $this->databaseConnection->exec($initialQuery);
+            }
+        }
+    }
+
+    
+    /**
      * Determine the database type from a string.
      *
-     * This method evaluates the provided string to identify common database types (e.g., SQLite, PostgreSQL, MariaDB, MySQL) 
-     * and returns the corresponding constant from the `PicoDatabaseType` class.
+     * This method evaluates the provided string to identify common database types such as SQLite, PostgreSQL, 
+     * MariaDB, MySQL, and SQL Server. It returns the corresponding constant from the `PicoDatabaseType` class.
+     * If the provided database type is not supported, it throws an `UnsupportedDatabaseException`.
      *
-     * @param string $databaseType The database type string (e.g., 'SQLite', 'PostgreSQL', 'MariaDB', 'MySQL').
-     * @return string The corresponding `PicoDatabaseType` constant.
+     * @param string $databaseType The database type string (e.g., 'SQLite', 'PostgreSQL', 'MariaDB', 'MySQL', 'SQLServer').
+     * @return string The corresponding `PicoDatabaseType` constant, one of:
+     *                - `PicoDatabaseType::DATABASE_TYPE_SQLITE`
+     *                - `PicoDatabaseType::DATABASE_TYPE_PGSQL`
+     *                - `PicoDatabaseType::DATABASE_TYPE_MARIADB`
+     *                - `PicoDatabaseType::DATABASE_TYPE_SQLSERVER`
+     *                - `PicoDatabaseType::DATABASE_TYPE_MYSQL`
      * @throws UnsupportedDatabaseException If the database type is unsupported.
      */
     private static function getDbType($databaseType) // NOSONAR
@@ -552,6 +596,10 @@ class PicoDatabase // NOSONAR
         {
             return PicoDatabaseType::DATABASE_TYPE_MYSQL;
         }
+        else if(stripos($databaseType, 'sqlsrv') !== false)
+        {
+            return PicoDatabaseType::DATABASE_TYPE_SQLSERVER;
+        }
         else
         {
             throw new UnsupportedDatabaseException("Unsupported database type: $databaseType");
@@ -563,21 +611,24 @@ class PicoDatabase // NOSONAR
      *
      * This function takes a string representing the database type and returns 
      * the corresponding database driver constant from the `PicoDatabaseType` class.
-     * It supports SQLite, PostgreSQL, and MySQL/MariaDB types.
+     * It supports SQLite, PostgreSQL, MySQL/MariaDB, and SQL Server types.
      *
-     * @param string $databaseType The type of the database (e.g., 'sqlite', 'postgres', 'pgsql', 'mysql', 'mariadb').
+     * @param string $databaseType The type of the database (e.g., 'sqlite', 'postgres', 'pgsql', 'mysql', 'mariadb', 'sqlsrv').
      * 
      * @return string The corresponding database driver constant, one of:
-     *                - `sqlite`
-     *                - `pgsql`
-     *                - `mysql`
+     *                - `PicoDatabaseType::DATABASE_TYPE_SQLITE`
+     *                - `PicoDatabaseType::DATABASE_TYPE_PGSQL`
+     *                - `PicoDatabaseType::DATABASE_TYPE_MYSQL`
+     *                - `PicoDatabaseType::DATABASE_TYPE_SQLSERVER`
      */
-    private function getDbDriver($databaseType)
+    private function getDbDriver($databaseType) // NOSONAR
     {
         if (stripos($databaseType, 'sqlite') !== false) {
             return PicoDatabaseType::DATABASE_TYPE_SQLITE;
         } else if (stripos($databaseType, 'postgre') !== false || stripos($databaseType, 'pgsql') !== false) {
             return PicoDatabaseType::DATABASE_TYPE_PGSQL;
+        } else if (stripos($databaseType, 'sqlsrv') !== false) {
+            return PicoDatabaseType::DATABASE_TYPE_SQLSERVER;
         } else {
             return PicoDatabaseType::DATABASE_TYPE_MYSQL;
         }
