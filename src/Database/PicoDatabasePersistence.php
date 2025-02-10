@@ -3343,19 +3343,22 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Fixes the input value based on its type.
+     * Fixes the input value based on its type and applies timezone adjustments if necessary.
      *
-     * If the input value is an instance of DateTime, it formats the date according
-     * to the specified column format. Otherwise, it returns the original value.
+     * If the input value is an instance of DateTime, it adjusts the timezone and formats the date 
+     * according to the specified column format. If the input value is not a DateTime, it simply 
+     * adjusts the timezone without formatting the value. If a date format is specified in the column, 
+     * it will format the DateTime accordingly.
      *
-     * @param mixed $value The input value to fix.
-     * @param array $column The column information containing potential date format.
-     * @return mixed The formatted date string or the original value.
+     * @param mixed $value The input value to fix, which can be a DateTime object, string, or other types.
+     * @param array $column The column information containing potential date format and type.
+     * @return mixed The formatted date string if the input is a DateTime, or the original value after timezone adjustment.
      */
     private function fixInput($value, $column)
     {
         if($value instanceof DateTime)
         {
+            $value = $this->fixTimeZone($value, $column, $this->timeZone, $this->timeZoneSystem);
             if(isset($column[self::DATE_TIME_FORMAT]))
             {
                 return (string) $value->format($column[self::DATE_TIME_FORMAT]);
@@ -3365,9 +3368,33 @@ class PicoDatabasePersistence // NOSONAR
                 return (string) $value->format(self::SQL_DATETIME_FORMAT);
             }
         }
-        if(isset($column[self::KEY_PROPERTY_TYPE]) && stripos($column[self::KEY_PROPERTY_TYPE], "timestamp") !== false)
+        else
         {
-            $value = PicoTimeZoneChanger::changeTimeZoneBeforeSave($value, $this->database);
+            $value = $this->fixTimeZone($value, $column, $this->timeZone, $this->timeZoneSystem);
+            return $value;
+        }
+    }
+
+    /**
+     * Adjusts the input value from the source timezone to the target timezone if necessary.
+     *
+     * This method checks if the column type is related to a timestamp and the database is SQLite.
+     * If so, it adjusts the input value (which can be a DateTime object, string, or Unix timestamp)
+     * from the source timezone to the target timezone. Otherwise, it returns the original value.
+     *
+     * @param mixed $value The value to be adjusted. Can be a DateTime, string, or Unix timestamp.
+     * @param array $column The column information containing potential date format and type.
+     * @param string|DateTimeZone $timeZoneFrom The source timezone (either a string or DateTimeZone object).
+     * @param string|DateTimeZone $timeZoneTo The target timezone (either a string or DateTimeZone object).
+     * @return mixed The adjusted value, either a formatted DateTime or the original value if no adjustment is necessary.
+     */
+    private function fixTimeZone($value, $column, $timeZoneFrom, $timeZoneTo)
+    {
+        if(isset($column[self::KEY_PROPERTY_TYPE]) 
+        && stripos($column[self::KEY_PROPERTY_TYPE], "timestamp") !== false 
+        && $this->database->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE)
+        {
+            return PicoTimeZoneChanger::changeTimeZone($value, $timeZoneFrom, $timeZoneTo);
         }
         return $value;
     }
