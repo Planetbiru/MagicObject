@@ -19,6 +19,7 @@ use MagicObject\Util\ClassUtil\ExtendedReflectionClass;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\ClassUtil\PicoEmptyParameter;
 use MagicObject\Util\Database\PicoDatabaseUtil;
+use MagicObject\Util\Database\PicoTimeZoneChanger;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -3363,6 +3364,10 @@ class PicoDatabasePersistence // NOSONAR
             {
                 return (string) $value->format(self::SQL_DATETIME_FORMAT);
             }
+        }
+        if(isset($column[self::KEY_PROPERTY_TYPE]) && stripos($column[self::KEY_PROPERTY_TYPE], "timestamp") !== false)
+        {
+            $value = PicoTimeZoneChanger::changeTimeZoneBeforeSave($value, $this->database);
         }
         return $value;
     }
