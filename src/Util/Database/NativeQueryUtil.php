@@ -14,6 +14,7 @@ use MagicObject\Exceptions\InvalidReturnTypeException;
 use MagicObject\MagicObject;
 use PDO;
 use PDOStatement;
+use ReflectionParameter;
 use stdClass;
 
 /**
