@@ -642,29 +642,68 @@ class PicoDatabase // NOSONAR
      * @return string The constructed connection string.
      * @throws InvalidDatabaseConfiguration If database configuration is invalid.
      */
-    private function constructConnectionString($withDatabase = true)
+    private function constructConnectionString($withDatabase = true) // NOSONAR
     {
         $emptyDriver = !$this->databaseCredentials->issetDriver();
         $emptyHost = !$this->databaseCredentials->issetHost();
         $emptyPort = !$this->databaseCredentials->issetPort();
         $emptyName = !$this->databaseCredentials->issetDatabaseName();
         $emptyValue = "";
+
+        // Append missing components to the emptyValue string
         $emptyValue .= $emptyDriver ? "{driver}" : "";
         $emptyValue .= $emptyHost ? "{host}" : "";
         $emptyValue .= $emptyPort ? "{port}" : "";
-        $invalidParam1 = $emptyDriver || $emptyHost || $emptyPort;
+
+        // Check if there are missing components
+        $invalidParam1 = $emptyDriver || $emptyHost || ($emptyPort && stripos($this->databaseCredentials->getDriver(), "sqlsrv") === false);
 
         if ($withDatabase) {
+            // If database is required and there are invalid parameters or missing database name, throw an exception
             if ($invalidParam1 || $emptyName) {
                 $emptyValue .= $emptyName ? "{database_name}" : "";
                 throw new InvalidDatabaseConfiguration("Invalid database configuration. $emptyValue. Please check your database configuration!");
             }
-            return $this->getDbDriver($this->databaseCredentials->getDriver()) . ':host=' . $this->databaseCredentials->getHost() . ';port=' . ((int) $this->databaseCredentials->getPort()) . ';dbname=' . $this->databaseCredentials->getDatabaseName();
+
+            // Construct connection string for a database with database name
+            if (stripos($this->databaseCredentials->getDriver(), "sqlsrv") !== false) {
+                return sprintf(
+                    '%s:Server=%s',
+                    $this->getDbDriver($this->databaseCredentials->getDriver()),
+                    $this->databaseCredentials->getHost()
+                );
+            } 
+            else
+            {
+                return sprintf(
+                    '%s:host=%s;port=%d;Database=%s',
+                    $this->getDbDriver($this->databaseCredentials->getDriver()),
+                    $this->databaseCredentials->getHost(),
+                    (int) $this->databaseCredentials->getPort(),
+                    $this->databaseCredentials->getDatabaseName()
+                );
+            }
         } else {
+            // If database is not required but parameters are missing, throw an exception
             if ($invalidParam1) {
                 throw new InvalidDatabaseConfiguration("Invalid database configuration. $emptyValue. Please check your database configuration!");
             }
-            return $this->getDbDriver($this->databaseCredentials->getDriver()) . ':host=' . $this->databaseCredentials->getHost() . ';port=' . ((int) $this->databaseCredentials->getPort());
+
+            // Construct connection string without database name
+            if (stripos($this->databaseCredentials->getDriver(), "sqlsrv") !== false) {
+                return sprintf(
+                    '%s:Server=%s',
+                    $this->getDbDriver($this->databaseCredentials->getDriver()),
+                    $this->databaseCredentials->getHost()
+                );
+            } else {
+                return sprintf(
+                    '%s:host=%s;port=%d',
+                    $this->getDbDriver($this->databaseCredentials->getDriver()),
+                    $this->databaseCredentials->getHost(),
+                    (int) $this->databaseCredentials->getPort()
+                );
+            }
         }
     }
 
