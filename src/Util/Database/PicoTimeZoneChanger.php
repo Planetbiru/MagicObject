@@ -5,6 +5,7 @@ namespace MagicObject\Util\Database;
 use DateTime;
 use DateTimeZone;
 use MagicObject\Database\PicoDatabase;
+use MagicObject\Database\PicoDatabaseType;
 
 class PicoTimeZoneChanger
 {
@@ -89,7 +90,7 @@ class PicoTimeZoneChanger
         $timeZoneTo = $databaseConfig->getTimeZoneSystem();
 
         // Check if the driver is SQL Server (sqlsrv) or SQLite (sqlite) and if the timezones are different
-        if ((stripos($driver, "sqlsrv") !== false || stripos($driver, "sqlite") !== false) 
+        if ((stripos($driver, PicoDatabaseType::DATABASE_TYPE_SQLSERVER) !== false || stripos($driver, PicoDatabaseType::DATABASE_TYPE_SQLITE) !== false) 
             && isset($timeZoneTo) && !empty($timeZoneTo) 
             && $timeZoneTo != $timeZoneFrom) {
             // If the conditions are met, change the timezone of the datetime value
@@ -125,7 +126,7 @@ class PicoTimeZoneChanger
         $timeZoneTo = $databaseConfig->getTimeZoneSystem();
 
         // Check if the driver is SQL Server (sqlsrv) or SQLite (sqlite) and if the timezones are different
-        if ((stripos($driver, "sqlsrv") !== false || stripos($driver, "sqlite") !== false) 
+        if ((stripos($driver, PicoDatabaseType::DATABASE_TYPE_SQLSERVER) !== false || stripos($driver, PicoDatabaseType::DATABASE_TYPE_SQLITE) !== false) 
             && isset($timeZoneTo) && !empty($timeZoneTo) 
             && $timeZoneTo != $timeZoneFrom) {
             // If the conditions are met, reverse the timezone conversion of the datetime value
