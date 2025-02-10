@@ -211,6 +211,40 @@ class PicoDatabasePersistence // NOSONAR
      * @var array
      */
     private $joinCache = array();
+    
+    /**
+     * The timezone offset for the current session, in the format '+hh:mm' or '-hh:mm'.
+     * This offset represents the time difference between the current session's timezone and UTC.
+     *
+     * @var string
+     */
+    private $timeZoneOffset;
+
+    /**
+     * The system's timezone offset, representing the offset used by the system's configuration, 
+     * in the format '+hh:mm' or '-hh:mm'.
+     * This offset is typically used when interacting with the system's time settings.
+     *
+     * @var string
+     */
+    private $timeZoneOffsetSystem;
+
+    /**
+     * The timezone identifier for the current session, e.g., 'Asia/Jakarta'.
+     * This timezone is used for time-related operations within the session.
+     *
+     * @var string
+     */
+    private $timeZone;
+
+    /**
+     * The system's timezone identifier, representing the timezone used by the system, 
+     * e.g., 'Europe/London'.
+     * This timezone is typically used for system-level time settings.
+     *
+     * @var string
+     */
+    private $timeZoneSystem;
 
     /**
      * Class constructor to initialize database connection and entity object.
@@ -223,6 +257,18 @@ class PicoDatabasePersistence // NOSONAR
         $this->database = $database;
         $this->className = get_class($object);
         $this->object = $object;
+        
+        $currentTimeZone = date_default_timezone_get();
+        $databaseConfig = $this->database->getDatabaseCredentials();
+        $timeZoneSystem = $databaseConfig->getTimeZoneSystem();
+        if(!isset($timeZoneSystem))
+        {
+            $timeZoneSystem = $currentTimeZone;
+        }
+        $this->timeZone = $currentTimeZone;
+        $this->timeZoneSystem = $timeZoneSystem;
+        $this->timeZoneOffset = PicoDatabase::getTimeZoneOffsetFromString($currentTimeZone);
+        $this->timeZoneOffsetSystem = PicoDatabase::getTimeZoneOffsetFromString($timeZoneSystem);
     }
     
     /**
@@ -3851,4 +3897,121 @@ class PicoDatabasePersistence // NOSONAR
     {
         return isset($input) && !empty($input);
     }
+
+    /**
+     * Get the timezone offset for the current session, represented in the format '+hh:mm' or '-hh:mm'.
+     *
+     * @return  string
+     */ 
+    public function getTimeZoneOffset()
+    {
+        return $this->timeZoneOffset;
+    }
+
+    /**
+     * Set the timezone offset for the current session, represented in the format '+hh:mm' or '-hh:mm'.
+     *
+     * @param  string  $timeZoneOffset  The timezone offset for the current session, represented in the format '+hh:mm' or '-hh:mm'.
+     *
+     * @return  self
+     */ 
+    public function setTimeZoneOffset($timeZoneOffset)
+    {
+        $this->timeZoneOffset = $timeZoneOffset;
+
+        return $this;
+    }
+
+    /**
+     * Get the system's timezone offset in the format '+hh:mm' or '-hh:mm'.
+     *
+     * This method returns the system's timezone offset, which is stored as a string in the format 
+     * of hours and minutes (e.g., '+07:00', '-03:00').
+     *
+     * @return string The system's timezone offset.
+     */
+    public function getTimeZoneOffsetSystem()
+    {
+        return $this->timeZoneOffsetSystem;
+    }
+
+    /**
+     * Set the system's timezone offset in the format '+hh:mm' or '-hh:mm'.
+     *
+     * This method sets the system's timezone offset, which should be provided as a string 
+     * in the format of hours and minutes (e.g., '+07:00', '-03:00').
+     *
+     * @param string $timeZoneOffsetSystem The timezone offset to set for the system.
+     *                                    Must be in the format '+hh:mm' or '-hh:mm'.
+     *
+     * @return self Returns the current instance for method chaining.
+     */
+    public function setTimeZoneOffsetSystem($timeZoneOffsetSystem)
+    {
+        $this->timeZoneOffsetSystem = $timeZoneOffsetSystem;
+
+        return $this;
+    }
+
+
+    /**
+     * Get the timezone used for time-related operations within the session.
+     *
+     * This method returns the timezone identifier (e.g., 'Asia/Jakarta') that is set for the current session 
+     * and is used for all time-related operations.
+     *
+     * @return string The timezone identifier for the current session (e.g., 'Asia/Jakarta').
+     */
+    public function getTimeZone()
+    {
+        return $this->timeZone;
+    }
+
+    /**
+     * Set the timezone used for time-related operations within the session.
+     *
+     * This method sets the timezone identifier (e.g., 'Asia/Jakarta') to be used for all time-related operations 
+     * in the current session.
+     *
+     * @param string $timeZone The timezone identifier to be used for time-related operations (e.g., 'Asia/Jakarta').
+     *
+     * @return self Returns the current instance for method chaining.
+     */
+    public function setTimeZone($timeZone)
+    {
+        $this->timeZone = $timeZone;
+
+        return $this;
+    }
+
+    /**
+     * Get the timezone typically used for system-level time settings.
+     *
+     * This method returns the system's timezone identifier (e.g., 'Europe/London') which is generally used for 
+     * system-level time settings and configurations.
+     *
+     * @return string The system's timezone identifier (e.g., 'Europe/London').
+     */
+    public function getTimeZoneSystem()
+    {
+        return $this->timeZoneSystem;
+    }
+
+    /**
+     * Set the timezone typically used for system-level time settings.
+     *
+     * This method sets the system's timezone identifier (e.g., 'Europe/London') that is typically used for system 
+     * configurations and time settings.
+     *
+     * @param string $timeZoneSystem The timezone identifier to be used for system-level time settings (e.g., 'Europe/London').
+     *
+     * @return self Returns the current instance for method chaining.
+     */
+    public function setTimeZoneSystem($timeZoneSystem)
+    {
+        $this->timeZoneSystem = $timeZoneSystem;
+
+        return $this;
+    }
+
 }
