@@ -9,14 +9,15 @@ use MagicObject\Database\PicoDatabase;
 class PicoTimeZoneChanger
 {
     /**
-     * Changes the time from the source timezone to the target timezone
+     * Changes the time from the source timezone to the target timezone, 
+     * only if the timezones are different.
      *
-     * @param string|DateTime|int $datetime The time in string format, DateTime object, or Unix timestamp (integer)
-     * @param string|DateTimeZone $from The source timezone (string or DateTimeZone object)
-     * @param string|DateTimeZone $to The target timezone (string or DateTimeZone object)
-     * @return string|DateTime|int The time adjusted to the target timezone, in the same format as the input
+     * @param string|DateTime|int $datetime The time in string format, DateTime object, or Unix timestamp (integer).
+     * @param string|DateTimeZone $from The source timezone (string or DateTimeZone object).
+     * @param string|DateTimeZone $to The target timezone (string or DateTimeZone object).
+     * @return string|DateTime|int The time adjusted to the target timezone, in the same format as the input.
      */
-    public static function changeTimeZone($datetime, $from, $to)
+    public static function changeTimeZone($datetime, $from, $to) // NOSONAR
     {
         // If $from is a string or offset, convert it to DateTimeZone object
         if (is_string($from) || $from instanceof DateTimeZone === false) {
@@ -26,6 +27,12 @@ class PicoTimeZoneChanger
         // If $to is a string or offset, convert it to DateTimeZone object
         if (is_string($to) || $to instanceof DateTimeZone === false) {
             $to = new DateTimeZone($to);
+        }
+
+        // Check if the source and target timezones are the same
+        if ($from->getName() === $to->getName()) {
+            // If the timezones are the same, return the original value without conversion
+            return $datetime;
         }
 
         // If $datetime is a string, convert it to a DateTime object
@@ -56,6 +63,7 @@ class PicoTimeZoneChanger
             throw new \InvalidArgumentException('The $datetime parameter must be a string, DateTime object, or Unix timestamp (integer)');
         }
     }
+
     
     /**
      * Adjusts the given time according to the timezone settings from the database configuration.
