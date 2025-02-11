@@ -293,7 +293,6 @@ class PicoDatabase // NOSONAR
 
             return $timeZone;
         } catch (Exception $e) {
-            // Handle any exceptions by returning an error message
             return "UTC+00:00";
         }
     }
@@ -463,10 +462,10 @@ class PicoDatabase // NOSONAR
             $connectionString,
             $this->databaseCredentials->getUsername(),
             $this->databaseCredentials->getPassword(),
-            [
+            array(
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::MYSQL_ATTR_FOUND_ROWS => true
-            ]
+            )
         );
 
         if (!empty($initialQueries)) {
@@ -514,9 +513,9 @@ class PicoDatabase // NOSONAR
             $connectionString,
             $this->databaseCredentials->getUsername(),
             $this->databaseCredentials->getPassword(),
-            [
+            array(
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-            ]
+            )
         );
 
         // Execute the initial queries (timezone, charset, schema) in PostgreSQL
@@ -548,9 +547,9 @@ class PicoDatabase // NOSONAR
             $connectionString,
             $this->databaseCredentials->getUsername(),
             $this->databaseCredentials->getPassword(),
-            [
+            array(
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-            ]
+            )
         );
 
         // Execute the initial queries (timezone, charset) in SQL Server
