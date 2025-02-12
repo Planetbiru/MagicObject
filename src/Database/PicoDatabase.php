@@ -675,7 +675,7 @@ class PicoDatabase // NOSONAR
             else
             {
                 return sprintf(
-                    '%s:host=%s;port=%d;Database=%s',
+                    '%s:host=%s;port=%d;dbname=%s',
                     $this->getDbDriver($this->databaseCredentials->getDriver()),
                     $this->databaseCredentials->getHost(),
                     (int) $this->databaseCredentials->getPort(),
