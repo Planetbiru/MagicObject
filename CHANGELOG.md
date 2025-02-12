@@ -172,3 +172,4 @@ These methods are designed to work seamlessly with an active database connection
 
 4.  **Yaml Parser and Dumper**
     MagicObject version 3.0 no longer depends on external libraries. The Yaml parsing and dumping functions are now fully handled by a class that is part of MagicObject itself, reducing its overall complexity.
+    

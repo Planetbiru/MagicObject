@@ -4,7 +4,6 @@ namespace MagicObject\Util;
 
 use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
-use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\InvalidTypeException;
     
 /**
