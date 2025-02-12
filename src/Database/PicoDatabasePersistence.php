@@ -259,10 +259,13 @@ class PicoDatabasePersistence // NOSONAR
         $this->database = $database;
         $this->className = get_class($object);
         $this->object = $object;
-        
+        $timeZoneSystem = null;
         $currentTimeZone = date_default_timezone_get();
-        $databaseConfig = $this->database->getDatabaseCredentials();
-        $timeZoneSystem = $databaseConfig->getTimeZoneSystem();
+        if(isset($database))
+        {
+            $databaseConfig = $this->database->getDatabaseCredentials();
+            $timeZoneSystem = $databaseConfig->getTimeZoneSystem();
+        }
         if(!isset($timeZoneSystem))
         {
             $timeZoneSystem = $currentTimeZone;
