@@ -164,14 +164,14 @@ class PicoDatabaseUtilSqlServer extends PicoDatabaseUtilBase implements PicoData
         $col[] = "[" . $columnName . "]";  // Enclose column name in square brackets
         $col[] = strtoupper($columnType);  // Add the column type (e.g., INT, VARCHAR)
 
-        // Check if the column is part of primary keys
-        if (in_array($columnName, $pkCols)) {
-            $col[] = 'PRIMARY KEY';
-        }
-
         // Check if the column should auto-increment
         if (isset($autoIncrementKeys) && is_array($autoIncrementKeys) && in_array($column[MagicObject::KEY_NAME], $autoIncrementKeys)) {
             $col[] = 'IDENTITY(1,1)';
+        }
+
+        // Check if the column is part of primary keys
+        if (in_array($columnName, $pkCols)) {
+            $col[] = 'PRIMARY KEY';
         }
 
         // Determine if the column allows NULL values
