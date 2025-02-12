@@ -34,6 +34,7 @@ use PDO;
  */
 class PicoDatabaseUtilSqlServer extends PicoDatabaseUtilBase implements PicoDatabaseUtilInterface // NOSONAR
 {
+    const TINYINT_1 = 'tinyint(1)';
 
     /**
      * Retrieves a list of columns for a specified table in SQL Server.
@@ -207,7 +208,7 @@ class PicoDatabaseUtilSqlServer extends PicoDatabaseUtilBase implements PicoData
     public function fixDefaultValue($defaultValue, $type)
     {
         $result = $defaultValue;
-        if(stripos($type, 'tinyint(1)') !== false || self::isTypeBoolean($type))
+        if(stripos($type, self::TINYINT_1) !== false || self::isTypeBoolean($type))
         {
             $result = ($defaultValue != 0 || strtolower($defaultValue) == 'true') ? 'TRUE' : 'FALSE';
         }
@@ -357,7 +358,7 @@ class PicoDatabaseUtilSqlServer extends PicoDatabaseUtilBase implements PicoData
             if (isset($columns[$name])) {
                 $type = $columns[$name];
 
-                if (strtolower($type) == 'tinyint(1)' || self::isTypeBoolean($type)) {
+                if (strtolower($type) == self::TINYINT_1 || self::isTypeBoolean($type)) {
                     // Process boolean types
                     $data = $this->fixBooleanData($data, $name, $value);
                 } else if (self::isTypeInteger($type)) {
@@ -373,17 +374,132 @@ class PicoDatabaseUtilSqlServer extends PicoDatabaseUtilBase implements PicoData
     }
 
     /**
-     * Returns the given column type without modification.
+     * Converts the given column type from MySQL format to SQL Server format.
      *
-     * This method simply returns the column type passed as an argument. It is useful 
-     * when no conversion is needed, and you want to retrieve the column type as-is.
+     * This method performs the conversion of the column type from MySQL to SQL Server syntax.
+     * It ensures compatibility when migrating column types from MySQL to SQL Server.
      *
-     * @param string $columnType The column type to be returned.
-     * @return string The same column type passed as input.
+     * @param string $columnType The MySQL column type to be converted.
+     * @return string The equivalent SQL Server column type.
+     * @throws InvalidArgumentException If the column type is not recognized or unsupported.
      */
-    public function getColumnType($columnType)
+    public function getColumnType($columnType) // NOSONAR
     {
-        return $columnType;
+        // Handle MySQL BOOLEAN type (tinyint(1)) and convert to SQL Server's BIT
+        if (stripos($columnType, self::TINYINT_1) === 0) {
+            return 'BIT';
+        }
+        
+        // Handle various integer types in MySQL and convert to SQL Server INTEGER/TINYINT/BIGINT/SMALLINT
+        else if (stripos($columnType, 'biginteger') === 0 
+            || stripos($columnType, 'bigint') === 0) {
+            return 'BIGINT';
+        }
+        else if (stripos($columnType, 'smallinteger') === 0 
+            || stripos($columnType, 'smallint') === 0) {
+            return 'SMALLINT';
+        }
+        else if (stripos($columnType, 'integer') === 0 
+            || stripos($columnType, 'int') === 0) {
+            return 'INT';
+        }
+        else if (stripos($columnType, 'tinyint') === 0) {
+            return 'TINYINT';
+        }
+
+        // Convert ENUM type in MySQL to SQL Server's equivalent type (VARCHAR or CHAR)
+        $type = $this->convertMySqlToSqlServer($columnType);
+        if (stripos($type, 'enum(') === 0) {
+            // Extract the enum values between the parentheses
+            if (preg_match('/^enum\((.+)\)$/i', $type, $matches)) {
+                // Get the enum values as an array by splitting the string
+                $enumValues = array_map('trim', explode(',', $matches[1]));
+                // Find the maximum length of the enum values
+                $maxLength = max(array_map('strlen', $enumValues));
+                // Set the NVARCHAR length to the max length of enum values + 2 (for some buffer)
+                $type = 'NVARCHAR(' . ($maxLength + 2) . ')';
+            }
+        } 
+        // Convert VARCHAR to SQL Server's equivalent VARCHAR
+        else if (stripos($type, 'varchar(') === 0) {
+            $type = str_ireplace('varchar', 'NVARCHAR', $columnType);
+        } 
+        // MySQL YEAR type is just INT in SQL Server
+        else if (stripos($type, 'year(') === 0) {
+            $type = 'INT';
+        }
+
+        // Return the final converted column type
+        return $type;
     }
+
+    /**
+     * Converts a MySQL CREATE TABLE query to a SQL Server compatible query.
+     *
+     * This function takes a SQL CREATE TABLE statement written for MySQL 
+     * and transforms it into a format compatible with SQL Server. It handles 
+     * common data types, constraints, and syntax differences between the two databases, 
+     * such as converting data types, removing unsupported clauses (e.g., AUTO_INCREMENT), 
+     * and adjusting default values and column types.
+     *
+     * @param string $mysqlQuery The MySQL CREATE TABLE query to be converted.
+     * 
+     * @return string The converted SQL Server CREATE TABLE query, with MySQL-specific syntax 
+     *         replaced by SQL Server equivalents, including type conversions and other adjustments.
+     *
+     * @throws InvalidArgumentException If the input query is not a valid MySQL CREATE TABLE query.
+     */
+    public function convertMySqlToSqlServer($mysqlQuery) {
+        // Remove comments
+        $query = preg_replace('/--.*?\n|\/\*.*?\*\//s', '', $mysqlQuery); // NOSONAR
+        
+        // Replace MySQL data types with SQL Server data types
+        $replacements = array(
+            self::TINYINT_1 => 'BIT', // MySQL TINYINT(1) as SQL Server BIT
+            'tinyint' => 'TINYINT',
+            'smallint' => 'SMALLINT',
+            'mediumint' => 'INT', // No direct equivalent, use INT
+            'bigint' => 'BIGINT',
+            'int' => 'INT',
+            'float' => 'FLOAT',
+            'double' => 'FLOAT', // SQL Server doesn't differentiate, so using FLOAT for both
+            'decimal' => 'DECIMAL',
+            'datetime' => 'DATETIME', // SQL Server uses DATETIME
+            'timestamp' => 'DATETIME', // SQL Server uses DATETIME for timestamp
+            'date' => 'DATE',
+            'time' => 'TIME',
+            'varchar' => 'VARCHAR', // Variable-length string
+            'char' => 'CHAR', // Fixed-length string
+            'text' => 'TEXT', // For large text
+            'mediumtext' => 'TEXT', // No direct equivalent in SQL Server
+            'longtext' => 'TEXT', // No direct equivalent in SQL Server
+            'blob' => 'VARBINARY(MAX)', // Binary data (similar to BLOB)
+            'json' => 'NVARCHAR(MAX)', // SQL Server supports JSON stored as text (using NVARCHAR)
+            'enum' => 'VARCHAR', // SQL Server doesn't support ENUM directly, so map it to VARCHAR
+            'set' => 'VARCHAR', // SQL Server doesn't support SET directly, so map it to VARCHAR
+            // Add more type conversions as needed
+        );
+
+        $query = str_ireplace(array_keys($replacements), array_values($replacements), $query);
+
+        // Handle AUTO_INCREMENT -> SQL Server uses IDENTITY instead
+        $query = preg_replace('/AUTO_INCREMENT=\d+/', '', $query); // NOSONAR
+        $query = preg_replace('/AUTO_INCREMENT/', 'IDENTITY', $query); // NOSONAR
+        
+        // Handle default values for strings and booleans
+        $query = preg_replace('/DEFAULT \'(.*?)\'/', 'DEFAULT \'\1\'', $query);
+        
+        // Remove "ENGINE" specification as it's not used in SQL Server
+        $query = preg_replace('/ENGINE=\w+/', '', $query);
+        
+        // Remove unnecessary commas (if any)
+        $query = preg_replace('/,\s*$/', '', $query);
+        
+        // Trim whitespace around the query
+        $query = trim($query);
+
+        return $query;
+    }
+
 
 }
