@@ -15,7 +15,7 @@ namespace MagicObject\Util;
  *
  */
 
-class PicoParsedown // NOSONAR
+class Parsedown // NOSONAR
 {
     /**
      * The current version of the parser.
