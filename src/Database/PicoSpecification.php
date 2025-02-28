@@ -474,6 +474,8 @@ class PicoSpecification // NOSONAR
                         $specification->addAnd(PicoPredicate::getInstance()->equals($filter->getColumnName(), $filter->valueOf($filterValue)));
                     } elseif ($filter->isFulltext()) {
                         $specification->addAnd(self::fullTextSearch($filter->getColumnName(), $filterValue));
+                    } else if(is_array($filterValue)) {
+                        $specification->addAnd(PicoPredicate::getInstance()->equals(PicoPredicate::functionLower($filter->getColumnName()), self::toLowerCase($filterValue)));
                     } else {
                         $specification->addAnd(PicoPredicate::getInstance()->like(PicoPredicate::functionLower($filter->getColumnName()), PicoPredicate::generateLikeContains(strtolower($filterValue))));
                     }
@@ -481,6 +483,20 @@ class PicoSpecification // NOSONAR
             }
         }
         return $specification;
+    }
+
+    /**
+     * Converts all string values in an array to lowercase.
+     *
+     * @param array $input The input array containing string values.
+     * @return array The modified array with all values converted to lowercase.
+     */
+    public static function toLowerCase($input)
+    {
+        foreach ($input as $key => $val) {
+            $input[$key] = strtolower($val);
+        }
+        return $input;
     }
 
     /**
