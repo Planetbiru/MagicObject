@@ -475,7 +475,7 @@ class PicoSpecification // NOSONAR
                     } elseif ($filter->isFulltext()) {
                         $specification->addAnd(self::fullTextSearch($filter->getColumnName(), $filterValue));
                     } else if(is_array($filterValue)) {
-                        $specification->addAnd(PicoPredicate::getInstance()->equals(PicoPredicate::functionLower($filter->getColumnName()), self::toLowerCase($filterValue)));
+                        $specification->addAnd(self::fullTextSearchArray($filter->getColumnName(), $filterValue));
                     } else {
                         $specification->addAnd(PicoPredicate::getInstance()->like(PicoPredicate::functionLower($filter->getColumnName()), PicoPredicate::generateLikeContains(strtolower($filterValue))));
                     }
@@ -539,6 +539,35 @@ class PicoSpecification // NOSONAR
             }
         }
         return $specification;
+    }
+
+    /**
+     * Creates a full-text search specification for an array of keyword sets.
+     * Each set of keywords is processed separately, allowing for multiple search conditions.
+     * Uses an OR condition between different keyword sets and an AND condition within each set.
+     *
+     * @param string $columnName The database column name to search within.
+     * @param array $keywordArray An array of keyword sets, where each element contains a string of keywords.
+     * @return self A new specification containing the combined full-text search predicates.
+     */
+    public static function fullTextSearchArray($columnName, $keywordArray)
+    {
+        $specs = new self;
+        foreach($keywordArray as $keywords)
+        {
+            $specification = new self;
+            $arr = explode(" ", $keywords);
+            foreach ($arr as $word) {
+                if (!empty($word)) {
+                    $specification->addAnd(
+                        PicoPredicate::getInstance()
+                            ->like(PicoPredicate::functionLower($columnName), PicoPredicate::generateLikeContains(strtolower($word)))
+                    );
+                }
+            }
+            $specs->addOr($specification);
+        }
+        return $specs;
     }
 
     /**
