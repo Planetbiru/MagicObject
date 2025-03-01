@@ -768,6 +768,18 @@ Example usage:
 $specs->addAnd((string) (new PicoDatabaseQueryBuilder($database))->bindSqlParams('artist_name LIKE ?', "%O'ben%"));
 ```
 
+If you are using MySQL or MariaDB, you can use PHP's built-in `addslashes` function:
+
+```php
+$specs->addAnd('artist_name LIKE ?', addslashes("%O'ben%"));
+```
+
+For other databases, you can use PHP's built-in `str_replace` function:
+
+```php
+$specs->addAnd('artist_name LIKE ?', str_replace("'", "''", "%O'ben%"));
+```
+
 -   **Creating a `PicoDatabaseQueryBuilder` instance**
     
     -   A new instance of `PicoDatabaseQueryBuilder` is created with the `$database` connection.
