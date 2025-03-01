@@ -1695,10 +1695,10 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
-     * Constructs an SQL query fragment based on the given specification.
+     * Constructs an SQL query fragment based on the given predicate.
      *
      * @param PicoDatabaseQueryBuilder $sqlQuery Query builder instance.
-     * @param PicoSpecification $spec Specification containing comparison logic and values.
+     * @param PicoPredicate $spec Predicate with comparison values.
      * @param string $columnFinal The database column to be compared.
      * @return string The constructed SQL query fragment.
      */
@@ -1718,7 +1718,7 @@ class PicoDatabasePersistence // NOSONAR
         }
         else
         {
-            $str = $spec->getFilterLogic() . " " . $columnFinal . " " . $spec->getComparation()->getComparison() . " " . $this->contructComparisonValue($spec, $sqlQuery);
+            $str = $spec->getFilterLogic() . " " . $columnFinal . " " . $spec->getComparation()->getComparison() . " " . $this->contructComparisonValue($sqlQuery, $spec);
         }
         return $str;
     }
@@ -1726,11 +1726,11 @@ class PicoDatabasePersistence // NOSONAR
     /**
      * Construct comparison value for predicates
      *
-     * @param PicoPredicate $predicate Predicate with comparison values
      * @param PicoDatabaseQueryBuilder $sqlQuery Query builder instance
+     * @param PicoPredicate $predicate Predicate with comparison values
      * @return string Formatted comparison value for SQL query
      */
-    private function contructComparisonValue($predicate, $sqlQuery)
+    private function contructComparisonValue($sqlQuery, $predicate)
     {
         if(is_array($predicate->getValue()))
         {
