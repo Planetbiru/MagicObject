@@ -174,3 +174,32 @@ These methods are designed to work seamlessly with an active database connection
     MagicObject version 3.0 no longer depends on external libraries. The Yaml parsing and dumping functions are now fully handled by a class that is part of MagicObject itself, reducing its overall complexity.
 5.  **Added `BETWEEN` Filter for Predicate Queries**  
     MagicObject now supports `BETWEEN` filters for predicate-based queries, allowing users to perform range-based filtering efficiently. This improves query performance and simplifies conditions when working with numerical or date ranges.
+
+
+# MagicObject Version 3.6
+
+## What's New
+
+**MagicObject 3.6** introduces new enhancements and improvements to provide greater flexibility in query building.
+
+- **String-Based Specifications in `WHERE` Clauses**
+
+You can now use raw SQL strings as part of the WHERE clause, allowing for more complex conditions that predicates alone cannot handle. This gives users full control over query construction, adapting to different DBMS requirements.
+
+**Example Usage:**
+
+```php
+$specs->addAnd((string) (new PicoDatabaseQueryBuilder($database))->bindSqlParams('artist_name LIKE ?', "%O'ben%"));
+```
+
+### **New `bindSqlParams` Function in `PicoDatabaseQueryBuilder`**
+
+A new function, `bindSqlParams`, has been introduced to safely bind SQL parameters, helping to escape values properly and prevent SQL injection.
+
+### **Key Improvements**
+
+-   Enhanced flexibility for defining custom SQL conditions.
+-   Improved support for complex `WHERE` clauses.
+-   Greater compatibility with different database systems.
+
+Upgrade to **MagicObject 3.6** now and enjoy improved query-building capabilities! 

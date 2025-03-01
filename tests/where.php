@@ -1,6 +1,7 @@
 <?php
 
 use MagicObject\Database\PicoDatabase;
+use MagicObject\Database\PicoDatabaseQueryBuilder;
 use MagicObject\Database\PicoPredicate;
 use MagicObject\Database\PicoSpecification;
 use MagicObject\MagicObject;
@@ -9,7 +10,7 @@ use MagicObject\SecretObject;
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 $databaseCredential = new SecretObject();
-$databaseCredential->loadYamlFile(dirname(dirname(__DIR__))."/test.yml", false, true, true);
+$databaseCredential->loadYamlFile(dirname(dirname(__DIR__))."/test.yml.txt", false, true, true);
 $database = new PicoDatabase($databaseCredential->getDatabase(), null, function($sql){
     echo $sql.";\r\n\r\n";
 });
@@ -417,18 +418,33 @@ class Producer extends MagicObject
 
 $album = new EntityAlbum(null, $database);
 
+$database->setCallbackDebugQuery(function($sql){
+	error_log($sql);
+});
+
 $specs = new PicoSpecification();
 $specs->name = ['Album 1', 'Album 2'];
+/*
 $specs->numberOfSong = 11;
 $specs->active = true;
 $specs->asDraft = false;
-$specs->setIpCreate('::');
-$specs->setIpEdit(null);
+*/
+
+$specs->addAnd("number_of_song = 11");
+$specs->addAnd("active = true");
+$specs->addAnd("as_draft = false");
+
+$specs->addAnd((string) (new PicoDatabaseQueryBuilder($database))->bindSqlParams('artist_name like ? ', "%O'ben%"));
 
 
 try
 {
-	$album->findByNameAndNumberOfSongAndActiveAndDraft(['Album 1', 'Album 2'], 11, true, false);
+	//$album->findByNameAndNumberOfSongAndActiveAndDraft(['Album 1', 'Album 2'], 11, true, false);
+	$res = $album->findAll($specs);
+	foreach($res->getResult() as $row)
+	{
+		echo $row."\r\n\r\n";
+	}
 }
 catch(Exception $e)
 {

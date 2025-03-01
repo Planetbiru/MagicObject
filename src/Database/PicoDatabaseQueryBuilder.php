@@ -425,6 +425,28 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	}
 
 	/**
+     * Binds SQL parameters by replacing placeholders with actual values.
+     *
+     * This function accepts multiple arguments, where the first argument 
+     * is expected to be a SQL string containing `?` placeholders, and 
+     * subsequent arguments are the values to replace them.
+     *
+     * @return string The formatted SQL query with values replaced.
+     */
+    public function bindSqlParams()
+    {
+        $count = func_num_args();
+        if ($count > 1) {
+            $params = array();
+            for ($i = 0; $i < $count; $i++) {
+                $params[] = func_get_arg($i);
+            }
+            return $this->createMatchedValue($params);
+        }
+        return "";
+    }
+
+	/**
 	 * Create a matched value string from the given arguments.
 	 *
 	 * @param array $args The arguments to match.

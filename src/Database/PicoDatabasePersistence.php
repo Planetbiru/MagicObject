@@ -1673,14 +1673,14 @@ class PicoDatabasePersistence // NOSONAR
             // flat
             if(isset($maps[$field]))
             {
-                // get from map
+                // Get from map.
                 $column = $this->getJoinSource($parentName, $masterTable, $entityTable, $maps[$field], $entityTable == $masterTable);
                 $columnFinal = $this->formatColumn($column, $functionFormat);
                 $arr[] = $this->constructSpecificationQuery($sqlQuery, $spec, $columnFinal);
             }
             else if(in_array($field, $columnNames))
             {
-                // get colum name
+                // Get colum name.
                 $column = $this->getJoinSource($parentName, $masterTable, $entityTable, $field, $entityTable == $masterTable);
                 $columnFinal = $this->formatColumn($column, $functionFormat);
                 $arr[] = $this->constructSpecificationQuery($sqlQuery, $spec, $columnFinal);
@@ -1688,39 +1688,59 @@ class PicoDatabasePersistence // NOSONAR
         }
         else if($spec instanceof PicoSpecification)
         {
-            // nested
+            // Neested
             $arr[] = $spec->getParentFilterLogic() . " (" . $this->createWhereFromSpecification($sqlQuery, $spec, $info) . ")";
+        }
+        else if(is_string($spec))
+        {
+            // Raw SQL query.
+            $arr[] = $this->constructSpecificationQuery($sqlQuery, $spec, null);
         }
         return $arr;
     }
 
     /**
      * Constructs an SQL query fragment based on the given predicate.
+     * 
+     * This method generates an SQL condition using a `PicoPredicate` instance or a raw SQL string.
+     * If the predicate specifies a "BETWEEN" comparison with an array of values, it constructs 
+     * a range-based condition. Otherwise, it applies a standard comparison operation.
      *
-     * @param PicoDatabaseQueryBuilder $sqlQuery Query builder instance.
-     * @param PicoPredicate $spec Predicate with comparison values.
+     * @param PicoDatabaseQueryBuilder $sqlQuery The query builder instance used for SQL operations.
+     * @param PicoPredicate|string $spec The predicate defining the condition, or a raw SQL string.
      * @param string $columnFinal The database column to be compared.
-     * @return string The constructed SQL query fragment.
+     * @return string The constructed SQL query fragment. Returns an empty string if no valid predicate is provided.
      */
     private function constructSpecificationQuery($sqlQuery, $spec, $columnFinal)
     {
-        if($spec->getComparation()->getComparison() == PicoDataComparation::BETWEEN && is_array($spec->getValue()) && count($spec->getValue()) > 1)
+        if(!isset($spec))
         {
-            $values = $spec->getValue();
-            $min = $values[0];
-            $max = end($values);
-            $str = $spec->getFilterLogic() . " ( " 
-            . $columnFinal . " >= " . $sqlQuery->escapeValue($min)
-            . " AND "
-            . $columnFinal . " <= " . $sqlQuery->escapeValue($max)
-            . " )"
-            ;
+            return "";
         }
-        else
+        if($spec instanceof PicoPredicate)
         {
-            $str = $spec->getFilterLogic() . " " . $columnFinal . " " . $spec->getComparation()->getComparison() . " " . $this->contructComparisonValue($sqlQuery, $spec);
+            if($spec->getComparation()->getComparison() == PicoDataComparation::BETWEEN && is_array($spec->getValue()) && count($spec->getValue()) > 1)
+            {
+                $values = $spec->getValue();
+                $min = $values[0];
+                $max = end($values);
+                $str = $spec->getFilterLogic() . " ( " 
+                . $columnFinal . " >= " . $sqlQuery->escapeValue($min)
+                . " AND "
+                . $columnFinal . " <= " . $sqlQuery->escapeValue($max)
+                . " )"
+                ;
+            }
+            else
+            {
+                $str = $spec->getFilterLogic() . " " . $columnFinal . " " . $spec->getComparation()->getComparison() . " " . $this->contructComparisonValue($sqlQuery, $spec);
+            }
+            return $str;
         }
-        return $str;
+        else if(is_string($spec))
+        {
+            return $spec;
+        }
     }
     
     /**
