@@ -197,7 +197,7 @@ You can now use raw SQL strings as part of the WHERE clause, allowing for more c
 $specs->addAnd((string) (new PicoDatabaseQueryBuilder($database))->bindSqlParams('artist_name LIKE ?', "%O'ben%"));
 ```
 
-**String-Based Sorting in ORDER BY Clauses**
+### String-Based Sorting in `ORDER BY` Clauses
 
 MagicObject now supports string-based sorting, allowing users to define custom `ORDER BY` clauses dynamically. This feature enhances flexibility when ordering query results.
 
