@@ -446,7 +446,7 @@ try
 	$res = $album->findAll($specs, null, $sorts);
 	foreach($res->getResult() as $row)
 	{
-		//echo $row."\r\n\r\n";
+		echo $row."\r\n\r\n";
 	}
 }
 catch(Exception $e)
