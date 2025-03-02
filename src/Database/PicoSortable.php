@@ -150,9 +150,9 @@ class PicoSortable
         }
         $ret = null;
         if ($tableInfo == null) {
-            $ret = $this->createWithoutMapping();
+            $ret = $this->createOrderByWithoutMapping();
         } else {
-            $ret = $this->createWithMapping($tableInfo);
+            $ret = $this->createOrderByWithMapping($tableInfo);
         }
         return $ret;
     }
@@ -162,7 +162,7 @@ class PicoSortable
      *
      * @return string The ORDER BY clause.
      */
-    private function createWithoutMapping()
+    private function createOrderByWithoutMapping()
     {
         $ret = "";
         if (empty($this->sortable)) {
@@ -193,7 +193,7 @@ class PicoSortable
      * @param PicoTableInfo $tableInfo Information about the table for mapping.
      * @return string The ORDER BY clause.
      */
-    private function createWithMapping($tableInfo)
+    private function createOrderByWithMapping($tableInfo)
     {
         $ret = null;
         $columns = $tableInfo->getColumns();
@@ -258,16 +258,14 @@ class PicoSortable
     }
 
     /**
-     * Convert the object to a JSON string representation for debugging.
+     * Generates the `ORDER BY` clause without mapping.
+     * This method is useful for debugging purposes.
      *
-     * This method is intended for debugging purposes only and provides 
-     * a JSON representation of the object's state.
-     *
-     * @return string The JSON representation of the object.
+     * @return string The generated `ORDER BY` clause.
      */
     public function __toString()
     {
-        return $this->createWithoutMapping();
+        return $this->createOrderByWithoutMapping();
     }
 
     /**

@@ -475,12 +475,10 @@ class PicoSpecification // NOSONAR
     }
 
     /**
-     * Convert the object to a JSON string representation for debugging.
+     * Creates a part of the `WHERE` clause from specifications for debugging purposes only.
+     * Removes leading logical operators (`AND`, `OR`) if present.
      *
-     * This method is intended for debugging purposes only and provides 
-     * a string representation of the object's state.
-     *
-     * @return string The JSON representation of the object.
+     * @return string The generated `WHERE` clause.
      */
     public function __toString()
     {
