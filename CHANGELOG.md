@@ -182,7 +182,13 @@ These methods are designed to work seamlessly with an active database connection
 
 **MagicObject 3.6** introduces new enhancements and improvements to provide greater flexibility in query building.
 
+### Key Features & Updates:
+
 - **String-Based Specifications in `WHERE` Clauses**
+- **Update Constructor for `PicoDatabaseQueryBuilder` class**
+- **New `bindSqlParams` Function for Secure Parameter Binding**
+
+### String-Based Specifications in `WHERE` Clauses
 
 You can now use raw SQL strings as part of the WHERE clause, allowing for more complex conditions that predicates alone cannot handle. This gives users full control over query construction, adapting to different DBMS requirements.
 
@@ -191,6 +197,11 @@ You can now use raw SQL strings as part of the WHERE clause, allowing for more c
 ```php
 $specs->addAnd((string) (new PicoDatabaseQueryBuilder($database))->bindSqlParams('artist_name LIKE ?', "%O'ben%"));
 ```
+
+### Updated Constructor for `PicoDatabaseQueryBuilder`
+
+When construct an object of `PicoDatabaseQueryBuilder` class, user can send a `PDO` object as parameter. `PicoDatabaseQueryBuilder` will retrieve database type information from it. So, user not require to construct a `PicoDatabase` to get the datatabase type from a `PDO` object.
+
 
 ### **New `bindSqlParams` Function in `PicoDatabaseQueryBuilder`**
 

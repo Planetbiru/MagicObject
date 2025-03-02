@@ -1,5 +1,8 @@
 <?php
+
 namespace MagicObject\Database;
+
+use PDO;
 
 /**
  * Class PicoDatabaseQueryBuilder
@@ -74,16 +77,24 @@ class PicoDatabaseQueryBuilder // NOSONAR
     private $hasValues = false;
 
     /**
-     * Constructor for PicoDatabaseQueryBuilder.
+     * Initializes a new instance of the PicoDatabaseQueryBuilder class.
      *
-     * @param PicoDatabase|string $databaseType The database type or an instance of PicoDatabase.
+     * This constructor accepts various types of database connections:
+     * - If a `PicoDatabase` instance is provided, the database type is retrieved from it.
+     * - If a `PDO` instance is provided, the driver name is used to determine the database type.
+     * - If a string is provided, it is assumed to be the database type.
+     *
+     * @param PicoDatabase|PDO|string $database The database connection or type.
      */
-    public function __construct($databaseType)
+    public function __construct($database)
     {
-        if ($databaseType instanceof PicoDatabase) {
-            $this->databaseType = $databaseType->getDatabaseType();
-        } elseif (is_string($databaseType)) {
-            $this->databaseType = $databaseType;
+        if ($database instanceof PicoDatabase) {
+            $this->databaseType = $database->getDatabaseType();
+        } elseif ($database instanceof PDO) {
+            $driver = $database->getAttribute(PDO::ATTR_DRIVER_NAME);
+            $this->databaseType = PicoDatabase::getDbType($driver);
+        } elseif (is_string($database)) {
+            $this->databaseType = $database;
         }
     }
 

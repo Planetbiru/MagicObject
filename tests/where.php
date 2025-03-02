@@ -434,7 +434,7 @@ $specs->addAnd("number_of_song = 11");
 $specs->addAnd("active = true");
 $specs->addAnd("as_draft = false");
 
-$specs->addAnd((string) (new PicoDatabaseQueryBuilder($database))->bindSqlParams('artist_name like ? ', "%O'ben%"));
+$specs->addAnd((string) (new PicoDatabaseQueryBuilder($database->getDatabaseConnection()))->bindSqlParams('artist_name like ? ', "%O'ben%"));
 
 
 try
