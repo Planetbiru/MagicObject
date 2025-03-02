@@ -208,14 +208,25 @@ $sortable = new PicoSortable();
 $sortable->add("artist_name DESC, album_year ASC");
 ```
 
+or
+
+```php
+$sortable = new PicoSortable();
+$sortable->add(["artist_name", "DESC"], true);
+$sortable->add(["album_year", "ASC"], true);
+```
+
 ### Updated Constructor for `PicoDatabaseQueryBuilder`
 
-When construct an object of `PicoDatabaseQueryBuilder` class, user can send a `PDO` object as parameter. `PicoDatabaseQueryBuilder` will retrieve database type information from it. So, user not require to construct a `PicoDatabase` to get the datatabase type from a `PDO` object.
+When construct an object of `PicoDatabaseQueryBuilder` class, user can send a `PDO` object as parameter. `PicoDatabaseQueryBuilder` will retrieve database type information from it. So, user not require to construct a `PicoDatabase` to get the datatabase type from it.
 
 **Before (Previous Approach):**
 
 ```php
-$database = new PicoDatabase($pdo);
+$databaseCredentials = new SecretObject();
+$databaseCredentials->loadYamlFile("db.yml");
+$database = new PicoDatabase($databaseCredentials);
+$database->connect();
 $queryBuilder = new PicoDatabaseQueryBuilder($database);
 ```
 
