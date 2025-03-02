@@ -7058,11 +7058,11 @@ try {
 <p><strong>Escaping Values in SQL WHERE Clause</strong></p>
 <p>When constructing SQL queries, it is crucial to properly escape values to prevent SQL injection and ensure data integrity. You can use the <code>bindSqlParams</code> function from the <code>PicoDatabaseQueryBuilder</code> class to safely replace placeholders (<code>?</code>) with actual values.</p>
 <p>Example usage:</p>
-<pre><code class="language-php">$specs-&gt;addAnd((string) (new PicoDatabaseQueryBuilder($database))-&gt;bindSqlParams('artist_name LIKE ?', "%O'ben%"));</code></pre>
+<pre><code class="language-php">$specs-&gt;addAnd((string) (new PicoDatabaseQueryBuilder($database))-&gt;bindSqlParams('lyric LIKE ?', "%O'ben%"));</code></pre>
 <p>If you are using MySQL or MariaDB, you can use PHP's built-in <code>addslashes</code> function:</p>
-<pre><code class="language-php">$specs-&gt;addAnd('artist_name LIKE ?', addslashes("%O'ben%"));</code></pre>
+<pre><code class="language-php">$specs-&gt;addAnd('lyric LIKE ?', addslashes("%O'ben%"));</code></pre>
 <p>For other databases, you can use PHP's built-in <code>str_replace</code> function:</p>
-<pre><code class="language-php">$specs-&gt;addAnd('artist_name LIKE ?', str_replace("'", "''", "%O'ben%"));</code></pre>
+<pre><code class="language-php">$specs-&gt;addAnd('lyric LIKE ?', str_replace("'", "''", "%O'ben%"));</code></pre>
 <ul>
 <li>
 <p><strong>Creating a <code>PicoDatabaseQueryBuilder</code> instance</strong></p>
@@ -7073,7 +7073,7 @@ try {
 <li>
 <p><strong>Calling <code>bindSqlParams</code></strong></p>
 <ul>
-<li>The function replaces the <code>?</code> placeholder in <code>'artist_name LIKE ?'</code> with the provided value <code>"%O'ben%"</code>.</li>
+<li>The function replaces the <code>?</code> placeholder in <code>'lyric LIKE ?'</code> with the provided value <code>"%O'ben%"</code>.</li>
 <li>This ensures proper escaping of special characters like the single quote (<code>'</code>) in <code>"O'ben"</code>.</li>
 </ul>
 </li>

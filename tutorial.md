@@ -8096,19 +8096,19 @@ When constructing SQL queries, it is crucial to properly escape values to preven
 Example usage:
 
 ```php
-$specs->addAnd((string) (new PicoDatabaseQueryBuilder($database))->bindSqlParams('artist_name LIKE ?', "%O'ben%"));
+$specs->addAnd((string) (new PicoDatabaseQueryBuilder($database))->bindSqlParams('lyric LIKE ?', "%O'ben%"));
 ```
 
 If you are using MySQL or MariaDB, you can use PHP's built-in `addslashes` function:
 
 ```php
-$specs->addAnd('artist_name LIKE ?', addslashes("%O'ben%"));
+$specs->addAnd('lyric LIKE ?', addslashes("%O'ben%"));
 ```
 
 For other databases, you can use PHP's built-in `str_replace` function:
 
 ```php
-$specs->addAnd('artist_name LIKE ?', str_replace("'", "''", "%O'ben%"));
+$specs->addAnd('lyric LIKE ?', str_replace("'", "''", "%O'ben%"));
 ```
 
 -   **Creating a `PicoDatabaseQueryBuilder` instance**
@@ -8116,7 +8116,7 @@ $specs->addAnd('artist_name LIKE ?', str_replace("'", "''", "%O'ben%"));
     -   A new instance of `PicoDatabaseQueryBuilder` is created with the `$database` connection.
 -   **Calling `bindSqlParams`**
     
-    -   The function replaces the `?` placeholder in `'artist_name LIKE ?'` with the provided value `"%O'ben%"`.
+    -   The function replaces the `?` placeholder in `'lyric LIKE ?'` with the provided value `"%O'ben%"`.
     -   This ensures proper escaping of special characters like the single quote (`'`) in `"O'ben"`.
 -   **Ensuring Type Safety**
     
