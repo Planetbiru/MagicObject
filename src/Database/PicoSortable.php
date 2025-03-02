@@ -21,7 +21,7 @@ class PicoSortable
     /**
      * Array of sortable criteria.
      *
-     * @var PicoSort[]
+     * @var (PicoSort|string)[]
      */
     private $sortable = array();
 
@@ -86,28 +86,40 @@ class PicoSortable
     /**
      * Add a sortable criterion.
      *
-     * @param PicoSort|array $sort The sorting criterion to add.
+     * @param PicoSort|array|string $sort The sorting criterion to add.
+     * @param bool $isRawSql Indicates whether the array-based sorting is raw SQL.
      * @return self Returns the current instance for method chaining.
      */
-    public function add($sort)
+    public function add($sort, bool $isRawSql = false)
     {
-        return $this->addSortable($sort);
+        return $this->addSortable($sort, $isRawSql);
     }
 
     /**
      * Add a sortable criterion.
      *
-     * @param PicoSort|array $sort The sorting criterion to add.
+     * @param PicoSort|array|string $sort The sorting criterion to add.
+     * @param bool $isRawSql Indicates whether the array-based sorting is raw SQL.
      * @return self Returns the current instance for method chaining.
      */
-    public function addSortable($sort)
+    public function addSortable($sort, $isRawSql = false)
     {
-        if ($sort != null) {
+        if (isset($sort)) {
             if ($sort instanceof PicoSort) {
                 $this->sortable[count($this->sortable)] = $sort;
             } else if (is_array($sort)) {
-                $sortable = $this->createSortable($sort[0], $sort[1]);
-                $this->sortable[count($this->sortable)] = $sortable;
+                if($isRawSql)
+                {
+                    $sortable = $this->createSortable($sort[0], $sort[1]);
+                    $this->sortable[count($this->sortable)] = $sortable;
+                }
+                else
+                {
+                    $this->sortable[count($this->sortable)] = $sort . " " . $sort[1];
+                }
+                
+            } else if (is_string($sort)) {
+                $this->sortable[count($this->sortable)] = $sort;
             }
         }
         return $this;
@@ -157,10 +169,17 @@ class PicoSortable
             return "";
         }
         $sorts = array();
-        foreach ($this->sortable as $sortable) {
-            $columnName = $sortable->getSortBy();
-            $sortType = $sortable->getSortType();
-            $sorts[] = $columnName . " " . $sortType;
+        foreach ($this->sortable as $sort) {
+            if($sort instanceof PicoSort)
+            {
+                $columnName = $sort->getSortBy();
+                $sortType = $sort->getSortType();
+                $sorts[] = $columnName . " " . $sortType;
+            }
+            else if(is_string($sort))
+            {
+                $sorts[] = $sort;
+            }
         }
         if (!empty($sorts)) {
             $ret = implode(", ", $sorts);
@@ -185,14 +204,21 @@ class PicoSortable
             $columnNames[] = $column[MagicObject::KEY_NAME];
         }
         $sorts = array();
-        foreach ($this->sortable as $sortable) {
-            $propertyName = $sortable->getSortBy();
-            $sortType = $sortable->getSortType();
-            if (isset($columnList[$propertyName])) {
-                $sortBy = $columnList[$propertyName]['name'];
-                $sorts[] = $sortBy . " " . $sortType;
-            } else if (in_array($propertyName, $columnNames)) {
-                $sorts[] = $propertyName . " " . $sortType;
+        foreach ($this->sortable as $sort) {
+            if($sort instanceof PicoSort)
+            {
+                $propertyName = $sort->getSortBy();
+                $sortType = $sort->getSortType();
+                if (isset($columnList[$propertyName])) {
+                    $sortBy = $columnList[$propertyName]['name'];
+                    $sorts[] = $sortBy . " " . $sortType;
+                } else if (in_array($propertyName, $columnNames)) {
+                    $sorts[] = $propertyName . " " . $sortType;
+                }
+            }
+            else if(is_string($sort))
+            {
+                $sorts[] = $sort;
             }
         }
         if (!empty($sorts)) {

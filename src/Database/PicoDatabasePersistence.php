@@ -1832,12 +1832,13 @@ class PicoDatabasePersistence // NOSONAR
         $ret = null;
         if($info == null)
         {
-            $ret = $this->createWithoutMapping($order, $info);
+            $ret = $this->createSortWithoutMapping($order, $info);     
         }
         else
         {
-            $ret = $this->createWithMapping($order, $info);
+            $ret = $this->createSortWithMapping($order, $info);
         }
+        
         return $ret;
     }
     
@@ -1848,22 +1849,29 @@ class PicoDatabasePersistence // NOSONAR
      * @param PicoTableInfo|null $info Table information
      * @return string|null The constructed ORDER BY clause or null
      */
-    private function createWithoutMapping($order, $info)
+    private function createSortWithoutMapping($order, $info)
     {
         $ret = null;
         $sorts = array();
-        foreach($order->getSortable() as $sortable)
+        foreach($order->getSortable() as $sort)
         {
-            $columnName = $sortable->getSortBy();
-            $sortType = $sortable->getSortType();             
-            $sortBy = $columnName;
-            $entityField = new PicoEntityField($sortBy, $info);
-            if($entityField->getEntity() != null)
+            if($sort instanceof PicoSort)
             {
-                $tableName = $this->getTableOf($entityField->getEntity(), $info);
-                $sortBy = $tableName.".".$sortBy;
+                $columnName = $sort->getSortBy();
+                $sortType = $sort->getSortType();             
+                $sortBy = $columnName;
+                $entityField = new PicoEntityField($sortBy, $info);
+                if($entityField->getEntity() != null)
+                {
+                    $tableName = $this->getTableOf($entityField->getEntity(), $info);
+                    $sortBy = $tableName.".".$sortBy;
+                }
+                $sorts[] = $sortBy . " " . $sortType;     
+            }    
+            else if(is_string($sort))
+            {
+                $sorts[] = $sort;
             }
-            $sorts[] = $sortBy . " " . $sortType;           
         }
         if(!empty($sorts))
         {
@@ -1879,53 +1887,60 @@ class PicoDatabasePersistence // NOSONAR
      * @param PicoTableInfo $info Table information
      * @return string The constructed ORDER BY clause
      */
-    private function createWithMapping($order, $info)
+    private function createSortWithMapping($order, $info) // NOSONAR
     {
         $masterColumnMaps = $this->getColumnMap($info);
         $masterTable = $info->getTableName();
         
         $arr = array();
     
-        foreach($order->getSortable() as $sortOrder)
-        {           
-            $entityField = new PicoEntityField($sortOrder->getSortBy(), $info);
-            $field = $entityField->getField();
-            $entityName = $entityField->getEntity();
-            $parentName = $entityField->getParentField();
-            
-            if($entityName != null)
-            {
-                $entityTable = $this->getTableOf($entityName, $info);
-                if($entityTable != null)
+        foreach($order->getSortable() as $sort)
+        {
+            if($sort instanceof PicoSort)
+            {           
+                $entityField = new PicoEntityField($sort->getSortBy(), $info);
+                $field = $entityField->getField();
+                $entityName = $entityField->getEntity();
+                $parentName = $entityField->getParentField();
+                
+                if($entityName != null)
                 {
-                    $joinColumnmaps = $this->getColumnMapOf($entityName, $info);                           
-                    $maps = $joinColumnmaps;
+                    $entityTable = $this->getTableOf($entityName, $info);
+                    if($entityTable != null)
+                    {
+                        $joinColumnmaps = $this->getColumnMapOf($entityName, $info);                           
+                        $maps = $joinColumnmaps;
+                    }
+                    else
+                    {
+                        $maps = $masterColumnMaps;
+                    }
+                    $columnNames = array_values($maps);
                 }
                 else
                 {
+                    $entityTable = null;
                     $maps = $masterColumnMaps;
+                    $columnNames = array_values($maps);
                 }
-                $columnNames = array_values($maps);
-            }
-            else
-            {
-                $entityTable = null;
-                $maps = $masterColumnMaps;
-                $columnNames = array_values($maps);
-            }
-            
-            if(isset($maps[$field]))
-            {
-                // get from map
-                $column = $this->getJoinSource($parentName, $masterTable, $entityTable, $maps[$field], $masterTable == $entityTable);
                 
-                $arr[] = $column . " " . $sortOrder->getSortType();
+                if(isset($maps[$field]))
+                {
+                    // get from map
+                    $column = $this->getJoinSource($parentName, $masterTable, $entityTable, $maps[$field], $masterTable == $entityTable);
+                    
+                    $arr[] = $column . " " . $sort->getSortType();
+                }
+                else if(in_array($field, $columnNames))
+                {
+                    // get colum name
+                    $column = $this->getJoinSource($parentName, $masterTable, $entityTable, $field, $masterTable == $entityTable);
+                    $arr[] = $column . " " . $sort->getSortType();
+                }
             }
-            else if(in_array($field, $columnNames))
+            else if(is_string($sort))
             {
-                // get colum name
-                $column = $this->getJoinSource($parentName, $masterTable, $entityTable, $field, $masterTable == $entityTable);
-                $arr[] = $column . " " . $sortOrder->getSortType();
+                $arr[] = $sort;
             }
         }
         return $this->joinStringArray($arr, self::MAX_LINE_LENGTH, self::COMMA, self::COMMA_RETURN);
@@ -2133,6 +2148,7 @@ class PicoDatabasePersistence // NOSONAR
      */
     private function setSortable($sqlQuery, $pageable, $sortable, $info)
     {
+        
         if($sortable != null)
         {
             if($sortable instanceof PicoSortable)

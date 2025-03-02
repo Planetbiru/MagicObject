@@ -185,6 +185,7 @@ These methods are designed to work seamlessly with an active database connection
 ### Key Features & Updates:
 
 - **String-Based Specifications in `WHERE` Clauses**
+- **String-Based Sortable in `ORDER BY` Clauses**
 - **Update Constructor for `PicoDatabaseQueryBuilder` class**
 - **New `bindSqlParams` Function for Secure Parameter Binding**
 
@@ -198,19 +199,47 @@ You can now use raw SQL strings as part of the WHERE clause, allowing for more c
 $specs->addAnd((string) (new PicoDatabaseQueryBuilder($database))->bindSqlParams('artist_name LIKE ?', "%O'ben%"));
 ```
 
+**String-Based Sorting in ORDER BY Clauses**
+
+MagicObject now supports string-based sorting, allowing users to define custom `ORDER BY` clauses dynamically. This feature enhances flexibility when ordering query results.
+
+**Example Usage:**
+
+```php
+$sortable = new PicoSortable();
+$sortable->add("artist_name DESC, album_year ASC");
+```
+
 ### Updated Constructor for `PicoDatabaseQueryBuilder`
 
 When construct an object of `PicoDatabaseQueryBuilder` class, user can send a `PDO` object as parameter. `PicoDatabaseQueryBuilder` will retrieve database type information from it. So, user not require to construct a `PicoDatabase` to get the datatabase type from a `PDO` object.
 
+**Before (Previous Approach):**
+
+```php
+$database = new PicoDatabase($pdo);
+$queryBuilder = new PicoDatabaseQueryBuilder($database);
+```
+
+**Now (New Approach in v3.6):**
+
+```php
+$queryBuilder = new PicoDatabaseQueryBuilder($pdo);
+```
 
 ### **New `bindSqlParams` Function in `PicoDatabaseQueryBuilder`**
 
 A new function, `bindSqlParams`, has been introduced to safely bind SQL parameters, helping to escape values properly and prevent SQL injection.
 
+
 ### **Key Improvements**
 
--   Enhanced flexibility for defining custom SQL conditions.
--   Improved support for complex `WHERE` clauses.
--   Greater compatibility with different database systems.
+-   **Increased flexibility** for defining custom SQL conditions.
+-   **Support for complex `WHERE` clauses** with direct SQL strings.
+-   **More control over query sorting** through string-based `ORDER BY` clauses.
+-   **Improved compatibility** with different database systems.
+-   **Enhanced sorting capabilities** with dynamic and flexible `ORDER BY` handling.
 
-Upgrade to **MagicObject 3.6** now and enjoy improved query-building capabilities! 
+Several functions in the class with **private access level** have undergone changes, including function names, parameter names, and parameter order, to improve maintainability. These changes do not affect compatibility with previous versions, as the functions are only accessed within the class itself.
+
+Upgrade to **MagicObject 3.6** now and enjoy a more powerful and flexible query-building experience!

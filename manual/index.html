@@ -7149,10 +7149,16 @@ catch(Exception $e)
 </code></pre>
 <p><strong>PicoPageable</strong></p>
 <p>Constructor:</p>
+<pre><code class="language-php">public function __construct(
+    PicoPage|PicoLimit|array|null $page = null,
+    PicoSortable|array|null $sortable = null
+)
+{
+}</code></pre>
 <p>Parameters:</p>
 <ul>
-<li>PicoPage|PicoLimit|array $page</li>
-<li>PicoSortable|array $sortable</li>
+<li>PicoPage|PicoLimit|array|null $page</li>
+<li>PicoSortable|array|null $sortable</li>
 </ul>
 <p>Method:</p>
 <ul>
@@ -7167,6 +7173,12 @@ catch(Exception $e)
 </ul>
 <p><strong>PicoPage</strong></p>
 <p>Constructor:</p>
+<pre><code class="language-php">public function __construct(
+    int $pageNumber = 1,
+    int $pageSize = 1
+)
+{
+}</code></pre>
 <p>Parameters:</p>
 <ul>
 <li>integer $pageNumber</li>
@@ -7195,6 +7207,9 @@ catch(Exception $e)
 </ul>
 <p><strong>PicoSortable</strong></p>
 <p>Constructor:</p>
+<pre><code class="language-php">public function __construct()
+{
+}</code></pre>
 <p>Parameters:</p>
 <p>Users can enter an even number of parameters where odd numbered parameters are columns while even numbered parameters are methods.</p>
 <p>Example:</p>
@@ -7237,7 +7252,28 @@ catch(Exception $e)
 <li>getInstance</li>
 <li>fixSortType</li>
 </ul>
-<p>Example:</p>
+<h4>Using String-Based Sorting</h4>
+<p>Since version <strong>3.6</strong>, <strong>MagicObject</strong> supports <strong>string-based sorting</strong>, allowing users to define custom <code>ORDER BY</code> clauses dynamically. This feature provides greater flexibility when ordering query results.</p>
+<p>Users can define sorting criteria in the following ways:</p>
+<p><strong>Sortable with String</strong></p>
+<pre><code class="language-php">$sortable = new PicoSortable();
+$sortable-&gt;add("LOWER(TRIM(title)) ASC");</code></pre>
+<p>or</p>
+<p><strong>Sortable with Array</strong></p>
+<pre><code class="language-php">$sortable = new PicoSortable();
+$sortable-&gt;add(["LOWER(TRIM(title))", "ASC"], true);</code></pre>
+<h4>Understanding the Second Parameter</h4>
+<p>The second parameter (<code>true</code> in this case) <strong>indicates that the first element of the array (or the first parameter) is a raw SQL expression</strong>. The default value is <code>false</code>. When set to <code>true</code>, <strong>MagicObject will not modify or escape the value</strong>, allowing full control over custom sorting logic.</p>
+<h4>Security Considerations</h4>
+<p>When using <strong>string-based sorting</strong>, always consider security risks. Manually escape the parameters you include using the <code>PicoDatabaseQueryBuilder::bindSqlParams()</code> function, as shown in the example below:</p>
+<pre><code class="language-php">$inputGet = new InputGet();
+$sortType = $inputGet-&gt;getOrderBy(PicoFilterConstant::FILTER_SANITIZE_SPECIAL_CHARS, false, false, true);
+
+$queryBuilder = new PicoDatabaseQueryBuilder($database);
+$sortBy = $queryBuilder-&gt;bindSqlParams('SIN(angle * ?)', $factor);
+$sortable-&gt;add([$sortBy, $sortType], true);</code></pre>
+<p>This ensures that the sorting parameters are properly sanitized and protected against SQL injection.</p>
+<h4>Pageable with Sortable and without Sortable</h4>
 <p><strong>Pageable without Sortable</strong></p>
 <pre><code class="language-php">$pageable = new PicoPageable(new Page(1, 100));
 // page number = 1

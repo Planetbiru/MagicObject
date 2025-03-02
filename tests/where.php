@@ -3,6 +3,7 @@
 use MagicObject\Database\PicoDatabase;
 use MagicObject\Database\PicoDatabaseQueryBuilder;
 use MagicObject\Database\PicoPredicate;
+use MagicObject\Database\PicoSortable;
 use MagicObject\Database\PicoSpecification;
 use MagicObject\MagicObject;
 use MagicObject\SecretObject;
@@ -419,31 +420,33 @@ class Producer extends MagicObject
 $album = new EntityAlbum(null, $database);
 
 $database->setCallbackDebugQuery(function($sql){
-	error_log($sql);
+	//error_log($sql);
 });
 
 $specs = new PicoSpecification();
-$specs->name = ['Album 1', 'Album 2'];
+//$specs->name = ['Album 1', 'Album 2'];
 /*
 $specs->numberOfSong = 11;
 $specs->active = true;
 $specs->asDraft = false;
 */
 
-$specs->addAnd("number_of_song = 11");
+//$specs->addAnd("number_of_song = 11");
 $specs->addAnd("active = true");
 $specs->addAnd("as_draft = false");
 
-$specs->addAnd((string) (new PicoDatabaseQueryBuilder($database->getDatabaseConnection()))->bindSqlParams('lyric like ? ', "%O'ben%"));
+$sorts = PicoSortable::getInstance();
+$sorts->add("(sort_order * 2) DESC");
 
+//$specs->addAnd((string) (new PicoDatabaseQueryBuilder($database->getDatabaseConnection()))->bindSqlParams('lyric like ? ', "%O'ben%"));
 
 try
 {
 	//$album->findByNameAndNumberOfSongAndActiveAndDraft(['Album 1', 'Album 2'], 11, true, false);
-	$res = $album->findAll($specs);
+	$res = $album->findAll($specs, null, $sorts);
 	foreach($res->getResult() as $row)
 	{
-		echo $row."\r\n\r\n";
+		//echo $row."\r\n\r\n";
 	}
 }
 catch(Exception $e)
