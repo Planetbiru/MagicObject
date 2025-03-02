@@ -32,13 +32,11 @@ Several bugs and issues from previous versions have been addressed in **MagicObj
 -   **Performance Optimizations**: Internally, **MagicObject Version 2** has been optimized to improve overall performance. Key database interaction operations have been streamlined, leading to faster query execution times and better resource utilization.
     
 -   **Backward Compatibility**: **MagicObject Version 2** maintains **backward compatibility** with **Version 1**, ensuring that existing users can upgrade smoothly without having to make significant changes to their codebase. This allows for an easy transition to the new version while still maintaining compatibility with legacy systems.
-    
+
 
 ## Migration Notes
 
 If you are upgrading from **MagicObject Version 1** to **Version 2**, please review the migration notes carefully. The documentation includes detailed guidelines and best practices for handling any potential breaking changes, as well as adjustments that may be necessary to ensure a smooth transition. By following these guidelines, you can ensure that your upgrade process is as seamless as possible, minimizing disruptions to your development workflow.
-
-
 
 # MagicObject Version 2.1
 
@@ -230,7 +228,6 @@ $queryBuilder = new PicoDatabaseQueryBuilder($pdo);
 ### **New `bindSqlParams` Function in `PicoDatabaseQueryBuilder`**
 
 A new function, `bindSqlParams`, has been introduced to safely bind SQL parameters, helping to escape values properly and prevent SQL injection.
-
 
 ### **Key Improvements**
 

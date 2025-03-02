@@ -478,15 +478,18 @@ class PicoSpecification // NOSONAR
      * Convert the object to a JSON string representation for debugging.
      *
      * This method is intended for debugging purposes only and provides 
-     * a JSON representation of the object's state.
+     * a string representation of the object's state.
      *
      * @return string The JSON representation of the object.
      */
     public function __toString()
     {
-        $specification = implode(" ", $this->getWhere($this->specifications));
+        $specification = trim(implode(" ", $this->getWhere($this->specifications)));
         if (stripos($specification, "and ") === 0) {
             $specification = substr($specification, 4);
+        }
+        if (stripos($specification, "or ") === 0) {
+            $specification = substr($specification, 3);
         }
         return $specification;
     }
