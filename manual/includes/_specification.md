@@ -706,7 +706,7 @@ catch(Exception $e)
 }
 ```
 
-**Specification from SQL**
+**String-Based Specification**
 
 Since version **3.6**, **MagicObject** has supported specifications in the form of strings, which are used as part of the `WHERE` clause. The introduction of string-based specifications aims to address limitations that cannot be handled using predicates alone. This feature provides users with greater flexibility, allowing them to write `WHERE` clauses directly, tailored to the syntax and capabilities of their specific DBMS.
 

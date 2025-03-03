@@ -7009,7 +7009,7 @@ catch(Exception $e)
 {
     error_log($e);
 }</code></pre>
-<p><strong>Specification from SQL</strong></p>
+<p><strong>String-Based Specification</strong></p>
 <p>Since version <strong>3.6</strong>, <strong>MagicObject</strong> has supported specifications in the form of strings, which are used as part of the <code>WHERE</code> clause. The introduction of string-based specifications aims to address limitations that cannot be handled using predicates alone. This feature provides users with greater flexibility, allowing them to write <code>WHERE</code> clauses directly, tailored to the syntax and capabilities of their specific DBMS.</p>
 <p>Example:</p>
 <pre><code class="language-php">
@@ -7263,7 +7263,7 @@ $sortable-&gt;add("LOWER(TRIM(title)) ASC");</code></pre>
 <pre><code class="language-php">$sortable = new PicoSortable();
 $sortable-&gt;add(["LOWER(TRIM(title))", "ASC"], true);</code></pre>
 <h4>Understanding the Second Parameter</h4>
-<p>The second parameter (<code>true</code> in this case) <strong>indicates that the first element of the array (or the first parameter) is a raw SQL expression</strong>. The default value is <code>false</code>. When set to <code>true</code>, <strong>MagicObject will not modify or escape the value</strong>, allowing full control over custom sorting logic.</p>
+<p>The second parameter (<code>true</code> in this case) <strong>indicates that the first element of the array in the first parameter is a raw SQL expression</strong>. The default value is <code>false</code>. When set to <code>true</code>, <strong>MagicObject will not modify or escape the value</strong>, allowing full control over custom sorting logic.</p>
 <h4>Security Considerations</h4>
 <p>When using <strong>string-based sorting</strong>, always consider security risks. Manually escape the parameters you include using the <code>PicoDatabaseQueryBuilder::bindSqlParams()</code> function, as shown in the example below:</p>
 <pre><code class="language-php">$inputGet = new InputGet();

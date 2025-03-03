@@ -8037,7 +8037,7 @@ catch(Exception $e)
 }
 ```
 
-**Specification from SQL**
+**String-Based Specification**
 
 Since version **3.6**, **MagicObject** has supported specifications in the form of strings, which are used as part of the `WHERE` clause. The introduction of string-based specifications aims to address limitations that cannot be handled using predicates alone. This feature provides users with greater flexibility, allowing them to write `WHERE` clauses directly, tailored to the syntax and capabilities of their specific DBMS.
 
@@ -8347,7 +8347,7 @@ $sortable->add(["LOWER(TRIM(title))", "ASC"], true);
 
 #### Understanding the Second Parameter
 
-The second parameter (`true` in this case) **indicates that the first element of the array (or the first parameter) is a raw SQL expression**. The default value is `false`. When set to `true`, **MagicObject will not modify or escape the value**, allowing full control over custom sorting logic.
+The second parameter (`true` in this case) **indicates that the first element of the array in the first parameter is a raw SQL expression**. The default value is `false`. When set to `true`, **MagicObject will not modify or escape the value**, allowing full control over custom sorting logic.
 
 #### Security Considerations
 
