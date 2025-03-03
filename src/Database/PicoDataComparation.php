@@ -18,16 +18,17 @@ namespace MagicObject\Database;
  * @package MagicObject\Database
  * @link https://github.com/Planetbiru/MagicObject
  */
-class PicoDataComparation
+class PicoDataComparation // NOSONAR
 {
     const EQUALS                 = "=";
     const NOT_EQUALS             = "!=";
-    const IN                     = "in";
-    const NOT_IN                 = "not in";
-    const IS                     = "is";
-    const IS_NOT                 = "is not";
-    const LIKE                   = "like";
-    const NOT_LIKE               = "not like";
+    const IN                     = "IN";
+    const BETWEEN                = "BETWEEN";
+    const NOT_IN                 = "NOT IN";
+    const IS                     = "IS";
+    const IS_NOT                 = "IS NOT";
+    const LIKE                   = "LIKE ";
+    const NOT_LIKE               = "NOT LIKE";
     const LESS_THAN              = "<";
     const GREATER_THAN           = ">";
     const LESS_THAN_OR_EQUALS    = "<=";
@@ -89,6 +90,29 @@ class PicoDataComparation
     public static function in($values)
     {
         return new self($values, self::IN);
+    }
+
+    /**
+     * Creates a comparison for inclusion within a range.
+     *
+     * @param mixed[] $values The range boundaries to compare against.
+     * @return self Returns the current instance for method chaining.
+     */
+    public static function inRange($values)
+    {
+        return new self($values, self::BETWEEN);
+    }
+
+    /**
+     * Creates a comparison for values within a specified range.
+     *
+     * @param mixed $min The lower boundary of the range.
+     * @param mixed $max The upper boundary of the range.
+     * @return self Returns the current instance for method chaining.
+     */
+    public static function between($min, $max)
+    {
+        return new self(array($min, $max), self::BETWEEN);
     }
 
     /**
@@ -275,6 +299,7 @@ class PicoDataComparation
             case self::NOT_LIKE:
             case self::IN:
             case self::NOT_IN:
+            case self::BETWEEN:
                 return $this->comparison;
             default:
                 return $this->_equals();
