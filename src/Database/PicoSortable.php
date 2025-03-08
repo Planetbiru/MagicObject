@@ -90,7 +90,7 @@ class PicoSortable
      * @param bool $isRawSql Indicates whether the array-based sorting is raw SQL.
      * @return self Returns the current instance for method chaining.
      */
-    public function add($sort, bool $isRawSql = false)
+    public function add($sort, $isRawSql = false)
     {
         return $this->addSortable($sort, $isRawSql);
     }
@@ -115,7 +115,7 @@ class PicoSortable
                 }
                 else
                 {
-                    $this->sortable[count($this->sortable)] = $sort . " " . $sort[1];
+                    $this->sortable[count($this->sortable)] = $sort[0] . " " . $sort[1];
                 }
                 
             } else if (is_string($sort)) {
