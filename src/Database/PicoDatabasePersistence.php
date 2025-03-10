@@ -1634,12 +1634,17 @@ class PicoDatabasePersistence // NOSONAR
      * @param array $arr Array of existing WHERE clauses
      * @param array $masterColumnMaps Master column mappings
      * @param PicoDatabaseQueryBuilder $sqlQuery Query builder instance
-     * @param PicoSpecification $spec Specification to process
+     * @param PicoSpecification|PicoPredicate|array|string $spec Specification to process
      * @param PicoTableInfo $info Table information
      * @return array Updated array of WHERE clauses
      */
     private function addWhere($arr, $masterColumnMaps, $sqlQuery, $spec, $info)
     {
+        if(isset($specs) && is_array($spec) && count($spec) == 2)
+        {
+            // Convert array to specification
+            $spec = PicoPredicate::getInstance()->equals($spec[0], $spec[1]);
+        }
         if($spec instanceof PicoPredicate)
         {
             $masterTable = $info->getTableName();
