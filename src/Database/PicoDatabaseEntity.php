@@ -82,7 +82,7 @@ class PicoDatabaseEntity
      *
      * @param PicoDatabase $defaultDatabase Default database connection
      *
-     * @return self
+     * @return self Fluent interface; returns the current instance.
      */ 
     public function setDefaultDatabase($defaultDatabase)
     {
