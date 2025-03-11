@@ -110,15 +110,19 @@ class PicoSortable
             } else if (is_array($sort)) {
                 if($isRawSql)
                 {
-                    $sortable = $this->createSortable($sort[0], $sort[1]);
-                    $this->sortable[count($this->sortable)] = $sortable;
+                    // Raw SQL
+                    // No mapping
+                    $this->sortable[count($this->sortable)] = $sort[0] . " " . $sort[1];
                 }
                 else
                 {
-                    $this->sortable[count($this->sortable)] = $sort[0] . " " . $sort[1];
+                    // Convert array to PicoSort
+                    $sortable = $this->createSortable($sort[0], $sort[1]);
+                    $this->sortable[count($this->sortable)] = $sortable;
                 }
                 
             } else if (is_string($sort)) {
+                // No mapping
                 $this->sortable[count($this->sortable)] = $sort;
             }
         }
