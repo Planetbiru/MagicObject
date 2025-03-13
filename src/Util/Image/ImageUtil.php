@@ -173,7 +173,7 @@ class ImageUtil
     /**
      * Get the image width.
      *
-     * @return int
+     * @return int The image width.
      */
     public function getWidth()
     {
@@ -183,7 +183,7 @@ class ImageUtil
     /**
      * Get the image height.
      *
-     * @return int
+     * @return int The image height.
      */
     public function getHeight()
     {
