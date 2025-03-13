@@ -193,7 +193,7 @@ class ImageUtil
     /**
      * Get the file name of the image.
      *
-     * @return string
+     * @return string The file name of the image.
      */
     public function getFilename()
     {
