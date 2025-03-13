@@ -335,7 +335,7 @@ class PicoDatabasePersistence // NOSONAR
      * Set a flag to include or skip null columns in the operation.
      *
      * @param bool $skip Flag indicating whether to skip null columns
-     * @return self Returns the current instance for method chaining
+     * @return self Returns the current instance for method chaining.
      */
     public function includeNull($skip)
     {
@@ -1033,7 +1033,7 @@ class PicoDatabasePersistence // NOSONAR
      *
      * @param PicoTableInfo $info Table information.
      * @param bool $firstCall Indicates whether this is the first call to the method.
-     * @return self Fluent interface; returns the current instance.
+     * @return self Returns the current instance for method chaining.
      */
     private function addGeneratedValue($info, $firstCall)
     {
@@ -1061,7 +1061,7 @@ class PicoDatabasePersistence // NOSONAR
      * @param string $prop The property name to set the generated value for.
      * @param string $strategy The generation strategy to use (e.g., UUID, IDENTITY).
      * @param bool $firstCall Indicates whether this is the first call to the method.
-     * @return self Fluent interface; returns the current instance.
+     * @return self Returns the current instance for method chaining.
      */
     private function setGeneratedValue($prop, $strategy, $firstCall)
     {

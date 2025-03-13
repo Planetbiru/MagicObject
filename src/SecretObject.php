@@ -329,7 +329,7 @@ class SecretObject extends stdClass // NOSONAR
      *
      * @param string $var The name of the property.
      * @param mixed $value The value to set.
-     * @return self Fluent interface; returns the current instance.
+     * @return self Returns the current instance for method chaining.
      */
     private function _set($var, $value)
     {
