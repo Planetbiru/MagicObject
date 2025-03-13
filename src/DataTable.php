@@ -520,7 +520,7 @@ class DataTable extends SetterGetter
     /**
      * Gets table information.
      *
-     * @return PicoTableInfo
+     * @return PicoTableInfo Table information.
      */
     public function getTableInfo()
     {

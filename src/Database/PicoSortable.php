@@ -134,7 +134,7 @@ class PicoSortable
      *
      * @param string $sortBy The field to sort by.
      * @param string $sortType The type of sorting (ASC or DESC).
-     * @return PicoSort
+     * @return PicoSort A new instance of PicoSort.
      */
     public function createSortable($sortBy, $sortType)
     {
