@@ -277,17 +277,17 @@ class NativeQueryUtil
         
         if (empty($queryString)) {
             // Attempt to extract the query using method 1
-            $queryString = $this->parseVersion1($docComment);
+            $queryString = $this->parseSingleLine($docComment);
         }
         
         if (empty($queryString)) {
             // Attempt to extract the query using method 2
-            $queryString = $this->parseVersion2($docComment);
+            $queryString = $this->parseMultiline($docComment);
         }
 
         if (empty($queryString)) {
             // Attempt to extract the query using method 3
-            $queryString = $this->parseVersion3($docComment);
+            $queryString = $this->parseMultilineWithAttributes($docComment);
         }
 
         $queryString = $this->trimQueryString($docComment, $queryString);
@@ -306,7 +306,7 @@ class NativeQueryUtil
      * @param string $docComment The docblock containing the `@query` annotation.
      * @return string The extracted SQL query or an empty string if not found.
      */
-    private function parseVersion1($docComment)
+    private function parseSingleLine($docComment)
     {
         preg_match('/@query\s*\("([^"]+)"\)/', $docComment, $matches);
         return $matches ? $matches[1] : '';
@@ -320,7 +320,7 @@ class NativeQueryUtil
      * @param string $docComment The docblock containing the `@query` annotation.
      * @return string The extracted SQL query or an empty string if not found.
      */
-    private function parseVersion2($docComment)
+    private function parseMultiline($docComment)
     {
         preg_match('/@query\s*\(\s*"(.*?)"\s*\)/s', $docComment, $matches);
         return $matches ? $matches[1] : '';
@@ -334,7 +334,7 @@ class NativeQueryUtil
      * @param string $docComment The docblock containing the `@query` annotation.
      * @return string The extracted SQL query or an empty string if not found.
      */
-    private function parseVersion3($docComment)
+    private function parseMultilineWithAttributes($docComment)
     {
         preg_match('/@query\s*\(\s*"([\s\S]+?)"\s*(?:,|$)/', $docComment, $matches);
         return $matches ? $matches[1] : '';
