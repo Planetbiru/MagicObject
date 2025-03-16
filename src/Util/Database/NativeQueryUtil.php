@@ -262,9 +262,17 @@ class NativeQueryUtil
     /**
      * Extracts the SQL query string from the docblock or the caller's parameters.
      *
-     * This method checks the caller's parameters for a `PicoDatabaseQueryTemplate` object
-     * to retrieve the query string. If not found, it attempts to extract the query from 
-     * the `@query` annotation within the docblock.
+     * This method first checks the caller's parameters for a `PicoDatabaseQueryTemplate` object
+     * to obtain the query string. If no such object is found, it attempts to extract the query 
+     * from the `@query` annotation in the docblock using different parsing methods.
+     *
+     * The extraction process follows these steps:
+     * 1. Attempts to retrieve a single-line query from the `@query` annotation.
+     * 2. If unsuccessful, attempts to extract a multi-line query.
+     * 3. If still unsuccessful, tries parsing a multi-line query with additional attributes.
+     * 4. Finally, trims and formats the extracted query string.
+     *
+     * If no query string is found, an `InvalidQueryInputException` is thrown.
      *
      * @param string $docComment The docblock of the caller function.
      * @param array $callerParamValues The parameters passed to the caller function.
@@ -276,20 +284,21 @@ class NativeQueryUtil
         $queryString = $this->getQueryStringFromCallerParams($callerParamValues);
         
         if (empty($queryString)) {
-            // Attempt to extract the query using method 1
+            // Attempts to retrieve a single-line query from the `@query` annotation.
             $queryString = $this->parseSingleLine($docComment);
         }
         
         if (empty($queryString)) {
-            // Attempt to extract the query using method 2
+            // If unsuccessful, attempts to extract a multi-line query.
             $queryString = $this->parseMultiline($docComment);
         }
 
         if (empty($queryString)) {
-            // Attempt to extract the query using method 3
+            // If still unsuccessful, tries parsing a multi-line query with additional attributes.
             $queryString = $this->parseMultilineWithAttributes($docComment);
         }
 
+        // Finally, trims and formats the extracted query string.
         $queryString = $this->trimQueryString($docComment, $queryString);
 
         if (empty($queryString)) {
