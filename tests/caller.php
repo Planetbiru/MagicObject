@@ -261,10 +261,10 @@ class Supervisor extends MagicObject
      * @param PicoSortable $sortable
      * @return MagicObject[]
      * @query("
-      SELECT supervisor.*
-      FROM supervisor 
-      WHERE supervisor.aktif = :aktif
-     ")
+     * SELECT supervisor.*
+     * FROM supervisor 
+     * WHERE supervisor.aktif = :aktif
+     * ", trim=true)
      */
     public function native13($pageable, $sortable, $aktif)
     {
@@ -272,8 +272,9 @@ class Supervisor extends MagicObject
         return $this->executeNativeQuery();
     }
 }
-
 $obj = new Supervisor(null, $database);
+
+/*
 
 
 $native1 = $obj->native1(1, true);
@@ -326,7 +327,7 @@ echo "Telepon: " . $native9[0]->getTelepon() . "\r\n";
 echo "Telepon: " . $native10->getTelepon() . "\r\n";
 echo "Telepon: " . $native11[0]->getTelepon() . "\r\n";
 
-
+*/
 $sortable = new PicoSortable();
 $sortable->addSortable(new PicoSort("nama", PicoSort::ORDER_TYPE_ASC));
 $pageable = new PicoPageable(new PicoPage(1, 2));
