@@ -265,7 +265,7 @@ Now, MagicObject can **extract and clean up SQL queries** written in the `@query
 ####  **Key Features:**
 
 - **Extract SQL Queries from Docblocks** – Automatically retrieves queries from the `@query` annotation.  
-- **Supports Trim Parameter** – Removes `*` and leading spaces from each line when the `trim` parameter is included.  
+- **Supports Trim Parameter** – Removes `*` and leading spaces from each line.  
 - **Flexible Processing** – Ensures queries remain readable even when written in a multiline format within docblocks.
 
 ####  **Usage Example:**
