@@ -300,3 +300,32 @@ class SupervisorExport extends MagicObject
 ```
 
 This feature ensures that queries stay clean and usable without unnecessary formatting issues.
+
+### **Improved Return Type Handling in `handleReturnObject`**
+
+MagicObject now supports **both classic and PHP 7+ array return type annotations**:
+
+#### **Key Enhancements:**
+
+- **Supports Classic (`stdClass[]`) and PHP 7+ (`array<stdClass>`) Notation** – Now handles both styles seamlessly.
+- **Regex-Based Type Parsing** – Automatically detects and processes return types.
+- **Stronger Type Handling** – Improved switch case handling with lowercase normalization.
+
+#### **Updated Logic in `handleReturnObject`**
+
+Now, when specifying return types, you can use either:
+
+```php
+/**
+ * @return stdClass[]
+ */
+```
+**or**
+
+```php
+/**
+ * @return array<stdClass>
+ */
+```
+
+This ensures compatibility across different PHP versions while maintaining flexibility in return type definitions.

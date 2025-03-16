@@ -124,9 +124,10 @@ class NativeQueryUtil
                 break;
         }
 
-        // Handle array-type hinting (e.g., MagicObject[], MyClass[])
-        if (strpos($returnType, "[") !== false) {
-            return $this->handleArrayReturnType($stmt, $returnType);
+        // Handle array-type hinting (supports both classic and PHP 7+ styles)
+        if (preg_match('/^(array<([\w\\\\]+)>|([\w\\\\]+)\[\])$/i', $returnType, $matches)) {
+            $className = $matches[2] ?? $matches[3];
+            return $this->handleArrayReturnType($stmt, $className);
         }
 
         // Handle single class-type return (e.g., MagicObject, MyClass)
@@ -136,14 +137,16 @@ class NativeQueryUtil
     /**
      * Handles return types with array hinting (e.g., `MagicObject[]`, `MyClass[]`).
      *
+     * Supports both classic (`stdClass[]`) and PHP 7.0+ (`array<stdClass>`) annotation styles.
+     *
      * @param PDOStatement $stmt The executed PDO statement.
-     * @param string $returnType The array-type return type (e.g., `MagicObject[]`).
-     * @return array The processed result as an array of objects.
+     * @param string $returnType The array-type return type (e.g., `MagicObject[]`, `array<MyClass>`).
+     * @return stdClass[]|array<stdClass> The processed result as an array of objects.
      * @throws InvalidReturnTypeException If the return type is invalid or unrecognized.
      */
     private function handleArrayReturnType($stmt, $returnType)
     {
-        $className = trim(explode("[", $returnType)[0]);
+        $className = trim(str_replace(array('[', ']', 'array<', '>'), '', $returnType));
 
         if ($className === 'stdClass') {
             return $stmt->fetchAll(PDO::FETCH_OBJ);
