@@ -251,3 +251,46 @@ A new function, `bindSqlParams`, has been introduced to safely bind SQL paramete
 Several functions in the class with **private access level** have undergone changes, including function names, parameter names, and parameter order, to improve maintainability. These changes do not affect compatibility with previous versions, as the functions are only accessed within the class itself.
 
 Upgrade to **MagicObject 3.6** now and enjoy a more powerful and flexible query-building experience!
+
+# MagicObject version 3.7
+
+## What's New
+
+MagicObject version **3.7** introduces significant improvements in SQL query handling with a new feature:
+
+### **Added `trimQueryString` for Processing Queries in Docblocks**
+
+Now, MagicObject can **extract and clean up SQL queries** written in the `@query` annotation inside docblocks.
+
+####  **Key Features:**
+
+- **Extract SQL Queries from Docblocks** – Automatically retrieves queries from the `@query` annotation.  
+- **Supports Trim Parameter** – Removes `*` and leading spaces from each line when the `trim` parameter is included.  
+- **Flexible Processing** – Ensures queries remain readable even when written in a multiline format within docblocks.
+
+####  **Usage Example:**
+
+```php
+    /**
+     * Native query 13
+     *
+     * This method will return an array of Supervisor object.
+     *
+     * @param int $supervisorId The ID of the table to search for.
+     * @param PicoPageable $pageable
+     * @param PicoSortable $sortable
+     * @return MagicObject[]
+     * @query("
+     * SELECT supervisor.*
+     * FROM supervisor 
+     * WHERE supervisor.aktif = :aktif
+     * ", trim=true)
+     */
+    public function native13($pageable, $sortable, $aktif)
+    {
+        // Call parent method to execute the query
+        return $this->executeNativeQuery();
+    }
+```
+
+This feature ensures that queries stay clean and usable without unnecessary formatting issues.
