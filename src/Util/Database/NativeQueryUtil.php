@@ -146,7 +146,7 @@ class NativeQueryUtil
      */
     private function handleArrayReturnType($stmt, $returnType)
     {
-        $className = trim(str_replace(['[', ']'], '', $returnType));
+        $className = trim(str_replace(array('[', ']', 'array<', '>'), '', $returnType));
 
         if ($className === 'stdClass') {
             return $stmt->fetchAll(PDO::FETCH_OBJ);
