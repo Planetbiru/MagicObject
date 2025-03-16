@@ -259,7 +259,7 @@ class Supervisor extends MagicObject
      * @param int $supervisorId The ID of the table to search for.
      * @param PicoPageable $pageable
      * @param PicoSortable $sortable
-     * @return MagicObject[]
+     * @return array<MagicObject>
      * @query("
      * SELECT supervisor.*
      * FROM supervisor 
