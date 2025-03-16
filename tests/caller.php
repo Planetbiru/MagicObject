@@ -14,7 +14,7 @@ $databaseCredential = new SecretObject();
 $databaseCredential->loadYamlFile(dirname(dirname(__DIR__)) . "/test.yml.txt", false, true, true);
 $databaseCredential->getDatabase()->setDatabaseName("sipro");
 $database = new PicoDatabase($databaseCredential->getDatabase(), null, function($sql){
-    echo $sql.";\r\n\r\n";
+    // echo $sql.";\r\n\r\n";
 });
 $database->connect();
 
@@ -264,7 +264,7 @@ class Supervisor extends MagicObject
      * SELECT supervisor.*
      * FROM supervisor 
      * WHERE supervisor.aktif = :aktif
-     * ", trim=true)
+     * ")
      */
     public function native13($pageable, $sortable, $aktif)
     {

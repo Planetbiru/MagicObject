@@ -416,10 +416,10 @@ print_r($native11);
 // For the MagicObject return type, users can utilize the features of the MagicObject except for 
 // interacting with the database again because native queries are designed for a different purpose.
 
-echo "Alamat: " . $native8->getTelepon() . "\r\n";
-echo "Alamat: " . $native9[0]->getTelepon() . "\r\n";
-echo "Alamat: " . $native10->getTelepon() . "\r\n";
-echo "Alamat: " . $native11[0]->getTelepon() . "\r\n";
+echo "Phone: " . $native8->getTelepon() . "\r\n";
+echo "Phone: " . $native9[0]->getTelepon() . "\r\n";
+echo "Phone: " . $native10->getTelepon() . "\r\n";
+echo "Phone: " . $native11[0]->getTelepon() . "\r\n";
 
 
 $sortable = new PicoSortable();
@@ -899,9 +899,9 @@ class SupervisorExport extends MagicObject
 
 The `trim` attribute is added inside the `@query` annotation:
 
-| Attribute   | Description |
-| ----------- | ----------- |
-| `trim=true` | Removes leading `*` and spaces from multiline queries in docblocks |
+| Attribute   | Allowed Values     | Description |
+| ----------- | ------------------ | ----------- |
+| `trim`      | `true` or `false`  | Removes leading `*` and spaces from multiline queries in docblocks. Default value is `true`. |
 
 #### Notes & Limitations
 
