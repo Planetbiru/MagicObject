@@ -285,13 +285,57 @@ class NativeQueryUtil
         }
         
         if (empty($queryString)) {
-            // Try reading the query in another way
+            // Try reading the query in another way (1)
             preg_match('/@query\s*\(\s*"(.*?)"\s*\)/s', $docComment, $matches);
             $queryString = $matches ? $matches[1] : '';
         }
+
+        if(empty($queryString))
+        {
+            // Try reading the query in another way (2)
+            $queryString = $this->trimQueryString($docComment);
+
+        }
+
+
         if (empty($queryString)) {
             throw new InvalidQueryInputException("No query found.\r\n" . $docComment);
         }
+        return $queryString;
+    }
+
+    /**
+     * Extracts and trims the SQL query string from a docblock annotation.
+     *
+     * This method searches for an `@query` annotation within the provided docblock
+     * and extracts the SQL query string. If the `trim` parameter is specified in the annotation,
+     * it removes leading `*` and whitespace characters from each line of the query.
+     *
+     * @param string $docComment The docblock containing the `@query` annotation.
+     * @return string The extracted and optionally trimmed SQL query string.
+     */
+    private function trimQueryString($docComment)
+    {
+        preg_match('/@query\s*\(\s*"([\s\S]+?)"\s*(?:,|$)/', $docComment, $matches);
+        $queryString = $matches ? $matches[1] : '';
+
+        preg_match_all('/,\s*([\w-]+)\s*=\s*([\w-]+)/', $docComment, $paramMatches, PREG_SET_ORDER);
+
+        $params = [];
+        foreach ($paramMatches as $match) {
+            $params[$match[1]] = $match[2];
+        }
+
+        if(isset($params['trim']))
+        {
+            $lines = explode("\n", $queryString);
+            foreach($lines as $idx=>$ln)
+            {
+                $lines[$idx] = ltrim($ln, " *");
+            }
+            $queryString = implode("\n", $lines);
+        }
+
         return $queryString;
     }
 

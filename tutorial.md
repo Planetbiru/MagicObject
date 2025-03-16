@@ -10599,7 +10599,7 @@ fclose($fp);
 
 ### Dynamic Query Template for Native Query
 
-MagicObject version 2.11 introduces a new feature for native queries called the dynamic query template, which allows users to dynamically pass a query template to the native query method.
+MagicObject version **2.11** introduces a new feature for native queries called the **dynamic query template**, allowing users to dynamically pass a query template to the native query method.
 
 **Example 4**
 
@@ -10707,6 +10707,98 @@ $result = $explort->exportActive($aktif, $pageable, $sortable, $template);
 ```
 
 In the example above, the `PicoDatabaseQueryTemplate` object is initialized using a string.
+
+### Query Trimming for Native Query
+
+MagicObject **3.7** introduces a new feature that allows users to **trim left spaces and asterisks** (`*`) from multiline SQL queries written in **docblock annotations**. This feature enhances **readability** and **ensures better formatting** of queries extracted from docblocks.
+
+#### Feature Overview
+
+-   **Automatic Query Trimming:** Removes leading `*` and spaces from SQL queries in docblocks.
+    
+-   **Improved Readability:** Prevents unwanted indentation when parsing queries.
+    
+-   **Easy Activation:** Just add `trim=true` in the `@query` annotation.
+    
+
+#### Before MagicObject 3.7 (Without Trim)
+
+When defining queries in docblocks, the indentation and leading `*` may cause unnecessary formatting issues:
+
+```
+<?php
+
+use MagicObject\Database\PicoPageable;
+use MagicObject\Database\PicoSortable;
+use MagicObject\MagicObject;
+
+class SupervisorExport extends MagicObject
+{
+    /**
+     * Exports active supervisors based on the given active status.
+     *
+     * @param bool $aktif The active status filter (true for active, false for inactive).
+     * @param PicoPageable $pageable Pagination details.
+     * @param PicoSortable $sortable Sorting details.
+     * @return PDOStatement The result of the executed query.
+     * @query("
+           SELECT supervisor.*
+           FROM supervisor
+           WHERE supervisor.aktif = :aktif
+      ")
+    */
+    public function exportActive($aktif, $pageable, $sortable)
+    {
+        return $this->executeNativeQuery();
+    }
+}
+```
+
+#### After MagicObject 3.7 (With Trim Enabled)
+
+With the `trim=true` option, MagicObject **automatically removes leading** `*` **and spaces**, keeping the query **clean and properly formatted**:
+
+```
+<?php
+
+use MagicObject\Database\PicoPageable;
+use MagicObject\Database\PicoSortable;
+use MagicObject\MagicObject;
+
+class SupervisorExport extends MagicObject
+{
+    /**
+     * Exports active supervisors based on the given active status.
+     *
+     * @param bool $aktif The active status filter (true for active, false for inactive).
+     * @param PicoPageable $pageable Pagination details.
+     * @param PicoSortable $sortable Sorting details.
+     * @return PDOStatement The result of the executed query.
+     * @query("
+     *      SELECT supervisor.*
+     *      FROM supervisor
+     *      WHERE supervisor.aktif = :aktif
+     * ", trim=true)
+    */
+    public function exportActive($aktif, $pageable, $sortable)
+    {
+        return $this->executeNativeQuery();
+    }
+}
+```
+
+#### Configuration & Parameters
+
+The `trim` attribute is added inside the `@query` annotation:
+
+| Attribute   | Description |
+| ----------- | ----------- |
+| `trim=true` | Removes leading `*` and spaces from multiline queries in docblocks |
+
+#### Notes & Limitations
+
+-   `trim=true` **does not modify the SQL syntax** itself, meaning `SELECT * FROM table` remains unchanged.
+-   This feature only affects how queries are **extracted** from docblocks, improving clarity without changing functionality.
 
 
 ### Best Practices
