@@ -270,27 +270,33 @@ Now, MagicObject can **extract and clean up SQL queries** written in the `@query
 
 ####  **Usage Example:**
 
-```php
+```
+<?php
+
+use MagicObject\Database\PicoPageable;
+use MagicObject\Database\PicoSortable;
+use MagicObject\MagicObject;
+
+class SupervisorExport extends MagicObject
+{
     /**
-     * Native query 13
+     * Exports active supervisors based on the given active status.
      *
-     * This method will return an array of Supervisor object.
-     *
-     * @param int $supervisorId The ID of the table to search for.
-     * @param PicoPageable $pageable
-     * @param PicoSortable $sortable
-     * @return MagicObject[]
+     * @param bool $aktif The active status filter (true for active, false for inactive).
+     * @param PicoPageable $pageable Pagination details.
+     * @param PicoSortable $sortable Sorting details.
+     * @return PDOStatement The result of the executed query.
      * @query("
-     * SELECT supervisor.*
-     * FROM supervisor 
-     * WHERE supervisor.aktif = :aktif
+     *      SELECT supervisor.*
+     *      FROM supervisor
+     *      WHERE supervisor.aktif = :aktif
      * ", trim=true)
-     */
-    public function native13($pageable, $sortable, $aktif)
+    */
+    public function exportActive($aktif, $pageable, $sortable)
     {
-        // Call parent method to execute the query
         return $this->executeNativeQuery();
     }
+}
 ```
 
 This feature ensures that queries stay clean and usable without unnecessary formatting issues.
