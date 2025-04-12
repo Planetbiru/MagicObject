@@ -2857,15 +2857,29 @@ class PicoDatabasePersistence // NOSONAR
             ->select($this->database->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE ? $agg : "count(*)")
             ->from($info->getTableName())
             ->where($where);
-
+        $count = 0;
         try {
             $stmt = $this->database->executeQuery($sqlQuery);
             if ($stmt) {
-                return $this->database->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE 
-                    ? $stmt->fetchColumn() 
-                    : $stmt->rowCount();
+                if($this->database->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE)
+                {
+                    $data = $stmt->fetchColumn();
+                    if($data === false)
+                    {
+                        // SQLite database
+                        $count = 0;
+                    }
+                    else
+                    {
+                        $count = 1;
+                    }
+                } 
+                else
+                {
+                    $count = $stmt->rowCount();
+                }
             }
-            throw new PDOException("Unknown error");
+            return $count;
         } catch (Exception $e) {
             throw new EmptyResultException($e->getMessage());
         }
