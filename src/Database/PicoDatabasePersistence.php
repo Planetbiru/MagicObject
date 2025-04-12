@@ -2854,7 +2854,7 @@ class PicoDatabasePersistence // NOSONAR
         $queryBuilder = new PicoDatabaseQueryBuilder($this->database);
         $sqlQuery = $queryBuilder
             ->newQuery()
-            ->select($this->database->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE ? "count(*)" : $agg)
+            ->select($this->database->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_SQLITE ? $agg : "count(*)")
             ->from($info->getTableName())
             ->where($where);
 
