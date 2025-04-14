@@ -41,6 +41,16 @@ class PicoUploadFileItem
     }
     
     /**
+     * Checks if the uploaded file is a multiple file upload.
+     *
+     * @return bool true if the file is a multiple upload; otherwise, false.
+     */
+    public function isExists()
+    {
+        return isset($this->value['tmp_name']) && is_file($this->value['tmp_name']);
+    }
+    
+    /**
      * Copies the uploaded file to a specified destination path.
      *
      * @param string $path The target path where the file will be copied.
@@ -90,6 +100,20 @@ class PicoUploadFileItem
     public function getName()
     {
         return isset($this->value['name']) ? $this->value['name'] : null;
+    }
+    
+    /**
+     * Gets the file extension of the uploaded file.
+     *
+     * @return string|null The file extension or null if not set.
+     */
+    public function getExtension()
+    {
+        $name = $this->getName();
+        if ($name) {
+            return pathinfo($name, PATHINFO_EXTENSION);
+        }
+        return null;
     }
     
     /**
