@@ -108,6 +108,23 @@ class PicoUploadFileItem
     }
     
     /**
+     * Generates a random file name with the specified length.
+     *
+     * @param int $length The desired length of the random file name.
+     * @return string The generated random file name with the same extension as the original file.
+     */
+    public function getRandomName($length)
+    {
+        $randomName = substr(bin2hex(random_bytes($length)), 0, $length);
+        $name = $this->getName();
+        if ($name) {
+            $extension = pathinfo($name, PATHINFO_EXTENSION);
+            return $randomName . '.' . $extension;
+        }
+        return $randomName;
+    }
+    
+    /**
      * Gets the file extension of the uploaded file.
      *
      * @return string|null The file extension or null if not set.
