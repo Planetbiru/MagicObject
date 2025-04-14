@@ -68,6 +68,8 @@ class PicoUploadFileItem
     
     /**
      * Moves the uploaded file to a specified destination path.
+     * 
+     * This method attempts to create the target directory if it does not exist.
      *
      * @param string $path The target path where the file will be moved.
      * @return bool true on success; otherwise, false.
@@ -75,6 +77,9 @@ class PicoUploadFileItem
      */
     public function moveTo($path)
     {
+        if(!file_exists(dirname($path))) {
+            mkdir(dirname($path), 0755, true);
+        }
         if (isset($this->value['tmp_name'])) {
             return move_uploaded_file($this->value['tmp_name'], $path);
         } else {
