@@ -2443,7 +2443,39 @@ Optionally, a filter can be applied to specify which properties to copy, and whe
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">50. <span class="method-label">removeValue</span></div>
+<div class="method-identity">50. <span class="method-label">mergeWith</span></div>
+<h3>Declaration</h3>
+<div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">mergeWith</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">self</span> <span class="parameter-name">$other</span><br>
+) : <span class="return-type">self</span><br>{<br>}</div>
+<div class='docblock'>
+<h3>Description</h3>
+<p>Merges the current object with another MagicObject.</p>
+<p>This method allows you to combine the properties of another object into the current one.
+It is particularly useful for updating or extending an object with new values while preserving
+existing nested structures.</p>
+<p>Behavior:</p>
+<ul>
+<li>If a property from the incoming object does not exist in the current object, it will be added.</li>
+<li>
+<p>If a property exists:</p>
+<ul>
+<li>If both values are instances of MagicObject, a recursive merge is performed.</li>
+<li>Otherwise, the existing value will be overwritten with the incoming one.</li>
+</ul>
+<p>All property names will be automatically camelized before processing.</p>
+</li>
+</ul>
+<h3>Parameters</h3>
+<div class="parameter-name">$other</div>
+<div class="parameter-description"><p>The MagicObject instance to merge with the current object.</p></div>
+<h3>Return</h3>
+<div class="return-type">self</div>
+<div class="return-description"><p>Returns the current object instance for method chaining.</p></div>
+</div>
+</div>
+<div class='method'>
+<div class="method-identity">51. <span class="method-label">removeValue</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">removeValue</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$propertyName</span>, <br>
@@ -2463,7 +2495,7 @@ Optionally, a filter can be applied to specify which properties to copy, and whe
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">51. <span class="method-label">tableInfo</span></div>
+<div class="method-identity">52. <span class="method-label">tableInfo</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">tableInfo</span>() : <span class="return-type">PicoTableInfo</span><br>{<br>}</div>
 <div class='docblock'>
@@ -2478,7 +2510,7 @@ for future calls to improve performance.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">52. <span class="method-label">defaultValue</span></div>
+<div class="method-identity">53. <span class="method-label">defaultValue</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">defaultValue</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">bool</span> <span class="parameter-name">$snakeCase <span class="parameter-equal-sign">=</span> <span class="parameter-default">false</span></span><br>
@@ -2495,7 +2527,7 @@ for future calls to improve performance.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">53. <span class="method-label">value</span></div>
+<div class="method-identity">54. <span class="method-label">value</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">value</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">bool</span> <span class="parameter-name">$snakeCase <span class="parameter-equal-sign">=</span> <span class="parameter-default">false</span></span><br>
@@ -2512,7 +2544,7 @@ for future calls to improve performance.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">54. <span class="method-label">valueObject</span></div>
+<div class="method-identity">55. <span class="method-label">valueObject</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">valueObject</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">boolean</span>|<span class="parameter-type">null</span> <span class="parameter-name">$snakeCase <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span><br>
@@ -2529,7 +2561,7 @@ for future calls to improve performance.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">55. <span class="method-label">valueArray</span></div>
+<div class="method-identity">56. <span class="method-label">valueArray</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">valueArray</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">bool</span> <span class="parameter-name">$snakeCase <span class="parameter-equal-sign">=</span> <span class="parameter-default">false</span></span><br>
@@ -2546,7 +2578,7 @@ for future calls to improve performance.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">56. <span class="method-label">valueArrayUpperCamel</span></div>
+<div class="method-identity">57. <span class="method-label">valueArrayUpperCamel</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">valueArrayUpperCamel</span>() : <span class="return-type">array</span><br>{<br>}</div>
 <div class='docblock'>
@@ -2558,7 +2590,7 @@ for future calls to improve performance.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">57. <span class="method-label">_snakeJson</span></div>
+<div class="method-identity">58. <span class="method-label">_snakeJson</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">protected</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">_snakeJson</span>() : <span class="return-type">bool</span><br>{<br>}</div>
 <div class='docblock'>
@@ -2570,7 +2602,7 @@ for future calls to improve performance.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">58. <span class="method-label">_snakeYaml</span></div>
+<div class="method-identity">59. <span class="method-label">_snakeYaml</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">protected</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">_snakeYaml</span>() : <span class="return-type">bool</span><br>{<br>}</div>
 <div class='docblock'>
@@ -2582,7 +2614,7 @@ for future calls to improve performance.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">59. <span class="method-label">_upperCamel</span></div>
+<div class="method-identity">60. <span class="method-label">_upperCamel</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">protected</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">_upperCamel</span>() : <span class="return-type">bool</span><br>{<br>}</div>
 <div class='docblock'>
@@ -2594,7 +2626,7 @@ for future calls to improve performance.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">60. <span class="method-label">_camel</span></div>
+<div class="method-identity">61. <span class="method-label">_camel</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">protected</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">_camel</span>() : <span class="return-type">bool</span><br>{<br>}</div>
 <div class='docblock'>
@@ -2606,7 +2638,7 @@ for future calls to improve performance.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">61. <span class="method-label">_pretty</span></div>
+<div class="method-identity">62. <span class="method-label">_pretty</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">protected</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">_pretty</span>() : <span class="return-type">bool</span><br>{<br>}</div>
 <div class='docblock'>
@@ -2618,7 +2650,7 @@ for future calls to improve performance.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">62. <span class="method-label">_isArray</span></div>
+<div class="method-identity">63. <span class="method-label">_isArray</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">_isArray</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">mixed</span> <span class="parameter-name">$params</span><br>
@@ -2637,7 +2669,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">63. <span class="method-label">_isNotNullAndNotEmpty</span></div>
+<div class="method-identity">64. <span class="method-label">_isNotNullAndNotEmpty</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">_isNotNullAndNotEmpty</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">mixed</span> <span class="parameter-name">$value</span><br>
@@ -2654,7 +2686,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">64. <span class="method-label">propertyList</span></div>
+<div class="method-identity">65. <span class="method-label">propertyList</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">protected</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">propertyList</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">bool</span> <span class="parameter-name">$reflectSelf <span class="parameter-equal-sign">=</span> <span class="parameter-default">false</span></span>, <br>
@@ -2674,7 +2706,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">65. <span class="method-label">listAll</span></div>
+<div class="method-identity">66. <span class="method-label">listAll</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">listAll</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">PicoSpecification</span>|<span class="parameter-type">null</span> <span class="parameter-name">$specification <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
@@ -2708,7 +2740,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">66. <span class="method-label">countData</span></div>
+<div class="method-identity">67. <span class="method-label">countData</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">countData</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">PicoDatabasePersistence</span> <span class="parameter-name">$persist</span>, <br>
@@ -2740,7 +2772,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">67. <span class="method-label">findOne</span></div>
+<div class="method-identity">68. <span class="method-label">findOne</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">findOne</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">PicoSpecification</span>|<span class="parameter-type">null</span> <span class="parameter-name">$specification <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
@@ -2768,7 +2800,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">68. <span class="method-label">findAll</span></div>
+<div class="method-identity">69. <span class="method-label">findAll</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">findAll</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">PicoSpecification</span>|<span class="parameter-type">null</span> <span class="parameter-name">$specification <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
@@ -2805,7 +2837,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">69. <span class="method-label">findAllAsc</span></div>
+<div class="method-identity">70. <span class="method-label">findAllAsc</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">findAllAsc</span>() : <span class="return-type">PicoPageData</span><br>{<br>}</div>
 <div class='docblock'>
@@ -2817,7 +2849,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">70. <span class="method-label">findAllDesc</span></div>
+<div class="method-identity">71. <span class="method-label">findAllDesc</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">findAllDesc</span>() : <span class="return-type">PicoPageData</span><br>{<br>}</div>
 <div class='docblock'>
@@ -2829,7 +2861,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">71. <span class="method-label">findSpecific</span></div>
+<div class="method-identity">72. <span class="method-label">findSpecific</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">findSpecific</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$selected</span>, <br>
@@ -2869,7 +2901,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">72. <span class="method-label">countDataCustom</span></div>
+<div class="method-identity">73. <span class="method-label">countDataCustom</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">countDataCustom</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">PicoDatabasePersistence</span> <span class="parameter-name">$persist</span>, <br>
@@ -2901,7 +2933,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">73. <span class="method-label">countDataCustomWithPagable</span></div>
+<div class="method-identity">74. <span class="method-label">countDataCustomWithPagable</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">countDataCustomWithPagable</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">PicoDatabasePersistence</span> <span class="parameter-name">$persist</span>, <br>
@@ -2933,7 +2965,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">74. <span class="method-label">countAll</span></div>
+<div class="method-identity">75. <span class="method-label">countAll</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">countAll</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">PicoSpecification</span>|<span class="parameter-type">null</span> <span class="parameter-name">$specification <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
@@ -2961,7 +2993,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">75. <span class="method-label">findAllQuery</span></div>
+<div class="method-identity">76. <span class="method-label">findAllQuery</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">findAllQuery</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">PicoSpecification</span>|<span class="parameter-type">null</span> <span class="parameter-name">$specification <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
@@ -2989,7 +3021,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">76. <span class="method-label">find</span></div>
+<div class="method-identity">77. <span class="method-label">find</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">find</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">mixed</span> <span class="parameter-name">$params</span><br>
@@ -3011,7 +3043,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">77. <span class="method-label">findIfExists</span></div>
+<div class="method-identity">78. <span class="method-label">findIfExists</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">findIfExists</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">array</span> <span class="parameter-name">$params</span><br>
@@ -3028,7 +3060,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">78. <span class="method-label">findBy</span></div>
+<div class="method-identity">79. <span class="method-label">findBy</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">findBy</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$method</span>, <br>
@@ -3068,7 +3100,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">79. <span class="method-label">countBy</span></div>
+<div class="method-identity">80. <span class="method-label">countBy</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">countBy</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$method</span>, <br>
@@ -3091,7 +3123,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">80. <span class="method-label">deleteBy</span></div>
+<div class="method-identity">81. <span class="method-label">deleteBy</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">deleteBy</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$method</span>, <br>
@@ -3114,7 +3146,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">81. <span class="method-label">findOneWithPrimaryKeyValue</span></div>
+<div class="method-identity">82. <span class="method-label">findOneWithPrimaryKeyValue</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">findOneWithPrimaryKeyValue</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">mixed</span> <span class="parameter-name">$primaryKeyVal</span>, <br>
@@ -3139,7 +3171,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">82. <span class="method-label">findOneBy</span></div>
+<div class="method-identity">83. <span class="method-label">findOneBy</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">findOneBy</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$method</span>, <br>
@@ -3167,7 +3199,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">83. <span class="method-label">findOneIfExistsBy</span></div>
+<div class="method-identity">84. <span class="method-label">findOneIfExistsBy</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">findOneIfExistsBy</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$method</span>, <br>
@@ -3193,7 +3225,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">84. <span class="method-label">deleteOneBy</span></div>
+<div class="method-identity">85. <span class="method-label">deleteOneBy</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">deleteOneBy</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$method</span>, <br>
@@ -3216,7 +3248,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">85. <span class="method-label">existsBy</span></div>
+<div class="method-identity">86. <span class="method-label">existsBy</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">existsBy</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$method</span>, <br>
@@ -3239,7 +3271,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">86. <span class="method-label">booleanToTextBy</span></div>
+<div class="method-identity">87. <span class="method-label">booleanToTextBy</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">booleanToTextBy</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$propertyName</span>, <br>
@@ -3259,7 +3291,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">87. <span class="method-label">toArrayObject</span></div>
+<div class="method-identity">88. <span class="method-label">toArrayObject</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">toArrayObject</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">array</span> <span class="parameter-name">$result</span>, <br>
@@ -3279,7 +3311,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">88. <span class="method-label">size</span></div>
+<div class="method-identity">89. <span class="method-label">size</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">size</span>() : <span class="return-type">int</span><br>{<br>}</div>
 <div class='docblock'>
@@ -3291,7 +3323,7 @@ used to validate the type of data before performing any operations on it that re
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">89. <span class="method-label">__call</span></div>
+<div class="method-identity">90. <span class="method-label">__call</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">__call</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$method</span>, <br>
@@ -3591,7 +3623,7 @@ invokes the appropriate method according to its name and parameters.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">90. <span class="method-label">__toString</span></div>
+<div class="method-identity">91. <span class="method-label">__toString</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">__toString</span>() : <span class="return-type">string</span><br>{<br>}</div>
 <div class='docblock'>
@@ -3603,7 +3635,7 @@ invokes the appropriate method according to its name and parameters.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">91. <span class="method-label">stringifyObject</span></div>
+<div class="method-identity">92. <span class="method-label">stringifyObject</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">stringifyObject</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">self</span> <span class="parameter-name">$value</span>, <br>
@@ -3623,7 +3655,7 @@ invokes the appropriate method according to its name and parameters.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">92. <span class="method-label">dumpYaml</span></div>
+<div class="method-identity">93. <span class="method-label">dumpYaml</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">dumpYaml</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">int</span>|<span class="parameter-type">null</span> <span class="parameter-name">$inline <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
