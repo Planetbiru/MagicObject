@@ -1435,6 +1435,62 @@ class MagicObject extends stdClass // NOSONAR
         }
         return $this;
     }
+    
+    /**
+     * Merges the current object with another MagicObject.
+     *
+     * This method allows you to combine the properties of another object into the current one.
+     * It is particularly useful for updating or extending an object with new values while preserving
+     * existing nested structures.
+     *
+     * Behavior:
+     * - If a property from the incoming object does not exist in the current object, it will be added.
+     * - If a property exists:
+     *   - If both values are instances of MagicObject, a recursive merge is performed.
+     *   - Otherwise, the existing value will be overwritten with the incoming one.
+     *
+     * All property names will be automatically camelized before processing.
+     *
+     * @param self $other The MagicObject instance to merge with the current object.
+     * @return self Returns the current object instance for method chaining.
+     */
+    public function mergeWith($other)
+    {
+        // Ensure $other is a MagicObject and not empty
+        if (isset($other) || $other instanceof self && !$other->empty()) {
+            // Get an array of values from the other object
+            $values = $other->valueArray();
+            $keys = array_keys($values);
+            
+            // Loop through each key-value pair
+            foreach ($keys as $key) {
+                // Normalize the key to camelCase
+                $value1 = $this->get($key);
+                $value2 = $other->get($key);
+
+                // If the property does not exist, simply add it
+                if (!$this->hasValue($key)) {
+                    $this->set($key, $value2);
+                } else {
+                    // If it exists, get the current value
+
+                    // If both current and new values are MagicObject, merge recursively
+                    if ($value1 instanceof self && $value2 instanceof self) {
+                        $value1->mergeWith($value2);
+                        $this->set($key, $value1);
+                    } else {
+                        // Otherwise, override the value
+                        $this->set($key, $value2);
+                    }
+                }
+            }
+        }
+
+        // Return the current object for chaining
+        return $this;
+    }
+
+
 
     /**
      * Remove property value and set it to null.
