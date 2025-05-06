@@ -1108,7 +1108,7 @@ class PhpDocumentCreator // NOSONAR
 
 }
 
-ob_start(); // Mulai output buffering
+ob_start(); 
 
 $srcDir = dirname(__DIR__) . '/src';
 
@@ -1165,7 +1165,6 @@ if (is_dir($srcDir)) {
 
 $htmlOutput = ob_get_clean();
 
-// Simpan ke file
 file_put_contents(__DIR__ . '/doc.html', $htmlOutput);
 
 echo "Documentation has been generated and saved to documentation.html\n";
