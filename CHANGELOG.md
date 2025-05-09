@@ -540,5 +540,11 @@ This allows any numeric property to be formatted as a string with a fixed number
 ```php
 $object = new MagicObject();
 $object->setData(100.123456);
-echo $object->toFixedData(2); // Outputs 100.12
+echo $object->toFixedData(2)."\r\n"; // Outputs 100.12
+echo $object->toFixedData(4)."\r\n"; // Outputs 100.1235
 ```
+
+### Bug Fixes
+
+-  Fixed an issue where countBy() returned 1 even when no records matched the condition.
+   The method now correctly uses fetchColumn() to retrieve the result from SELECT COUNT(*).
