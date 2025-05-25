@@ -12014,7 +12014,7 @@ $config-&gt;loadYamlFile('import.yml', true, true, true);
 
 $fp = fopen(__DIR__.'/db.sql', 'w');
 fclose($fp);
-$sql = PicoDatabaseUtilMySql::importData($config, function($sql, $source, $target){
+$sql = (new PicoDatabaseUtilMySql())-&gt;importData($config, function($sql, $source, $target){
     $fp = fopen(__DIR__.'/db.sql', 'a');
     fwrite($fp, $sql.";\r\n\r\n");
     fclose($fp);
@@ -12059,7 +12059,7 @@ require_once dirname(__DIR__) . "/vendor/autoload.php";
 $config = new SecretObject();
 $config-&gt;loadYamlFile('import.yml', true, true, true);
 
-PicoDatabaseUtilMySql::autoConfigureImportData($config);
+(new PicoDatabaseUtilMySql())-&gt;autoConfigureImportData($config);
 file_put_contents('import.yml', $config-&gt;dumpYaml(0, 2));</code></pre>
 <p><strong>Executing Script</strong></p>
 <pre><code class="language-bash">php configure-import.php</code></pre>
