@@ -2,8 +2,10 @@
 
 namespace MagicObject\Util\Database;
 
+use MagicObject\Exceptions\DatabaseConversionException;
+
 /**
- * Class DatabaseConverter
+ * Class PicoDatabaseConverter
  *
  * This class is responsible for translating database query structures between different SQL dialects.
  * It takes SQL queries written in one dialect (e.g., MySQL) and converts them into another dialect (e.g., PostgreSQL, SQLite).
@@ -18,7 +20,7 @@ namespace MagicObject\Util\Database;
  *
  * @package MagicObject\Util\Database
  */
-class DatabaseConverter // NOSONAR
+class PicoDatabaseConverter // NOSONAR
 {
     /**
      * Array mapping of database field types to SQLite data types.
@@ -220,14 +222,14 @@ class DatabaseConverter // NOSONAR
                 }
             }
             if ($baseType === 'timestamp') {
-                if (str_contains($type, 'with time zone')) {
+                if ($this->strContains($type, 'with time zone')) {
                     if ($targetDialect === 'mysql') {
                         return 'TIMESTAMP';
                     }
                     if ($targetDialect === 'sqlite') {
                         return 'DATETIME';
                     }
-                } elseif (str_contains($type, 'without time zone')) {
+                } elseif ($this->strContains($type, 'without time zone')) {
                     if ($targetDialect === 'mysql') {
                         return 'DATETIME';
                     }
@@ -252,9 +254,9 @@ class DatabaseConverter // NOSONAR
             $translatedBaseType = $targetMap[$baseType];
 
             if (
-                str_contains(strtoupper($translatedBaseType), 'VARCHAR') ||
-                str_contains(strtoupper($translatedBaseType), 'CHARACTER VARYING') ||
-                str_contains(strtoupper($translatedBaseType), 'CHAR')
+                $this->strContains(strtoupper($translatedBaseType), 'VARCHAR') ||
+                $this->strContains(strtoupper($translatedBaseType), 'CHARACTER VARYING') ||
+                $this->strContains(strtoupper($translatedBaseType), 'CHAR')
             ) {
                 return $translatedBaseType . $params;
             }
@@ -297,84 +299,94 @@ class DatabaseConverter // NOSONAR
     public function mysqlToPostgreSQL($sql)
     {
         $sql = trim($sql);
-        $sql = preg_replace('/\s+/', ' ', $sql); // Normalize spaces
 
-        // Extract table name
-        if (!preg_match('/CREATE TABLE (`?)([^`\s]+)(`?)\s*\((.*)\)/is', $sql, $matches)) {
+        // Extract table name and body using a custom parser to handle nested parentheses
+        if (!preg_match('/CREATE\s+TABLE\s+(IF\s+NOT\s+EXISTS\s+)?`?([^\s`(]+)`?\s*\(/i', $sql, $matches, PREG_OFFSET_CAPTURE)) {
             throw new DatabaseConversionException("Invalid MySQL CREATE TABLE statement format.");
         }
-        $tableName = $this->quoteIdentifier($matches[2], 'postgresql');
-        $columnsAndConstraints = trim($matches[4]);
 
-        $lines = explode(',', $columnsAndConstraints);
+        $ifNotExists = isset($matches[1][0]) ? 'IF NOT EXISTS ' : '';
+        $tableName = $this->quoteIdentifier($matches[2][0], 'postgresql');
+        $startPos = $matches[0][1] + strlen($matches[0][0]) - 1;
+
+        $depth = 1;
+        $i = $startPos + 1;
+        $len = strlen($sql);
+        while ($i < $len && $depth > 0) {
+            if ($sql[$i] === '(') $depth++;
+            elseif ($sql[$i] === ')') $depth--;
+            $i++;
+        }
+
+        if ($depth !== 0) {
+            throw new DatabaseConversionException("Unbalanced parentheses in CREATE TABLE statement.");
+        }
+
+        $columnsSection = substr($sql, $startPos + 1, $i - $startPos - 2);
+        $tableOptions = trim(substr($sql, $i));
+
+        // Parse lines manually to preserve commas inside data types or defaults
+        $lines = preg_split('/,(?![^\(\)]*\))/', $columnsSection);
         $newLines = [];
         $tableConstraints = [];
-        $ifNotExists = str_contains(strtoupper($sql), 'IF NOT EXISTS') ? 'IF NOT EXISTS ' : '';
 
         foreach ($lines as $line) {
             $line = trim($line);
-            if (empty($line)) continue;
+            if ($line === '') continue;
 
             // Column definition
-            if (preg_match('/^(`?)([^`\s]+)(`?)\s+([a-zA-Z0-9_() ]+)(.*)$/i', $line, $colMatches)) {
-                $columnName = $this->quoteIdentifier($colMatches[2], 'postgresql');
-                $columnType = strtolower(trim($colMatches[4]));
-                $columnDefinition = trim($colMatches[5]);
+            if (preg_match('/^`?([^`\s]+)`?\s+([a-zA-Z0-9_\(\)]+)(.*)$/i', $line, $colMatches)) {
+                $columnName = $this->quoteIdentifier($colMatches[1], 'postgresql');
+                $columnType = strtolower(trim($colMatches[2]));
+                $columnDefinition = trim($colMatches[3]);
 
+                // Translate type
                 $translatedType = $this->translateFieldType($columnType, 'mysql', 'postgresql');
 
                 // Handle AUTO_INCREMENT
-                if (str_contains(strtoupper($columnDefinition), 'AUTO_INCREMENT')) {
-                    if (str_contains(strtoupper($columnType), 'BIGINT')) {
-                        $translatedType = 'BIGSERIAL';
-                    } else {
-                        $translatedType = 'SERIAL';
-                    }
+                if (stripos($columnDefinition, 'AUTO_INCREMENT') !== false) {
+                    $translatedType = stripos($columnType, 'bigint') !== false ? 'BIGSERIAL' : 'SERIAL';
                     $columnDefinition = str_ireplace('AUTO_INCREMENT', '', $columnDefinition);
-                    // If it's AUTO_INCREMENT, it's implicitly PRIMARY KEY in MySQL, so ensure it is in PG
-                    if (!str_contains(strtoupper($columnDefinition), 'PRIMARY KEY')) {
-                         $columnDefinition .= ' PRIMARY KEY';
+                    if (stripos($columnDefinition, 'PRIMARY KEY') === false) {
+                        $columnDefinition .= ' PRIMARY KEY';
                     }
                 }
 
-                // Handle BOOLEAN (TINYINT(1))
-                if (str_contains(strtoupper($columnType), 'TINYINT(1)')) {
+                // Handle BOOLEAN (tinyint(1))
+                if (preg_match('/tinyint\s*\(\s*1\s*\)/i', $columnType)) {
                     $translatedType = 'BOOLEAN';
-                    $columnDefinition = str_ireplace("DEFAULT '1'", "DEFAULT TRUE", $columnDefinition);
-                    $columnDefinition = str_ireplace("DEFAULT '0'", "DEFAULT FALSE", $columnDefinition);
+                    $columnDefinition = str_ireplace("DEFAULT '1'", 'DEFAULT TRUE', $columnDefinition);
+                    $columnDefinition = str_ireplace("DEFAULT '0'", 'DEFAULT FALSE', $columnDefinition);
                 }
 
-                // Handle DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-                if (str_contains(strtoupper($columnDefinition), 'ON UPDATE CURRENT_TIMESTAMP')) {
+                // Remove MySQL-specific ON UPDATE
+                if (stripos($columnDefinition, 'ON UPDATE CURRENT_TIMESTAMP') !== false) {
                     $columnDefinition = str_ireplace('ON UPDATE CURRENT_TIMESTAMP', '', $columnDefinition);
-                    // Note: ON UPDATE requires a trigger in PostgreSQL, not a column definition.
-                    // For simplicity, we just remove it here.
                 }
-                
-                // Handle ENUM/SET (already done in translateFieldType, but ensure no leftover params)
-                if (str_contains(strtoupper($columnType), 'ENUM') || str_contains(strtoupper($columnType), 'SET')) {
+
+                // ENUM/SET to TEXT
+                if (stripos($columnType, 'enum') !== false || stripos($columnType, 'set') !== false) {
                     $translatedType = 'TEXT';
                 }
 
                 $newLines[] = $columnName . ' ' . $translatedType . ' ' . trim($columnDefinition);
-            } elseif (preg_match('/^(PRIMARY KEY|UNIQUE KEY)\s*(`?)([^`\s]+)(`?)\s*\((.*)\)/i', $line, $keyMatches)) {
-                // Table-level PRIMARY KEY or UNIQUE KEY
+            }
+            // Table constraints
+            elseif (preg_match('/^(PRIMARY KEY|UNIQUE KEY)\s*`?([^`]+)?`?\s*\((.+)\)/i', $line, $keyMatches)) {
                 $keyType = strtoupper($keyMatches[1]);
-                $keyName = $this->quoteIdentifier($keyMatches[3], 'postgresql');
-                $keyColumns = $keyMatches[5];
-                
-                // Replace backticks with double quotes in column list
-                $keyColumns = preg_replace('/`([^`]+)`/', '"$1"', $keyColumns);
+                $keyName = $keyMatches[2];
+                $keyColumns = preg_replace('/`([^`]+)`/', '"$1"', $keyMatches[3]);
 
                 if ($keyType === 'PRIMARY KEY') {
                     $tableConstraints[] = 'PRIMARY KEY (' . $keyColumns . ')';
                 } elseif ($keyType === 'UNIQUE KEY') {
-                    $tableConstraints[] = 'CONSTRAINT ' . $keyName . ' UNIQUE (' . $keyColumns . ')';
+                    $tableConstraints[] = 'CONSTRAINT ' . $this->quoteIdentifier($keyName, 'postgresql') . ' UNIQUE (' . $keyColumns . ')';
                 }
-            } else {
-                // Other constraints or unparsed parts, try to add as is, but quote identifiers
-                $line = preg_replace_callback('/(`)([^`]+)(`)/', function($m) {
-                    return $this->quoteIdentifier($m[2], 'postgresql');
+            }
+            // Other constraints
+            else {
+                $line = preg_replace_callback('/`([^`]+)`/', function ($m) {
+                    return $this->quoteIdentifier($m[1], 'postgresql');
                 }, $line);
                 $newLines[] = $line;
             }
@@ -384,15 +396,34 @@ class DatabaseConverter // NOSONAR
             $newLines = array_merge($newLines, $tableConstraints);
         }
 
-        // Clean up table options (ENGINE, CHARSET, COLLATE)
         $finalSql = "CREATE TABLE " . $ifNotExists . $tableName . " (\n    " . implode(",\n    ", $newLines) . "\n)";
-        $finalSql = preg_replace('/\s+ENGINE=[a-zA-Z0-9_]+\s*/i', '', $finalSql);
-        $finalSql = preg_replace('/\s+DEFAULT CHARSET=[a-zA-Z0-9_]+\s*/i', '', $finalSql);
-        $finalSql = preg_replace('/\s+COLLATE=[a-zA-Z0-9_]+\s*/i', '', $finalSql);
-        $finalSql = preg_replace('/\s+COMMENT\s+\'[^\']+\'/i', '', $finalSql); // Remove column comments
+
+        // Clean up MySQL table options
+        $finalSql = preg_replace('/ENGINE\s*=\s*[a-zA-Z0-9_]+/i', '', $finalSql);
+        $finalSql = preg_replace('/DEFAULT\s+CHARSET\s*=\s*[a-zA-Z0-9_]+/i', '', $finalSql);
+        $finalSql = preg_replace('/COLLATE\s*=\s*[a-zA-Z0-9_]+/i', '', $finalSql);
+        $finalSql = preg_replace('/COMMENT\s+\'.*?\'/i', '', $finalSql);
+
+        $finalSql = str_replace('`', '"', $finalSql); // Convert backticks to double quotes for PostgreSQL
+        $finalSql = str_replace('"PRIMARY" KEY', 'PRIMARY KEY', $finalSql); // Fix PostgreSQL's PRIMARY KEY quoting
+        $finalSql = str_replace('"UNIQUE" KEY', 'UNIQUE', $finalSql); // Fix PostgreSQL's UNIQUE KEY quoting
+        $finalSql = str_replace('"FOREIGN" KEY', 'FOREIGN KEY', $finalSql); // Fix PostgreSQL's FOREIGN KEY quoting
+        $finalSql = str_replace('"CHECK" (', 'CHECK (', $finalSql); // Fix PostgreSQL's CHECK constraint quoting
+        $finalSql = str_replace('"DEFAULT" ', 'DEFAULT ', $finalSql); // Fix PostgreSQL's DEFAULT quoting
+        $finalSql = str_replace('"NOT" NULL', 'NOT NULL', $finalSql); // Fix PostgreSQL's NOT NULL quoting
+        $finalSql = str_replace('"NULL"', 'NULL', $finalSql); // Fix PostgreSQL's NULL quoting
+        $finalSql = str_replace('"REFERENCES"', 'REFERENCES', $finalSql); // Fix PostgreSQL's REFERENCES quoting
+        $finalSql = str_replace('"ON" DELETE', 'ON DELETE', $finalSql); // Fix PostgreSQL's ON DELETE quoting
+        $finalSql = str_replace('"ON" UPDATE', 'ON UPDATE', $finalSql); // Fix PostgreSQL's ON UPDATE quoting
+        $finalSql = str_replace('"USING"', 'USING', $finalSql); // Fix PostgreSQL's USING quoting
+        $finalSql = str_replace('"WITH"', 'WITH', $finalSql); // Fix PostgreSQL's WITH quoting
+        $finalSql = str_replace('"CONSTRAINT"', 'CONSTRAINT', $finalSql); // Fix PostgreSQL's CONSTRAINT quoting
+        
+        $finalSql = $this->fixLines($finalSql);
 
         return trim($finalSql) . ';';
     }
+
 
     /**
      * Translates a CREATE TABLE statement from MySQL to SQLite.
@@ -404,97 +435,132 @@ class DatabaseConverter // NOSONAR
     public function mysqlToSQLite($sql)
     {
         $sql = trim($sql);
-        $sql = preg_replace('/\s+/', ' ', $sql); // Normalize spaces
 
-        // Extract table name
-        if (!preg_match('/CREATE TABLE (`?)([^`\s]+)(`?)\s*\((.*)\)/is', $sql, $matches)) {
+        // Ambil nama tabel dan isi definisi kolom/constraint
+        if (!preg_match('/CREATE\s+TABLE\s+(IF\s+NOT\s+EXISTS\s+)?`?([^\s`(]+)`?\s*\(/i', $sql, $matches, PREG_OFFSET_CAPTURE)) {
             throw new DatabaseConversionException("Invalid MySQL CREATE TABLE statement format.");
         }
-        $tableName = $this->quoteIdentifier($matches[2], 'sqlite');
-        $columnsAndConstraints = trim($matches[4]);
 
-        $lines = explode(',', $columnsAndConstraints);
+        $ifNotExists = isset($matches[1][0]) ? 'IF NOT EXISTS ' : '';
+        $tableName = $this->quoteIdentifier($matches[2][0], 'sqlite');
+        $startPos = $matches[0][1] + strlen($matches[0][0]) - 1;
+
+        // Ambil isi kolom dan constraint dengan tracking tanda kurung
+        $depth = 1;
+        $i = $startPos + 1;
+        $len = strlen($sql);
+        while ($i < $len && $depth > 0) {
+            if ($sql[$i] === '(') $depth++;
+            elseif ($sql[$i] === ')') $depth--;
+            $i++;
+        }
+
+        if ($depth !== 0) {
+            throw new DatabaseConversionException("Unbalanced parentheses in CREATE TABLE statement.");
+        }
+
+        $columnsSection = substr($sql, $startPos + 1, $i - $startPos - 2);
+        $tableOptions = trim(substr($sql, $i));
+        $lines = preg_split('/,(?![^\(]*\))/m', $columnsSection);
+
         $newLines = [];
         $primaryKeyColumnFound = false;
-        $ifNotExists = str_contains(strtoupper($sql), 'IF NOT EXISTS') ? 'IF NOT EXISTS ' : '';
 
         foreach ($lines as $line) {
             $line = trim($line);
-            if (empty($line)) continue;
+            if ($line === '') continue;
 
             // Column definition
-            if (preg_match('/^(`?)([^`\s]+)(`?)\s+([a-zA-Z0-9_() ]+)(.*)$/i', $line, $colMatches)) {
-                $columnName = $this->quoteIdentifier($colMatches[2], 'sqlite');
-                $columnType = strtolower(trim($colMatches[4]));
-                $columnDefinition = trim($colMatches[5]);
+            if (preg_match('/^`?([^`\s]+)`?\s+([a-zA-Z0-9_\(\)]+)(.*)$/i', $line, $colMatches)) {
+                $columnName = $this->quoteIdentifier($colMatches[1], 'sqlite');
+                $columnType = strtolower(trim($colMatches[2]));
+                $columnDefinition = trim($colMatches[3]);
 
                 $translatedType = $this->translateFieldType($columnType, 'mysql', 'sqlite');
 
-                // Handle AUTO_INCREMENT for INTEGER PRIMARY KEY AUTOINCREMENT
-                if (str_contains(strtoupper($columnDefinition), 'AUTO_INCREMENT')) {
-                    if (str_contains(strtoupper($columnType), 'INT') && str_contains(strtoupper($columnDefinition), 'PRIMARY KEY')) {
-                        $translatedType = 'INTEGER'; // SQLite only uses INTEGER for AUTOINCREMENT
+                // AUTO_INCREMENT di SQLite hanya INTEGER PRIMARY KEY AUTOINCREMENT
+                if (stripos($columnDefinition, 'AUTO_INCREMENT') !== false) {
+                    if (stripos($columnType, 'int') !== false && stripos($columnDefinition, 'PRIMARY KEY') !== false && !$primaryKeyColumnFound) {
+                        $translatedType = 'INTEGER';
                         $columnDefinition = str_ireplace('AUTO_INCREMENT', 'AUTOINCREMENT', $columnDefinition);
                         $primaryKeyColumnFound = true;
                     } else {
-                        // If AUTO_INCREMENT but not primary key or not int, just remove it
                         $columnDefinition = str_ireplace('AUTO_INCREMENT', '', $columnDefinition);
                     }
                 }
 
-                // Handle BOOLEAN (TINYINT(1))
-                if (str_contains(strtoupper($columnType), 'TINYINT(1)')) {
-                    $translatedType = 'INTEGER'; // SQLite uses INTEGER for BOOLEAN
-                    $columnDefinition = str_ireplace("DEFAULT '1'", "DEFAULT 1", $columnDefinition);
-                    $columnDefinition = str_ireplace("DEFAULT '0'", "DEFAULT 0", $columnDefinition);
+                // BOOLEAN (TINYINT(1)) -> INTEGER
+                if (preg_match('/tinyint\s*\(\s*1\s*\)/i', $columnType)) {
+                    $translatedType = 'INTEGER';
+                    $columnDefinition = str_ireplace("DEFAULT '1'", 'DEFAULT 1', $columnDefinition);
+                    $columnDefinition = str_ireplace("DEFAULT '0'", 'DEFAULT 0', $columnDefinition);
                 }
-                
-                // Handle ENUM/SET
-                if (str_contains(strtoupper($columnType), 'ENUM') || str_contains(strtoupper($columnType), 'SET')) {
+
+                // ENUM dan SET -> TEXT
+                if (stripos($columnType, 'enum') !== false || stripos($columnType, 'set') !== false) {
                     $translatedType = 'TEXT';
                 }
 
-                // Handle DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-                if (str_contains(strtoupper($columnDefinition), 'ON UPDATE CURRENT_TIMESTAMP')) {
+                // Hapus ON UPDATE CURRENT_TIMESTAMP
+                if (stripos($columnDefinition, 'ON UPDATE CURRENT_TIMESTAMP') !== false) {
                     $columnDefinition = str_ireplace('ON UPDATE CURRENT_TIMESTAMP', '', $columnDefinition);
-                    // Note: ON UPDATE requires a trigger in SQLite, not a column definition.
                 }
 
                 $newLines[] = $columnName . ' ' . $translatedType . ' ' . trim($columnDefinition);
-            } elseif (preg_match('/^(PRIMARY KEY|UNIQUE KEY)\s*(`?)([^`\s]+)(`?)\s*\((.*)\)/i', $line, $keyMatches)) {
-                // Table-level PRIMARY KEY or UNIQUE KEY
+            }
+            // PRIMARY KEY atau UNIQUE KEY table-level
+            elseif (preg_match('/^(PRIMARY KEY|UNIQUE KEY)\s*`?([^`]*)`?\s*\((.+)\)/i', $line, $keyMatches)) {
                 $keyType = strtoupper($keyMatches[1]);
-                $keyColumns = $keyMatches[5];
-                
-                // Replace backticks with double quotes in column list
-                $keyColumns = preg_replace('/`([^`]+)`/', '"$1"', $keyColumns);
+                $keyColumns = preg_replace('/`([^`]+)`/', '"$1"', $keyMatches[3]);
 
                 if ($keyType === 'PRIMARY KEY' && !$primaryKeyColumnFound) {
                     $newLines[] = 'PRIMARY KEY (' . $keyColumns . ')';
                 } elseif ($keyType === 'UNIQUE KEY') {
                     $newLines[] = 'UNIQUE (' . $keyColumns . ')';
                 }
-            } else {
-                // Other constraints or unparsed parts, try to add as is, but quote identifiers
-                $line = preg_replace_callback('/(`)([^`]+)(`)/', function($m) {
-                    return $this->quoteIdentifier($m[2], 'sqlite');
+            }
+            // Lainnya
+            else {
+                $line = preg_replace_callback('/`([^`]+)`/', function ($m) {
+                    return $this->quoteIdentifier($m[1], 'sqlite');
                 }, $line);
                 $newLines[] = $line;
             }
         }
 
-        // Clean up table options
+        // Finalisasi statement CREATE TABLE
         $finalSql = "CREATE TABLE " . $ifNotExists . $tableName . " (\n    " . implode(",\n    ", $newLines) . "\n)";
-        $finalSql = preg_replace('/\s+ENGINE=[a-zA-Z0-9_]+\s*/i', '', $finalSql);
-        $finalSql = preg_replace('/\s+DEFAULT CHARSET=[a-zA-Z0-9_]+\s*/i', '', $finalSql);
-        $finalSql = preg_replace('/\s+COLLATE=[a-zA-Z0-9_]+\s*/i', '', $finalSql);
-        $finalSql = preg_replace('/\s+COMMENT\s+\'[^\']+\'/i', '', $finalSql); // Remove column comments
+
+        // Bersihkan ENGINE, CHARSET, COLLATE, COMMENT
+        $finalSql = preg_replace('/ENGINE\s*=\s*[a-zA-Z0-9_]+/i', '', $finalSql);
+        $finalSql = preg_replace('/DEFAULT\s+CHARSET\s*=\s*[a-zA-Z0-9_]+/i', '', $finalSql);
+        $finalSql = preg_replace('/COLLATE\s*=\s*[a-zA-Z0-9_]+/i', '', $finalSql);
+        $finalSql = preg_replace('/COMMENT\s+\'.*?\'/i', '', $finalSql);
+
+        $finalSql = str_replace('"PRIMARY" KEY', 'PRIMARY KEY', $finalSql); // Fix PostgreSQL's PRIMARY KEY quoting
+        $finalSql = str_replace('"UNIQUE" KEY', 'UNIQUE', $finalSql); // Fix PostgreSQL's UNIQUE KEY quoting
+        $finalSql = str_replace('"FOREIGN" KEY', 'FOREIGN KEY', $finalSql); // Fix PostgreSQL's FOREIGN KEY quoting
+        $finalSql = str_replace('"CHECK" (', 'CHECK (', $finalSql); // Fix PostgreSQL's CHECK constraint quoting
+        $finalSql = str_replace('"DEFAULT" ', 'DEFAULT ', $finalSql); // Fix PostgreSQL's DEFAULT quoting
+        $finalSql = str_replace('"NOT" NULL', 'NOT NULL', $finalSql); // Fix PostgreSQL's NOT NULL quoting
+        $finalSql = str_replace('"NULL"', 'NULL', $finalSql); // Fix PostgreSQL's NULL quoting
+        $finalSql = str_replace('"REFERENCES"', 'REFERENCES', $finalSql); // Fix PostgreSQL's REFERENCES quoting
+        $finalSql = str_replace('"ON" DELETE', 'ON DELETE', $finalSql); // Fix PostgreSQL's ON DELETE quoting
+        $finalSql = str_replace('"ON" UPDATE', 'ON UPDATE', $finalSql); // Fix PostgreSQL's ON UPDATE quoting
+        $finalSql = str_replace('"USING"', 'USING', $finalSql); // Fix PostgreSQL's USING quoting
+        $finalSql = str_replace('"WITH"', 'WITH', $finalSql); // Fix PostgreSQL's WITH quoting
+        $finalSql = str_replace('"CONSTRAINT"', 'CONSTRAINT', $finalSql); // Fix PostgreSQL's CONSTRAINT quoting
+        $finalSql = str_replace('`', '"', $finalSql); // Convert backticks to double quotes for SQLite
+
+        $finalSql = $this->fixLines($finalSql);
 
         return trim($finalSql) . ';';
     }
 
     /**
-     * Translates a CREATE TABLE statement from PostgreSQL to MySQL.
+     * Translates a PostgreSQL CREATE TABLE statement to MySQL,
+     * focusing only on converting CHARACTER VARYING(n) to VARCHAR(n),
+     * and preserving other attributes like NULL/NOT NULL/DEFAULT.
      *
      * @param string $sql The PostgreSQL CREATE TABLE statement.
      * @return string The translated MySQL CREATE TABLE statement.
@@ -503,102 +569,92 @@ class DatabaseConverter // NOSONAR
     public function postgresqlToMySQL($sql)
     {
         $sql = trim($sql);
-        $sql = preg_replace('/\s+/', ' ', $sql); // Normalize spaces
+        $sql = preg_replace('/\s+/', ' ', $sql); // Normalize whitespace
+
+        // Find opening parenthesis for table definition
+        $posOpen = strpos(strtoupper($sql), '(');
+        if ($posOpen === false) {
+            throw new DatabaseConversionException("Invalid CREATE TABLE: missing opening parenthesis.");
+        }
+
+        // Find the matching closing parenthesis
+        $len = strlen($sql);
+        $parenCount = 0;
+        $posClose = false;
+        for ($i = $posOpen; $i < $len; $i++) {
+            if ($sql[$i] === '(') $parenCount++;
+            elseif ($sql[$i] === ')') $parenCount--;
+            if ($parenCount === 0) {
+                $posClose = $i;
+                break;
+            }
+        }
+        if ($posClose === false) {
+            throw new DatabaseConversionException("Invalid CREATE TABLE: unbalanced parentheses.");
+        }
 
         // Extract table name
-        if (!preg_match('/CREATE TABLE (IF NOT EXISTS\s+)?("?)([^"\s]+)("?)\s*\((.*)\)/is', $sql, $matches)) {
-            throw new DatabaseConversionException("Invalid PostgreSQL CREATE TABLE statement format.");
+        if (!preg_match('/CREATE TABLE (IF NOT EXISTS\s+)?("?)([^"\s]+)("?)/i', substr($sql, 0, $posOpen), $matches)) {
+            throw new DatabaseConversionException("Cannot parse table name.");
         }
         $ifNotExists = isset($matches[1]) ? 'IF NOT EXISTS ' : '';
         $tableName = $this->quoteIdentifier($matches[3], 'mysql');
-        $columnsAndConstraints = trim($matches[5]);
 
-        $lines = explode(',', $columnsAndConstraints);
+        // Get column and constraint definitions
+        $columnsDef = trim(substr($sql, $posOpen + 1, $posClose - $posOpen - 1));
+
+        // Split into lines, handling nested parentheses
+        $lines = [];
+        $buffer = '';
+        $parenLevel = 0;
+        for ($i = 0; $i < strlen($columnsDef); $i++) {
+            $char = $columnsDef[$i];
+            if ($char === '(') $parenLevel++;
+            elseif ($char === ')') $parenLevel--;
+
+            if ($char === ',' && $parenLevel === 0) {
+                $lines[] = trim($buffer);
+                $buffer = '';
+            } else {
+                $buffer .= $char;
+            }
+        }
+        if (trim($buffer) !== '') {
+            $lines[] = trim($buffer);
+        }
+
         $newLines = [];
-        $tableConstraints = [];
 
         foreach ($lines as $line) {
-            $line = trim($line);
-            if (empty($line)) continue;
-
-            // Column definition
-            if (preg_match('/^("?)([^"\s]+)("?)\s+([a-zA-Z0-9_() ]+)(.*)$/i', $line, $colMatches)) {
-                $columnName = $this->quoteIdentifier($colMatches[2], 'mysql');
-                $columnType = strtolower(trim($colMatches[4]));
-                $columnDefinition = trim($colMatches[5]);
-
-                $translatedType = $this->translateFieldType($columnType, 'postgresql', 'mysql');
-
-                // Handle SERIAL/BIGSERIAL
-                if (str_contains(strtoupper($columnType), 'SERIAL')) {
-                    if (str_contains(strtoupper($columnType), 'BIGSERIAL')) {
-                        $translatedType = 'BIGINT';
-                    } else {
-                        $translatedType = 'INT';
-                    }
-                    $columnDefinition = str_ireplace('PRIMARY KEY', '', $columnDefinition); // Remove PG's implicit PK
-                    $columnDefinition .= ' AUTO_INCREMENT PRIMARY KEY'; // Add MySQL's AUTO_INCREMENT PK
-                }
-
-                // Handle BOOLEAN
-                if (str_contains(strtoupper($columnType), 'BOOLEAN')) {
-                    $translatedType = 'TINYINT(1)';
-                    $columnDefinition = str_ireplace("DEFAULT TRUE", "DEFAULT '1'", $columnDefinition);
-                    $columnDefinition = str_ireplace("DEFAULT FALSE", "DEFAULT '0'", $columnDefinition);
-                }
-
-                // Handle TIMESTAMP WITH TIME ZONE / WITHOUT TIME ZONE
-                if (str_contains(strtoupper($columnType), 'TIMESTAMP WITH TIME ZONE')) {
-                    $translatedType = 'TIMESTAMP';
-                } elseif (str_contains(strtoupper($columnType), 'TIMESTAMP WITHOUT TIME ZONE')) {
-                    $translatedType = 'DATETIME';
-                }
-                
-                // Handle JSONB
-                if (str_contains(strtoupper($columnType), 'JSONB')) {
-                    $translatedType = 'JSON';
-                }
-
-                $newLines[] = $columnName . ' ' . $translatedType . ' ' . trim($columnDefinition);
-            } elseif (preg_match('/^(PRIMARY KEY|UNIQUE)\s*\((.*)\)/i', $line, $keyMatches)) {
-                // Table-level PRIMARY KEY or UNIQUE
-                $keyType = strtoupper($keyMatches[1]);
-                $keyColumns = $keyMatches[2];
-                
-                // Replace double quotes with backticks in column list
-                $keyColumns = preg_replace('/"([^"]+)"/', '`$1`', $keyColumns);
-
-                if ($keyType === 'PRIMARY KEY') {
-                    $tableConstraints[] = 'PRIMARY KEY (' . $keyColumns . ')';
-                } elseif ($keyType === 'UNIQUE') {
-                    // PostgreSQL's UNIQUE can be a constraint without a name, or named.
-                    // MySQL's UNIQUE KEY can be named or unnamed.
-                    // If it's a simple UNIQUE (col), we can just add UNIQUE to the column definition.
-                    // If it's a named constraint, add it as a table constraint.
-                    if (preg_match('/^CONSTRAINT\s+"?([^"]+)"?\s+UNIQUE\s*\((.*)\)/i', $line, $constraintMatches)) {
-                        $constraintName = $this->quoteIdentifier($constraintMatches[1], 'mysql');
-                        $tableConstraints[] = 'UNIQUE KEY ' . $constraintName . ' (' . $keyColumns . ')';
-                    } else {
-                        $tableConstraints[] = 'UNIQUE KEY (' . $keyColumns . ')';
-                    }
-                }
+            // Ubah CHARACTER VARYING(n) ke VARCHAR(n)
+            if (preg_match('/^("?)([^"\s]+)\1\s+character varying\s*\((\d+)\)(.*)$/i', $line, $colMatch)) {
+                $colName = $this->quoteIdentifier($colMatch[2], 'mysql');
+                $length = $colMatch[3];
+                $rest = trim($colMatch[4]);
+                $newLines[] = "{$colName} VARCHAR({$length}) {$rest}";
             } else {
-                // Other constraints or unparsed parts, try to add as is, but quote identifiers
-                $line = preg_replace_callback('/(")([^"]+?)(")/', function($m) {
-                    return $this->quoteIdentifier($m[2], 'mysql');
+                // Untuk baris lain, hanya ubah identifier dari PostgreSQL-style ke MySQL-style
+                $line = preg_replace_callback('/"([^"]+)"/', function ($m) {
+                    return $this->quoteIdentifier($m[1], 'mysql');
                 }, $line);
                 $newLines[] = $line;
             }
         }
 
-        if (!empty($tableConstraints)) {
-            $newLines = array_merge($newLines, $tableConstraints);
-        }
+        $finalSql = "CREATE TABLE {$ifNotExists}{$tableName} (\n    " . implode(",\n    ", $newLines) . "\n)";
+        $finalSql .= "\nENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
-        $finalSql = "CREATE TABLE " . $ifNotExists . $tableName . " (\n    " . implode(",\n    ", $newLines) . "\n)";
-        $finalSql .= "\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"; // Add common MySQL table options
+        $finalSql = str_replace('TIMESTAMP WITH TIME ZONE', 'TIMESTAMP', $finalSql); // Convert PostgreSQL's TIMESTAMP WITH TIME ZONE to MySQL's TIMESTAMP
+        $finalSql = str_replace('TIMESTAMP WITHOUT TIME ZONE', 'DATETIME', $finalSql); // Convert PostgreSQL's TIMESTAMP WITHOUT TIME ZONE to MySQL's DATETIME
+        $finalSql = str_replace('SERIAL', 'BIGINT AUTO_INCREMENT', $finalSql); // Convert PostgreSQL's SERIAL to MySQL's INT AUTO_INCREMENT
+        $finalSql = str_replace('BIGSERIAL', 'BIGINT AUTO_INCREMENT', $finalSql); // Convert PostgreSQL's BIGSERIAL to MySQL's BIGINT AUTO_INCREMENT
+        $finalSql = str_replace('BOOLEAN', 'TINYINT(1)', $finalSql); // Convert PostgreSQL's BOOLEAN to MySQL's TINYINT(1)
+        $finalSql = str_replace('JSONB', 'JSON', $finalSql); // Convert PostgreSQL's JSONB to MySQL's JSON
+        $finalSql = str_replace('JSON', 'JSON', $finalSql); // Convert PostgreSQL's JSON to MySQL's JSON
 
-        return trim($finalSql) . ';';
+        $finalSql = $this->fixLines($finalSql);
+
+        return trim($finalSql);
     }
 
     /**
@@ -638,9 +694,9 @@ class DatabaseConverter // NOSONAR
                 $translatedType = $this->translateFieldType($columnType, 'postgresql', 'sqlite');
 
                 // Handle SERIAL/BIGSERIAL
-                if (str_contains(strtoupper($columnType), 'SERIAL')) {
+                if ($this->strContains(strtoupper($columnType), 'SERIAL')) {
                     $translatedType = 'INTEGER';
-                    if (str_contains(strtoupper($columnDefinition), 'PRIMARY KEY')) {
+                    if ($this->strContains(strtoupper($columnDefinition), 'PRIMARY KEY')) {
                         $columnDefinition = str_ireplace('PRIMARY KEY', 'AUTOINCREMENT', $columnDefinition);
                         $primaryKeyColumnFound = true;
                     } else {
@@ -650,19 +706,19 @@ class DatabaseConverter // NOSONAR
                 }
 
                 // Handle BOOLEAN
-                if (str_contains(strtoupper($columnType), 'BOOLEAN')) {
+                if ($this->strContains(strtoupper($columnType), 'BOOLEAN')) {
                     $translatedType = 'INTEGER'; // SQLite uses INTEGER for BOOLEAN
                     $columnDefinition = str_ireplace("DEFAULT TRUE", "DEFAULT 1", $columnDefinition);
                     $columnDefinition = str_ireplace("DEFAULT FALSE", "DEFAULT 0", $columnDefinition);
                 }
 
                 // Handle TIMESTAMP WITH TIME ZONE / WITHOUT TIME ZONE
-                if (str_contains(strtoupper($columnType), 'TIMESTAMP WITH TIME ZONE') || str_contains(strtoupper($columnType), 'TIMESTAMP WITHOUT TIME ZONE')) {
-                    $translatedType = 'DATETIME'; // SQLite doesn't have explicit TIMESTAMP types, DATETIME is common
+                if ($this->strContains(strtoupper($columnType), 'TIMESTAMP WITH TIME ZONE') || $this->strContains(strtoupper($columnType), 'TIMESTAMP WITHOUT TIME ZONE')) {
+                    $translatedType = 'TIMESTAMP'; // SQLite doesn't have explicit TIMESTAMP types, TIMESTAMP is common
                 }
                 
                 // Handle JSONB
-                if (str_contains(strtoupper($columnType), 'JSONB')) {
+                if ($this->strContains(strtoupper($columnType), 'JSONB')) {
                     $translatedType = 'TEXT';
                 }
 
@@ -676,7 +732,7 @@ class DatabaseConverter // NOSONAR
                 $keyColumns = preg_replace('/"([^"]+)"/', '"$1"', $keyColumns);
 
                 if ($keyType === 'PRIMARY KEY' && !$primaryKeyColumnFound) {
-                    $newLines[] = 'PRIMARY KEY (' . $keyColumns . ')';
+                    $newLines[] = 'PRIMARY KEY (' .trim($keyColumns) . ')';
                 } elseif ($keyType === 'UNIQUE') {
                     // Remove CONSTRAINT name for SQLite
                     $line = preg_replace('/^CONSTRAINT\s+"?([^"]+)"?\s+UNIQUE\s*\((.*)\)/i', 'UNIQUE ($2)', $line);
@@ -692,6 +748,25 @@ class DatabaseConverter // NOSONAR
         }
 
         $finalSql = "CREATE TABLE " . $ifNotExists . $tableName . " (\n    " . implode(",\n    ", $newLines) . "\n)";
+
+        $finalSql = str_replace('CHARACTER VARYING', 'NVARCHAR', $finalSql); // Convert CHARACTER VARYING to NVARCHAR
+
+        $finalSql = str_replace('`', '"', $finalSql); // Convert backticks to double quotes for PostgreSQL
+        $finalSql = str_replace('"PRIMARY" KEY', 'PRIMARY KEY', $finalSql); // Fix PostgreSQL's PRIMARY KEY quoting
+        $finalSql = str_replace('"UNIQUE" KEY', 'UNIQUE', $finalSql); // Fix PostgreSQL's UNIQUE KEY quoting
+        $finalSql = str_replace('"FOREIGN" KEY', 'FOREIGN KEY', $finalSql); // Fix PostgreSQL's FOREIGN KEY quoting
+        $finalSql = str_replace('"CHECK" (', 'CHECK (', $finalSql); // Fix PostgreSQL's CHECK constraint quoting
+        $finalSql = str_replace('"DEFAULT" ', 'DEFAULT ', $finalSql); // Fix PostgreSQL's DEFAULT quoting
+        $finalSql = str_replace('"NOT" NULL', 'NOT NULL', $finalSql); // Fix PostgreSQL's NOT NULL quoting
+        $finalSql = str_replace('"NULL"', 'NULL', $finalSql); // Fix PostgreSQL's NULL quoting
+        $finalSql = str_replace('"REFERENCES"', 'REFERENCES', $finalSql); // Fix PostgreSQL's REFERENCES quoting
+        $finalSql = str_replace('"ON" DELETE', 'ON DELETE', $finalSql); // Fix PostgreSQL's ON DELETE quoting
+        $finalSql = str_replace('"ON" UPDATE', 'ON UPDATE', $finalSql); // Fix PostgreSQL's ON UPDATE quoting
+        $finalSql = str_replace('"USING"', 'USING', $finalSql); // Fix PostgreSQL's USING quoting
+        $finalSql = str_replace('"WITH"', 'WITH', $finalSql); // Fix PostgreSQL's WITH quoting
+        $finalSql = str_replace('"CONSTRAINT"', 'CONSTRAINT', $finalSql); // Fix PostgreSQL's CONSTRAINT quoting
+
+        $finalSql = $this->fixLines($finalSql);
 
         return trim($finalSql) . ';';
     }
@@ -733,14 +808,14 @@ class DatabaseConverter // NOSONAR
                 $translatedType = $this->translateFieldType($columnType, 'sqlite', 'mysql');
 
                 // Handle INTEGER PRIMARY KEY AUTOINCREMENT
-                if (str_contains(strtoupper($columnType), 'INTEGER') && str_contains(strtoupper($columnDefinition), 'AUTOINCREMENT')) {
+                if ($this->strContains(strtoupper($columnType), 'INTEGER') && $this->strContains(strtoupper($columnDefinition), 'AUTOINCREMENT')) {
                     $translatedType = 'INT'; // MySQL uses INT
                     $columnDefinition = str_ireplace('AUTOINCREMENT', 'AUTO_INCREMENT', $columnDefinition);
                     $primaryKeyColumnFound = true;
                 }
                 
                 // Handle BOOLEAN (INTEGER)
-                if (str_contains(strtoupper($columnType), 'INTEGER') && (str_contains(strtoupper($columnDefinition), 'DEFAULT 1') || str_contains(strtoupper($columnDefinition), 'DEFAULT 0'))) {
+                if ($this->strContains(strtoupper($columnType), 'INTEGER') && ($this->strContains(strtoupper($columnDefinition), 'DEFAULT 1') || $this->strContains(strtoupper($columnDefinition), 'DEFAULT 0'))) {
                     // This is a heuristic, assuming INTEGER with default 0/1 is boolean
                     $translatedType = 'TINYINT(1)';
                     $columnDefinition = str_ireplace("DEFAULT 1", "DEFAULT '1'", $columnDefinition);
@@ -748,12 +823,12 @@ class DatabaseConverter // NOSONAR
                 }
 
                 // Handle DATETIME
-                if (str_contains(strtoupper($columnType), 'DATETIME')) {
+                if ($this->strContains(strtoupper($columnType), 'DATETIME')) {
                     $translatedType = 'DATETIME'; // MySQL DATETIME
                 }
                 
                 // Handle TEXT (for JSON)
-                if (str_contains(strtoupper($columnType), 'TEXT') && str_contains(strtoupper($columnName), 'json')) {
+                if ($this->strContains(strtoupper($columnType), 'TEXT') && $this->strContains(strtoupper($columnName), 'json')) {
                     // Heuristic: if text column name contains 'json', assume it's JSON
                     $translatedType = 'JSON';
                 }
@@ -824,7 +899,7 @@ class DatabaseConverter // NOSONAR
                 $translatedType = $this->translateFieldType($columnType, 'sqlite', 'postgresql');
 
                 // Handle INTEGER PRIMARY KEY AUTOINCREMENT
-                if (str_contains(strtoupper($columnType), 'INTEGER') && str_contains(strtoupper($columnDefinition), 'AUTOINCREMENT')) {
+                if ($this->strContains(strtoupper($columnType), 'INTEGER') && $this->strContains(strtoupper($columnDefinition), 'AUTOINCREMENT')) {
                     $translatedType = 'SERIAL'; // PostgreSQL uses SERIAL
                     $columnDefinition = str_ireplace('AUTOINCREMENT', '', $columnDefinition);
                     $columnDefinition .= ' PRIMARY KEY'; // Add PRIMARY KEY explicitly
@@ -832,7 +907,7 @@ class DatabaseConverter // NOSONAR
                 }
 
                 // Handle BOOLEAN (INTEGER)
-                if (str_contains(strtoupper($columnType), 'INTEGER') && (str_contains(strtoupper($columnDefinition), 'DEFAULT 1') || str_contains(strtoupper($columnDefinition), 'DEFAULT 0'))) {
+                if ($this->strContains(strtoupper($columnType), 'INTEGER') && ($this->strContains(strtoupper($columnDefinition), 'DEFAULT 1') || $this->strContains(strtoupper($columnDefinition), 'DEFAULT 0'))) {
                     // This is a heuristic, assuming INTEGER with default 0/1 is boolean
                     $translatedType = 'BOOLEAN';
                     $columnDefinition = str_ireplace("DEFAULT 1", "DEFAULT TRUE", $columnDefinition);
@@ -840,12 +915,12 @@ class DatabaseConverter // NOSONAR
                 }
 
                 // Handle DATETIME
-                if (str_contains(strtoupper($columnType), 'DATETIME')) {
+                if ($this->strContains(strtoupper($columnType), 'DATETIME')) {
                     $translatedType = 'TIMESTAMP WITHOUT TIME ZONE';
                 }
                 
                 // Handle TEXT (for JSON)
-                if (str_contains(strtoupper($columnType), 'TEXT') && str_contains(strtoupper($columnName), 'json')) {
+                if ($this->strContains(strtoupper($columnType), 'TEXT') && $this->strContains(strtoupper($columnName), 'json')) {
                     // Heuristic: if text column name contains 'json', assume it's JSONB
                     $translatedType = 'JSONB';
                 }
@@ -893,8 +968,9 @@ class DatabaseConverter // NOSONAR
      */
     public function translateCreateTable($sql, $sourceDialect, $targetDialect)
     {
-        $sourceDialect = strtolower($sourceDialect);
-        $targetDialect = strtolower($targetDialect);
+        //$sql = $this->normalizeCreateTableSql($sql);
+        $sourceDialect = $this->normalizeDialect($sourceDialect);
+        $targetDialect = $this->normalizeDialect($targetDialect);
 
         if ($sourceDialect === $targetDialect) {
             return $sql; // No translation needed
@@ -917,4 +993,114 @@ class DatabaseConverter // NOSONAR
                 throw new DatabaseConversionException("Unsupported CREATE TABLE translation: from " . $sourceDialect . " to " . $targetDialect);
         }
     }
+
+    /**
+     * Returns the canonical name for a given database dialect alias.
+     *
+     * This method normalizes various aliases for common database dialects
+     * into their standard (canonical) names. For example, 'pgsql' and 'postgres'
+     * both map to 'postgresql', and 'mariadb' maps to 'mysql'.
+     *
+     * Supported aliases:
+     * - mysql, mariadb → mysql
+     * - postgres, pgsql, postgresql → postgresql
+     * - sqlite, sqlite3 → sqlite
+     *
+     * @param string $dialect The input dialect name (case-insensitive).
+     * @return string The canonical dialect name.
+     *
+     * @throws DatabaseConversionException If the dialect is not supported.
+     */
+    public function normalizeDialect($dialect)
+    {
+        $dialect = strtolower(trim($dialect));
+
+        $mapping = [
+            'mysql'     => 'mysql',
+            'mariadb'   => 'mysql',
+            'postgres'  => 'postgresql',
+            'pgsql'     => 'postgresql',
+            'postgresql'=> 'postgresql',
+            'sqlite'    => 'sqlite',
+            'sqlite3'   => 'sqlite',
+        ];
+
+        if (isset($mapping[$dialect])) {
+            return $mapping[$dialect];
+        }
+
+        throw new DatabaseConversionException("Unsupported database dialect: " . $dialect);
+    }
+
+    public function normalizeCreateTableSql($sql)
+    {
+        $sql = trim($sql);
+        $sql = str_replace("`", "", $sql); // Remove backticks for standard SQL
+        $sql = preg_replace('/\s+/', ' ', $sql); // Normalize spaces
+        $sql = preg_replace('/\s*;\s*$/', '', $sql); // Remove trailing semicolon if present
+        return $sql;
+    }
+
+    /**
+     * Checks if a string contains a specific substring.
+     *
+     * @param string $haystack The string to search within.
+     * @param string $needle   The substring to search for.
+     * @return bool            True if the substring is found, false otherwise.
+     */
+    public function strContains($haystack, $needle)
+    {
+        return strpos($haystack, $needle) !== false;
+    }
+
+    /**
+     * Cleans up a multi-line SQL statement without altering its line structure.
+     *
+     * @param string $sql The SQL string to clean.
+     * @return string The cleaned SQL string with preserved line breaks.
+     */
+    public function fixLines($sql)
+    {
+        // Normalize line endings (Windows/Linux/macOS compatibility)
+        $sql = str_replace(["\r\n", "\r"], "\n", $sql);
+        $sql = trim($sql);
+
+        // Split into individual lines
+        $lines = explode("\n", $sql);
+        $fixedLines = [];
+
+        foreach ($lines as $line) {
+            $line = $this->fixLine($line);
+            if (trim($line) !== '') {
+                $fixedLines[] = $line;
+            }
+        }
+
+        return implode("\r\n", $fixedLines);
+    }
+
+    /**
+     * Cleans a single line of SQL by removing comments and excess whitespace.
+     *
+     * @param string $line A single line of SQL.
+     * @return string The cleaned line.
+     */
+    public function fixLine($line)
+    {
+        // Remove single-line comments
+        $line = preg_replace('/--.*$/', '', $line);
+
+        // Remove inline multi-line comments
+        $line = preg_replace('/\/\*.*?\*\//s', '', $line);
+
+        // Remove trailing spaces before a comma
+        $line = preg_replace('/\s+,(\s*)$/', ',$1', $line);
+
+        // Normalize internal spaces (preserve line breaks externally)
+        $line = preg_replace('/\s+/', ' ', $line);
+
+        return rtrim($line);
+    }
+
+
 }
