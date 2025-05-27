@@ -126,7 +126,7 @@ class PicoDatabaseConverter // NOSONAR
             "binary" => "BINARY",
             "varbinary" => "VARBINARY",
             "blob" => "BLOB",
-            "timestamp with time zone" => "TIMESTAMP",
+            "timestamp with time zone" => "TIMESTAMP", // NOSONAR
             "timestamp without time zone" => "DATETIME", // NOSONAR
             "timestamptz" => "TIMESTAMP", // NOSONAR
             "timestamp" => "TIMESTAMPTZ", // custom rule if needed
@@ -158,7 +158,7 @@ class PicoDatabaseConverter // NOSONAR
             "bit" => "BIT",
             "boolean" => "BOOLEAN",
             "char" => "CHARACTER",
-            "nvarchar" => "CHARACTER VARYING",
+            "nvarchar" => "CHARACTER VARYING", // NOSONAR
             "varchar" => "CHARACTER VARYING",
             "character varying" => "CHARACTER VARYING", // NOSONAR
             "tinytext" => "TEXT",
@@ -568,7 +568,7 @@ class PicoDatabaseConverter // NOSONAR
             throw new DatabaseConversionException("Invalid MySQL CREATE TABLE statement format.");
         }
 
-        $ifNotExists = isset($matches[1][0]) ? 'IF NOT EXISTS ' : '';
+        $ifNotExists = isset($matches[1][0]) ? 'IF NOT EXISTS ' : ''; // NOSONAR
         $tableName = $this->quoteIdentifier($matches[2][0], 'postgresql');
         $startPos = $matches[0][1] + strlen($matches[0][0]) - 1;
 
@@ -576,8 +576,14 @@ class PicoDatabaseConverter // NOSONAR
         $i = $startPos + 1;
         $len = strlen($sql);
         while ($i < $len && $depth > 0) {
-            if ($sql[$i] === '(') $depth++;
-            elseif ($sql[$i] === ')') $depth--;
+            if ($sql[$i] === '(') 
+            {
+                $depth++;
+            }
+            elseif ($sql[$i] === ')') 
+            {
+                $depth--;
+            }
             $i++;
         }
 
@@ -830,18 +836,16 @@ class PicoDatabaseConverter // NOSONAR
      * @return string The translated MySQL CREATE TABLE statement.
      * @throws DatabaseConversionException If the SQL format is invalid.
      */
+    
     public function postgresqlToMySQL($sql) // NOSONAR
     {
-        $sql = trim($sql);
-        $sql = preg_replace('/\s+/', ' ', $sql); // Normalize whitespace
+        $sql = trim(preg_replace('/\s+/', ' ', $sql)); // Normalize whitespace
 
-        // Find opening parenthesis for table definition
         $posOpen = strpos(strtoupper($sql), '(');
         if ($posOpen === false) {
             throw new DatabaseConversionException("Invalid CREATE TABLE: missing opening parenthesis.");
         }
 
-        // Find the matching closing parenthesis
         $len = strlen($sql);
         $parenCount = 0;
         $posClose = false;
@@ -863,17 +867,15 @@ class PicoDatabaseConverter // NOSONAR
             throw new DatabaseConversionException("Invalid CREATE TABLE: unbalanced parentheses.");
         }
 
-        // Extract table name
-        if (!preg_match('/CREATE TABLE (IF NOT EXISTS\s+)?("?)([^"\s]+)("?)/i', substr($sql, 0, $posOpen), $matches)) {
+        if (!preg_match('/CREATE TABLE (IF NOT EXISTS\s+)?("?)([^"\s]+)\2/i', substr($sql, 0, $posOpen), $matches)) {
             throw new DatabaseConversionException("Cannot parse table name.");
         }
         $ifNotExists = isset($matches[1]) ? 'IF NOT EXISTS ' : '';
         $tableName = $this->quoteIdentifier($matches[3], 'mysql');
 
-        // Get column and constraint definitions
         $columnsDef = trim(substr($sql, $posOpen + 1, $posClose - $posOpen - 1));
 
-        // Split into lines, handling nested parentheses
+        // Parse column definitions considering nested parentheses
         $lines = [];
         $buffer = '';
         $parenLevel = 0;
@@ -902,16 +904,15 @@ class PicoDatabaseConverter // NOSONAR
         $newLines = [];
 
         foreach ($lines as $line) {
-            // Ubah CHARACTER VARYING(n) ke VARCHAR(n)
+            // Convert "character varying(n)" to VARCHAR(n)
             if (preg_match('/^("?)([^"\s]+)\1\s+character varying\s*\((\d+)\)(.*)$/i', $line, $colMatch)) {
                 $colName = $this->quoteIdentifier($colMatch[2], 'mysql');
                 $length = $colMatch[3];
                 $rest = trim($colMatch[4]);
                 $newLines[] = "{$colName} VARCHAR({$length}) {$rest}";
             } else {
-                // Untuk baris lain, hanya ubah identifier dari PostgreSQL-style ke MySQL-style
-                $line = preg_replace_callback('/"([^"]+)"/', function ($m) // NOSONAR
-                {
+                // Replace PostgreSQL-style identifiers with MySQL-style
+                $line = preg_replace_callback('/"([^"]+)"/', function ($m) /* NOSONAR */{
                     return $this->quoteIdentifier($m[1], 'mysql');
                 }, $line);
                 $newLines[] = $line;
@@ -921,19 +922,35 @@ class PicoDatabaseConverter // NOSONAR
         $finalSql = "CREATE TABLE {$ifNotExists}{$tableName} (\n    " . implode(",\n    ", $newLines) . "\n)";
         $finalSql .= "\nENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-        $finalSql = str_replace('TIMESTAMP WITH TIME ZONE', 'TIMESTAMP', $finalSql); // Convert PostgreSQL's TIMESTAMP WITH TIME ZONE to MySQL's TIMESTAMP
-        $finalSql = str_replace('TIMESTAMP WITHOUT TIME ZONE', 'DATETIME', $finalSql); // Convert PostgreSQL's TIMESTAMP WITHOUT TIME ZONE to MySQL's DATETIME
-        $finalSql = str_replace('SERIAL', 'BIGINT AUTO_INCREMENT', $finalSql); // Convert PostgreSQL's SERIAL to MySQL's INT AUTO_INCREMENT
-        $finalSql = str_replace('BIGSERIAL', 'BIGINT AUTO_INCREMENT', $finalSql); // Convert PostgreSQL's BIGSERIAL to MySQL's BIGINT AUTO_INCREMENT
-        $finalSql = str_replace('BOOLEAN', 'TINYINT(1)', $finalSql); // Convert PostgreSQL's BOOLEAN to MySQL's TINYINT(1)
-        $finalSql = str_replace('JSONB', 'JSON', $finalSql); // Convert PostgreSQL's JSONB to MySQL's JSON
-        $finalSql = str_replace('JSON', 'JSON', $finalSql); // Convert PostgreSQL's JSON to MySQL's JSON
+        // Type translations
+        $replacements = [
+            'TIMESTAMPTZ' => 'TIMESTAMP',
+            'TIMESTAMP WITH TIME ZONE' => 'TIMESTAMP',
+            'TIMESTAMP WITHOUT TIME ZONE' => 'DATETIME',
+            'BOOLEAN' => 'TINYINT(1)',
+            'JSONB' => 'JSON'
+        ];
+        $finalSql = str_ireplace(array_keys($replacements), array_values($replacements), $finalSql);
 
+        // SERIAL and BIGSERIAL to BIGINT AUTO_INCREMENT — remove duplicate PRIMARY KEY if needed
+        $finalSql = preg_replace_callback('/`(\w+)`\s+(BIG)?SERIAL\s+(.*)/i', function ($matches) {
+            $col = "`{$matches[1]}`";
+            $rest = strtoupper($matches[3]);
+            $hasPK = strpos($rest, 'PRIMARY KEY') !== false;
+            $type = 'BIGINT';
+            $mod = 'NOT NULL AUTO_INCREMENT';
+            $rest = str_ireplace('PRIMARY KEY', '', $rest); // remove if exists here
+            $rest = trim($rest);
+            return $hasPK
+                ? "{$col} {$type} {$mod}" // no need to keep PRIMARY KEY inline
+                : "{$col} {$type} {$mod} {$rest}";
+        }, $finalSql);
+
+        // Final formatting
         $finalSql = $this->fixLines($finalSql);
-
-        $finalSql = trim($finalSql).";";
-        return $finalSql;
+        return trim($finalSql) . ";";
     }
+
 
     /**
      * Translates a CREATE TABLE statement from PostgreSQL to SQLite.
