@@ -1205,7 +1205,7 @@ class PicoDatabaseConverter // NOSONAR
                 }
 
                 // Handle BOOLEAN (INTEGER)
-                if (($this->strContains(strtoupper($translatedType), 'BOOLEAN') || $this->strContains(strtoupper($translatedType), 'INTEGER')) && ($this->strContains(strtoupper($translatedType), 'DEFAULT 1') || $this->strContains(strtoupper($translatedType), 'DEFAULT 0'))) {
+                if (($this->strContains(strtoupper($translatedType), 'INTEGER') && ($this->strContains(strtoupper($translatedType), 'DEFAULT 1') || $this->strContains(strtoupper($translatedType), 'DEFAULT 0'))) || $this->strContains(strtoupper($translatedType), 'BOOL')) {
                     // This is a heuristic, assuming INTEGER with default 0/1 is boolean
                     $translatedType = str_ireplace('INTEGER', 'BOOLEAN', $translatedType);
                     $translatedType = str_ireplace("DEFAULT 1", "DEFAULT TRUE", $translatedType);
