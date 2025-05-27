@@ -250,24 +250,26 @@ class PicoDatabaseConverter // NOSONAR
     }
 
     /**
-     * Converts a raw value to the appropriate native PHP type based on SQL type.
+     * Converts a raw database value to its appropriate native PHP type based on the SQL type and database dialect.
      *
-     * @param mixed  $value    The raw input value (string, int, etc).
-     * @param string $sqlType  The SQL type name (e.g. 'int', 'boolean', 'json', etc).
+     * @param mixed  $value   The raw input value (e.g., string, int, resource).
+     * @param string $sqlType The SQL type name (e.g., 'int', 'boolean', 'json', etc.).
+     * @param string $dialect The database dialect (e.g., 'mysql', 'postgresql', 'sqlite').
      * @return mixed The value converted to a native PHP type.
      */
-    public function convertToPhpType($value, $sqlType) // NOSONAR
+    public function convertToPhpType($value, $sqlType, $dialect) // NOSONAR
     {
-        // Normalize the SQL type name (strip length, lowercase)
+        // Normalize the SQL type: remove length/precision and convert to lowercase
         $normalizedType = strtolower(trim(preg_replace('/\s*\(.*\)/', '', $sqlType)));
 
-        // If the value is already null, return as is
+        // If the value is already null, return it directly
         if ($value === null) {
             return null;
         }
 
-        // Match against known SQL to PHP types
-        switch ($normalizedType) {
+        // Convert based on the normalized SQL type
+        switch ($normalizedType) // NOSONAR
+        {
             case 'int':
             case 'integer':
             case 'smallint':
@@ -283,7 +285,16 @@ class PicoDatabaseConverter // NOSONAR
             case 'tinyint(1)':
             case 'boolean':
             case 'bool':
-                return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
+                // Convert to boolean; fall back to null if unrecognized
+                $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                if (!isset($value)) {
+                    return null;
+                }
+                // For SQLite, return as integer 0/1
+                if (stripos($dialect, 'sqlite') !== false) {
+                    return $value === true ? 1 : 0;
+                }
+                return $value;
 
             case 'float':
             case 'real':
@@ -296,12 +307,14 @@ class PicoDatabaseConverter // NOSONAR
 
             case 'json':
             case 'jsonb':
-                return json_decode($value, true); // Decode as associative array
+                // Decode JSON into an associative array
+                return json_decode($value, true);
 
             case 'blob':
             case 'binary':
             case 'varbinary':
             case 'bytea':
+                // If the value is a resource (e.g., stream), read it; otherwise cast to string
                 return is_resource($value) ? stream_get_contents($value) : (string) $value;
 
             case 'date':
@@ -311,13 +324,15 @@ class PicoDatabaseConverter // NOSONAR
             case 'timestamp with time zone':
             case 'timestamp without time zone':
             case 'timestamptz':
-                return (string) $value; // Optionally convert to DateTime
+                // Optionally return as DateTime object instead of string
+                return (string) $value;
 
             default:
                 // Fallback: treat as string
                 return (string) $value;
         }
     }
+
 
     /**
      * Converts a PHP value to a valid SQL literal string based on native PHP type.
@@ -385,8 +400,6 @@ class PicoDatabaseConverter // NOSONAR
         return str_replace("'", "''", $value);
     }
 
-
-
     /**
      * Translates a database field type from a source dialect to a target dialect.
      * This function primarily maps the base type, while specific translation methods
@@ -449,7 +462,7 @@ class PicoDatabaseConverter // NOSONAR
         } elseif ($sourceDialect === 'postgresql') {
             if ($baseType === 'serial' || $baseType === 'bigserial') {
                 if ($targetDialect === 'mysql') {
-                    return ($baseType === 'bigserial' ? 'BIGINT' : 'INT');
+                    return $baseType === 'bigserial' ? 'BIGINT' : 'INT';
                 }
                 if ($targetDialect === 'sqlite') {
                     return 'INTEGER';
