@@ -1093,13 +1093,20 @@ class PicoDatabaseConverter // NOSONAR
                     $columnDefinition = str_ireplace('AUTOINCREMENT', 'AUTO_INCREMENT', $columnDefinition);
                     $primaryKeyColumnFound = true;
                 }
-                
+
                 // Handle BOOLEAN (INTEGER)
-                if ($this->strContains(strtoupper($columnType), 'INTEGER') && ($this->strContains(strtoupper($columnDefinition), 'DEFAULT 1') || $this->strContains(strtoupper($columnDefinition), 'DEFAULT 0'))) {
+                if (($this->strContains(strtoupper($columnType), 'INTEGER') && ($this->strContains(strtoupper($columnType), 'DEFAULT 1') || $this->strContains(strtoupper($columnType), 'DEFAULT 0'))) || $this->strContains(strtoupper($columnType), 'BOOL')) {
                     // This is a heuristic, assuming INTEGER with default 0/1 is boolean
-                    $translatedType = 'TINYINT(1)';
-                    $columnDefinition = str_ireplace("DEFAULT 1", "DEFAULT '1'", $columnDefinition);
-                    $columnDefinition = str_ireplace("DEFAULT 0", "DEFAULT '0'", $columnDefinition);
+                    $translatedType = $columnType;
+                    $translatedType = str_ireplace('BOOLEAN', 'TINYINT(1)', $translatedType);
+                    $translatedType = str_ireplace('BOOL', 'TINYINT(1)', $translatedType);
+                    $translatedType = str_ireplace('INTEGER', 'TINYINT(1)', $translatedType);
+                    $translatedType = str_ireplace("DEFAULT 1", "DEFAULT TRUE", $translatedType);
+                    $translatedType = str_ireplace("DEFAULT 0", "DEFAULT FALSE", $translatedType);
+                }
+                else
+                {
+
                 }
 
                 // Handle DATETIME
