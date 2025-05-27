@@ -43,72 +43,99 @@ class PicoDatabaseConverter // NOSONAR
      */
     private $dbToPostgreSQL;
 
-    public function __construct() {
+    /**
+     * Array mapping of SQL data types to PHP types.
+     *
+     * @var array
+     */
+    private $sqlToPhpType;
+
+    public function __construct() // NOSONAR
+    {
         $this->dbToSqlite = [
-            "int" => "INTEGER",
             "tinyint(1)" => "BOOLEAN", // NOSONAR
             "tinyint" => "INTEGER",
             "smallint" => "INTEGER",
             "mediumint" => "INTEGER",
             "bigint" => "INTEGER",
+            "integer" => "INTEGER",
+            "int" => "INTEGER",
+            "bigserial" => "INTEGER",
+            "serial" => "INTEGER",
             "real" => "REAL",
             "float" => "REAL",
+            "double precision" => "REAL", // NOSONAR
             "double" => "REAL",
             "decimal" => "REAL",
-            "nvarchar" => "NVARCHAR",
-            "varchar" => "NVARCHAR",
-            "character varying" => "NVARCHAR", // NOSONAR
+            "numeric" => "REAL",
+            "money" => "REAL",
+            "bit" => "INTEGER",
+            "boolean" => "INTEGER",
             "char" => "NVARCHAR",
+            "nvarchar" => "NVARCHAR",
+            "character varying" => "NVARCHAR", // NOSONAR
+            "varchar" => "NVARCHAR",
             "tinytext" => "TEXT",
             "mediumtext" => "TEXT",
             "longtext" => "TEXT",
             "text" => "TEXT",
+            "jsonb" => "TEXT",
+            "json" => "TEXT",
+            "uuid" => "TEXT",
+            "xml" => "TEXT",
+            "blob" => "BLOB",
+            "binary" => "BLOB",
+            "varbinary" => "BLOB",
             "datetime" => "DATETIME",
+            "timestamptz" => "TIMESTAMP",
             "timestamp" => "TIMESTAMP",
             "date" => "DATE",
             "time" => "TIME",
-            "year" => "INTEGER",
-            "boolean" => "INTEGER",
-            "json" => "TEXT",
-            "jsonb" => "TEXT",
-            "integer" => "INTEGER",
-            "serial" => "INTEGER",
-            "bigserial" => "INTEGER",
-            "double precision" => "REAL",
-            "timestamptz" => "TIMESTAMP"
+            "year" => "INTEGER"
         ];
 
         $this->dbToMySQL = [
             "bigint" => "BIGINT",
             "mediumint" => "MEDIUMINT",
             "smallint" => "SMALLINT",
+            "tinyint(1)" => "TINYINT(1)", // NOSONAR
+            "tinyint" => "TINYINT",
             "integer" => "INT",
-            "double" => "DOUBLE",
+            "int" => "INT",
             "float" => "FLOAT",
             "real" => "DOUBLE",
+            "double precision" => "DOUBLE",
+            "double" => "DOUBLE",
             "decimal" => "DECIMAL",
             "numeric" => "NUMERIC",
+            "money" => "DECIMAL(19,4)",
+            "bit" => "BIT",
+            "boolean" => "TINYINT(1)",
+            "char" => "CHAR",
+            "nvarchar" => "VARCHAR",
+            "varchar" => "VARCHAR",
+            "character varying" => "VARCHAR",
             "tinytext" => "TINYTEXT",
             "mediumtext" => "MEDIUMTEXT",
             "longtext" => "LONGTEXT",
             "text" => "TEXT",
-            "nvarchar" => "VARCHAR",
-            "varchar" => "VARCHAR",
-            "character varying" => "VARCHAR",
-            "tinyint(1)" => "TINYINT(1)", // NOSONAR
-            "tinyint" => "TINYINT",
-            "boolean" => "TINYINT(1)",
-            "int" => "INT",
+            "jsonb" => "JSON",
+            "json" => "JSON",
+            "uuid" => "CHAR(36)",
+            "xml" => "TEXT",
+            "binary" => "BINARY",
+            "varbinary" => "VARBINARY",
+            "blob" => "BLOB",
+            "timestamp with time zone" => "TIMESTAMP",
+            "timestamp without time zone" => "DATETIME", // NOSONAR
+            "timestamptz" => "TIMESTAMP", // NOSONAR
+            "timestamp" => "TIMESTAMPTZ", // custom rule if needed
             "datetime" => "DATETIME",
             "date" => "DATE",
-            "timestamptz" => "TIMESTAMP",
-            "timestamp with time zone" => "TIMESTAMP",
-            "timestamp without time zone" => "DATETIME",
-            "timestamp" => "TIMESTAMPTZ",
-            "json" => "JSON",
+            "time" => "TIME",
+            "year" => "YEAR",
             "enum" => "ENUM",
-            "set" => "SET",
-            "char" => "CHAR"
+            "set" => "SET"
         ];
 
         $this->dbToPostgreSQL = [
@@ -118,25 +145,247 @@ class PicoDatabaseConverter // NOSONAR
             "tinyint(1)" => "BOOLEAN",
             "tinyint" => "INTEGER",
             "integer" => "INTEGER",
+            "int" => "INTEGER",
+            "bigserial" => "BIGSERIAL",
+            "serial" => "SERIAL",
+            "float" => "REAL",
             "real" => "REAL",
-            "longtext" => "TEXT",
-            "mediumtext" => "TEXT",
-            "smalltext" => "TEXT",
-            "tinytext" => "TEXT",
-            "text" => "TEXT",
-            "character varying" => "CHARACTER VARYING", // NOSONAR
+            "double precision" => "DOUBLE PRECISION",
+            "double" => "DOUBLE PRECISION",
+            "decimal" => "DECIMAL",
+            "numeric" => "NUMERIC",
+            "money" => "MONEY",
+            "bit" => "BIT",
+            "boolean" => "BOOLEAN",
+            "char" => "CHARACTER",
             "nvarchar" => "CHARACTER VARYING",
             "varchar" => "CHARACTER VARYING",
-            "char" => "CHARACTER",
-            "boolean" => "BOOLEAN",
-            "datetime" => "TIMESTAMP WITHOUT TIME ZONE",
-            "date" => "DATE",
+            "character varying" => "CHARACTER VARYING", // NOSONAR
+            "tinytext" => "TEXT",
+            "mediumtext" => "TEXT",
+            "longtext" => "TEXT",
+            "smalltext" => "TEXT",
+            "text" => "TEXT",
+            "json" => "JSONB",
+            "jsonb" => "JSONB",
+            "uuid" => "UUID",
+            "xml" => "XML",
+            "blob" => "BYTEA",
+            "binary" => "BYTEA",
+            "varbinary" => "BYTEA",
+            "datetime" => "TIMESTAMP WITHOUT TIME ZONE", // NOSONAR
+            "timestamp without time zone" => "TIMESTAMP WITHOUT TIME ZONE",
+            "timestamp with time zone" => "TIMESTAMP WITH TIME ZONE", // NOSONAR
             "timestamptz" => "TIMESTAMP WITH TIME ZONE",
             "timestamp" => "TIMESTAMP WITH TIME ZONE",
+            "date" => "DATE",
             "time" => "TIME",
-            "json" => "JSONB"
+            "year" => "INTEGER",
+            "enum" => "TEXT", // PostgreSQL does support ENUM but requires definition
+            "set" => "TEXT"   // no native SET, fallback to TEXT
         ];
+
+        $this->sqlToPhpType = [
+            // Integer types
+            'tinyint' => 'int',
+            'tinyint(1)' => 'bool', // special case often used for boolean
+            'smallint' => 'int',
+            'mediumint' => 'int',
+            'int' => 'int',
+            'integer' => 'int',
+            'bigint' => 'int',
+            'serial' => 'int',
+            'bigserial' => 'int',
+            'year' => 'int',
+            'bit' => 'int',
+
+            // Floating-point types
+            'float' => 'float',
+            'real' => 'float',
+            'double' => 'float',
+            'double precision' => 'float',
+            'decimal' => 'float',
+            'numeric' => 'float',
+            'money' => 'float',
+
+            // Boolean type
+            'boolean' => 'bool',
+            'bool' => 'bool',
+
+            // String types
+            'char' => 'string',
+            'varchar' => 'string',
+            'nvarchar' => 'string',
+            'character varying' => 'string',
+            'text' => 'string',
+            'tinytext' => 'string',
+            'mediumtext' => 'string',
+            'longtext' => 'string',
+            'smalltext' => 'string',
+            'enum' => 'string',
+            'set' => 'string',
+            'uuid' => 'string',
+            'xml' => 'string',
+
+            // Date & Time types (usually stored as string in PHP)
+            'datetime' => 'string',
+            'timestamp' => 'string',
+            'timestamp with time zone' => 'string',
+            'timestamp without time zone' => 'string',
+            'timestamptz' => 'string',
+            'date' => 'string',
+            'time' => 'string',
+
+            // Binary types
+            'blob' => 'string',
+            'binary' => 'string',
+            'varbinary' => 'string',
+            'bytea' => 'string',
+
+            // JSON types
+            'json' => 'array',   // assuming it's decoded
+            'jsonb' => 'array',  // assuming it's decoded
+        ];
+
     }
+
+    /**
+     * Converts a raw value to the appropriate native PHP type based on SQL type.
+     *
+     * @param mixed  $value    The raw input value (string, int, etc).
+     * @param string $sqlType  The SQL type name (e.g. 'int', 'boolean', 'json', etc).
+     * @return mixed The value converted to a native PHP type.
+     */
+    public function convertToPhpType($value, $sqlType) // NOSONAR
+    {
+        // Normalize the SQL type name (strip length, lowercase)
+        $normalizedType = strtolower(trim(preg_replace('/\s*\(.*\)/', '', $sqlType)));
+
+        // If the value is already null, return as is
+        if ($value === null) {
+            return null;
+        }
+
+        // Match against known SQL to PHP types
+        switch ($normalizedType) {
+            case 'int':
+            case 'integer':
+            case 'smallint':
+            case 'mediumint':
+            case 'bigint':
+            case 'serial':
+            case 'bigserial':
+            case 'year':
+            case 'bit':
+                return (int) $value;
+
+            case 'tinyint':
+            case 'tinyint(1)':
+            case 'boolean':
+            case 'bool':
+                return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
+
+            case 'float':
+            case 'real':
+            case 'double':
+            case 'double precision':
+            case 'decimal':
+            case 'numeric':
+            case 'money':
+                return (float) $value;
+
+            case 'json':
+            case 'jsonb':
+                return json_decode($value, true); // Decode as associative array
+
+            case 'blob':
+            case 'binary':
+            case 'varbinary':
+            case 'bytea':
+                return is_resource($value) ? stream_get_contents($value) : (string) $value;
+
+            case 'date':
+            case 'time':
+            case 'datetime':
+            case 'timestamp':
+            case 'timestamp with time zone':
+            case 'timestamp without time zone':
+            case 'timestamptz':
+                return (string) $value; // Optionally convert to DateTime
+
+            default:
+                // Fallback: treat as string
+                return (string) $value;
+        }
+    }
+
+    /**
+     * Converts a PHP value to a valid SQL literal string based on native PHP type.
+     *
+     * @param mixed  $value The PHP value (e.g. int, string, array, etc).
+     * @param string $phpType The native PHP type (e.g. 'int', 'string', 'bool', etc).
+     * @return string SQL literal (e.g. 123, 'text', NULL).
+     */
+    public function convertPhpValueToSqlLiteral($value, $phpType) // NOSONAR
+    {
+        // Normalize PHP type
+        $phpType = strtolower(trim($phpType));
+
+        // NULL
+        if ($value === null || $phpType === 'null') {
+            return 'NULL';
+        }
+
+        switch ($phpType) {
+            case 'int':
+            case 'integer':
+                return (string)(int)$value;
+
+            case 'float':
+            case 'double':
+                return (string)(float)$value;
+
+            case 'bool':
+            case 'boolean':
+                return $value ? '1' : '0';
+
+            case 'array':
+                // Convert array to JSON string and escape
+                $json = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                return "'" . $this->escapeSqlString($json) . "'";
+
+            case 'string':
+            default:
+                return "'" . $this->escapeSqlString((string)$value) . "'";
+        }
+    }
+
+    /**
+     * Converts a value and its SQL type to a valid SQL literal string
+     * by first mapping the SQL type to a native PHP type.
+     *
+     * @param mixed  $value The input value to be converted.
+     * @param string $type  The SQL type (e.g., 'int', 'varchar', 'boolean').
+     * @return string A valid SQL literal (e.g., 123, 'text', NULL).
+     */
+    public function convertValueToSqlLiteral($value, $type)
+    {
+        $phpType = isset($this->sqlToPhpType[$type]) ? $this->sqlToPhpType[$type] : 'string';
+        return $this->convertPhpValueToSqlLiteral($value, $phpType);
+    }
+
+    /**
+     * Escapes a string for SQL by doubling single quotes.
+     *
+     * @param string $value
+     * @return string
+     */
+    protected function escapeSqlString(string $value): string
+    {
+        return str_replace("'", "''", $value);
+    }
+
+
 
     /**
      * Translates a database field type from a source dialect to a target dialect.
@@ -149,10 +398,11 @@ class PicoDatabaseConverter // NOSONAR
      * @return string The translated base field type.
      * @throws DatabaseConversionException If an unsupported target dialect is provided.
      */
-    private function translateFieldType($type, $sourceDialect, $targetDialect)
+    private function translateFieldType($type, $sourceDialect, $targetDialect) // NOSONAR
     {
         $type = strtolower(trim($type));
-        $type = preg_replace('/\s+/', ' ', $type); // Normalize spaces
+        // Normalize spaces in the type string
+        $type = preg_replace('/\s+/', ' ', $type); // NOSONAR
 
         $targetMap = [];
         switch ($targetDialect) {
@@ -296,7 +546,7 @@ class PicoDatabaseConverter // NOSONAR
      * @return string The translated PostgreSQL CREATE TABLE statement.
      * @throws DatabaseConversionException If the SQL format is invalid.
      */
-    public function mysqlToPostgreSQL($sql)
+    public function mysqlToPostgreSQL($sql) // NOSONAR
     {
         $sql = trim($sql);
 
@@ -347,7 +597,8 @@ class PicoDatabaseConverter // NOSONAR
                 if (stripos($columnDefinition, 'AUTO_INCREMENT') !== false) {
                     $translatedType = stripos($columnType, 'bigint') !== false ? 'BIGSERIAL' : 'SERIAL';
                     $columnDefinition = str_ireplace('AUTO_INCREMENT', '', $columnDefinition);
-                    if (stripos($columnDefinition, 'PRIMARY KEY') === false) {
+                    if (stripos($columnDefinition, 'PRIMARY KEY') === false) // NOSONAR
+                    {
                         $columnDefinition .= ' PRIMARY KEY';
                     }
                 }
@@ -566,7 +817,7 @@ class PicoDatabaseConverter // NOSONAR
      * @return string The translated MySQL CREATE TABLE statement.
      * @throws DatabaseConversionException If the SQL format is invalid.
      */
-    public function postgresqlToMySQL($sql)
+    public function postgresqlToMySQL($sql) // NOSONAR
     {
         $sql = trim($sql);
         $sql = preg_replace('/\s+/', ' ', $sql); // Normalize whitespace
@@ -582,8 +833,14 @@ class PicoDatabaseConverter // NOSONAR
         $parenCount = 0;
         $posClose = false;
         for ($i = $posOpen; $i < $len; $i++) {
-            if ($sql[$i] === '(') $parenCount++;
-            elseif ($sql[$i] === ')') $parenCount--;
+            if ($sql[$i] === '(') 
+            {
+                $parenCount++;
+            }
+            elseif ($sql[$i] === ')') 
+            {
+                $parenCount--;
+            }
             if ($parenCount === 0) {
                 $posClose = $i;
                 break;
@@ -609,8 +866,14 @@ class PicoDatabaseConverter // NOSONAR
         $parenLevel = 0;
         for ($i = 0; $i < strlen($columnsDef); $i++) {
             $char = $columnsDef[$i];
-            if ($char === '(') $parenLevel++;
-            elseif ($char === ')') $parenLevel--;
+            if ($char === '(') 
+            {
+                $parenLevel++;
+            }
+            elseif ($char === ')') 
+            {
+                $parenLevel--;
+            }
 
             if ($char === ',' && $parenLevel === 0) {
                 $lines[] = trim($buffer);
@@ -634,7 +897,8 @@ class PicoDatabaseConverter // NOSONAR
                 $newLines[] = "{$colName} VARCHAR({$length}) {$rest}";
             } else {
                 // Untuk baris lain, hanya ubah identifier dari PostgreSQL-style ke MySQL-style
-                $line = preg_replace_callback('/"([^"]+)"/', function ($m) {
+                $line = preg_replace_callback('/"([^"]+)"/', function ($m) // NOSONAR
+                {
                     return $this->quoteIdentifier($m[1], 'mysql');
                 }, $line);
                 $newLines[] = $line;
@@ -642,7 +906,7 @@ class PicoDatabaseConverter // NOSONAR
         }
 
         $finalSql = "CREATE TABLE {$ifNotExists}{$tableName} (\n    " . implode(",\n    ", $newLines) . "\n)";
-        $finalSql .= "\nENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+        $finalSql .= "\nENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
         $finalSql = str_replace('TIMESTAMP WITH TIME ZONE', 'TIMESTAMP', $finalSql); // Convert PostgreSQL's TIMESTAMP WITH TIME ZONE to MySQL's TIMESTAMP
         $finalSql = str_replace('TIMESTAMP WITHOUT TIME ZONE', 'DATETIME', $finalSql); // Convert PostgreSQL's TIMESTAMP WITHOUT TIME ZONE to MySQL's DATETIME
@@ -654,7 +918,8 @@ class PicoDatabaseConverter // NOSONAR
 
         $finalSql = $this->fixLines($finalSql);
 
-        return trim($finalSql);
+        $finalSql = trim($finalSql).";";
+        return $finalSql;
     }
 
     /**
@@ -664,111 +929,113 @@ class PicoDatabaseConverter // NOSONAR
      * @return string The translated SQLite CREATE TABLE statement.
      * @throws DatabaseConversionException If the SQL format is invalid.
      */
-    public function postgresqlToSQLite($sql)
+    public function postgresqlToSQLite($sql) // NOSONAR
     {
         $sql = trim($sql);
-        $sql = preg_replace('/\s+/', ' ', $sql); // Normalize spaces
+        $sql = preg_replace('/\s+/', ' ', $sql); // Normalize whitespace
+
+        // Find opening parenthesis for table definition
+        $posOpen = strpos(strtoupper($sql), '(');
+        if ($posOpen === false) {
+            throw new DatabaseConversionException("Invalid CREATE TABLE: missing opening parenthesis.");
+        }
+
+        // Find the matching closing parenthesis
+        $len = strlen($sql);
+        $parenCount = 0;
+        $posClose = false;
+        for ($i = $posOpen; $i < $len; $i++) {
+            if ($sql[$i] === '(') {
+                $parenCount++;
+            } elseif ($sql[$i] === ')') {
+                $parenCount--;
+            }
+            if ($parenCount === 0) {
+                $posClose = $i;
+                break;
+            }
+        }
+        if ($posClose === false) {
+            throw new DatabaseConversionException("Invalid CREATE TABLE: unbalanced parentheses.");
+        }
 
         // Extract table name
-        if (!preg_match('/CREATE TABLE (IF NOT EXISTS\s+)?("?)([^"\s]+)("?)\s*\((.*)\)/is', $sql, $matches)) {
-            throw new DatabaseConversionException("Invalid PostgreSQL CREATE TABLE statement format.");
+        if (!preg_match('/CREATE TABLE (IF NOT EXISTS\s+)?("?)([^"\s]+)("?)/i', substr($sql, 0, $posOpen), $matches)) {
+            throw new DatabaseConversionException("Cannot parse table name.");
         }
         $ifNotExists = isset($matches[1]) ? 'IF NOT EXISTS ' : '';
         $tableName = $this->quoteIdentifier($matches[3], 'sqlite');
-        $columnsAndConstraints = trim($matches[5]);
 
-        $lines = explode(',', $columnsAndConstraints);
+        // Get column and constraint definitions
+        $columnsDef = trim(substr($sql, $posOpen + 1, $posClose - $posOpen - 1));
+
+        // Split into lines, handling nested parentheses
+        $lines = [];
+        $buffer = '';
+        $parenLevel = 0;
+        for ($i = 0; $i < strlen($columnsDef); $i++) {
+            $char = $columnsDef[$i];
+            if ($char === '(') {
+                $parenLevel++;
+            } elseif ($char === ')') {
+                $parenLevel--;
+            }
+
+            if ($char === ',' && $parenLevel === 0) {
+                $lines[] = trim($buffer);
+                $buffer = '';
+            } else {
+                $buffer .= $char;
+            }
+        }
+        if (trim($buffer) !== '') {
+            $lines[] = trim($buffer);
+        }
+
         $newLines = [];
-        $primaryKeyColumnFound = false;
 
         foreach ($lines as $line) {
-            $line = trim($line);
-            if (empty($line)) continue;
-
-            // Column definition
-            if (preg_match('/^("?)([^"\s]+)("?)\s+([a-zA-Z0-9_() ]+)(.*)$/i', $line, $colMatches)) {
-                $columnName = $this->quoteIdentifier($colMatches[2], 'sqlite');
-                $columnType = strtolower(trim($colMatches[4]));
-                $columnDefinition = trim($colMatches[5]);
-
-                $translatedType = $this->translateFieldType($columnType, 'postgresql', 'sqlite');
-
-                // Handle SERIAL/BIGSERIAL
-                if ($this->strContains(strtoupper($columnType), 'SERIAL')) {
-                    $translatedType = 'INTEGER';
-                    if ($this->strContains(strtoupper($columnDefinition), 'PRIMARY KEY')) {
-                        $columnDefinition = str_ireplace('PRIMARY KEY', 'AUTOINCREMENT', $columnDefinition);
-                        $primaryKeyColumnFound = true;
-                    } else {
-                        // If SERIAL but not primary key, just make it INTEGER
-                        $columnDefinition = str_ireplace('PRIMARY KEY', '', $columnDefinition); // Remove any PRIMARY KEY if not main autoinc
-                    }
+            // Convert CHARACTER VARYING(n) to VARCHAR
+            if (preg_match('/^("?)([^"\s]+)\1\s+character varying\s*\((\d+)\)(.*)$/i', ltrim($line), $colMatch)) {
+                $colName = $this->quoteIdentifier($colMatch[2], 'sqlite');
+                $length = "";
+                $len = trim($colMatch[3]);
+                if(!empty($len))
+                {
+                    $length = "($len)";
                 }
-
-                // Handle BOOLEAN
-                if ($this->strContains(strtoupper($columnType), 'BOOLEAN')) {
-                    $translatedType = 'INTEGER'; // SQLite uses INTEGER for BOOLEAN
-                    $columnDefinition = str_ireplace("DEFAULT TRUE", "DEFAULT 1", $columnDefinition);
-                    $columnDefinition = str_ireplace("DEFAULT FALSE", "DEFAULT 0", $columnDefinition);
-                }
-
-                // Handle TIMESTAMP WITH TIME ZONE / WITHOUT TIME ZONE
-                if ($this->strContains(strtoupper($columnType), 'TIMESTAMP WITH TIME ZONE') || $this->strContains(strtoupper($columnType), 'TIMESTAMP WITHOUT TIME ZONE')) {
-                    $translatedType = 'TIMESTAMP'; // SQLite doesn't have explicit TIMESTAMP types, TIMESTAMP is common
-                }
-                
-                // Handle JSONB
-                if ($this->strContains(strtoupper($columnType), 'JSONB')) {
-                    $translatedType = 'TEXT';
-                }
-
-                $newLines[] = $columnName . ' ' . $translatedType . ' ' . trim($columnDefinition);
-            } elseif (preg_match('/^(PRIMARY KEY|UNIQUE)\s*\((.*)\)/i', $line, $keyMatches)) {
-                // Table-level PRIMARY KEY or UNIQUE
-                $keyType = strtoupper($keyMatches[1]);
-                $keyColumns = $keyMatches[2];
-                
-                // Replace double quotes with backticks in column list
-                $keyColumns = preg_replace('/"([^"]+)"/', '"$1"', $keyColumns);
-
-                if ($keyType === 'PRIMARY KEY' && !$primaryKeyColumnFound) {
-                    $newLines[] = 'PRIMARY KEY (' .trim($keyColumns) . ')';
-                } elseif ($keyType === 'UNIQUE') {
-                    // Remove CONSTRAINT name for SQLite
-                    $line = preg_replace('/^CONSTRAINT\s+"?([^"]+)"?\s+UNIQUE\s*\((.*)\)/i', 'UNIQUE ($2)', $line);
-                    $newLines[] = $line;
-                }
+                $rest = trim($colMatch[4]);
+                $newLines[] = "{$colName} NVARCHAR{$length} {$rest}";
             } else {
-                // Other constraints or unparsed parts, try to add as is, but quote identifiers
-                $line = preg_replace_callback('/(")([^"]+?)(")/', function($m) {
-                    return $this->quoteIdentifier($m[2], 'sqlite');
+                // Convert PostgreSQL-style identifiers to SQLite-style
+                $line = preg_replace_callback('/"([^"]+)"/', function ($m) {
+                    return $this->quoteIdentifier($m[1], 'sqlite');
                 }, $line);
                 $newLines[] = $line;
             }
         }
 
-        $finalSql = "CREATE TABLE " . $ifNotExists . $tableName . " (\n    " . implode(",\n    ", $newLines) . "\n)";
+        // Convert DEFAULT TRUE/FALSE to DEFAULT 1/0 if type is BOOLEAN or TINYINT(1)
+        foreach ($newLines as &$line) {
+            if (preg_match('/\b(TINYINT\s*\(1\)|BOOLEAN)\b/i', $line)) {
+                $line = preg_replace('/DEFAULT\s+TRUE/i', 'DEFAULT 1', $line);
+                $line = preg_replace('/DEFAULT\s+FALSE/i', 'DEFAULT 0', $line);
+            }
+        }
 
-        $finalSql = str_replace('CHARACTER VARYING', 'NVARCHAR', $finalSql); // Convert CHARACTER VARYING to NVARCHAR
+        $finalSql = "CREATE TABLE {$ifNotExists}{$tableName} (\n    " . implode(",\n    ", $newLines) . "\n);";
 
-        $finalSql = str_replace('`', '"', $finalSql); // Convert backticks to double quotes for PostgreSQL
-        $finalSql = str_replace('"PRIMARY" KEY', 'PRIMARY KEY', $finalSql); // Fix PostgreSQL's PRIMARY KEY quoting
-        $finalSql = str_replace('"UNIQUE" KEY', 'UNIQUE', $finalSql); // Fix PostgreSQL's UNIQUE KEY quoting
-        $finalSql = str_replace('"FOREIGN" KEY', 'FOREIGN KEY', $finalSql); // Fix PostgreSQL's FOREIGN KEY quoting
-        $finalSql = str_replace('"CHECK" (', 'CHECK (', $finalSql); // Fix PostgreSQL's CHECK constraint quoting
-        $finalSql = str_replace('"DEFAULT" ', 'DEFAULT ', $finalSql); // Fix PostgreSQL's DEFAULT quoting
-        $finalSql = str_replace('"NOT" NULL', 'NOT NULL', $finalSql); // Fix PostgreSQL's NOT NULL quoting
-        $finalSql = str_replace('"NULL"', 'NULL', $finalSql); // Fix PostgreSQL's NULL quoting
-        $finalSql = str_replace('"REFERENCES"', 'REFERENCES', $finalSql); // Fix PostgreSQL's REFERENCES quoting
-        $finalSql = str_replace('"ON" DELETE', 'ON DELETE', $finalSql); // Fix PostgreSQL's ON DELETE quoting
-        $finalSql = str_replace('"ON" UPDATE', 'ON UPDATE', $finalSql); // Fix PostgreSQL's ON UPDATE quoting
-        $finalSql = str_replace('"USING"', 'USING', $finalSql); // Fix PostgreSQL's USING quoting
-        $finalSql = str_replace('"WITH"', 'WITH', $finalSql); // Fix PostgreSQL's WITH quoting
-        $finalSql = str_replace('"CONSTRAINT"', 'CONSTRAINT', $finalSql); // Fix PostgreSQL's CONSTRAINT quoting
+        // Type conversions
+        $finalSql = str_replace('TIMESTAMP WITH TIME ZONE', 'TIMESTAMP', $finalSql);
+        $finalSql = str_replace('TIMESTAMP WITHOUT TIME ZONE', 'TIMESTAMP', $finalSql);
+        $finalSql = str_replace('SERIAL', 'INTEGER PRIMARY KEY AUTOINCREMENT', $finalSql);
+        $finalSql = str_replace('BIGSERIAL', 'INTEGER PRIMARY KEY AUTOINCREMENT', $finalSql);
+        $finalSql = str_ireplace('JSONB', 'JSON', $finalSql); // SQLite stores JSON as JSON
+        $finalSql = str_ireplace('JSON', 'JSON', $finalSql);
 
         $finalSql = $this->fixLines($finalSql);
 
-        return trim($finalSql) . ';';
+        return trim($finalSql);
     }
 
     /**
@@ -857,9 +1124,13 @@ class PicoDatabaseConverter // NOSONAR
         }
 
         $finalSql = "CREATE TABLE " . $ifNotExists . $tableName . " (\n    " . implode(",\n    ", $newLines) . "\n)";
-        $finalSql .= "\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"; // Add common MySQL table options
+        $finalSql .= "\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"; // Add common MySQL table options
 
-        return trim($finalSql) . ';';
+        $finalSql = trim($finalSql) . ';';
+
+        $finalSql = $this->fixLine($finalSql);
+
+        return $finalSql;
     }
 
     /**
@@ -888,7 +1159,10 @@ class PicoDatabaseConverter // NOSONAR
 
         foreach ($lines as $line) {
             $line = trim($line);
-            if (empty($line)) continue;
+            if (empty($line)) 
+            {
+                continue;
+            }
 
             // Column definition
             if (preg_match('/^("?)([^"\s]+)("?)\s+([a-zA-Z0-9_() ]+)(.*)$/i', $line, $colMatches)) {
@@ -897,6 +1171,10 @@ class PicoDatabaseConverter // NOSONAR
                 $columnDefinition = trim($colMatches[5]);
 
                 $translatedType = $this->translateFieldType($columnType, 'sqlite', 'postgresql');
+
+                if ($this->strContains(strtoupper($columnType), 'NVARCHAR')) {
+                    $translatedType = str_ireplace('NVARCHAR', 'CHARACTER VARYING', $translatedType); 
+                }
 
                 // Handle INTEGER PRIMARY KEY AUTOINCREMENT
                 if ($this->strContains(strtoupper($columnType), 'INTEGER') && $this->strContains(strtoupper($columnDefinition), 'AUTOINCREMENT')) {
@@ -907,11 +1185,11 @@ class PicoDatabaseConverter // NOSONAR
                 }
 
                 // Handle BOOLEAN (INTEGER)
-                if ($this->strContains(strtoupper($columnType), 'INTEGER') && ($this->strContains(strtoupper($columnDefinition), 'DEFAULT 1') || $this->strContains(strtoupper($columnDefinition), 'DEFAULT 0'))) {
+                if (($this->strContains(strtoupper($translatedType), 'BOOLEAN') || $this->strContains(strtoupper($translatedType), 'INTEGER')) && ($this->strContains(strtoupper($translatedType), 'DEFAULT 1') || $this->strContains(strtoupper($translatedType), 'DEFAULT 0'))) {
                     // This is a heuristic, assuming INTEGER with default 0/1 is boolean
-                    $translatedType = 'BOOLEAN';
-                    $columnDefinition = str_ireplace("DEFAULT 1", "DEFAULT TRUE", $columnDefinition);
-                    $columnDefinition = str_ireplace("DEFAULT 0", "DEFAULT FALSE", $columnDefinition);
+                    $translatedType = str_ireplace('INTEGER', 'BOOLEAN', $translatedType);
+                    $translatedType = str_ireplace("DEFAULT 1", "DEFAULT TRUE", $translatedType);
+                    $translatedType = str_ireplace("DEFAULT 0", "DEFAULT FALSE", $translatedType);
                 }
 
                 // Handle DATETIME
@@ -944,6 +1222,7 @@ class PicoDatabaseConverter // NOSONAR
                     $newLines[] = 'UNIQUE (' . $keyColumns . ')';
                 }
             } else {
+                
                 // Other constraints or unparsed parts, try to add as is, but quote identifiers
                 $line = preg_replace_callback('/(")([^"]+?)(")/', function($m) {
                     return $this->quoteIdentifier($m[2], 'postgresql');
@@ -954,7 +1233,11 @@ class PicoDatabaseConverter // NOSONAR
 
         $finalSql = "CREATE TABLE " . $ifNotExists . $tableName . " (\n    " . implode(",\n    ", $newLines) . "\n)";
 
-        return trim($finalSql) . ';';
+        $finalSql = trim($finalSql) . ';';
+
+        $finalSql = $this->fixLine($finalSql);
+        return $finalSql;
+
     }
 
     /**
@@ -1093,11 +1376,8 @@ class PicoDatabaseConverter // NOSONAR
         // Remove inline multi-line comments
         $line = preg_replace('/\/\*.*?\*\//s', '', $line);
 
-        // Remove trailing spaces before a comma
-        $line = preg_replace('/\s+,(\s*)$/', ',$1', $line);
-
-        // Normalize internal spaces (preserve line breaks externally)
-        $line = preg_replace('/\s+/', ' ', $line);
+        // Remove spaces before commas
+        $line = preg_replace('/\s+,/', ',', $line);
 
         return rtrim($line);
     }

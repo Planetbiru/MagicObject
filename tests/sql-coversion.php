@@ -42,10 +42,10 @@ echo $mySql . "\n\n";
 
 echo "PostgreSQL:\n";
 echo $postgreSql . "\n\n";
-/*
+
 echo "SQLite:\n";
 echo $sqlite . "\n\n";
-*/
+
 echo "Now, let's convert the PostgreSQL back to MySQL:\n";
 $mySqlConverted = $converter->translateCreateTable($postgreSql, PicoDatabaseType::DATABASE_TYPE_POSTGRESQL, PicoDatabaseType::DATABASE_TYPE_MARIADB);
 echo $mySqlConverted . "\n\n";
@@ -53,3 +53,11 @@ echo $mySqlConverted . "\n\n";
 echo "Now, let convert PostgreSQL to SQLite:\n";
 $sqliteConverted = $converter->translateCreateTable($postgreSql, PicoDatabaseType::DATABASE_TYPE_POSTGRESQL, PicoDatabaseType::DATABASE_TYPE_SQLITE);   
 echo $sqliteConverted . "\n\n";
+
+echo "Now, let convert SQLite to MySQL:\n";
+$mysqlConverted2 = $converter->translateCreateTable($sqliteConverted, PicoDatabaseType::DATABASE_TYPE_SQLITE, PicoDatabaseType::DATABASE_TYPE_MYSQL);   
+echo $mysqlConverted2 . "\n\n";
+
+echo "Now, let convert SQLite to PostgreSQL:\n";
+$postgresqlConverted2 = $converter->translateCreateTable($sqliteConverted, PicoDatabaseType::DATABASE_TYPE_SQLITE, PicoDatabaseType::DATABASE_TYPE_POSTGRESQL);   
+echo $postgresqlConverted2 . "\n\n";
