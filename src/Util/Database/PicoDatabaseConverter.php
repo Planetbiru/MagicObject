@@ -62,6 +62,7 @@ class PicoDatabaseConverter // NOSONAR
             "int" => "INTEGER",
             "bigserial" => "INTEGER",
             "serial" => "INTEGER",
+
             "real" => "REAL",
             "float" => "REAL",
             "double precision" => "REAL", // NOSONAR
@@ -69,12 +70,15 @@ class PicoDatabaseConverter // NOSONAR
             "decimal" => "REAL",
             "numeric" => "REAL",
             "money" => "REAL",
+
             "bit" => "INTEGER",
             "boolean" => "INTEGER",
+
             "char" => "NVARCHAR",
             "nvarchar" => "NVARCHAR",
             "character varying" => "NVARCHAR", // NOSONAR
             "varchar" => "NVARCHAR",
+
             "tinytext" => "TEXT",
             "mediumtext" => "TEXT",
             "longtext" => "TEXT",
@@ -86,6 +90,9 @@ class PicoDatabaseConverter // NOSONAR
             "blob" => "BLOB",
             "binary" => "BLOB",
             "varbinary" => "BLOB",
+            "timestamp with time zone" => "TIMESTAMP", // NOSONAR
+            "timestamp without time zone" => "DATETIME", // NOSONAR
+            "timestamptz" => "TIMESTAMP", // NOSONAR
             "datetime" => "DATETIME",
             "timestamptz" => "TIMESTAMP",
             "timestamp" => "TIMESTAMP",
@@ -101,6 +108,10 @@ class PicoDatabaseConverter // NOSONAR
             "tinyint(1)" => "TINYINT(1)", // NOSONAR
             "tinyint" => "TINYINT",
             "integer" => "INT",
+            
+            "bigserial" => "BIGINT",
+            "serial" => "INT",
+
             "int" => "INT",
             "float" => "FLOAT",
             "real" => "DOUBLE",
@@ -109,12 +120,15 @@ class PicoDatabaseConverter // NOSONAR
             "decimal" => "DECIMAL",
             "numeric" => "NUMERIC",
             "money" => "DECIMAL(19,4)",
+
             "bit" => "BIT",
             "boolean" => "TINYINT(1)",
+
             "char" => "CHAR",
             "nvarchar" => "VARCHAR",
             "varchar" => "VARCHAR",
             "character varying" => "VARCHAR",
+
             "tinytext" => "TINYTEXT",
             "mediumtext" => "MEDIUMTEXT",
             "longtext" => "LONGTEXT",
@@ -129,7 +143,6 @@ class PicoDatabaseConverter // NOSONAR
             "timestamp with time zone" => "TIMESTAMP", // NOSONAR
             "timestamp without time zone" => "DATETIME", // NOSONAR
             "timestamptz" => "TIMESTAMP", // NOSONAR
-            "timestamp" => "TIMESTAMPTZ", // custom rule if needed
             "datetime" => "DATETIME",
             "date" => "DATE",
             "time" => "TIME",
@@ -601,10 +614,13 @@ class PicoDatabaseConverter // NOSONAR
 
         foreach ($lines as $line) {
             $line = trim($line);
-            if ($line === '') continue;
+            if ($line === '') 
+            {
+                continue;
+            }
 
             // Column definition
-            if (preg_match('/^`?([^`\s]+)`?\s+([a-zA-Z0-9_\(\)]+)(.*)$/i', $line, $colMatches)) {
+            if (preg_match('/^`?([^`\s]+)`?\s+([a-zA-Z0-9_\(\)]+)(.*)$/i', $line, $colMatches)) /*M NOSONAR */ {
                 $columnName = $this->quoteIdentifier($colMatches[1], 'postgresql');
                 $columnType = strtolower(trim($colMatches[2]));
                 $columnDefinition = trim($colMatches[3]);
@@ -961,25 +977,20 @@ class PicoDatabaseConverter // NOSONAR
      */
     public function postgresqlToSQLite($sql) // NOSONAR
     {
-        $sql = trim($sql);
-        $sql = preg_replace('/\s+/', ' ', $sql); // Normalize whitespace
+        $sql = trim(preg_replace('/\s+/', ' ', $sql)); // Normalize whitespace
 
-        // Find opening parenthesis for table definition
+        // Find opening and closing parenthesis
         $posOpen = strpos(strtoupper($sql), '(');
         if ($posOpen === false) {
             throw new DatabaseConversionException("Invalid CREATE TABLE: missing opening parenthesis.");
         }
 
-        // Find the matching closing parenthesis
         $len = strlen($sql);
         $parenCount = 0;
         $posClose = false;
         for ($i = $posOpen; $i < $len; $i++) {
-            if ($sql[$i] === '(') {
-                $parenCount++;
-            } elseif ($sql[$i] === ')') {
-                $parenCount--;
-            }
+            if ($sql[$i] === '(') $parenCount++;
+            elseif ($sql[$i] === ')') $parenCount--;
             if ($parenCount === 0) {
                 $posClose = $i;
                 break;
@@ -990,27 +1001,23 @@ class PicoDatabaseConverter // NOSONAR
         }
 
         // Extract table name
-        if (!preg_match('/CREATE TABLE (IF NOT EXISTS\s+)?("?)([^"\s]+)("?)/i', substr($sql, 0, $posOpen), $matches)) {
+        if (!preg_match('/CREATE TABLE (IF NOT EXISTS\s+)?("?)([^"\s]+)\2/i', substr($sql, 0, $posOpen), $matches)) {
             throw new DatabaseConversionException("Cannot parse table name.");
         }
         $ifNotExists = isset($matches[1]) ? 'IF NOT EXISTS ' : '';
         $tableName = $this->quoteIdentifier($matches[3], 'sqlite');
 
-        // Get column and constraint definitions
+        // Extract column and constraint definitions
         $columnsDef = trim(substr($sql, $posOpen + 1, $posClose - $posOpen - 1));
 
-        // Split into lines, handling nested parentheses
+        // Split lines by commas outside of nested parentheses
         $lines = [];
         $buffer = '';
         $parenLevel = 0;
         for ($i = 0; $i < strlen($columnsDef); $i++) {
             $char = $columnsDef[$i];
-            if ($char === '(') {
-                $parenLevel++;
-            } elseif ($char === ')') {
-                $parenLevel--;
-            }
-
+            if ($char === '(') $parenLevel++;
+            elseif ($char === ')') $parenLevel--;
             if ($char === ',' && $parenLevel === 0) {
                 $lines[] = trim($buffer);
                 $buffer = '';
@@ -1025,48 +1032,65 @@ class PicoDatabaseConverter // NOSONAR
         $newLines = [];
 
         foreach ($lines as $line) {
-            // Convert CHARACTER VARYING(n) to VARCHAR
+            // Convert CHARACTER VARYING(n) to NVARCHAR(n)
             if (preg_match('/^("?)([^"\s]+)\1\s+character varying\s*\((\d+)\)(.*)$/i', ltrim($line), $colMatch)) {
                 $colName = $this->quoteIdentifier($colMatch[2], 'sqlite');
-                $length = "";
-                $len = trim($colMatch[3]);
-                if(!empty($len))
-                {
-                    $length = "($len)";
-                }
+                $length = trim($colMatch[3]);
                 $rest = trim($colMatch[4]);
-                $newLines[] = "{$colName} NVARCHAR{$length} {$rest}";
-            } else {
-                // Convert PostgreSQL-style identifiers to SQLite-style
-                $line = preg_replace_callback('/"([^"]+)"/', function ($m) {
-                    return $this->quoteIdentifier($m[1], 'sqlite');
-                }, $line);
-                $newLines[] = $line;
+                $newLines[] = "{$colName} NVARCHAR({$length}) {$rest}";
+                continue;
             }
+
+            // Convert SERIAL/BIGSERIAL to INTEGER (handled explicitly)
+            if (preg_match('/^("?)([^"\s]+)\1\s+(BIG)?SERIAL(.*)$/i', $line, $colMatch)) {
+                $colName = $this->quoteIdentifier($colMatch[2], 'sqlite');
+                $rest = strtoupper(trim($colMatch[4]));
+                // Remove inline PRIMARY KEY if exists
+                $rest = str_ireplace('PRIMARY KEY', '', $rest);
+                $rest = trim(preg_replace('/\s+/', ' ', $rest));
+                $newLines[] = "{$colName} INTEGER NOT NULL" . (!empty($rest) ? " {$rest}" : "");
+                continue;
+            }
+
+            // Replace PostgreSQL-style quoted identifiers
+            $line = preg_replace_callback('/"([^"]+)"/', fn($m) => $this->quoteIdentifier($m[1], 'sqlite'), $line);
+            $newLines[] = $line;
         }
 
-        // Convert DEFAULT TRUE/FALSE to DEFAULT 1/0 if type is BOOLEAN or TINYINT(1)
+        // Replace TRUE/FALSE with 1/0 for BOOLEAN types
         foreach ($newLines as &$line) {
-            if (preg_match('/\b(TINYINT\s*\(1\)|BOOLEAN)\b/i', $line)) {
+            if (preg_match('/\b(BOOLEAN|TINYINT\s*\(1\))\b/i', $line)) {
                 $line = preg_replace('/DEFAULT\s+TRUE/i', 'DEFAULT 1', $line);
                 $line = preg_replace('/DEFAULT\s+FALSE/i', 'DEFAULT 0', $line);
             }
         }
 
+        // Convert types globally (after line-by-line handling)
+        $typeMap = [
+            'BIGINT' => 'INTEGER',
+            'TIMESTAMP WITH TIME ZONE' => 'TIMESTAMP',
+            'TIMESTAMP WITHOUT TIME ZONE' => 'TIMESTAMP',
+            'BOOLEAN' => 'BOOLEAN', // SQLite uses INTEGER for booleans
+            'JSONB' => 'JSON',
+            'JSON' => 'JSON'
+        ];
         $finalSql = "CREATE TABLE {$ifNotExists}{$tableName} (\n    " . implode(",\n    ", $newLines) . "\n);";
+        $finalSql = str_ireplace(array_keys($typeMap), array_values($typeMap), $finalSql);
 
-        // Type conversions
-        $finalSql = str_replace('TIMESTAMP WITH TIME ZONE', 'TIMESTAMP', $finalSql);
-        $finalSql = str_replace('TIMESTAMP WITHOUT TIME ZONE', 'TIMESTAMP', $finalSql);
-        $finalSql = str_replace('SERIAL', 'INTEGER PRIMARY KEY AUTOINCREMENT', $finalSql);
-        $finalSql = str_replace('BIGSERIAL', 'INTEGER PRIMARY KEY AUTOINCREMENT', $finalSql);
-        $finalSql = str_ireplace('JSONB', 'JSON', $finalSql); // SQLite stores JSON as JSON
-        $finalSql = str_ireplace('JSON', 'JSON', $finalSql);
+        $finalSql = preg_replace('/DEFAULT\s+TRUE/i', 'DEFAULT 1', $finalSql);
+        $finalSql = preg_replace('/DEFAULT\s+FALSE/i', 'DEFAULT 0', $finalSql);
+
+        // Final cleanup to avoid duplicate PRIMARY KEY
+        $finalSql = preg_replace('/INTEGER\s+PRIMARY KEY\s+AUTOINCREMENT\s+NOT NULL\s+PRIMARY KEY/i', 'INTEGER NOT NULL', $finalSql);
+        $finalSql = preg_replace('/\s+PRIMARY KEY\s+PRIMARY KEY/i', ' PRIMARY KEY', $finalSql);
 
         $finalSql = $this->fixLines($finalSql);
 
+        $finalSql = preg_replace('/\bNOT\s+NULL\b(?:\s+NOT\s+NULL\b)+/i', 'NOT NULL', $finalSql);
+
         return trim($finalSql);
     }
+
 
     /**
      * Translates a CREATE TABLE statement from SQLite to MySQL.
@@ -1382,11 +1406,14 @@ class PicoDatabaseConverter // NOSONAR
     public function fixLines($sql)
     {
         // Normalize line endings (Windows/Linux/macOS compatibility)
-        $sql = str_replace(["\r\n", "\r"], "\n", $sql);
+        $sql = str_replace("\n", "\r\n", $sql);
+        $sql = str_replace("\r\r\n", "\r\n", $sql);
+        $sql = str_replace("\r", "\r\n", $sql);
+        $sql = str_replace("\r\n\n", "\r\n", $sql);
         $sql = trim($sql);
 
         // Split into individual lines
-        $lines = explode("\n", $sql);
+        $lines = explode("\r\n", $sql);
         $fixedLines = [];
 
         foreach ($lines as $line) {
@@ -1415,6 +1442,8 @@ class PicoDatabaseConverter // NOSONAR
 
         // Remove spaces before commas
         $line = preg_replace('/\s+,/', ',', $line);
+
+        
 
         return rtrim($line);
     }
