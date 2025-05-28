@@ -1112,90 +1112,92 @@ class PicoDatabaseConverter // NOSONAR
         $tableName = $this->quoteIdentifier($matches[3], 'mysql');
         $columnsAndConstraints = trim($matches[5]);
 
-        $lines = explode(',', $columnsAndConstraints);
+        $lines = $this->splitSqlByCommaRespectingParentheses($columnsAndConstraints);
         $newLines = [];
-        $primaryKeyColumnFound = false;
+        $primaryKeyColumn = null;
+
+        // Cari apakah ada PRIMARY KEY di tingkat tabel
+        foreach ($lines as $line) {
+            if (preg_match('/^PRIMARY KEY\s*\(\s*"([^"]+)"\s*\)/i', trim($line), $pkMatch)) {
+                $primaryKeyColumn = $pkMatch[1];
+                break;
+            }
+        }
 
         foreach ($lines as $line) {
             $line = trim($line);
             if (empty($line)) continue;
 
             // Column definition
-            if (preg_match('/^("?)([^"\s]+)("?)\s+([a-zA-Z0-9_() ]+)(.*)$/i', $line, $colMatches)) {
-                $columnName = $this->quoteIdentifier($colMatches[2], 'mysql');
-                $columnType = strtolower(trim($colMatches[4]));
-                $columnDefinition = trim($colMatches[5]);
+            if (preg_match('/^("?)([^"\s]+)\1\s+([a-zA-Z0-9_()]+)(.*)$/i', $line, $colMatches)) {
+                $columnRaw = $colMatches[2];
+                $columnName = $this->quoteIdentifier($columnRaw, 'mysql');
+                $columnType = strtolower(trim($colMatches[3]));
+                $columnDefinition = trim($colMatches[4]);
 
                 $translatedType = $this->translateFieldType($columnType, 'sqlite', 'mysql');
 
-                // Handle INTEGER PRIMARY KEY AUTOINCREMENT
-                if ($this->strContains(strtoupper($columnType), 'INTEGER') && $this->strContains(strtoupper($columnDefinition), 'AUTOINCREMENT')) {
-                    $translatedType = 'INT'; // MySQL uses INT
-                    $columnDefinition = str_ireplace('AUTOINCREMENT', 'AUTO_INCREMENT', $columnDefinition);
-                    $primaryKeyColumnFound = true;
+                // INTEGER → BIGINT(20), REAL → DOUBLE
+                $translatedType = str_ireplace('INTEGER', 'BIGINT(20)', $translatedType);
+                $translatedType = str_ireplace('REAL', 'DOUBLE', $translatedType);
+
+                // BOOLEAN
+                if (preg_match('/BOOLEAN/i', $columnType) || preg_match('/DEFAULT\s+[01]/i', $columnDefinition)) {
+                    $translatedType = 'TINYINT(1)';
+                    $columnDefinition = str_ireplace('DEFAULT 1', 'DEFAULT TRUE', $columnDefinition);
+                    $columnDefinition = str_ireplace('DEFAULT 0', 'DEFAULT FALSE', $columnDefinition);
                 }
 
-                // Handle BOOLEAN (INTEGER)
-                if (($this->strContains(strtoupper($columnType), 'INTEGER') && ($this->strContains(strtoupper($columnType), 'DEFAULT 1') || $this->strContains(strtoupper($columnType), 'DEFAULT 0'))) || $this->strContains(strtoupper($columnType), 'BOOL')) {
-                    // This is a heuristic, assuming INTEGER with default 0/1 is boolean
-                    $translatedType = $columnType;
-                    $translatedType = str_ireplace('BOOLEAN', 'TINYINT(1)', $translatedType);
-                    $translatedType = str_ireplace('BOOL', 'TINYINT(1)', $translatedType);
-                    $translatedType = str_ireplace('INTEGER', 'TINYINT(1)', $translatedType);
-                    $translatedType = str_ireplace("DEFAULT 1", "DEFAULT TRUE", $translatedType);
-                    $translatedType = str_ireplace("DEFAULT 0", "DEFAULT FALSE", $translatedType);
-                }
-                else
-                {
-
-                }
-
-                // Handle DATETIME
-                if ($this->strContains(strtoupper($columnType), 'DATETIME')) {
-                    $translatedType = 'DATETIME'; // MySQL DATETIME
-                }
-                
-                // Handle TEXT (for JSON)
-                if ($this->strContains(strtoupper($columnType), 'TEXT') && $this->strContains(strtoupper($columnName), 'json')) {
-                    // Heuristic: if text column name contains 'json', assume it's JSON
+                // JSON detection
+                if ($this->strContains(strtoupper($columnType), 'TEXT') && $this->strContains(strtoupper($columnRaw), 'JSON')) {
                     $translatedType = 'JSON';
                 }
 
-                $newLines[] = $columnName . ' ' . $translatedType . ' ' . trim($columnDefinition);
-            } elseif (preg_match('/^(PRIMARY KEY|UNIQUE)\s*\((.*)\)/i', $line, $keyMatches)) {
-                // Table-level PRIMARY KEY or UNIQUE
-                $keyType = strtoupper($keyMatches[1]);
-                $keyColumns = $keyMatches[2];
-                
-                // Replace double quotes with backticks in column list
-                $keyColumns = preg_replace('/"([^"]+)"/', '`$1`', $keyColumns);
-
-                if ($keyType === 'PRIMARY KEY' && !$primaryKeyColumnFound) {
-                    $newLines[] = 'PRIMARY KEY (' . $keyColumns . ')';
-                } elseif ($keyType === 'UNIQUE') {
-                    $newLines[] = 'UNIQUE KEY (' . $keyColumns . ')';
+                // AUTO_INCREMENT untuk kolom PRIMARY KEY
+                if ($columnRaw === $primaryKeyColumn && preg_match('/NOT NULL/i', $columnDefinition)) {
+                    $translatedType = 'BIGINT(20)';
+                    $columnDefinition = preg_replace('/NOT NULL/i', '', $columnDefinition);
+                    $columnDefinition .= ' AUTO_INCREMENT';
                 }
+
+                $definition = trim("$columnName $translatedType $columnDefinition");
+                $newLines[] = preg_replace('/\s+/', ' ', $definition);
+            } elseif (preg_match('/^PRIMARY KEY\s*\((.*?)\)/i', $line, $pkMatch)) {
+                // Tangani PRIMARY KEY tabel jika belum dilakukan di atas
+                $keyColumns = trim($pkMatch[1]);
+                $keyColumns = preg_replace_callback('/"([^"]+)"/', function ($m) {
+                    return $this->quoteIdentifier($m[1], 'mysql');
+                }, $keyColumns);
+                $newLines[] = "PRIMARY KEY ($keyColumns)";
+            } elseif (preg_match('/^UNIQUE\s*\((.*?)\)/i', $line, $uqMatch)) {
+                $keyColumns = trim($uqMatch[1]);
+                $keyColumns = preg_replace_callback('/"([^"]+)"/', function ($m) {
+                    return $this->quoteIdentifier($m[1], 'mysql');
+                }, $keyColumns);
+                $newLines[] = "UNIQUE KEY ($keyColumns)";
             } else {
-                // Other constraints or unparsed parts, try to add as is, but quote identifiers
-                $line = preg_replace_callback('/(")([^"]+?)(")/', function($m) {
-                    return $this->quoteIdentifier($m[2], 'mysql');
+                // Constraint lainnya
+                $line = preg_replace_callback('/"([^"]+)"/', function ($m) {
+                    return $this->quoteIdentifier($m[1], 'mysql');
                 }, $line);
                 $newLines[] = $line;
             }
         }
 
         $finalSql = "CREATE TABLE " . $ifNotExists . $tableName . " (\n    " . implode(",\n    ", $newLines) . "\n)";
-        $finalSql .= "\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"; // Add common MySQL table options
+        $finalSql .= "\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
-        $finalSql = trim($finalSql) . ';';
+        $finalSql = preg_replace('/`PRIMARY` KEY/i', 'PRIMARY KEY', $finalSql);
 
-        $finalSql = $this->fixLine($finalSql);
-
-        return $finalSql;
+        return $this->fixLine(trim($finalSql));
     }
 
     /**
      * Translates a CREATE TABLE statement from SQLite to PostgreSQL.
+     *
+     * This method parses the SQLite CREATE TABLE SQL string, extracts columns and constraints,
+     * and converts them into a format compatible with PostgreSQL. It handles data type
+     * conversions, primary keys (both inline and table-level), and optional column definitions.
      *
      * @param string $sql The SQLite CREATE TABLE statement.
      * @return string The translated PostgreSQL CREATE TABLE statement.
@@ -1204,101 +1206,166 @@ class PicoDatabaseConverter // NOSONAR
     public function sqliteToPostgreSQL($sql)
     {
         $sql = trim($sql);
-        $sql = preg_replace('/\s+/', ' ', $sql); // Normalize spaces
+        $sql = preg_replace('/\s+/', ' ', $sql); // Normalize multiple spaces to single space
 
-        // Extract table name
+        // Extract table name and column/constraint definitions
         if (!preg_match('/CREATE TABLE (IF NOT EXISTS\s+)?("?)([^"\s]+)("?)\s*\((.*)\)/is', $sql, $matches)) {
             throw new DatabaseConversionException("Invalid SQLite CREATE TABLE statement format.");
         }
+
         $ifNotExists = isset($matches[1]) ? 'IF NOT EXISTS ' : '';
         $tableName = $this->quoteIdentifier($matches[3], 'postgresql');
         $columnsAndConstraints = trim($matches[5]);
 
-        $lines = explode(',', $columnsAndConstraints);
+        // Split column and constraint definitions, respecting parentheses inside types or expressions
+        $lines = $this->splitSqlByCommaRespectingParentheses($columnsAndConstraints);
         $newLines = [];
-        $primaryKeyColumnFound = false;
 
+        $primaryKeyColumn = null;
+        $primaryKeyHandled = false;
+
+        // Step 1: Detect table-level PRIMARY KEY for a single column
+        foreach ($lines as $line) {
+            if (preg_match('/^"?PRIMARY"?\s+KEY\s*\(\s*"([^"]+)"\s*\)/i', trim($line), $pkMatch)) {
+                $primaryKeyColumn = $pkMatch[1];
+                break;
+            }
+        }
+
+        // Step 2: Process each column and constraint line
         foreach ($lines as $line) {
             $line = trim($line);
-            if (empty($line)) 
-            {
-                continue;
-            }
+            
+            if (empty($line)) continue;
 
             // Column definition
-            if (preg_match('/^("?)([^"\s]+)("?)\s+([a-zA-Z0-9_() ]+)(.*)$/i', $line, $colMatches)) {
-                $columnName = $this->quoteIdentifier($colMatches[2], 'postgresql');
-                $columnType = strtolower(trim($colMatches[4]));
-                $columnDefinition = trim($colMatches[5]);
+            if (preg_match('/^("?)([^"\s]+)\1\s+([a-zA-Z0-9_()]+)(.*)$/i', $line, $colMatches)) {
+                $columnRaw = $colMatches[2];
+                $columnName = $this->quoteIdentifier($columnRaw, 'postgresql');
+                $columnType = strtoupper(trim($colMatches[3]));
+                $columnDefinition = trim($colMatches[4]);
 
-                $translatedType = $this->translateFieldType($columnType, 'sqlite', 'postgresql');
+                $translatedType = $this->translateFieldType(strtolower($columnType), 'sqlite', 'postgresql');
 
-                if ($this->strContains(strtoupper($columnType), 'NVARCHAR')) {
-                    $translatedType = str_ireplace('NVARCHAR', 'CHARACTER VARYING', $translatedType); 
+                // Replace NVARCHAR with CHARACTER VARYING
+                if ($this->strContains($columnType, 'NVARCHAR')) {
+                    $translatedType = str_ireplace('NVARCHAR', 'CHARACTER VARYING', $translatedType);
                 }
 
-                // Handle INTEGER PRIMARY KEY AUTOINCREMENT
-                if ($this->strContains(strtoupper($columnType), 'INTEGER') && $this->strContains(strtoupper($columnDefinition), 'AUTOINCREMENT')) {
-                    $translatedType = 'SERIAL'; // PostgreSQL uses SERIAL
-                    $columnDefinition = str_ireplace('AUTOINCREMENT', '', $columnDefinition);
-                    $columnDefinition .= ' PRIMARY KEY'; // Add PRIMARY KEY explicitly
-                    $primaryKeyColumnFound = true;
-                }
-
-                // Handle BOOLEAN (INTEGER)
-                if (($this->strContains(strtoupper($translatedType), 'INTEGER') && ($this->strContains(strtoupper($translatedType), 'DEFAULT 1') || $this->strContains(strtoupper($translatedType), 'DEFAULT 0'))) || $this->strContains(strtoupper($translatedType), 'BOOL')) {
-                    // This is a heuristic, assuming INTEGER with default 0/1 is boolean
-                    $translatedType = str_ireplace('INTEGER', 'BOOLEAN', $translatedType);
-                    $translatedType = str_ireplace("DEFAULT 1", "DEFAULT TRUE", $translatedType);
-                    $translatedType = str_ireplace("DEFAULT 0", "DEFAULT FALSE", $translatedType);
-                }
-
-                // Handle DATETIME
-                if ($this->strContains(strtoupper($columnType), 'DATETIME')) {
+                // Replace DATETIME with TIMESTAMP WITHOUT TIME ZONE
+                if ($this->strContains($columnType, 'DATETIME')) {
                     $translatedType = 'TIMESTAMP WITHOUT TIME ZONE';
                 }
-                
-                // Handle TEXT (for JSON)
-                if ($this->strContains(strtoupper($columnType), 'TEXT') && $this->strContains(strtoupper($columnName), 'json')) {
-                    // Heuristic: if text column name contains 'json', assume it's JSONB
+
+                // Detect and convert JSON column names with TEXT type to JSONB
+                if ($this->strContains($columnType, 'TEXT') && $this->strContains(strtolower($columnRaw), 'json')) {
                     $translatedType = 'JSONB';
                 }
 
-                $newLines[] = $columnName . ' ' . $translatedType . ' ' . trim($columnDefinition);
-            } elseif (preg_match('/^(PRIMARY KEY|UNIQUE)\s*\((.*)\)/i', $line, $keyMatches)) {
-                // Table-level PRIMARY KEY or UNIQUE
-                $keyType = strtoupper($keyMatches[1]);
-                $keyColumns = $keyMatches[2];
-                
-                // Replace double quotes with backticks in column list
-                $keyColumns = preg_replace('/"([^"]+)"/', '"$1"', $keyColumns);
-
-                if ($keyType === 'PRIMARY KEY' && !$primaryKeyColumnFound) {
-                    $newLines[] = 'PRIMARY KEY (' . $keyColumns . ')';
-                } elseif ($keyType === 'UNIQUE') {
-                    // SQLite's UNIQUE can be a constraint without a name.
-                    // PostgreSQL's UNIQUE can be named or unnamed.
-                    // If it's a simple UNIQUE (col), we can just add UNIQUE to the column definition.
-                    // If it's a named constraint, add it as a table constraint.
-                    $newLines[] = 'UNIQUE (' . $keyColumns . ')';
+                // Convert BOOLEAN representations
+                if (($this->strContains($translatedType, 'INTEGER') &&
+                    ($this->strContains(strtoupper($columnDefinition), 'DEFAULT 1') ||
+                    $this->strContains(strtoupper($columnDefinition), 'DEFAULT 0'))) ||
+                    $this->strContains($translatedType, 'BOOL')) {
+                    $translatedType = 'BOOLEAN';
+                    $columnDefinition = str_ireplace('DEFAULT 1', 'DEFAULT TRUE', $columnDefinition);
+                    $columnDefinition = str_ireplace('DEFAULT 0', 'DEFAULT FALSE', $columnDefinition);
                 }
-            } else {
-                
-                // Other constraints or unparsed parts, try to add as is, but quote identifiers
-                $line = preg_replace_callback('/(")([^"]+?)(")/', function($m) {
-                    return $this->quoteIdentifier($m[2], 'postgresql');
+
+                // Convert INTEGER NOT NULL with table-level PK into BIGSERIAL PRIMARY KEY
+                if ($columnRaw === $primaryKeyColumn &&
+                    $columnType === 'INTEGER' &&
+                    preg_match('/NOT\s+NULL/i', $columnDefinition))
+                {
+                    $translatedType = 'BIGSERIAL';
+                    $columnDefinition = preg_replace('/NOT\s+NULL/i', '', $columnDefinition);
+                    $columnDefinition = trim($columnDefinition) . ' PRIMARY KEY NOT NULL';
+                    $primaryKeyHandled = true;
+                }
+
+                // Check if column already defines PRIMARY KEY
+                if (preg_match('/PRIMARY\s+KEY/i', $line)) {
+                    if ($primaryKeyHandled) {
+                        continue;
+                    }
+                    $primaryKeyHandled = true;
+                }
+
+                // Combine and normalize spacing
+                $definition = trim("$columnName $translatedType $columnDefinition");
+                $definition = preg_replace('/\s+/', ' ', $definition);
+                $newLines[] = $definition;
+            }
+            // Handle PRIMARY KEY constraint
+            elseif (preg_match('/^"?PRIMARY"?\s+KEY\s*\((.*?)\)/i', trim($line), $pkMatch)) {
+                if ($primaryKeyHandled) {
+                    // PRIMARY KEY already defined in a column, skip
+                    continue;
+                }
+
+                $keyColumns = trim($pkMatch[1]);
+                $keyColumns = preg_replace_callback('/"([^"]+)"/', function ($m) {
+                    return $this->quoteIdentifier($m[1], 'postgresql');
+                }, $keyColumns);
+                $newLines[] = "PRIMARY KEY ($keyColumns)";
+                $primaryKeyHandled = true;
+            }
+            // Handle UNIQUE constraint
+            elseif (preg_match('/^UNIQUE\s*\((.*?)\)/i', $line, $uqMatch)) {
+                $keyColumns = trim($uqMatch[1]);
+                $keyColumns = preg_replace_callback('/"([^"]+)"/', function ($m) {
+                    return $this->quoteIdentifier($m[1], 'postgresql');
+                }, $keyColumns);
+                $newLines[] = "UNIQUE ($keyColumns)";
+            }
+            // Handle all other lines (fallback)
+            else {
+                $line = preg_replace_callback('/"([^"]+)"/', function ($m) {
+                    return $this->quoteIdentifier($m[1], 'postgresql');
                 }, $line);
                 $newLines[] = $line;
             }
         }
 
-        $finalSql = "CREATE TABLE " . $ifNotExists . $tableName . " (\n    " . implode(",\n    ", $newLines) . "\n)";
+        // Final CREATE TABLE assembly
+        $finalSql = "CREATE TABLE " . $ifNotExists . $tableName . " (\n    " . implode(",\n    ", $newLines) . "\n);";
 
-        $finalSql = trim($finalSql) . ';';
+        return $this->fixLine(trim($finalSql));
+    }
 
-        $finalSql = $this->fixLine($finalSql);
-        return $finalSql;
+    /**
+     * Splits a SQL column/constraint string into separate parts using commas,
+     * while respecting commas that are inside parentheses (e.g., data types or expressions).
+     *
+     * @param string $sql The part inside CREATE TABLE (...) to be split.
+     * @return array An array of lines representing column or constraint definitions.
+     */
+    private function splitSqlByCommaRespectingParentheses($sql)
+    {
+        $result = [];
+        $buffer = '';
+        $parenLevel = 0;
+        $length = strlen($sql);
 
+        for ($i = 0; $i < $length; $i++) {
+            $char = $sql[$i];
+            if ($char === '(') {
+                $parenLevel++;
+            } elseif ($char === ')') {
+                $parenLevel--;
+            } elseif ($char === ',' && $parenLevel === 0) {
+                $result[] = $buffer;
+                $buffer = '';
+                continue;
+            }
+            $buffer .= $char;
+        }
+
+        if (trim($buffer) !== '') {
+            $result[] = $buffer;
+        }
+
+        return $result;
     }
 
     /**
