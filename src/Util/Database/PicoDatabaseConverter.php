@@ -50,7 +50,38 @@ class PicoDatabaseConverter // NOSONAR
      */
     private $sqlToPhpType;
 
+    /**
+     * PicoDatabaseConverter constructor.
+     *
+     * Initializes internal data type mappings used for converting SQL queries
+     * between different database dialects (e.g., MySQL, PostgreSQL, SQLite).
+     *
+     * This method prepares internal arrays for:
+     * - Mapping SQL types to target dialects
+     * - Mapping SQL types to PHP types
+     */
     public function __construct() // NOSONAR
+    {
+        $this->initTypes();
+
+    }
+
+    /**
+     * Initializes internal mappings for type conversions between different database systems
+     * (MySQL, SQLite, PostgreSQL) and PHP types.
+     *
+     * This function sets up:
+     * - `$dbToSqlite`: maps other DB types to equivalent SQLite types.
+     * - `$dbToMySQL`: maps other DB types to equivalent MySQL types.
+     * - `$dbToPostgreSQL`: maps other DB types to equivalent PostgreSQL types.
+     * - `$sqlToPhpType`: maps SQL types to corresponding PHP native types.
+     *
+     * These mappings are used during SQL translation and type inference to ensure
+     * consistent cross-database behavior and compatibility.
+     *
+     * @return void
+     */
+    public function initTypes()
     {
         $this->dbToSqlite = [
             "tinyint(1)" => "BOOLEAN", // NOSONAR
@@ -90,6 +121,7 @@ class PicoDatabaseConverter // NOSONAR
             "blob" => "BLOB",
             "binary" => "BLOB",
             "varbinary" => "BLOB",
+
             "timestamp with time zone" => "TIMESTAMP", // NOSONAR
             "timestamp without time zone" => "DATETIME", // NOSONAR
             "timestamptz" => "TIMESTAMP", // NOSONAR
@@ -140,6 +172,7 @@ class PicoDatabaseConverter // NOSONAR
             "binary" => "BINARY",
             "varbinary" => "VARBINARY",
             "blob" => "BLOB",
+
             "timestamp with time zone" => "TIMESTAMP", // NOSONAR
             "timestamp without time zone" => "DATETIME", // NOSONAR
             "timestamptz" => "TIMESTAMP", // NOSONAR
@@ -147,6 +180,7 @@ class PicoDatabaseConverter // NOSONAR
             "date" => "DATE",
             "time" => "TIME",
             "year" => "YEAR",
+
             "enum" => "ENUM",
             "set" => "SET"
         ];
@@ -161,6 +195,7 @@ class PicoDatabaseConverter // NOSONAR
             "int" => "INTEGER",
             "bigserial" => "BIGSERIAL",
             "serial" => "SERIAL",
+
             "float" => "REAL",
             "real" => "REAL",
             "double precision" => "DOUBLE PRECISION",
@@ -168,8 +203,10 @@ class PicoDatabaseConverter // NOSONAR
             "decimal" => "DECIMAL",
             "numeric" => "NUMERIC",
             "money" => "MONEY",
+
             "bit" => "BIT",
             "boolean" => "BOOLEAN",
+
             "char" => "CHARACTER",
             "nvarchar" => "CHARACTER VARYING", // NOSONAR
             "varchar" => "CHARACTER VARYING",
@@ -186,6 +223,7 @@ class PicoDatabaseConverter // NOSONAR
             "blob" => "BYTEA",
             "binary" => "BYTEA",
             "varbinary" => "BYTEA",
+
             "datetime" => "TIMESTAMP WITHOUT TIME ZONE", // NOSONAR
             "timestamp without time zone" => "TIMESTAMP WITHOUT TIME ZONE",
             "timestamp with time zone" => "TIMESTAMP WITH TIME ZONE", // NOSONAR
@@ -194,6 +232,7 @@ class PicoDatabaseConverter // NOSONAR
             "date" => "DATE",
             "time" => "TIME",
             "year" => "INTEGER",
+
             "enum" => "TEXT", // PostgreSQL does support ENUM but requires definition
             "set" => "TEXT"   // no native SET, fallback to TEXT
         ];
@@ -259,16 +298,93 @@ class PicoDatabaseConverter // NOSONAR
             'json' => 'array',   // assuming it's decoded
             'jsonb' => 'array',  // assuming it's decoded
         ];
-
     }
 
     /**
-     * Converts a raw database value to its appropriate native PHP type based on the SQL type and database dialect.
+     * Generates a value string for an SQL INSERT statement, excluding the `VALUES` keyword.
      *
-     * @param mixed  $value   The raw input value (e.g., string, int, resource).
+     * Converts raw input values into appropriate SQL-formatted values based on their types and
+     * the target SQL dialect (e.g., MySQL, PostgreSQL, SQLite).
+     *
+     * Example output: ('value1', 123, NULL)
+     *
+     * @param array $data         Associative array of data to insert. Keys are column names, values are raw values.
+     * @param array $targetTypes  Associative array of target data types. Keys are column names, values are SQL types.
+     * @param string $targetDialect Target SQL dialect (e.g., 'mysql', 'postgresql', 'sqlite').
+     *
+     * @return string|null A comma-separated string of values inside parentheses, or null if input is empty.
+     */
+    public function createInsert($data, $targetTypes, $targetDialect)
+    {
+        $values = array();
+        foreach($data as $columnName => $rawValue)
+        {
+            $sqlType = $this->getColumnType($targetTypes, $columnName);
+            $value = $this->convertToPhpType($rawValue, $sqlType, $targetDialect);
+            $values[] = $value;
+        }
+        if(!empty($values))
+        {
+            return "(".implode(", ", $values).")";
+        }
+        return null;
+    }
+
+    /**
+     * Gets the SQL data type for a specific column name from the provided target type map.
+     *
+     * Defaults to 'text' if the column type is not found.
+     *
+     * @param array $targetTypes Associative array of column names to SQL types.
+     * @param string $columnName The name of the column to look up.
+     *
+     * @return string The SQL data type associated with the column, or 'text' if undefined.
+     */
+    public function getColumnType($targetTypes, $columnName)
+    {
+        return isset($targetTypes[$columnName]) ? $targetTypes[$columnName] : 'text';
+    }
+
+    /**
+     * Escapes and quotes a string value for safe use in an SQL statement.
+     *
+     * Returns `'NULL'` if the input is null. Otherwise, wraps the string in single quotes
+     * and escapes internal quotes or special characters.
+     *
+     * @param string|null $value The raw string value to quote.
+     *
+     * @return string The SQL-safe quoted string or `'NULL'` if the value is null.
+     */
+    public function quoteString($value)
+    {
+        if(!isset($value) || $value === null)
+        {
+            return "NULL";
+        }
+        return "'".$this->escapeSqlString($value)."'";
+    }
+
+    /**
+     * Converts a raw database value to its corresponding PHP representation
+     * based on the provided SQL type and database dialect.
+     *
+     * This function is commonly used for safely handling and transforming
+     * database field values into native PHP types before usage in application logic.
+     *
+     * Supported conversions:
+     * - Integer types are cast to int.
+     * - Boolean types are normalized to true/false or 0/1 (for SQLite).
+     * - Float/decimal types are cast to float.
+     * - JSON is decoded into an associative array and quoted.
+     * - Binary/blob data is read and quoted.
+     * - Date/time values are returned as quoted strings.
+     * - Unknown or string types are returned as quoted strings.
+     *
+     * @param mixed  $value   The raw input value (e.g., string, int, stream resource).
      * @param string $sqlType The SQL type name (e.g., 'int', 'boolean', 'json', etc.).
      * @param string $dialect The database dialect (e.g., 'mysql', 'postgresql', 'sqlite').
-     * @return mixed The value converted to a native PHP type.
+     *
+     * @return mixed The value converted to the appropriate PHP type or quoted string.
      */
     public function convertToPhpType($value, $sqlType, $dialect) // NOSONAR
     {
@@ -277,7 +393,7 @@ class PicoDatabaseConverter // NOSONAR
 
         // If the value is already null, return it directly
         if ($value === null) {
-            return null;
+            return "NULL";
         }
 
         // Convert based on the normalized SQL type
@@ -307,7 +423,7 @@ class PicoDatabaseConverter // NOSONAR
                 if (stripos($dialect, 'sqlite') !== false) {
                     return $value === true ? 1 : 0;
                 }
-                return $value;
+                return $value ? "TRUE" : "FALSE";
 
             case 'float':
             case 'real':
@@ -321,14 +437,15 @@ class PicoDatabaseConverter // NOSONAR
             case 'json':
             case 'jsonb':
                 // Decode JSON into an associative array
-                return json_decode($value, true);
+                return $this->quoteString(json_decode($value, true));
 
             case 'blob':
             case 'binary':
             case 'varbinary':
             case 'bytea':
                 // If the value is a resource (e.g., stream), read it; otherwise cast to string
-                return is_resource($value) ? stream_get_contents($value) : (string) $value;
+                $result = is_resource($value) ? stream_get_contents($value) : (string) $value;
+                return $this->quoteString($result);
 
             case 'date':
             case 'time':
@@ -338,14 +455,15 @@ class PicoDatabaseConverter // NOSONAR
             case 'timestamp without time zone':
             case 'timestamptz':
                 // Optionally return as DateTime object instead of string
-                return (string) $value;
+                $result = (string) $value;
+                return $this->quoteString($result);
 
             default:
                 // Fallback: treat as string
-                return (string) $value;
+                $result = (string) $value;
+                return $this->quoteString($result);
         }
     }
-
 
     /**
      * Converts a PHP value to a valid SQL literal string based on native PHP type.
@@ -403,12 +521,12 @@ class PicoDatabaseConverter // NOSONAR
     }
 
     /**
-     * Escapes a string for SQL by doubling single quotes.
+     * Escapes a string for use in SQL queries by doubling single quotes.
      *
-     * @param string $value
-     * @return string
+     * @param string $value The input string to be escaped.
+     * @return string The escaped string with single quotes doubled.
      */
-    protected function escapeSqlString(string $value): string
+    protected function escapeSqlString($value)
     {
         return str_replace("'", "''", $value);
     }
@@ -543,13 +661,14 @@ class PicoDatabaseConverter // NOSONAR
         return strtoupper($type);
     }
 
-
     /**
-     * Helper to normalize quotes for identifiers.
+     * Normalizes and quotes an SQL identifier (e.g., table or column name) based on the database dialect.
+     * 
+     * Removes existing quotes and applies the appropriate quoting style for the target dialect.
      *
-     * @param string $identifier
-     * @param string $dialect
-     * @return string
+     * @param string $identifier The identifier to be quoted (e.g., column or table name).
+     * @param string $dialect The SQL dialect (e.g., 'mysql', 'postgresql', 'sqlite').
+     * @return string The properly quoted identifier.
      */
     private function quoteIdentifier($identifier, $dialect)
     {
@@ -709,7 +828,6 @@ class PicoDatabaseConverter // NOSONAR
 
         return trim($finalSql) . ';';
     }
-
 
     /**
      * Translates a CREATE TABLE statement from MySQL to SQLite.
@@ -967,7 +1085,6 @@ class PicoDatabaseConverter // NOSONAR
         return trim($finalSql) . ";";
     }
 
-
     /**
      * Translates a CREATE TABLE statement from PostgreSQL to SQLite.
      *
@@ -1090,7 +1207,6 @@ class PicoDatabaseConverter // NOSONAR
 
         return trim($finalSql);
     }
-
 
     /**
      * Translates a CREATE TABLE statement from SQLite to MySQL.
@@ -1510,10 +1626,7 @@ class PicoDatabaseConverter // NOSONAR
         // Remove spaces before commas
         $line = preg_replace('/\s+,/', ',', $line);
 
-        
-
         return rtrim($line);
     }
-
 
 }
