@@ -139,7 +139,7 @@ class PicoDatabaseConverter // NOSONAR
             "smallint" => "SMALLINT",
             "tinyint(1)" => "TINYINT(1)", // NOSONAR
             "tinyint" => "TINYINT",
-            "integer" => "INT",
+            "integer" => "BIGINT",
             
             "bigserial" => "BIGINT",
             "serial" => "INT",
@@ -1232,7 +1232,7 @@ class PicoDatabaseConverter // NOSONAR
         $newLines = [];
         $primaryKeyColumn = null;
 
-        // Cari apakah ada PRIMARY KEY di tingkat tabel
+        // Check if there is a PRIMARY KEY at the table level
         foreach ($lines as $line) {
             if (preg_match('/^PRIMARY KEY\s*\(\s*"([^"]+)"\s*\)/i', trim($line), $pkMatch)) {
                 $primaryKeyColumn = $pkMatch[1];
@@ -1269,17 +1269,16 @@ class PicoDatabaseConverter // NOSONAR
                     $translatedType = 'JSON';
                 }
 
-                // AUTO_INCREMENT untuk kolom PRIMARY KEY
-                if ($columnRaw === $primaryKeyColumn && preg_match('/NOT NULL/i', $columnDefinition)) {
+                // AUTO_INCREMENT for PRIMARY KEY column
+                if ($columnRaw === $primaryKeyColumn && preg_match('/INTEGER/i', $columnType) && preg_match('/NOT NULL/i', $columnDefinition)) {
                     $translatedType = 'BIGINT(20)';
-                    $columnDefinition = preg_replace('/NOT NULL/i', '', $columnDefinition);
                     $columnDefinition .= ' AUTO_INCREMENT';
                 }
 
                 $definition = trim("$columnName $translatedType $columnDefinition");
                 $newLines[] = preg_replace('/\s+/', ' ', $definition);
             } elseif (preg_match('/^PRIMARY KEY\s*\((.*?)\)/i', $line, $pkMatch)) {
-                // Tangani PRIMARY KEY tabel jika belum dilakukan di atas
+                // Handle table-level PRIMARY KEY if not handled above
                 $keyColumns = trim($pkMatch[1]);
                 $keyColumns = preg_replace_callback('/"([^"]+)"/', function ($m) {
                     return $this->quoteIdentifier($m[1], 'mysql');
@@ -1292,7 +1291,7 @@ class PicoDatabaseConverter // NOSONAR
                 }, $keyColumns);
                 $newLines[] = "UNIQUE KEY ($keyColumns)";
             } else {
-                // Constraint lainnya
+                // Other constraints
                 $line = preg_replace_callback('/"([^"]+)"/', function ($m) {
                     return $this->quoteIdentifier($m[1], 'mysql');
                 }, $line);
@@ -1304,6 +1303,7 @@ class PicoDatabaseConverter // NOSONAR
         $finalSql .= "\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
         $finalSql = preg_replace('/`PRIMARY` KEY/i', 'PRIMARY KEY', $finalSql);
+        $finalSql = str_replace('"', '`', $finalSql);
 
         return $this->fixLine(trim($finalSql));
     }
