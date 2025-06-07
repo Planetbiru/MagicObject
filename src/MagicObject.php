@@ -3110,15 +3110,4 @@ class MagicObject extends stdClass // NOSONAR
         $input = $this->valueArray($snake);
         return PicoYamlUtil::dump($input, $inline, $indent, $flags);
     }
-    
-    /**
-     * Validate current object
-     *
-     * @return void
-     * @throws InvalidValueException
-     */
-    public function validate()
-    {
-        ValidationUtil::validate($this);
-    }
 }
