@@ -36,6 +36,7 @@ use MagicObject\Util\PicoEnvironmentVariable;
 use MagicObject\Util\PicoIniUtil;
 use MagicObject\Util\PicoStringUtil;
 use MagicObject\Util\PicoYamlUtil;
+use MagicObject\Util\ValidationUtil;
 use PDO;
 use ReflectionClass;
 use ReflectionMethod;
@@ -3108,5 +3109,16 @@ class MagicObject extends stdClass // NOSONAR
         $snake = $this->_snakeYaml();
         $input = $this->valueArray($snake);
         return PicoYamlUtil::dump($input, $inline, $indent, $flags);
+    }
+    
+    /**
+     * Validate current object
+     *
+     * @return void
+     * @throws InvalidValueException
+     */
+    public function validate()
+    {
+        ValidationUtil::validate($this);
     }
 }
