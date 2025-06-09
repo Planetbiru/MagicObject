@@ -705,12 +705,11 @@ The following validation annotations are now supported:
 -   **`@DecimalMax(value="...", message="...")`**: Validates that a numeric property (can be float/string) is less than or equal to a specified decimal value.
 -   **`@Digits(integer=X, fraction=Y, message="...")`**: Checks that a numeric property has at most `X` integer digits and `Y` fractional digits.
 -   **`@AssertTrue(message="...")`**: Asserts that a boolean property's value is strictly `true`.
--   **`@Null(message="...")`**: Ensures the property value is strictly `null`.
 -   **`@FutureOrPresent(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the future or the present.
 -   **`@Length(min=X, max=Y, message="...")`**: Similar to `@Size`, specifically for string lengths within a range.
 -   **`@Range(min=X, max=Y, message="...")`**: Validates that a numeric property's value falls within an inclusive range.
 -   **`@NoHtml(message="...")`**: Checks if a string property contains any HTML tags.
--   **`@ValidEnum(message="...", allowedValues={...}, caseSensitive=true|false)`**: Ensures a string property's value is one of a predefined set of allowed values, with an option for case-sensitive or case-insensitive comparison.
+-   **`@Enum(message="...", allowedValues={...}, caseSensitive=true|false)`**: Ensures a string property's value is one of a predefined set of allowed values, with an option for case-sensitive or case-insensitive comparison.
 
 These new validation capabilities provide a declarative and robust way to ensure data consistency and reduce boilerplate validation code in your MagicObject entities.
 
@@ -758,13 +757,13 @@ class UserProfile extends MagicObject
     protected $birthDate;
 
     /**
-     * @ValidEnum(message="Gender must be 'Male' or 'Female'", allowedValues={"Male", "Female"})
+     * @Enum(message="Gender must be 'Male' or 'Female'", allowedValues={"Male", "Female"})
      * @var string
      */
     protected $gender;
 
     /**
-     * @ValidEnum(message="Status must be 'active', 'inactive', or 'pending'", allowedValues={"active", "inactive", "pending"}, caseSensitive=false)
+     * @Enum(message="Status must be 'active', 'inactive', or 'pending'", allowedValues={"active", "inactive", "pending"}, caseSensitive=false)
      * @var string
      */
     protected $status;

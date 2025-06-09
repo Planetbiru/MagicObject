@@ -10,8 +10,8 @@ use ReflectionClass;
 
 /**
  * Utility class for validating object properties based on annotations defined in their docblocks.
- * This class provides a set of common validation rules, similar to Jakarta Bean Validation (JSR 380)
- * annotations in Spring Boot, by parsing PHP docblock comments.
+ * This class provides a set of common validation rules, inspired by Jakarta Bean Validation (JSR 380)
+ * as used in Spring Boot, by parsing PHP docblock comments.
  */
 class ValidationUtil // NOSONAR
 {
@@ -31,27 +31,35 @@ class ValidationUtil // NOSONAR
      */
     public static function getInstance($customTemplates = array())
     {
+        if(!isset($customTemplates) || !is_array($customTemplates)) {
+            $customTemplates = array();
+        }   
         return new self($customTemplates);
     }
     
     /**
      * ValidationUtil constructor.
-     * Initializes default message templates and allows overriding/extending them.
      *
-     * @param array $customTemplates Optional. An associative array of custom message templates.
+     * Initializes the ValidationUtil instance and sets up default or custom validation message templates.
+     *
+     * @param array $customTemplates Optional. An associative array of custom message templates to override or extend the defaults.
      */
     public function __construct($customTemplates = array())
     {
+        if(!isset($customTemplates) || !is_array($customTemplates)) {
+            $customTemplates = array();
+        } 
         $this->init($customTemplates);
     }
     
     /**
      * Initializes default validation message templates.
-     * Can be used to set or override templates.
      *
-     * @param array $customTemplates Optional. An associative array of custom message templates
-     * to override or extend the defaults.
-     * @return self
+     * This method sets up the default validation message templates and allows overriding or extending them
+     * with custom templates provided as an argument.
+     *
+     * @param array $customTemplates Optional. An associative array of custom message templates to override or extend the defaults.
+     * @return self Returns the current instance for method chaining.
      */
     public function init($customTemplates = array())
     {
@@ -59,21 +67,20 @@ class ValidationUtil // NOSONAR
             'required' => "Field '%s' cannot be null",
             'notEmpty' => "Field '%s' cannot be empty",
             'notBlank' => "Field '%s' cannot be blank",
-            'size' => "Field '%s' must be between %f and %f characters/elements",
-            'min' => "Field '%s' must be at least %f",
-            'max' => "Field '%s' must be less than %f",
+            'size' => "Field '%s' must be between %d and %d characters",
+            'min' => "Field '%s' must be at least %s",
+            'max' => "Field '%s' must be less than %s",
             'pattern' => "Invalid format for field '%s'",
             'email' => "Invalid email address for field '%s'",
             'past' => "Date for field '%s' must be in the past",
             'future' => "Date for field '%s' must be in the future",
-            'decimalMin' => "Value for field '%s' must be at least %f",
-            'decimalMax' => "Value for field '%s' must be less than %f",
+            'decimalMin' => "Value for field '%s' must be at least %s",
+            'decimalMax' => "Value for field '%s' must be less than %s",
             'digits' => "Value for field '%s' must have at most %d integer digits and %d fractional digits",
             'assertTrue' => "Field '%s' must be true",
-            'null' => "Field '%s' must be null",
             'futureOrPresent' => "Date for field '%s' cannot be in the past",
             'length' => "Field '%s' must be between %d and %d characters",
-            'range' => "Value for field '%s' must be between %d and %d",
+            'range' => "Value for field '%s' must be between %s and %s",
             'noHtml' => "Field '%s' contains HTML tags and must be removed",
             'validEnum' => "Field '%s' has an invalid value.",
         );
@@ -82,7 +89,7 @@ class ValidationUtil // NOSONAR
         if (!empty($customTemplates)) {
             $camelizedCustomTemplates = array();
             foreach ($customTemplates as $key => $value) {
-                // Pastikan PicoStringUtil di-import atau berikan namespace lengkap
+                // Make sure PicoStringUtil is imported or use the full namespace
                 $camelizedKey = PicoStringUtil::camelize($key); 
                 $camelizedCustomTemplates[$camelizedKey] = $value;
             }
@@ -143,7 +150,7 @@ class ValidationUtil // NOSONAR
 
         foreach ($properties as $property) {
             $docComment = $property->getDocComment();
-            if ($docComment === false) {
+            if ($docComment === false || strpos($property->getName(), '_') === 0) {
                 continue;
             }
 
@@ -151,14 +158,14 @@ class ValidationUtil // NOSONAR
             // Build the full property path for better error messages
             $fullPropertyName = $parentPropertyName ? $parentPropertyName . '.' . $propertyName : $propertyName;
 
-            $propertyValue = $object->get($property);
-
+            $property->setAccessible(true); // NOSONAR
+            $propertyValue = $property->getValue($object); // NOSONAR           
+           
             // The order of validation matters: @Valid should usually be processed first
             // to allow nested object validation before individual property validations.
             if ($this->validateValidAnnotation($fullPropertyName, $propertyValue, $docComment)) {
-                continue; // If @Valid is present and handled, skip other validations for this property.
+                continue; // If @Valid is present and handled, skip other validations for this property.   
             }
-
             $this->validateRequiredAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateNotEmptyAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateNotBlankAnnotation($fullPropertyName, $propertyValue, $docComment);
@@ -173,12 +180,11 @@ class ValidationUtil // NOSONAR
             $this->validateDecimalMaxAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateDigitsAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateAssertTrueAnnotation($fullPropertyName, $propertyValue, $docComment);
-            $this->validateNullAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateFutureOrPresentAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateLengthAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateRangeAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateNoHtmlAnnotation($fullPropertyName, $propertyValue, $docComment);
-            $this->validateValidEnumAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validateEnumAnnotation($fullPropertyName, $propertyValue, $docComment);
         }
     }
     
@@ -216,20 +222,98 @@ class ValidationUtil // NOSONAR
     }
 
     /**
-     * Validates the @Valid annotation for nested objects.
+     * Retrieves an annotation parameter value and converts it to the specified type.
+     *
+     * @param array $params The array of annotation parameters.
+     * @param string $name The name of the parameter to retrieve.
+     * @param string $type The expected type of the parameter ('string', 'int', or 'bool').
+     * @param mixed $default The default value to return if the parameter is not set.
+     * @return mixed The value of the parameter, converted to the specified type, or the default value.
+     */
+    public function getAnnotationParam($params, $name, $type = 'string', $default = null) // NOSONAR
+    {
+        if (!isset($params[$name])) {
+            return $default;
+        }
+
+        $value = $params[$name];
+
+        switch ($type) {
+            case 'int':
+                return (int) $value;
+            case 'float':
+                return (float) $value;
+            case 'bool':
+                return strtolower($value) === 'true' || $value === '1';
+            case 'string':
+            default:
+                return (string) $value;
+        }
+    }
+
+    /**
+     * Parses annotation parameters from a string into an associative array.
+     *
+     * @param string $annotationParams The annotation parameters as a string.
+     * @return array The parsed parameters as an associative array.
+     */
+    public function parseAnnotationParams($annotationParams)
+    {
+        $result = [];
+
+        preg_match_all('/(\w+)\s*=\s*(?:"([^"]*)"|([\d.]+)|\b(true|false)\b)/i', $annotationParams, $matches, PREG_SET_ORDER);
+
+        foreach ($matches as $match) {
+            $key = $match[1];
+
+            if (isset($match[2]) && $match[2] !== '') {
+                // String value
+                $value = $match[2];
+            } elseif (isset($match[3]) && $match[3] !== '') {
+                // Numeric value: detect float or int
+                $value = strpos($match[3], '.') !== false ? (float)$match[3] : (int)$match[3];
+            } elseif (isset($match[4])) {
+                // Boolean literal
+                $value = strtolower($match[4]) === 'true';
+            } else {
+                $value = null;
+            }
+
+            $result[$key] = $value;
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Validates the **`Valid`** annotation for nested objects.
      * This annotation triggers recursive validation for MagicObject instances.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
      * @param mixed $propertyValue The current value of the property.
      * @param string $docComment The docblock comment of the property.
-     * @return bool True if @Valid is present and handled (i.e., further validation for this property should be skipped).
      * @throws InvalidValueException If a nested object validation fails.
      */
-    private function validateValidAnnotation($propertyName, $propertyValue, $docComment)
+    private function validateValidAnnotation($propertyName, $propertyValue, $docComment) // NOSONAR
     {
         if (preg_match('/@Valid/', $docComment)) {
             if (is_object($propertyValue) && $propertyValue instanceof MagicObject) {
                 // Pass the current full property name to the recursive call
+                
+                // Get @var 
+                $reference = null;
+                if (preg_match('/@var\s+([^\s]+)/', $docComment, $matches)) {
+                    $varType = $matches[1];
+                    if(class_exists($varType)) {
+                        $reference = new $varType(); // Create a new instance if needed
+                        if ($reference instanceof MagicObject) {
+                            $reference->loadData($propertyValue); // Load data from the current property value
+                        }
+                        $this->validate($reference, $propertyName);
+                        return true; // Indicates that @Valid was processed
+                    }
+                }
                 $this->validate($propertyValue, $propertyName);
             }
             return true; // Indicates that @Valid was processed
@@ -238,7 +322,7 @@ class ValidationUtil // NOSONAR
     }
 
     /**
-     * Validates the @Required annotation.
+     * Validates the **`Required`** annotation.
      * Ensures the property value is not strictly null.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -248,16 +332,28 @@ class ValidationUtil // NOSONAR
      */
     private function validateRequiredAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@Required(?: vigilance)?\(message="([^"]*)"\)/', $docComment, $matches)) {
-            $message = isset($matches[1]) && !empty($matches[1]) ? $matches[1] : $this->createMessage('required', array($propertyName));
+        if (preg_match('/@Required(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+
+            if (empty($message)) {
+                $message = $this->createMessage('required', array($propertyName));
+            }
+
             if ($propertyValue === null) {
+                throw new InvalidValueException($propertyName, $message);
+            }
+        }
+        elseif (preg_match('/@Required(?: vigilance)?\b/', $docComment)) {
+            if ($propertyValue === null) {
+                $message = $this->createMessage('required', array($propertyName));
                 throw new InvalidValueException($propertyName, $message);
             }
         }
     }
 
     /**
-     * Validates the @NotEmpty annotation.
+     * Validates the **`NotEmpty`** annotation.
      * Ensures a string is not empty or an array is not empty.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -267,16 +363,26 @@ class ValidationUtil // NOSONAR
      */
     private function validateNotEmptyAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@NotEmpty(?: vigilance)?\(message="([^"]*)"\)/', $docComment, $matches)) {
-            $message = isset($matches[1]) && !empty($matches[1]) ? $matches[1] : $this->createMessage('notEmpty', array($propertyName));
-            if ((is_string($propertyValue) && empty($propertyValue)) || (is_array($propertyValue) && empty($propertyValue))) {
-                throw new InvalidValueException($propertyName, $message);
+        if (preg_match('/@NotEmpty(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+
+            if (empty($message)) {
+                $message = $this->createMessage('notEmpty', array($propertyName));
             }
+        } elseif (preg_match('/@NotEmpty(?: vigilance)?\b/', $docComment)) {
+            $message = $this->createMessage('notEmpty', array($propertyName));
+        } else {
+            return;
+        }
+
+        if ((is_string($propertyValue) && trim($propertyValue) === '') || (is_array($propertyValue) && empty($propertyValue))) {
+            throw new InvalidValueException($propertyName, $message);
         }
     }
 
     /**
-     * Validates the @NotBlank annotation.
+     * Validates the **`NotBlank`** annotation.
      * Ensures a string is not empty and not just whitespace.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -286,16 +392,26 @@ class ValidationUtil // NOSONAR
      */
     private function validateNotBlankAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@NotBlank(?: vigilance)?\(message="([^"]*)"\)/', $docComment, $matches)) {
-            $message = isset($matches[1]) && !empty($matches[1]) ? $matches[1] : $this->createMessage('notBlank', array($propertyName));
-            if (is_string($propertyValue) && trim($propertyValue) === '') {
-                throw new InvalidValueException($propertyName, $message);
+        if (preg_match('/@NotBlank(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+
+            if (empty($message)) {
+                $message = $this->createMessage('notBlank', array($propertyName));
             }
+        } elseif (preg_match('/@NotBlank(?: vigilance)?\b/', $docComment)) {
+            $message = $this->createMessage('notBlank', array($propertyName));
+        } else {
+            return;
+        }
+
+        if (is_string($propertyValue) && trim($propertyValue) === '') {
+            throw new InvalidValueException($propertyName, $message);
         }
     }
 
     /**
-     * Validates the @Size annotation.
+     * Validates the **`Size`** annotation.
      * Ensures the size of a string (length) or an array (count) is within a specified range.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -305,20 +421,28 @@ class ValidationUtil // NOSONAR
      */
     private function validateSizeAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@Size(?: vigilance)?\(min=(\d+), max=(\d+), message="([^"]*)"\)/', $docComment, $matches)) {
-            $min = (int)$matches[1];
-            $max = (int)$matches[2];
-            $message = isset($matches[3]) && !empty($matches[3]) ? $matches[3] : $this->createMessage('size', array($propertyName, $min, $max));
+        if (preg_match('/@Size(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+            $min = $this->getAnnotationParam($params, 'min', 'int');
+            $max = $this->getAnnotationParam($params, 'max', 'int');
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+            if (empty($message)) {
+                $message = $this->createMessage('size', array($propertyName, $min, $max));
+            }
 
-            if ((is_string($propertyValue) && (strlen($propertyValue) < $min || strlen($propertyValue) > $max)) ||
-                (is_array($propertyValue) && (count($propertyValue) < $min || count($propertyValue) > $max))) {
+            if (($min !== null && $max !== null) &&
+                (
+                    (is_string($propertyValue) && (strlen($propertyValue) < $min || strlen($propertyValue) > $max)) ||
+                    (is_array($propertyValue) && (count($propertyValue) < $min || count($propertyValue) > $max))
+                )
+            ) {
                 throw new InvalidValueException($propertyName, $message);
             }
         }
     }
 
     /**
-     * Validates the @Min annotation.
+     * Validates the **`Min`** annotation.
      * Ensures a numeric value is greater than or equal to a specified minimum.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -328,9 +452,16 @@ class ValidationUtil // NOSONAR
      */
     private function validateMinAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@Min(?: vigilance)?\(value=(\d+), message="([^"]*)"\)/', $docComment, $matches)) {
-            $min = (int)$matches[1];
-            $message = isset($matches[2]) && !empty($matches[2]) ? $matches[2] : $this->createMessage('min', array($propertyName, $min));
+        if (preg_match('/@Min(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+
+            $min = $this->getAnnotationParam($params, 'value', 'float');
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+
+            if (empty($message)) {
+                $message = $this->createMessage('min', array($propertyName, $min));
+            }
+
             if (is_numeric($propertyValue) && $propertyValue < $min) {
                 throw new InvalidValueException($propertyName, $message);
             }
@@ -338,7 +469,7 @@ class ValidationUtil // NOSONAR
     }
 
     /**
-     * Validates the @Max annotation.
+     * Validates the **`Max`** annotation.
      * Ensures a numeric value is less than or equal to a specified maximum.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -348,9 +479,16 @@ class ValidationUtil // NOSONAR
      */
     private function validateMaxAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@Max(?: vigilance)?\(value=(\d+), message="([^"]*)"\)/', $docComment, $matches)) {
-            $max = (int)$matches[1];
-            $message = isset($matches[2]) && !empty($matches[2]) ? $matches[2] : $this->createMessage('max', array($propertyName, $max));
+        if (preg_match('/@Max(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+
+            $max = $this->getAnnotationParam($params, 'value', 'float');
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+
+            if (empty($message)) {
+                $message = $this->createMessage('max', array($propertyName, $max));
+            }
+
             if (is_numeric($propertyValue) && $propertyValue > $max) {
                 throw new InvalidValueException($propertyName, $message);
             }
@@ -358,7 +496,7 @@ class ValidationUtil // NOSONAR
     }
 
     /**
-     * Validates the @Pattern annotation.
+     * Validates the **`Pattern`** annotation.
      * Ensures a string matches a specified regular expression.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -368,9 +506,19 @@ class ValidationUtil // NOSONAR
      */
     private function validatePatternAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@Pattern(?: vigilance)?\(regexp="([^"]*)", message="([^"]*)"\)/', $docComment, $matches)) {
-            $regexp = str_replace('\\\\', '\\', $matches[1]);
-            $message = isset($matches[2]) && !empty($matches[2]) ? $matches[2] : $this->createMessage('pattern', array($propertyName));
+        if (preg_match('/@Pattern(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+
+            $regexp = $this->getAnnotationParam($params, 'regexp', 'string');
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+
+            if (empty($message)) {
+                $message = $this->createMessage('pattern', array($propertyName));
+            }
+
+            // Unescape double backslashes (e.g. \\d) into single backslash for PHP regex
+            $regexp = str_replace('\\\\', '\\', $regexp);
+
             if (is_string($propertyValue) && !preg_match("/{$regexp}/", $propertyValue)) {
                 throw new InvalidValueException($propertyName, $message);
             }
@@ -378,7 +526,7 @@ class ValidationUtil // NOSONAR
     }
 
     /**
-     * Validates the @Email annotation.
+     * Validates the **`Email`** annotation.
      * Ensures a string is a well-formed email address.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -388,8 +536,17 @@ class ValidationUtil // NOSONAR
      */
     private function validateEmailAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@Email(?: vigilance)?\(message="([^"]*)"\)/', $docComment, $matches)) {
-            $message = isset($matches[1]) && !empty($matches[1]) ? $matches[1] : $this->createMessage('email', array($propertyName));
+        if (preg_match('/@Email(?: vigilance)?(?:\(([^)]*)\))?/', $docComment, $matches)) {
+            $params = [];
+            if (isset($matches[1])) {
+                $params = $this->parseAnnotationParams($matches[1]);
+            }
+
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+            if (empty($message)) {
+                $message = $this->createMessage('email', array($propertyName));
+            }
+
             if (is_string($propertyValue) && !filter_var($propertyValue, FILTER_VALIDATE_EMAIL)) {
                 throw new InvalidValueException($propertyName, $message);
             }
@@ -397,7 +554,7 @@ class ValidationUtil // NOSONAR
     }
 
     /**
-     * Validates the @Past annotation.
+     * Validates the **`Past`** annotation.
      * Ensures a date is in the past. Supports DateTimeInterface, int (timestamp), and string date formats.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -407,17 +564,28 @@ class ValidationUtil // NOSONAR
      */
     private function validatePastAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@Past(?: vigilance)?\(message="([^"]*)"\)/', $docComment, $matches)) {
-            $message = isset($matches[1]) && !empty($matches[1]) ? $matches[1] : $this->createMessage('past', array($propertyName));
+        if (preg_match('/@Past(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+
+            if (empty($message)) {
+                $message = $this->createMessage('past', array($propertyName));
+            }
+
+            // Convert the property value to a DateTime object
             $date = $this->convertToDateTime($propertyValue);
-            if ($date instanceof DateTimeInterface && $date->getTimestamp() >= (new DateTime())->getTimestamp()) {
-                throw new InvalidValueException($propertyName, $message);
+            if ($date instanceof DateTimeInterface) {
+                $now = new DateTime();
+                if ($date->getTimestamp() >= $now->getTimestamp()) {
+                    throw new InvalidValueException($propertyName, $message);
+                }
             }
         }
     }
 
     /**
-     * Validates the @Future annotation.
+     * Validates the **`Future`** annotation.
      * Ensures a date is in the future. Supports DateTimeInterface, int (timestamp), and string date formats.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -427,17 +595,27 @@ class ValidationUtil // NOSONAR
      */
     private function validateFutureAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@Future(?: vigilance)?\(message="([^"]*)"\)/', $docComment, $matches)) {
-            $message = isset($matches[1]) && !empty($matches[1]) ? $matches[1] : $this->createMessage('future', array($propertyName));
+        if (preg_match('/@Future(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+            if (empty($message)) {
+                $message = $this->createMessage('future', array($propertyName));
+            }
+
+            // Convert the property value to a DateTime object
             $date = $this->convertToDateTime($propertyValue);
-            if ($date instanceof DateTimeInterface && $date->getTimestamp() <= (new DateTime())->getTimestamp()) {
-                throw new InvalidValueException($propertyName, $message);
+            if ($date instanceof DateTimeInterface) {
+                $now = new DateTime();
+                if ($date->getTimestamp() <= $now->getTimestamp()) {
+                    throw new InvalidValueException($propertyName, $message);
+                }
             }
         }
     }
 
     /**
-     * Validates the @DecimalMin annotation.
+     * Validates the **`DecimalMin`** annotation.
      * Ensures a numeric value is greater than or equal to a specified decimal minimum.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -447,9 +625,21 @@ class ValidationUtil // NOSONAR
      */
     private function validateDecimalMinAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@DecimalMin(?: vigilance)?\(value="([^"]*)", message="([^"]*)"\)/', $docComment, $matches)) {
-            $min = (float)$matches[1];
-            $message = isset($matches[2]) && !empty($matches[2]) ? $matches[2] : $this->createMessage('decimalMin', array($propertyName, $min));
+        if (preg_match('/@DecimalMin(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+
+            $min = $this->getAnnotationParam($params, 'value', 'float');
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+
+            if ($min === null) {
+                // Bisa lempar exception atau set default min 0
+                $min = 0.0;
+            }
+
+            if (empty($message)) {
+                $message = $this->createMessage('decimalMin', array($propertyName, $min));
+            }
+
             if (is_numeric($propertyValue) && (float)$propertyValue < $min) {
                 throw new InvalidValueException($propertyName, $message);
             }
@@ -457,7 +647,7 @@ class ValidationUtil // NOSONAR
     }
 
     /**
-     * Validates the @DecimalMax annotation.
+     * Validates the **`DecimalMax`** annotation.
      * Ensures a numeric value is less than or equal to a specified decimal maximum.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -467,17 +657,29 @@ class ValidationUtil // NOSONAR
      */
     private function validateDecimalMaxAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@DecimalMax(?: vigilance)?\(value="([^"]*)", message="([^"]*)"\)/', $docComment, $matches)) {
-            $max = (float)$matches[1];
-            $message = isset($matches[2]) && !empty($matches[2]) ? $matches[2] : $this->createMessage('decimalMax', array($propertyName, $max));
+        if (preg_match('/@DecimalMax(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+
+            $max = $this->getAnnotationParam($params, 'value', 'float');
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+
+            if ($max === null) {
+                $max = 0.0; // atau lempar exception jika perlu
+            }
+
+            if (empty($message)) {
+                $message = $this->createMessage('decimalMax', array($propertyName, $max));
+            }
+
             if (is_numeric($propertyValue) && (float)$propertyValue > $max) {
                 throw new InvalidValueException($propertyName, $message);
             }
         }
     }
 
+
     /**
-     * Validates the @Digits annotation.
+     * Validates the **`Digits`** annotation.
      * Ensures a numeric value has at most a specified number of integer and fractional digits.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -485,12 +687,25 @@ class ValidationUtil // NOSONAR
      * @param string $docComment The docblock comment of the property.
      * @throws InvalidValueException If the number of digits exceeds the specified limits.
      */
-    private function validateDigitsAnnotation($propertyName, $propertyValue, $docComment)
+    private function validateDigitsAnnotation($propertyName, $propertyValue, $docComment) // NOSONAR
     {
-        if (preg_match('/@Digits(?: vigilance)?\(integer=(\d+), fraction=(\d+), message="([^"]*)"\)/', $docComment, $matches)) {
-            $integer = (int)$matches[1];
-            $fraction = (int)$matches[2];
-            $message = isset($matches[3]) && !empty($matches[3]) ? $matches[3] : $this->createMessage('digits', array($propertyName, $integer, $fraction));
+        if (preg_match('/@Digits(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+
+            $integer = $this->getAnnotationParam($params, 'integer', 'int');
+            $fraction = $this->getAnnotationParam($params, 'fraction', 'int');
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+
+            if ($integer === null) {
+                $integer = 0;
+            }
+            if ($fraction === null) {
+                $fraction = 0;
+            }
+
+            if (empty($message)) {
+                $message = $this->createMessage('digits', array($propertyName, $integer, $fraction));
+            }
 
             if (is_numeric($propertyValue)) {
                 $parts = explode('.', (string)$propertyValue);
@@ -505,7 +720,7 @@ class ValidationUtil // NOSONAR
     }
 
     /**
-     * Validates the @AssertTrue annotation.
+     * Validates the **`AssertTrue`** annotation.
      * Ensures a boolean property value is strictly true.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -515,8 +730,14 @@ class ValidationUtil // NOSONAR
      */
     private function validateAssertTrueAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@AssertTrue(?: vigilance)?\(message="([^"]*)"\)/', $docComment, $matches)) {
-            $message = isset($matches[1]) && !empty($matches[1]) ? $matches[1] : $this->createMessage('assertTrue', array($propertyName));
+        if (preg_match('/@AssertTrue(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+
+            if (empty($message)) {
+                $message = $this->createMessage('assertTrue', array($propertyName));
+            }
+
             if ($propertyValue !== true) {
                 throw new InvalidValueException($propertyName, $message);
             }
@@ -524,26 +745,7 @@ class ValidationUtil // NOSONAR
     }
 
     /**
-     * Validates the @Null annotation.
-     * Ensures a property value is strictly null.
-     *
-     * @param string $propertyName The name of the property being validated, potentially including parent path.
-     * @param mixed $propertyValue The current value of the property.
-     * @param string $docComment The docblock comment of the property.
-     * @throws InvalidValueException If the property value is not null.
-     */
-    private function validateNullAnnotation($propertyName, $propertyValue, $docComment)
-    {
-        if (preg_match('/@Null(?: vigilance)?\(message="([^"]*)"\)/', $docComment, $matches)) {
-            $message = isset($matches[1]) && !empty($matches[1]) ? $matches[1] : $this->createMessage('null', array($propertyName));
-            if ($propertyValue !== null) {
-                throw new InvalidValueException($propertyName, $message);
-            }
-        }
-    }
-
-    /**
-     * Validates the @FutureOrPresent annotation.
+     * Validates the **`FutureOrPresent`** annotation.
      * Ensures a date is in the future or the present. Supports DateTimeInterface, int (timestamp), and string date formats.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -553,8 +755,15 @@ class ValidationUtil // NOSONAR
      */
     private function validateFutureOrPresentAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@FutureOrPresent(?: vigilance)?\(message="([^"]*)"\)/', $docComment, $matches)) {
-            $message = isset($matches[1]) && !empty($matches[1]) ? $matches[1] : $this->createMessage('futureOrPresent', array($propertyName));
+        if (preg_match('/@FutureOrPresent(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+
+            if (empty($message)) {
+                $message = $this->createMessage('futureOrPresent', array($propertyName));
+            }
+
+            // Convert the property value to a DateTime object
             $date = $this->convertToDateTime($propertyValue);
             if ($date instanceof DateTimeInterface && $date->getTimestamp() < (new DateTime())->getTimestamp()) {
                 throw new InvalidValueException($propertyName, $message);
@@ -563,7 +772,7 @@ class ValidationUtil // NOSONAR
     }
 
     /**
-     * Validates the @Length annotation.
+     * Validates the **`Length`** annotation.
      * Ensures the length of a string is within a specified range. This is specific to strings.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -573,18 +782,24 @@ class ValidationUtil // NOSONAR
      */
     private function validateLengthAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@Length(?: vigilance)?\(min=(\d+), max=(\d+), message="([^"]*)"\)/', $docComment, $matches)) {
-            $min = (int)$matches[1];
-            $max = (int)$matches[2];
-            $message = isset($matches[3]) && !empty($matches[3]) ? $matches[3] : $this->createMessage('length', array($propertyName, $min, $max));
-            if (is_string($propertyValue) && (strlen($propertyValue) < $min || strlen($propertyValue) > $max)) {
+        if (preg_match('/@Length(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+            $min = $this->getAnnotationParam($params, 'min', 'int');
+            $max = $this->getAnnotationParam($params, 'max', 'int');
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+
+            if (empty($message)) {
+                $message = $this->createMessage('length', array($propertyName, $min, $max));
+            }
+
+            if (is_string($propertyValue) && ($min !== null && strlen($propertyValue) < $min || $max !== null && strlen($propertyValue) > $max)) {
                 throw new InvalidValueException($propertyName, $message);
             }
         }
     }
 
     /**
-     * Validates the @Range annotation.
+     * Validates the **`Range`** annotation.
      * Ensures a numeric value is within a specified inclusive range.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -594,18 +809,48 @@ class ValidationUtil // NOSONAR
      */
     private function validateRangeAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@Range(?: vigilance)?\(min=(\d+), max=(\d+), message="([^"]*)"\)/', $docComment, $matches)) {
-            $min = (int)$matches[1];
-            $max = (int)$matches[2];
-            $message = isset($matches[3]) && !empty($matches[3]) ? $matches[3] : $this->createMessage('range', array($propertyName, $min, $max));
-            if (is_numeric($propertyValue) && ($propertyValue < $min || $propertyValue > $max)) {
+        if (preg_match('/@Range(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+            $min = $this->getAnnotationParam($params, 'min', 'float');
+            $max = $this->getAnnotationParam($params, 'max', 'float');
+            $message = $this->getAnnotationParam($params, 'message', 'string');
+
+            if (empty($message)) {
+                $message = $this->createMessage('range', [$propertyName, $min, $max]);
+            }
+
+            if (is_numeric($propertyValue) && (($min !== null && $propertyValue < $min) || ($max !== null && $propertyValue > $max))) {
                 throw new InvalidValueException($propertyName, $message);
             }
         }
     }
 
     /**
-     * Validates the @NoHtml annotation.
+     * Parses annotation parameters for a specific annotation from a docblock comment.
+     *
+     * @param string $annotation The annotation name (without '@').
+     * @param string $docComment The docblock comment string.
+     * @return array The parsed parameters as an associative array.
+     */
+    private function parseAnnotationParameters($annotation, $docComment)
+    {
+        $pattern = sprintf('/@%s(?: vigilance)?\(([^)]*)\)/', preg_quote($annotation, '/'));
+        if (preg_match($pattern, $docComment, $matches)) {
+            $paramsString = $matches[1];
+            $params = [];
+            // parse key="value" pairs, supports more than one parameter if present
+            preg_match_all('/(\w+)="([^"]*)"/', $paramsString, $paramMatches, PREG_SET_ORDER);
+            foreach ($paramMatches as $pm) {
+                $params[$pm[1]] = $pm[2];
+            }
+            return $params;
+        }
+        return [];
+    }
+
+
+    /**
+     * Validates the **`NoHtml`** annotation.
      * Ensures a string does not contain any HTML tags.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -615,16 +860,17 @@ class ValidationUtil // NOSONAR
      */
     private function validateNoHtmlAnnotation($propertyName, $propertyValue, $docComment)
     {
-        if (preg_match('/@NoHtml(?: vigilance)?\(message="([^"]*)"\)/', $docComment, $matches)) {
-            $message = isset($matches[1]) && !empty($matches[1]) ? $matches[1] : $this->createMessage('noHtml', array($propertyName));
-            if (is_string($propertyValue) && strip_tags($propertyValue) !== $propertyValue) {
-                throw new InvalidValueException($propertyName, $message);
-            }
+        $params = $this->parseAnnotationParameters('NoHtml', $docComment);
+        $message = $params['message'] ?? $this->createMessage('noHtml', [$propertyName]);
+
+        if (is_string($propertyValue) && strip_tags($propertyValue) !== $propertyValue) {
+            throw new InvalidValueException($propertyName, $message);
         }
     }
 
+
     /**
-     * Validates the @ValidEnum annotation.
+     * Validates the **`Enum`** annotation.
      * Ensures a string value is one of the allowed values. Supports case-sensitive or case-insensitive matching.
      *
      * @param string $propertyName The name of the property being validated, potentially including parent path.
@@ -632,19 +878,38 @@ class ValidationUtil // NOSONAR
      * @param string $docComment The docblock comment of the property.
      * @throws InvalidValueException If the string value is not found in the allowed values list.
      */
-    private function validateValidEnumAnnotation($propertyName, $propertyValue, $docComment) // NOSONAR
+    private function validateEnumAnnotation($propertyName, $propertyValue, $docComment) // NOSONAR
     {
-        if (preg_match('/@ValidEnum(?: vigilance)?\(message="([^"]*)", allowedValues=\{([^}]+)\}(?:, caseSensitive=(true|false))?\)/', $docComment, $matches)) {
-            $message = isset($matches[1]) && !empty($matches[1]) ? $matches[1] : $this->createMessage('validEnum', array($propertyName));
-            $allowedValuesRaw = explode(',', $matches[2]);
-            $allowedValues = array_map(function($value) {
-                return trim($value, ' "');
-            }, $allowedValuesRaw);
+        if (preg_match('/@Enum(?: vigilance)?\(([^)]+)\)/', $docComment, $matches)) {
+            $paramsString = $matches[1];
 
-            $caseSensitive = true;
-            if (isset($matches[3])) {
-                $caseSensitive = ($matches[3] === 'true');
+            // Parse key="value", allowedValues={...}, caseSensitive=true|false
+            $params = [];
+
+            // Parsing allowedValues separately because the format is {value1,value2,...}
+            if (preg_match('/allowedValues=\{([^}]*)\}/', $paramsString, $avMatches)) {
+                $allowedValuesRaw = explode(',', $avMatches[1]);
+                $allowedValues = array_map(function($v) {
+                    return trim($v, ' "');
+                }, $allowedValuesRaw);
+                $params['allowedValues'] = $allowedValues;
+                // Remove the allowedValues part so it is not duplicated when parsing key="value"
+                $paramsString = str_replace($avMatches[0], '', $paramsString);
             }
+
+            // Parsing key="value" and caseSensitive=true|false
+            preg_match_all('/(\w+)="([^"]*)"|(\w+)=(true|false)/', $paramsString, $paramMatches, PREG_SET_ORDER);
+            foreach ($paramMatches as $pm) {
+                if (!empty($pm[1])) {
+                    $params[$pm[1]] = $pm[2];
+                } elseif (!empty($pm[3])) {
+                    $params[$pm[3]] = ($pm[4] === 'true');
+                }
+            }
+
+            $message = $params['message'] ?? $this->createMessage('validEnum', [$propertyName]);
+            $allowedValues = $params['allowedValues'] ?? [];
+            $caseSensitive = $params['caseSensitive'] ?? true;
 
             $isValid = false;
             if (is_string($propertyValue)) {
@@ -657,7 +922,7 @@ class ValidationUtil // NOSONAR
                             $isValid = true;
                             break;
                         }
-                        // Also check if numeric and matches any allowed value (e.g., "1" matches 1)
+                        // If numeric, compare numerically
                         if (is_numeric($lowerPropertyValue) && is_numeric($allowedValue) && (float)$lowerPropertyValue === (float)$allowedValue) {
                             $isValid = true;
                             break;
@@ -671,4 +936,5 @@ class ValidationUtil // NOSONAR
             }
         }
     }
+
 }
