@@ -9,7 +9,7 @@ $converter = new PicoDatabaseConverter();
 
 $mySql = <<<SQL
 CREATE TABLE IF NOT EXISTS `admin` (
-  `admin_id` varchar(40) NOT NULL,
+  `admin_id` bigint(40) NOT NULL auto_increment,
   `name` varchar(100) DEFAULT NULL,
   `username` varchar(100) DEFAULT NULL,
   `password` varchar(100) DEFAULT NULL,

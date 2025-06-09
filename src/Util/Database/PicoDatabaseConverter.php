@@ -753,7 +753,7 @@ class PicoDatabaseConverter // NOSONAR
                     $columnDefinition = str_ireplace('AUTO_INCREMENT', '', $columnDefinition);
                     if (stripos($columnDefinition, 'PRIMARY KEY') === false) // NOSONAR
                     {
-                        $columnDefinition .= ' PRIMARY KEY';
+                        $columnDefinition .= 'PRIMARY KEY';
                     }
                 }
 
@@ -823,6 +823,9 @@ class PicoDatabaseConverter // NOSONAR
         $finalSql = str_replace('"USING"', 'USING', $finalSql); // Fix PostgreSQL's USING quoting
         $finalSql = str_replace('"WITH"', 'WITH', $finalSql); // Fix PostgreSQL's WITH quoting
         $finalSql = str_replace('"CONSTRAINT"', 'CONSTRAINT', $finalSql); // Fix PostgreSQL's CONSTRAINT quoting
+
+        $finalSql = str_replace(' DEFAULT NULL', ' NULL DEFAULT NULL', $finalSql);
+        $finalSql = str_replace(' NULL NULL DEFAULT NULL', ' NULL DEFAULT NULL', $finalSql);
         
         $finalSql = $this->fixLines($finalSql);
 
