@@ -24,6 +24,7 @@ use MagicObject\Exceptions\FindOptionException;
 use MagicObject\Exceptions\InvalidAnnotationException;
 use MagicObject\Exceptions\InvalidQueryInputException;
 use MagicObject\Exceptions\InvalidReturnTypeException;
+use MagicObject\Exceptions\InvalidValueException;
 use MagicObject\Exceptions\NoDatabaseConnectionException;
 use MagicObject\Exceptions\NoRecordFoundException;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
@@ -3109,5 +3110,22 @@ class MagicObject extends stdClass // NOSONAR
         $snake = $this->_snakeYaml();
         $input = $this->valueArray($snake);
         return PicoYamlUtil::dump($input, $inline, $indent, $flags);
+    }
+
+    /**
+     * Validate the current object using ValidationUtil.
+     *
+     * This method checks the properties of the current object against validation annotations.
+     * If any validation rule fails, an InvalidValueException will be thrown.
+     *
+     * @param string|null $parentPropertyName The name of the parent property, if applicable (for nested validation).
+     * @param array|null $messageTemplate Optional custom message templates for validation errors.
+     * @throws InvalidValueException If validation fails.
+     * @return self Returns the current instance for method chaining.
+     */
+    public function validate($parentPropertyName = null, $messageTemplate = null)
+    {
+        ValidationUtil::getInstance($messageTemplate)->validate($this, $parentPropertyName);
+        return $this;
     }
 }

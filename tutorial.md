@@ -1430,7 +1430,7 @@ The `ValidationUtil` class has been significantly enhanced to provide a robust a
 The following validation annotations are now supported:
 
 -   **`@Valid`**: Recursively validates nested `MagicObject` instances.
--   **`@NotNull(message="...")`**: Ensures the property value is not `null`.
+-   **`@Required(message="...")`**: Ensures the property value is not `null`.
 -   **`@NotEmpty(message="...")`**: Checks if a string is not empty (`""`) or an array is not empty.
 -   **`@NotBlank(message="...")`**: Validates that a string is not empty and not just whitespace characters.
 -   **`@Size(min=X, max=Y, message="...")`**: Verifies that the length of a string or the count of an array is within a specified range.
@@ -1444,12 +1444,11 @@ The following validation annotations are now supported:
 -   **`@DecimalMax(value="...", message="...")`**: Validates that a numeric property (can be float/string) is less than or equal to a specified decimal value.
 -   **`@Digits(integer=X, fraction=Y, message="...")`**: Checks that a numeric property has at most `X` integer digits and `Y` fractional digits.
 -   **`@AssertTrue(message="...")`**: Asserts that a boolean property's value is strictly `true`.
--   **`@Null(message="...")`**: Ensures the property value is strictly `null`.
 -   **`@FutureOrPresent(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the future or the present.
 -   **`@Length(min=X, max=Y, message="...")`**: Similar to `@Size`, specifically for string lengths within a range.
 -   **`@Range(min=X, max=Y, message="...")`**: Validates that a numeric property's value falls within an inclusive range.
 -   **`@NoHtml(message="...")`**: Checks if a string property contains any HTML tags.
--   **`@ValidEnum(message="...", allowedValues={...}, caseSensitive=true|false)`**: Ensures a string property's value is one of a predefined set of allowed values, with an option for case-sensitive or case-insensitive comparison.
+-   **`@Enum(message="...", allowedValues={...}, caseSensitive=true|false)`**: Ensures a string property's value is one of a predefined set of allowed values, with an option for case-sensitive or case-insensitive comparison.
 
 These new validation capabilities provide a declarative and robust way to ensure data consistency and reduce boilerplate validation code in your MagicObject entities.
 
@@ -1461,7 +1460,7 @@ These new validation capabilities provide a declarative and robust way to ensure
 class UserProfile extends MagicObject
 {
     /**
-     * @NotNull(message="Username cannot be null")
+     * @Required(message="Username cannot be null")
      * @NotBlank(message="Username cannot be blank")
      * @Length(min=4, max=20, message="Username must be 4-20 characters long")
      * @Pattern(regexp="^[a-zA-Z0-9_]+$", message="Username can only contain letters, numbers, and underscores")
@@ -1471,7 +1470,7 @@ class UserProfile extends MagicObject
 
     /**
      * @Email(message="Invalid email address format")
-     * @NotNull(message="Email cannot be null")
+     * @Required(message="Email cannot be null")
      * @var string
      */
     protected $email;
@@ -1497,13 +1496,13 @@ class UserProfile extends MagicObject
     protected $birthDate;
 
     /**
-     * @ValidEnum(message="Gender must be 'Male' or 'Female'", allowedValues={"Male", "Female"})
+     * @Enum(message="Gender must be 'Male' or 'Female'", allowedValues={"Male", "Female"})
      * @var string
      */
     protected $gender;
 
     /**
-     * @ValidEnum(message="Status must be 'active', 'inactive', or 'pending'", allowedValues={"active", "inactive", "pending"}, caseSensitive=false)
+     * @Enum(message="Status must be 'active', 'inactive', or 'pending'", allowedValues={"active", "inactive", "pending"}, caseSensitive=false)
      * @var string
      */
     protected $status;
@@ -1522,14 +1521,14 @@ class UserProfile extends MagicObject
 class Address extends MagicObject
 {
     /**
-     * @NotNull(message="Street cannot be null")
+     * @Required(message="Street cannot be null")
      * @NotBlank(message="Street cannot be blank")
      * @var string
      */
     protected $street;
 
     /**
-     * @NotNull(message="City cannot be null")
+     * @Required(message="City cannot be null")
      * @NotBlank(message="City cannot be blank")
      * @var string
      */
@@ -1556,7 +1555,7 @@ try {
     $address->setCity("Anytown");
     $user->setAddress($address);
 
-    ValidationUtil::validate($user);
+    ValidationUtil::getInstance()->validate($user);
     echo "Test 1: Valid User Profile - PASSED.\n";
 } catch (InvalidValueException $e) {
     echo "Test 1: FAILED (Unexpected) - " . $e->getPropertyName() . ": " . $e->getValidationMessage() . "\n";
@@ -1578,7 +1577,7 @@ try {
     $address->setCity("Anytown");
     $user->setAddress($address);
 
-    ValidationUtil::validate($user);
+    ValidationUtil::getInstance()->validate($user);
     echo "Test 2: Valid User Profile (should have failed) - PASSED.\n";
 } catch (InvalidValueException $e) {
     echo "Test 2: FAILED (Expected) - " . $e->getPropertyName() . ": " . $e->getValidationMessage() . "\n";
@@ -1600,7 +1599,7 @@ try {
     $address->setCity("Anytown");
     $user->setAddress($address);
 
-    ValidationUtil::validate($user);
+    ValidationUtil::getInstance()->validate($user);
     echo "Test 3: Valid User Profile (should have failed) - PASSED.\n";
 } catch (InvalidValueException $e) {
     echo "Test 3: FAILED (Expected) - " . $e->getPropertyName() . ": " . $e->getValidationMessage() . "\n";
@@ -1622,7 +1621,7 @@ try {
     $address->setCity("Anytown");
     $user->setAddress($address);
 
-    ValidationUtil::validate($user);
+    ValidationUtil::getInstance()->validate($user);
     echo "Test 4: Valid User Profile (should have failed) - PASSED.\n";
 } catch (InvalidValueException $e) {
     echo "Test 4: FAILED (Expected) - " . $e->getPropertyName() . ": " . $e->getValidationMessage() . "\n";
@@ -1644,7 +1643,7 @@ try {
     $address->setCity("Anytown");
     $user->setAddress($address);
 
-    ValidationUtil::validate($user);
+    ValidationUtil::getInstance()->validate($user);
     echo "Test 5: Valid User Profile (should have failed due to nested object) - PASSED.\n";
 } catch (InvalidValueException $e) {
     echo "Test 5: FAILED (Expected due to nested object) - " . $e->getPropertyName() . ": " . $e->getValidationMessage() . "\n";
