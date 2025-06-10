@@ -82,6 +82,15 @@ class ValidationUtil // NOSONAR
             'length' => "Field '\${property}' must be between \${min} and \${max} characters",
             'range' => "Value for field '\${property}' must be between \${min} and \${max}",
             'noHtml' => "Field '\${property}' contains HTML tags and must be removed",
+            'positive' => "Field '\${property}' must be a positive number",
+            'positiveOrZero' => "Field '\${property}' must be zero or a positive number",
+            'negative' => "Field '\${property}' must be a negative number",
+            'negativeOrZero' => "Field '\${property}' must be zero or a negative number",
+            'pastOrPresent' => "Date for field '\${property}' must be in the past or present",
+            'url' => "Field '\${property}' must be a valid URL",
+            'ip' => "Field '\${property}' must be a valid IP address",
+            'dateFormat' => "Field '\${property}' must match the date format '\${format}'",
+            'phone' => "Field '\${property}' must be a valid phone number",
             'enum' => "Field '\${property}' has an invalid value. Allowed values: \${allowedValues}.",
         );
 
@@ -147,6 +156,7 @@ class ValidationUtil // NOSONAR
     {
         $reflectionClass = new ReflectionClass($object);
         $properties = $reflectionClass->getProperties();
+        $package = $reflectionClass->getNamespaceName();
 
         foreach ($properties as $property) {
             $docComment = $property->getDocComment();
@@ -161,9 +171,8 @@ class ValidationUtil // NOSONAR
             $property->setAccessible(true); // NOSONAR
             $propertyValue = $property->getValue($object); // NOSONAR           
            
-            // The order of validation matters: @Valid should usually be processed first
-            // to allow nested object validation before individual property validations.
-            if ($this->validateValidAnnotation($fullPropertyName, $propertyValue, $docComment)) {
+            // Pass $package to validateValidAnnotation
+            if ($this->validateValidAnnotation($fullPropertyName, $propertyValue, $docComment, $package)) {
                 continue; // If @Valid is present and handled, skip other validations for this property.   
             }
             $this->validateRequiredAnnotation($fullPropertyName, $propertyValue, $docComment);
@@ -184,6 +193,15 @@ class ValidationUtil // NOSONAR
             $this->validateLengthAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateRangeAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateNoHtmlAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validatePositiveAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validatePositiveOrZeroAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validateNegativeAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validateNegativeOrZeroAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validatePastOrPresentAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validateUrlAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validateIpAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validateDateFormatAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validatePhoneAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateEnumAnnotation($fullPropertyName, $propertyValue, $docComment);
         }
     }
@@ -286,18 +304,23 @@ class ValidationUtil // NOSONAR
      * @param string $propertyName The name of the property being validated, potentially including parent path.
      * @param mixed $propertyValue The current value of the property.
      * @param string $docComment The docblock comment of the property.
+     * @param string $package The namespace of the parent object.
      * @throws InvalidValueException If a nested object validation fails.
      */
-    private function validateValidAnnotation($propertyName, $propertyValue, $docComment) // NOSONAR
+    private function validateValidAnnotation($propertyName, $propertyValue, $docComment, $package = '') // NOSONAR
     {
         if (preg_match('/@Valid/', $docComment)) {
             if (is_object($propertyValue) && $propertyValue instanceof MagicObject) {
                 // Pass the current full property name to the recursive call
-                
+
                 // Get @var 
                 $reference = null;
                 if (preg_match('/@var\s+([^\s]+)/', $docComment, $matches)) {
                     $varType = $matches[1];
+                    // If $varType does not contain namespace separator, prepend $package
+                    if (strpos($varType, '\\') === false && !empty($package)) {
+                        $varType = $package . '\\' . $varType;
+                    }
                     if(class_exists($varType)) {
                         $reference = new $varType(); // Create a new instance if needed
                         if ($reference instanceof MagicObject) {
@@ -938,6 +961,140 @@ class ValidationUtil // NOSONAR
             }
 
             if (!$isValid) {
+                throw new InvalidValueException($propertyName, $message);
+            }
+        }
+    }
+
+    /**
+     * Validates the **`Positive`** annotation.
+     * Ensures a numeric value is positive (> 0).
+     */
+    private function validatePositiveAnnotation($propertyName, $propertyValue, $docComment)
+    {
+        if (preg_match('/@Positive(?: vigilance)?\(([^)]*)\)/', $docComment, $matches) || preg_match('/@Positive(?: vigilance)?\b/', $docComment)) {
+            $message = $this->createMessage('positive', array('property' => $propertyName));
+            if (is_numeric($propertyValue) && $propertyValue <= 0) {
+                throw new InvalidValueException($propertyName, $message);
+            }
+        }
+    }
+
+    /**
+     * Validates the **`PositiveOrZero`** annotation.
+     * Ensures a numeric value is positive or zero (>= 0).
+     */
+    private function validatePositiveOrZeroAnnotation($propertyName, $propertyValue, $docComment)
+    {
+        if (preg_match('/@PositiveOrZero(?: vigilance)?\(([^)]*)\)/', $docComment, $matches) || preg_match('/@PositiveOrZero(?: vigilance)?\b/', $docComment)) {
+            $message = $this->createMessage('positiveOrZero', array('property' => $propertyName));
+            if (is_numeric($propertyValue) && $propertyValue < 0) {
+                throw new InvalidValueException($propertyName, $message);
+            }
+        }
+    }
+
+    /**
+     * Validates the **`Negative`** annotation.
+     * Ensures a numeric value is negative (< 0).
+     */
+    private function validateNegativeAnnotation($propertyName, $propertyValue, $docComment)
+    {
+        if (preg_match('/@Negative(?: vigilance)?\(([^)]*)\)/', $docComment, $matches) || preg_match('/@Negative(?: vigilance)?\b/', $docComment)) {
+            $message = $this->createMessage('negative', array('property' => $propertyName));
+            if (is_numeric($propertyValue) && $propertyValue >= 0) {
+                throw new InvalidValueException($propertyName, $message);
+            }
+        }
+    }
+
+    /**
+     * Validates the **`NegativeOrZero`** annotation.
+     * Ensures a numeric value is negative or zero (<= 0).
+     */
+    private function validateNegativeOrZeroAnnotation($propertyName, $propertyValue, $docComment)
+    {
+        if (preg_match('/@NegativeOrZero(?: vigilance)?\(([^)]*)\)/', $docComment, $matches) || preg_match('/@NegativeOrZero(?: vigilance)?\b/', $docComment)) {
+            $message = $this->createMessage('negativeOrZero', array('property' => $propertyName));
+            if (is_numeric($propertyValue) && $propertyValue > 0) {
+                throw new InvalidValueException($propertyName, $message);
+            }
+        }
+    }
+
+    /**
+     * Validates the **`PastOrPresent`** annotation.
+     * Ensures a date/time is in the past or present.
+     */
+    private function validatePastOrPresentAnnotation($propertyName, $propertyValue, $docComment)
+    {
+        if (preg_match('/@PastOrPresent(?: vigilance)?\(([^)]*)\)/', $docComment, $matches) || preg_match('/@PastOrPresent(?: vigilance)?\b/', $docComment)) {
+            $message = $this->createMessage('pastOrPresent', array('property' => $propertyName));
+            $date = $this->convertToDateTime($propertyValue);
+            if ($date instanceof DateTimeInterface && $date->getTimestamp() > (new DateTime())->getTimestamp()) {
+                throw new InvalidValueException($propertyName, $message);
+            }
+        }
+    }
+
+    /**
+     * Validates the **`Url`** annotation.
+     * Ensures a string is a valid URL.
+     */
+    private function validateUrlAnnotation($propertyName, $propertyValue, $docComment)
+    {
+        if (preg_match('/@Url(?: vigilance)?\(([^)]*)\)/', $docComment, $matches) || preg_match('/@Url(?: vigilance)?\b/', $docComment)) {
+            $message = $this->createMessage('url', array('property' => $propertyName));
+            if (is_string($propertyValue) && !filter_var($propertyValue, FILTER_VALIDATE_URL)) {
+                throw new InvalidValueException($propertyName, $message);
+            }
+        }
+    }
+
+    /**
+     * Validates the **`Ip`** annotation.
+     * Ensures a string is a valid IP address.
+     */
+    private function validateIpAnnotation($propertyName, $propertyValue, $docComment)
+    {
+        if (preg_match('/@Ip(?: vigilance)?\(([^)]*)\)/', $docComment, $matches) || preg_match('/@Ip(?: vigilance)?\b/', $docComment)) {
+            $message = $this->createMessage('ip', array('property' => $propertyName));
+            if (is_string($propertyValue) && !filter_var($propertyValue, FILTER_VALIDATE_IP)) {
+                throw new InvalidValueException($propertyName, $message);
+            }
+        }
+    }
+
+    /**
+     * Validates the **`DateFormat`** annotation.
+     * Ensures a string matches a specific date format.
+     */
+    private function validateDateFormatAnnotation($propertyName, $propertyValue, $docComment)
+    {
+        if (preg_match('/@DateFormat(?: vigilance)?\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+            $format = isset($params['format']) ? $params['format'] : 'Y-m-d';
+            $message = $this->createMessage('dateFormat', array('property' => $propertyName, 'format' => $format));
+            if (is_string($propertyValue)) {
+                $dt = DateTime::createFromFormat($format, $propertyValue);
+                $errors = DateTime::getLastErrors();
+                if (!$dt || $errors['warning_count'] > 0 || $errors['error_count'] > 0) {
+                    throw new InvalidValueException($propertyName, $message);
+                }
+            }
+        }
+    }
+
+    /**
+     * Validates the **`Phone`** annotation.
+     * Ensures a string is a valid phone number (basic pattern).
+     */
+    private function validatePhoneAnnotation($propertyName, $propertyValue, $docComment)
+    {
+        if (preg_match('/@Phone(?: vigilance)?\(([^)]*)\)/', $docComment, $matches) || preg_match('/@Phone(?: vigilance)?\b/', $docComment)) {
+            $message = $this->createMessage('phone', array('property' => $propertyName));
+            // Basic phone regex: allows +, numbers, spaces, dashes, parentheses, min 8 digits
+            if (is_string($propertyValue) && !preg_match('/^\+?[0-9\s\-\(\)]{8,}$/', $propertyValue)) {
                 throw new InvalidValueException($propertyName, $message);
             }
         }

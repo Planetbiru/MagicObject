@@ -1448,6 +1448,15 @@ The following validation annotations are now supported:
 -   **`@Length(min=X, max=Y, message="...")`**: Similar to `@Size`, specifically for string lengths within a range.
 -   **`@Range(min=X, max=Y, message="...")`**: Validates that a numeric property's value falls within an inclusive range.
 -   **`@NoHtml(message="...")`**: Checks if a string property contains any HTML tags.
+-   **`@Positive(message="...")`**: Ensures a numeric value is positive (> 0).
+-   **`@PositiveOrZero(message="...")`**: Ensures a numeric value is positive or zero (>= 0).
+-   **`@Negative(message="...")`**: Ensures a numeric value is negative (< 0).
+-   **`@NegativeOrZero(message="...")`**: Ensures a numeric value is negative or zero (<= 0).
+-   **`@PastOrPresent(message="...")`**: Ensures a date/time is in the past or present.
+-   **`@Url(message="...")`**: Ensures a string is a valid URL.
+-   **`@Ip(message="...")`**: Ensures a string is a valid IP address.
+-   **`@DateFormat(format="...", message="...")`**: Ensures a string matches a specific date format.
+-   **`@Phone(message="...")`**: Ensures a string is a valid phone number.
 -   **`@Enum(message="...", allowedValues={...}, caseSensitive=true|false)`**: Ensures a string property's value is one of a predefined set of allowed values, with an option for case-sensitive or case-insensitive comparison.
 
 These new validation capabilities provide a declarative and robust way to ensure data consistency and reduce boilerplate validation code in your MagicObject entities.

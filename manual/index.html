@@ -1291,6 +1291,15 @@ service httpd restart</code></pre>
 <li><strong><code>@Length(min=X, max=Y, message="...")</code></strong>: Similar to <code>@Size</code>, specifically for string lengths within a range.</li>
 <li><strong><code>@Range(min=X, max=Y, message="...")</code></strong>: Validates that a numeric property's value falls within an inclusive range.</li>
 <li><strong><code>@NoHtml(message="...")</code></strong>: Checks if a string property contains any HTML tags.</li>
+<li><strong><code>@Positive(message="...")</code></strong>: Ensures a numeric value is positive (&gt; 0).</li>
+<li><strong><code>@PositiveOrZero(message="...")</code></strong>: Ensures a numeric value is positive or zero (&gt;= 0).</li>
+<li><strong><code>@Negative(message="...")</code></strong>: Ensures a numeric value is negative (&lt; 0).</li>
+<li><strong><code>@NegativeOrZero(message="...")</code></strong>: Ensures a numeric value is negative or zero (&lt;= 0).</li>
+<li><strong><code>@PastOrPresent(message="...")</code></strong>: Ensures a date/time is in the past or present.</li>
+<li><strong><code>@Url(message="...")</code></strong>: Ensures a string is a valid URL.</li>
+<li><strong><code>@Ip(message="...")</code></strong>: Ensures a string is a valid IP address.</li>
+<li><strong><code>@DateFormat(format="...", message="...")</code></strong>: Ensures a string matches a specific date format.</li>
+<li><strong><code>@Phone(message="...")</code></strong>: Ensures a string is a valid phone number.</li>
 <li><strong><code>@Enum(message="...", allowedValues={...}, caseSensitive=true|false)</code></strong>: Ensures a string property's value is one of a predefined set of allowed values, with an option for case-sensitive or case-insensitive comparison.</li>
 </ul>
 <p>These new validation capabilities provide a declarative and robust way to ensure data consistency and reduce boilerplate validation code in your MagicObject entities.</p>

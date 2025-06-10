@@ -39595,11 +39595,13 @@ If any validation rule fails, an InvalidValueException is thrown.</p>
 <div class='docblock'>
 <h3>Description</h3>
 <p>Creates a validation message using a predefined template.</p>
+<p>This method replaces placeholders like ${property}, ${min}, etc. in the template
+with the corresponding values from the provided associative array.</p>
 <h3>Parameters</h3>
 <div class="parameter-name">$validationType</div>
 <div class="parameter-description"><p>The type of validation (e.g., 'required', 'size').</p></div>
 <div class="parameter-name">$values</div>
-<div class="parameter-description"><p>An array of values to be inserted into the message template (e.g., [$propertyName, $min, $max]).</p></div>
+<div class="parameter-description"><p>An associative array of values to be inserted into the message template (e.g., ['property' =&gt; $propertyName, 'min' =&gt; $min, 'max' =&gt; $max]).</p></div>
 <h3>Return</h3>
 <div class="return-type">string</div>
 <div class="return-description"><p>The formatted validation message.</p></div>
@@ -39654,7 +39656,8 @@ If any validation rule fails, an InvalidValueException is thrown.</p>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">validateValidAnnotation</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$propertyName</span>, <br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">mixed</span> <span class="parameter-name">$propertyValue</span>, <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$docComment</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$docComment</span>, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$package <span class="parameter-equal-sign">=</span> <span class="parameter-default">''</span></span><br>
 )<br>{<br>}</div>
 <div class='docblock'>
 <h3>Description</h3>
@@ -39667,6 +39670,8 @@ This annotation triggers recursive validation for MagicObject instances.</p>
 <div class="parameter-description"><p>The current value of the property.</p></div>
 <div class="parameter-name">$docComment</div>
 <div class="parameter-description"><p>The docblock comment of the property.</p></div>
+<div class="parameter-name">$package</div>
+<div class="parameter-description"><p>The namespace of the parent object.</p></div>
 <h3>Throws</h3>
 <div class="return-type">InvalidValueException</div>
 <div class="return-description"><p>If a nested object validation fails.</p></div>
@@ -40146,6 +40151,96 @@ Ensures a string value is one of the allowed values. Supports case-sensitive or 
 <h3>Throws</h3>
 <div class="return-type">InvalidValueException</div>
 <div class="return-description"><p>If the string value is not found in the allowed values list.</p></div>
+</div>
+</div>
+<div class='method'>
+<div class="method-identity">30. <span class="method-label">validatePositiveAnnotation</span></div>
+<h3>Declaration</h3>
+<div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">validatePositiveAnnotation</span>()<br>{<br>}</div>
+<div class='docblock'>
+<h3>Description</h3>
+<p>Validates the <strong><code>Positive</code></strong> annotation.
+Ensures a numeric value is positive (&gt; 0).</p>
+</div>
+</div>
+<div class='method'>
+<div class="method-identity">31. <span class="method-label">validatePositiveOrZeroAnnotation</span></div>
+<h3>Declaration</h3>
+<div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">validatePositiveOrZeroAnnotation</span>()<br>{<br>}</div>
+<div class='docblock'>
+<h3>Description</h3>
+<p>Validates the <strong><code>PositiveOrZero</code></strong> annotation.
+Ensures a numeric value is positive or zero (&gt;= 0).</p>
+</div>
+</div>
+<div class='method'>
+<div class="method-identity">32. <span class="method-label">validateNegativeAnnotation</span></div>
+<h3>Declaration</h3>
+<div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">validateNegativeAnnotation</span>()<br>{<br>}</div>
+<div class='docblock'>
+<h3>Description</h3>
+<p>Validates the <strong><code>Negative</code></strong> annotation.
+Ensures a numeric value is negative (&lt; 0).</p>
+</div>
+</div>
+<div class='method'>
+<div class="method-identity">33. <span class="method-label">validateNegativeOrZeroAnnotation</span></div>
+<h3>Declaration</h3>
+<div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">validateNegativeOrZeroAnnotation</span>()<br>{<br>}</div>
+<div class='docblock'>
+<h3>Description</h3>
+<p>Validates the <strong><code>NegativeOrZero</code></strong> annotation.
+Ensures a numeric value is negative or zero (&lt;= 0).</p>
+</div>
+</div>
+<div class='method'>
+<div class="method-identity">34. <span class="method-label">validatePastOrPresentAnnotation</span></div>
+<h3>Declaration</h3>
+<div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">validatePastOrPresentAnnotation</span>()<br>{<br>}</div>
+<div class='docblock'>
+<h3>Description</h3>
+<p>Validates the <strong><code>PastOrPresent</code></strong> annotation.
+Ensures a date/time is in the past or present.</p>
+</div>
+</div>
+<div class='method'>
+<div class="method-identity">35. <span class="method-label">validateUrlAnnotation</span></div>
+<h3>Declaration</h3>
+<div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">validateUrlAnnotation</span>()<br>{<br>}</div>
+<div class='docblock'>
+<h3>Description</h3>
+<p>Validates the <strong><code>Url</code></strong> annotation.
+Ensures a string is a valid URL.</p>
+</div>
+</div>
+<div class='method'>
+<div class="method-identity">36. <span class="method-label">validateIpAnnotation</span></div>
+<h3>Declaration</h3>
+<div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">validateIpAnnotation</span>()<br>{<br>}</div>
+<div class='docblock'>
+<h3>Description</h3>
+<p>Validates the <strong><code>Ip</code></strong> annotation.
+Ensures a string is a valid IP address.</p>
+</div>
+</div>
+<div class='method'>
+<div class="method-identity">37. <span class="method-label">validateDateFormatAnnotation</span></div>
+<h3>Declaration</h3>
+<div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">validateDateFormatAnnotation</span>()<br>{<br>}</div>
+<div class='docblock'>
+<h3>Description</h3>
+<p>Validates the <strong><code>DateFormat</code></strong> annotation.
+Ensures a string matches a specific date format.</p>
+</div>
+</div>
+<div class='method'>
+<div class="method-identity">38. <span class="method-label">validatePhoneAnnotation</span></div>
+<h3>Declaration</h3>
+<div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">validatePhoneAnnotation</span>()<br>{<br>}</div>
+<div class='docblock'>
+<h3>Description</h3>
+<p>Validates the <strong><code>Phone</code></strong> annotation.
+Ensures a string is a valid phone number (basic pattern).</p>
 </div>
 </div>
 </div>
