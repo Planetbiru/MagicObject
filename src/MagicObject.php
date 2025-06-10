@@ -3129,6 +3129,8 @@ class MagicObject extends stdClass // NOSONAR
         $objectToValidate = $this;
         if(isset($reference) && $reference instanceof MagicObject)
         {
+            // If a reference object is provided, wrap the current object in it
+            // to validate against the reference's annotations.
             $objectToValidate = $reference->loadData($this);
         }
         ValidationUtil::getInstance($messageTemplate)->validate($objectToValidate, $parentPropertyName);

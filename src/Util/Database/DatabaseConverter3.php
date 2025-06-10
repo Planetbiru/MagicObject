@@ -5,11 +5,22 @@ namespace MagicObject\Util\Database;
 use MagicObject\Exceptions\DatabaseConversionException;
 
 /**
- * DatabaseConverter provides methods to translate CREATE TABLE statements and field types
- * between MySQL, PostgreSQL, and SQLite dialects. It handles type mapping, identifier quoting,
- * and conversion of common SQL syntax differences between these databases.
+ * Class DatabaseConverter
+ *
+ * This class is responsible for translating database query structures between different SQL dialects.
+ * It takes SQL queries written in one dialect (e.g., MySQL) and converts them into another dialect (e.g., PostgreSQL, SQLite).
+ * The class handles differences in syntax, keywords, functions, and other database-specific features.
+ *
+ * Key functionalities of this class include:
+ * - Translating data types between different SQL flavors.
+ * - Adjusting query syntax to match the conventions of different database systems.
+ * - Converting SQL-specific expressions like `AUTO_INCREMENT` to equivalent expressions in other databases.
+ *
+ * This class is typically used when migrating databases or working with systems that need to support multiple database engines.
+ *
+ * @package MagicObject\Util\Database
  */
-class DatabaseConverter
+class DatabaseConverter3 // NOSONAR
 {
     /**
      * Array mapping of database field types to SQLite data types.
@@ -128,48 +139,154 @@ class DatabaseConverter
     }
 
     /**
-     * Translates a CREATE TABLE statement from a source dialect to a target dialect.
+     * Translates a database field type from a source dialect to a target dialect.
+     * This function primarily maps the base type, while specific translation methods
+     * handle modifiers like AUTO_INCREMENT, SERIAL, BOOLEAN defaults, etc.
      *
-     * @param string $sql The CREATE TABLE statement.
+     * @param string $type The field type to translate (e.g., "VARCHAR(255)", "INT").
      * @param string $sourceDialect The source database dialect (e.g., 'mysql', 'postgresql', 'sqlite').
      * @param string $targetDialect The target database dialect (e.g., 'mysql', 'postgresql', 'sqlite').
-     * @return string The translated CREATE TABLE statement.
-     * @throws DatabaseConversionException If an unsupported translation is requested or SQL format is invalid.
+     * @return string The translated base field type.
+     * @throws DatabaseConversionException If an unsupported target dialect is provided.
      */
-    public function translateCreateTable($sql, $sourceDialect, $targetDialect) // NOSONAR
+    private function translateFieldType($type, $sourceDialect, $targetDialect) // NOSONAR
     {
-        // Normalize dialect aliases
-        $aliases = [
-            'pgsql' => 'postgresql',
-            'postgres' => 'postgresql',
-            'postgresql' => 'postgresql',
-            'sqlite3' => 'sqlite',
-            'mysql' => 'mysql',
-        ];
-        $sourceDialect = strtolower($sourceDialect);
-        $targetDialect = strtolower($targetDialect);
-        $sourceDialect = isset($aliases[$sourceDialect]) ? $aliases[$sourceDialect] : $sourceDialect;
-        $targetDialect = isset($aliases[$targetDialect]) ? $aliases[$targetDialect] : $targetDialect;
+        $type = strtolower(trim($type));
+        // Normalize spaces
+        $type = preg_replace('/\s+/', ' ', $type); // NOSONAR
 
-        if ($sourceDialect === $targetDialect) {
-            return $sql; // No translation needed
+        $targetMap = [];
+        switch ($targetDialect) {
+            case 'mysql': {
+                $targetMap = $this->dbToMySQL;
+                break;
+            }
+            case 'postgresql': {
+                $targetMap = $this->dbToPostgreSQL;
+                break;
+            }
+            case 'sqlite': {
+                $targetMap = $this->dbToSqlite;
+                break;
+            }
+            default: {
+                throw new DatabaseConversionException("Unsupported target dialect: " . $targetDialect);
+            }
         }
 
-        switch ($sourceDialect . 'To' . ucfirst($targetDialect)) {
-            case 'mysqlToPostgresql':
-                return $this->mysqlToPostgreSQL($sql);
-            case 'mysqlToSqlite':
-                return $this->mysqlToSQLite($sql);
-            case 'postgresqlToMysql':
-                return $this->postgresqlToMySQL($sql);
-            case 'postgresqlToSqlite':
-                return $this->postgresqlToSQLite($sql);
-            case 'sqliteToMysql':
-                return $this->sqliteToMySQL($sql);
-            case 'sqliteToPostgresql':
-                return $this->sqliteToPostgreSQL($sql);
+        // Extract base type and any parameters (e.g., "VARCHAR(255)" -> "varchar", "(255)")
+        $baseType = $type;
+        $params = '';
+        if (preg_match('/^([a-zA-Z_]+)(\s*\(.*\))?$/', $type, $matches)) {
+            $baseType = $matches[1];
+            if (isset($matches[2])) {
+                $params = $matches[2];
+            }
+        }
+
+        // Handle specific type conversions that are not just direct map lookups
+        if ($sourceDialect === 'mysql') {
+            if ($baseType === 'enum' || $baseType === 'set') {
+                return 'TEXT';
+            }
+            if ($baseType === 'tinyint' && $params === '(1)') {
+                if ($targetDialect === 'postgresql') {
+                    return 'BOOLEAN';
+                }
+                if ($targetDialect === 'sqlite') {
+                    return 'INTEGER';
+                }
+            }
+        } elseif ($sourceDialect === 'postgresql') {
+            if ($baseType === 'serial' || $baseType === 'bigserial') {
+                if ($targetDialect === 'mysql') {
+                    return ($baseType === 'bigserial' ? 'BIGINT' : 'INT'); // NOSONAR
+                }
+                if ($targetDialect === 'sqlite') {
+                    return 'INTEGER';
+                }
+            }
+            if ($baseType === 'boolean') {
+                if ($targetDialect === 'mysql') {
+                    return 'TINYINT(1)';
+                }
+                if ($targetDialect === 'sqlite') {
+                    return 'INTEGER';
+                }
+            }
+            if ($baseType === 'jsonb') {
+                if ($targetDialect === 'mysql') {
+                    return 'JSON';
+                }
+                if ($targetDialect === 'sqlite') {
+                    return 'TEXT';
+                }
+            }
+            if ($baseType === 'timestamp') {
+                if (str_contains($type, 'with time zone')) {
+                    if ($targetDialect === 'mysql') {
+                        return 'TIMESTAMP';
+                    }
+                    if ($targetDialect === 'sqlite') {
+                        return 'DATETIME';
+                    }
+                } elseif (str_contains($type, 'without time zone')) {
+                    if ($targetDialect === 'mysql') {
+                        return 'DATETIME';
+                    }
+                    if ($targetDialect === 'sqlite') {
+                        return 'DATETIME';
+                    }
+                }
+            }
+        } elseif ($sourceDialect === 'sqlite') {
+            if ($baseType === 'datetime') {
+                if ($targetDialect === 'mysql') {
+                    return 'DATETIME';
+                }
+                if ($targetDialect === 'postgresql') {
+                    return 'TIMESTAMP WITHOUT TIME ZONE';
+                }
+            }
+        }
+
+        // Fallback to direct mapping of base type
+        if (isset($targetMap[$baseType])) {
+            $translatedBaseType = $targetMap[$baseType];
+
+            if (
+                str_contains(strtoupper($translatedBaseType), 'VARCHAR') ||
+                str_contains(strtoupper($translatedBaseType), 'CHARACTER VARYING') ||
+                str_contains(strtoupper($translatedBaseType), 'CHAR')
+            ) {
+                return $translatedBaseType . $params;
+            }
+
+            return $translatedBaseType;
+        }
+
+        return strtoupper($type);
+    }
+
+
+    /**
+     * Helper to normalize quotes for identifiers.
+     *
+     * @param string $identifier
+     * @param string $dialect
+     * @return string
+     */
+    private function quoteIdentifier($identifier, $dialect)
+    {
+        $identifier = trim($identifier, "`\"[]"); // Remove existing quotes
+        switch ($dialect) {
+            case 'mysql':
+                return "`" . $identifier . "`";
+            case 'postgresql':
+            case 'sqlite':
+                return "\"" . $identifier . "\"";
             default:
-                throw new DatabaseConversionException("Unsupported CREATE TABLE translation: from " . $sourceDialect . " to " . $targetDialect);
+                return $identifier;
         }
     }
 
@@ -183,7 +300,7 @@ class DatabaseConverter
     public function mysqlToPostgreSQL($sql) // NOSONAR
     {
         $sql = trim($sql);
-        $sql = preg_replace('/\s+/', ' ', $sql); // NOSONAR
+        $sql = preg_replace('/\s+/', ' ', $sql); // Normalize spaces
 
         // Extract table name
         if (!preg_match('/CREATE TABLE (`?)([^`\s]+)(`?)\s*\((.*)\)/is', $sql, $matches)) {
@@ -507,162 +624,103 @@ class DatabaseConverter
         return trim($finalSql) . ';';
     }
 
-
-
-
-
-
-
-
     /**
-     * Helper to normalize quotes for identifiers.
+     * Translates a CREATE TABLE statement from PostgreSQL to SQLite.
      *
-     * @param string $identifier
-     * @param string $dialect
-     * @return string
+     * @param string $sql The PostgreSQL CREATE TABLE statement.
+     * @return string The translated SQLite CREATE TABLE statement.
+     * @throws DatabaseConversionException If the SQL format is invalid.
      */
-    private function quoteIdentifier($identifier, $dialect)
+    public function postgresqlToSQLite($sql) // NOSONAR
     {
-        $identifier = trim($identifier, "`\"[]"); // Remove existing quotes
-        switch ($dialect) {
-            case 'mysql':
-                return "`" . $identifier . "`";
-            case 'postgresql':
-            case 'sqlite':
-                return "\"" . $identifier . "\"";
-            default:
-                return $identifier;
+        $sql = trim($sql);
+        $sql = preg_replace('/\s+/', ' ', $sql); // Normalize spaces
+
+        // Extract table name
+        if (!preg_match('/CREATE TABLE (IF NOT EXISTS\s+)?("?)([^"\s]+)("?)\s*\((.*)\)/is', $sql, $matches)) {
+            throw new DatabaseConversionException("Invalid PostgreSQL CREATE TABLE statement format.");
         }
-    }
+        $ifNotExists = isset($matches[1]) ? 'IF NOT EXISTS ' : '';
+        $tableName = $this->quoteIdentifier($matches[3], 'sqlite');
+        $columnsAndConstraints = trim($matches[5]);
 
-    /**
-     * Translates a database field type from a source dialect to a target dialect.
-     * This function primarily maps the base type, while specific translation methods
-     * handle modifiers like AUTO_INCREMENT, SERIAL, BOOLEAN defaults, etc.
-     *
-     * @param string $type The field type to translate (e.g., "VARCHAR(255)", "INT").
-     * @param string $sourceDialect The source database dialect (e.g., 'mysql', 'postgresql', 'sqlite').
-     * @param string $targetDialect The target database dialect (e.g., 'mysql', 'postgresql', 'sqlite').
-     * @return string The translated base field type.
-     * @throws DatabaseConversionException If an unsupported target dialect is provided.
-     */
-    private function translateFieldType($type, $sourceDialect, $targetDialect) // NOSONAR
-    {
-        $type = strtolower(trim($type));
-        // Normalize spaces
-        $type = preg_replace('/\s+/', ' ', $type); // NOSONAR
+        $lines = explode(',', $columnsAndConstraints);
+        $newLines = [];
+        $primaryKeyColumnFound = false;
 
-        $targetMap = [];
-        switch ($targetDialect) {
-            case 'mysql': {
-                $targetMap = $this->dbToMySQL;
-                break;
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (empty($line)) 
+            {
+                continue;
             }
-            case 'postgresql': {
-                $targetMap = $this->dbToPostgreSQL;
-                break;
-            }
-            case 'sqlite': {
-                $targetMap = $this->dbToSqlite;
-                break;
-            }
-            default: {
-                throw new DatabaseConversionException("Unsupported target dialect: " . $targetDialect);
-            }
-        }
 
-        // Extract base type and any parameters (e.g., "VARCHAR(255)" -> "varchar", "(255)")
-        $baseType = $type;
-        $params = '';
-        if (preg_match('/^([a-zA-Z_]+)(\s*\(.*\))?$/', $type, $matches)) {
-            $baseType = $matches[1];
-            if (isset($matches[2])) {
-                $params = $matches[2];
-            }
-        }
+            // Column definition
+            if (preg_match('/^("?)([^"\s]+)("?)\s+([a-zA-Z0-9_() ]+)(.*)$/i', $line, $colMatches)) // NOSONAR
+            {
+                $columnName = $this->quoteIdentifier($colMatches[2], 'sqlite');
+                $columnType = strtolower(trim($colMatches[4]));
+                $columnDefinition = trim($colMatches[5]);
 
-        // Handle specific type conversions that are not just direct map lookups
-        if ($sourceDialect === 'mysql') {
-            if ($baseType === 'enum' || $baseType === 'set') {
-                return 'TEXT';
-            }
-            if ($baseType === 'tinyint' && $params === '(1)') {
-                if ($targetDialect === 'postgresql') {
-                    return 'BOOLEAN';
-                }
-                if ($targetDialect === 'sqlite') {
-                    return 'INTEGER';
-                }
-            }
-        } elseif ($sourceDialect === 'postgresql') {
-            if ($baseType === 'serial' || $baseType === 'bigserial') {
-                if ($targetDialect === 'mysql') {
-                    return ($baseType === 'bigserial' ? 'BIGINT' : 'INT'); // NOSONAR
-                }
-                if ($targetDialect === 'sqlite') {
-                    return 'INTEGER';
-                }
-            }
-            if ($baseType === 'boolean') {
-                if ($targetDialect === 'mysql') {
-                    return 'TINYINT(1)';
-                }
-                if ($targetDialect === 'sqlite') {
-                    return 'INTEGER';
-                }
-            }
-            if ($baseType === 'jsonb') {
-                if ($targetDialect === 'mysql') {
-                    return 'JSON';
-                }
-                if ($targetDialect === 'sqlite') {
-                    return 'TEXT';
-                }
-            }
-            if ($baseType === 'timestamp') {
-                if (str_contains($type, 'with time zone')) {
-                    if ($targetDialect === 'mysql') {
-                        return 'TIMESTAMP';
-                    }
-                    if ($targetDialect === 'sqlite') {
-                        return 'DATETIME';
-                    }
-                } elseif (str_contains($type, 'without time zone')) {
-                    if ($targetDialect === 'mysql') {
-                        return 'DATETIME';
-                    }
-                    if ($targetDialect === 'sqlite') {
-                        return 'DATETIME';
+                $translatedType = $this->translateFieldType($columnType, 'postgresql', 'sqlite');
+
+                // Handle SERIAL/BIGSERIAL
+                if (str_contains(strtoupper($columnType), 'SERIAL')) {
+                    $translatedType = 'INTEGER';
+                    if (str_contains(strtoupper($columnDefinition), 'PRIMARY KEY')) {
+                        $columnDefinition = str_ireplace('PRIMARY KEY', 'AUTOINCREMENT', $columnDefinition);
+                        $primaryKeyColumnFound = true;
+                    } else {
+                        // If SERIAL but not primary key, just make it INTEGER
+                        $columnDefinition = str_ireplace('PRIMARY KEY', '', $columnDefinition); // Remove any PRIMARY KEY if not main autoinc
                     }
                 }
-            }
-        } elseif ($sourceDialect === 'sqlite') {
-            if ($baseType === 'datetime') {
-                if ($targetDialect === 'mysql') {
-                    return 'DATETIME';
+
+                // Handle BOOLEAN
+                if (str_contains(strtoupper($columnType), 'BOOLEAN')) {
+                    $translatedType = 'INTEGER'; // SQLite uses INTEGER for BOOLEAN
+                    $columnDefinition = str_ireplace("DEFAULT TRUE", "DEFAULT 1", $columnDefinition);
+                    $columnDefinition = str_ireplace("DEFAULT FALSE", "DEFAULT 0", $columnDefinition);
                 }
-                if ($targetDialect === 'postgresql') {
-                    return 'TIMESTAMP WITHOUT TIME ZONE';
+
+                // Handle TIMESTAMP WITH TIME ZONE / WITHOUT TIME ZONE
+                if (str_contains(strtoupper($columnType), 'TIMESTAMP WITH TIME ZONE') || str_contains(strtoupper($columnType), 'TIMESTAMP WITHOUT TIME ZONE')) {
+                    $translatedType = 'DATETIME'; // SQLite doesn't have explicit TIMESTAMP types, DATETIME is common
                 }
+                
+                // Handle JSONB
+                if (str_contains(strtoupper($columnType), 'JSONB')) {
+                    $translatedType = 'TEXT';
+                }
+
+                $newLines[] = $columnName . ' ' . $translatedType . ' ' . trim($columnDefinition);
+            } elseif (preg_match('/^(PRIMARY KEY|UNIQUE)\s*\((.*)\)/i', $line, $keyMatches)) {
+                // Table-level PRIMARY KEY or UNIQUE
+                $keyType = strtoupper($keyMatches[1]);
+                $keyColumns = $keyMatches[2];
+                
+                // Replace double quotes with backticks in column list
+                $keyColumns = preg_replace('/"([^"]+)"/', '"$1"', $keyColumns);
+
+                if ($keyType === 'PRIMARY KEY' && !$primaryKeyColumnFound) {
+                    $newLines[] = 'PRIMARY KEY (' . $keyColumns . ')';
+                } elseif ($keyType === 'UNIQUE') {
+                    // Remove CONSTRAINT name for SQLite
+                    $line = preg_replace('/^CONSTRAINT\s+"?([^"]+)"?\s+UNIQUE\s*\((.*)\)/i', 'UNIQUE ($2)', $line);
+                    $newLines[] = $line;
+                }
+            } else {
+                // Other constraints or unparsed parts, try to add as is, but quote identifiers
+                $line = preg_replace_callback('/(")([^"]+?)(")/', function($m) {
+                    return $this->quoteIdentifier($m[2], 'sqlite');
+                }, $line);
+                $newLines[] = $line;
             }
         }
 
-        // Fallback to direct mapping of base type
-        if (isset($targetMap[$baseType])) {
-            $translatedBaseType = $targetMap[$baseType];
+        $finalSql = "CREATE TABLE " . $ifNotExists . $tableName . " (\n    " . implode(",\n    ", $newLines) . "\n)";
 
-            if (
-                str_contains(strtoupper($translatedBaseType), 'VARCHAR') ||
-                str_contains(strtoupper($translatedBaseType), 'CHARACTER VARYING') ||
-                str_contains(strtoupper($translatedBaseType), 'CHAR')
-            ) {
-                return $translatedBaseType . $params;
-            }
-
-            return $translatedBaseType;
-        }
-
-        return strtoupper($type);
+        return trim($finalSql) . ';';
     }
 
     /**
@@ -761,27 +819,137 @@ class DatabaseConverter
     }
 
     /**
-     * Translates a CREATE TABLE statement from PostgreSQL to SQLite.
-     *
-     * @param string $sql The PostgreSQL CREATE TABLE statement.
-     * @return string The translated SQLite CREATE TABLE statement.
-     * @throws DatabaseConversionException If the SQL format is invalid.
-     */
-    public function postgresqlToSQLite($sql)
-    {
-        return $this->mysqlToSQLite($this->postgresqlToMySQL($sql));
-    }
-    
-    /**
      * Translates a CREATE TABLE statement from SQLite to PostgreSQL.
      *
      * @param string $sql The SQLite CREATE TABLE statement.
      * @return string The translated PostgreSQL CREATE TABLE statement.
      * @throws DatabaseConversionException If the SQL format is invalid.
      */
-    public function sqliteToPostgreSQL($sql)
+    public function sqliteToPostgreSQL($sql) // NOSONAR
     {
-        return $this->mysqlToPostgreSQL($this->sqliteToMySQL($sql));
+        $sql = trim($sql);
+        $sql = preg_replace('/\s+/', ' ', $sql); // Normalize spaces
+
+        // Extract table name
+        if (!preg_match('/CREATE TABLE (IF NOT EXISTS\s+)?("?)([^"\s]+)("?)\s*\((.*)\)/is', $sql, $matches)) {
+            throw new DatabaseConversionException("Invalid SQLite CREATE TABLE statement format.");
+        }
+        $ifNotExists = isset($matches[1]) ? 'IF NOT EXISTS ' : '';
+        $tableName = $this->quoteIdentifier($matches[3], 'postgresql');
+        $columnsAndConstraints = trim($matches[5]);
+
+        $lines = explode(',', $columnsAndConstraints);
+        $newLines = [];
+        $primaryKeyColumnFound = false;
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (empty($line)) 
+            {
+                continue;
+            }
+
+            // Column definition
+            if (preg_match('/^("?)([^"\s]+)("?)\s+([a-zA-Z0-9_() ]+)(.*)$/i', $line, $colMatches)) // NOSONAR
+            {
+                $columnName = $this->quoteIdentifier($colMatches[2], 'postgresql');
+                $columnType = strtolower(trim($colMatches[4]));
+                $columnDefinition = trim($colMatches[5]);
+
+                $translatedType = $this->translateFieldType($columnType, 'sqlite', 'postgresql');
+
+                // Handle INTEGER PRIMARY KEY AUTOINCREMENT
+                if (str_contains(strtoupper($columnType), 'INTEGER') && str_contains(strtoupper($columnDefinition), 'AUTOINCREMENT')) {
+                    $translatedType = 'SERIAL'; // PostgreSQL uses SERIAL
+                    $columnDefinition = str_ireplace('AUTOINCREMENT', '', $columnDefinition);
+                    $columnDefinition .= ' PRIMARY KEY'; // Add PRIMARY KEY explicitly
+                    $primaryKeyColumnFound = true;
+                }
+
+                // Handle BOOLEAN (INTEGER)
+                if (str_contains(strtoupper($columnType), 'INTEGER') && (str_contains(strtoupper($columnDefinition), 'DEFAULT 1') || str_contains(strtoupper($columnDefinition), 'DEFAULT 0'))) {
+                    // This is a heuristic, assuming INTEGER with default 0/1 is boolean
+                    $translatedType = 'BOOLEAN';
+                    $columnDefinition = str_ireplace("DEFAULT 1", "DEFAULT TRUE", $columnDefinition);
+                    $columnDefinition = str_ireplace("DEFAULT 0", "DEFAULT FALSE", $columnDefinition);
+                }
+
+                // Handle DATETIME
+                if (str_contains(strtoupper($columnType), 'DATETIME')) {
+                    $translatedType = 'TIMESTAMP WITHOUT TIME ZONE';
+                }
+                
+                // Handle TEXT (for JSON)
+                if (str_contains(strtoupper($columnType), 'TEXT') && str_contains(strtoupper($columnName), 'json')) {
+                    // Heuristic: if text column name contains 'json', assume it's JSONB
+                    $translatedType = 'JSONB';
+                }
+
+                $newLines[] = $columnName . ' ' . $translatedType . ' ' . trim($columnDefinition);
+            } elseif (preg_match('/^(PRIMARY KEY|UNIQUE)\s*\((.*)\)/i', $line, $keyMatches)) {
+                // Table-level PRIMARY KEY or UNIQUE
+                $keyType = strtoupper($keyMatches[1]);
+                $keyColumns = $keyMatches[2];
+                
+                // Replace double quotes with backticks in column list
+                $keyColumns = preg_replace('/"([^"]+)"/', '"$1"', $keyColumns);
+
+                if ($keyType === 'PRIMARY KEY' && !$primaryKeyColumnFound) {
+                    $newLines[] = 'PRIMARY KEY (' . $keyColumns . ')';
+                } elseif ($keyType === 'UNIQUE') {
+                    // SQLite's UNIQUE can be a constraint without a name.
+                    // PostgreSQL's UNIQUE can be named or unnamed.
+                    // If it's a simple UNIQUE (col), we can just add UNIQUE to the column definition.
+                    // If it's a named constraint, add it as a table constraint.
+                    $newLines[] = 'UNIQUE (' . $keyColumns . ')';
+                }
+            } else {
+                // Other constraints or unparsed parts, try to add as is, but quote identifiers
+                $line = preg_replace_callback('/(")([^"]+?)(")/', function($m) {
+                    return $this->quoteIdentifier($m[2], 'postgresql');
+                }, $line);
+                $newLines[] = $line;
+            }
+        }
+
+        $finalSql = "CREATE TABLE " . $ifNotExists . $tableName . " (\n    " . implode(",\n    ", $newLines) . "\n)";
+
+        return trim($finalSql) . ';';
     }
 
+    /**
+     * Translates a CREATE TABLE statement from a source dialect to a target dialect.
+     *
+     * @param string $sql The CREATE TABLE statement.
+     * @param string $sourceDialect The source database dialect (e.g., 'mysql', 'postgresql', 'sqlite').
+     * @param string $targetDialect The target database dialect (e.g., 'mysql', 'postgresql', 'sqlite').
+     * @return string The translated CREATE TABLE statement.
+     * @throws DatabaseConversionException If an unsupported translation is requested or SQL format is invalid.
+     */
+    public function translateCreateTable($sql, $sourceDialect, $targetDialect) // NOSONAR
+    {
+        $sourceDialect = strtolower($sourceDialect);
+        $targetDialect = strtolower($targetDialect);
+
+        if ($sourceDialect === $targetDialect) {
+            return $sql; // No translation needed
+        }
+
+        switch ($sourceDialect . 'To' . ucfirst($targetDialect)) {
+            case 'mysqlToPostgresql':
+                return $this->mysqlToPostgreSQL($sql);
+            case 'mysqlToSqlite':
+                return $this->mysqlToSQLite($sql);
+            case 'postgresqlToMysql':
+                return $this->postgresqlToMySQL($sql);
+            case 'postgresqlToSqlite':
+                return $this->postgresqlToSQLite($sql);
+            case 'sqliteToMysql':
+                return $this->sqliteToMySQL($sql);
+            case 'sqliteToPostgresql':
+                return $this->sqliteToPostgreSQL($sql);
+            default:
+                throw new DatabaseConversionException("Unsupported CREATE TABLE translation: from " . $sourceDialect . " to " . $targetDialect);
+        }
+    }
 }

@@ -1427,28 +1427,52 @@ Utilizing environment variables for configuration management is an essential pra
 
 The `ValidationUtil` class has been significantly enhanced to provide a robust and flexible object property validation mechanism. Inspired by Jakarta Bean Validation (JSR 380), developers can now apply a comprehensive set of annotations directly in property docblocks to enforce data integrity.
 
-The following validation annotations are now supported:
+The following validation annotations are now supported, grouped by their function:
 
--   **`@Valid`**: Recursively validates nested `MagicObject` instances.
+### Presence & Nullability
 -   **`@Required(message="...")`**: Ensures the property value is not `null`.
 -   **`@NotEmpty(message="...")`**: Checks if a string is not empty (`""`) or an array is not empty.
 -   **`@NotBlank(message="...")`**: Validates that a string is not empty and not just whitespace characters.
--   **`@Size(min=X, max=Y, message="...")`**: Verifies that the length of a string or the count of an array is within a specified range.
+
+### Value Range & Size
 -   **`@Min(value=X, message="...")`**: Asserts that a numeric property's value is greater than or equal to a minimum value.
 -   **`@Max(value=X, message="...")`**: Asserts that a numeric property's value is less than or equal to a maximum value.
--   **`@Pattern(regexp="...", message="...")`**: Validates a string property against a specified regular expression.
--   **`@Email(message="...")`**: Checks if a string property is a well-formed email address.
--   **`@Past(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the past.
--   **`@Future(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the future.
 -   **`@DecimalMin(value="...", message="...")`**: Validates that a numeric property (can be float/string) is greater than or equal to a specified decimal value.
 -   **`@DecimalMax(value="...", message="...")`**: Validates that a numeric property (can be float/string) is less than or equal to a specified decimal value.
--   **`@Digits(integer=X, fraction=Y, message="...")`**: Checks that a numeric property has at most `X` integer digits and `Y` fractional digits.
--   **`@AssertTrue(message="...")`**: Asserts that a boolean property's value is strictly `true`.
--   **`@FutureOrPresent(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the future or the present.
--   **`@Length(min=X, max=Y, message="...")`**: Similar to `@Size`, specifically for string lengths within a range.
 -   **`@Range(min=X, max=Y, message="...")`**: Validates that a numeric property's value falls within an inclusive range.
+-   **`@Size(min=X, max=Y, message="...")`**: Verifies that the length of a string or the count of an array is within a specified range.
+-   **`@Length(min=X, max=Y, message="...")`**: Similar to `@Size`, specifically for string lengths within a range.
+-   **`@Digits(integer=X, fraction=Y, message="...")`**: Checks that a numeric property has at most `X` integer digits and `Y` fractional digits.
+
+### Numeric Sign
+-   **`@Positive(message="...")`**: Ensures a numeric value is positive (> 0).
+-   **`@PositiveOrZero(message="...")`**: Ensures a numeric value is positive or zero (>= 0).
+-   **`@Negative(message="...")`**: Ensures a numeric value is negative (< 0).
+-   **`@NegativeOrZero(message="...")`**: Ensures a numeric value is negative or zero (<= 0).
+
+### Pattern & Format
+-   **`@Pattern(regexp="...", message="...")`**: Validates a string property against a specified regular expression.
+-   **`@Email(message="...")`**: Checks if a string property is a well-formed email address.
+-   **`@Url(message="...")`**: Ensures a string is a valid URL.
+-   **`@Ip(message="...")`**: Ensures a string is a valid IP address.
+-   **`@DateFormat(format="...", message="...")`**: Ensures a string matches a specific date format.
+-   **`@Phone(message="...")`**: Ensures a string is a valid phone number.
 -   **`@NoHtml(message="...")`**: Checks if a string property contains any HTML tags.
+
+### Date & Time
+-   **`@Past(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the past.
+-   **`@Future(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the future.
+-   **`@PastOrPresent(message="...")`**: Ensures a date/time is in the past or present.
+-   **`@FutureOrPresent(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the future or the present.
+
+### Boolean
+-   **`@AssertTrue(message="...")`**: Asserts that a boolean property's value is strictly `true`.
+
+### Enum & Allowed Values
 -   **`@Enum(message="...", allowedValues={...}, caseSensitive=true|false)`**: Ensures a string property's value is one of a predefined set of allowed values, with an option for case-sensitive or case-insensitive comparison.
+
+### Nested Validation
+-   **`@Valid`**: Recursively validates nested `MagicObject` instances.
 
 These new validation capabilities provide a declarative and robust way to ensure data consistency and reduce boilerplate validation code in your MagicObject entities.
 
@@ -3511,6 +3535,57 @@ public function onBeforeLoad($data)
 ```
 
 In this example, if the incoming data is not an `EntityAlbum`, an `InvalidArgumentException` is thrown, preventing further processing of invalid data.
+
+#### Validation Support in MagicDto
+
+MagicDto supports property validation using annotations, ensuring that data loaded into a DTO meets the required constraints before serialization or further processing. You can use the following validation annotations in your DTO classes:
+
+##### Presence & Nullability
+- **@Required**: Ensures the property value is not `null`.
+- **@NotEmpty**: Ensures a string or array is not empty.
+- **@NotBlank**: Ensures a string is not empty and not just whitespace.
+
+##### Value Range & Size
+- **@Min**: Asserts that a numeric property's value is greater than or equal to a minimum value.
+- **@Max**: Asserts that a numeric property's value is less than or equal to a maximum value.
+- **@DecimalMin**: Validates that a numeric property is greater than or equal to a specified decimal value.
+- **@DecimalMax**: Validates that a numeric property is less than or equal to a specified decimal value.
+- **@Range**: Validates that a numeric property's value falls within an inclusive range.
+- **@Size**: Verifies that the length of a string or the count of an array is within a specified range.
+- **@Length**: Specifically for string lengths within a range.
+- **@Digits**: Checks that a numeric property has at most a specified number of integer and fractional digits.
+
+##### Numeric Sign
+- **@Positive**: Ensures a numeric value is positive (> 0).
+- **@PositiveOrZero**: Ensures a numeric value is positive or zero (>= 0).
+- **@Negative**: Ensures a numeric value is negative (< 0).
+- **@NegativeOrZero**: Ensures a numeric value is negative or zero (<= 0).
+
+##### Pattern & Format
+- **@Pattern**: Validates a string property against a specified regular expression.
+- **@Email**: Checks if a string property is a well-formed email address.
+- **@Url**: Ensures a string is a valid URL.
+- **@Ip**: Ensures a string is a valid IP address.
+- **@DateFormat**: Ensures a string matches a specific date format.
+- **@Phone**: Ensures a string is a valid phone number.
+- **@NoHtml**: Checks if a string property contains any HTML tags.
+
+##### Date & Time
+- **@Past**: Ensures a property represents a date/time in the past.
+- **@Future**: Ensures a property represents a date/time in the future.
+- **@PastOrPresent**: Ensures a date/time is in the past or present.
+- **@FutureOrPresent**: Ensures a property represents a date/time in the future or the present.
+
+##### Boolean
+- **@AssertTrue**: Asserts that a boolean property's value is strictly `true`.
+
+##### Enum & Allowed Values
+- **@Enum**: Ensures a property value is one of a predefined set of allowed values, with an option for case-sensitive or case-insensitive comparison.
+
+##### Nested Validation
+- **@Valid**: Recursively validates nested DTOs or objects.
+
+To use validation, simply annotate your DTO properties as needed. When you load data into a MagicDto instance, call the `validate()` method to enforce all validation rules before serialization or further processing.
 
 #### Explanation
 
