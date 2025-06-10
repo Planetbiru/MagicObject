@@ -96,12 +96,18 @@ class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
      *
      * @param string|null $parentPropertyName The name of the parent property, if applicable (for nested validation).
      * @param array|null $messageTemplate Optional custom message templates for validation errors.
+     * @param MagicObject $reference Optional reference object for validation context.
      * @throws InvalidValueException If validation fails.
      * @return self Returns the current instance for method chaining.
      */
-    public function validate($parentPropertyName = null, $messageTemplate = null)
+    public function validate($parentPropertyName = null, $messageTemplate = null, $reference = null)
     {
-        ValidationUtil::getInstance($messageTemplate)->validate($this->object, $parentPropertyName);
+        $objectToValidate = $this->object;
+        if(isset($reference) && $reference instanceof MagicObject)
+        {
+            $objectToValidate = $reference->loadData($this->object);
+        }
+        ValidationUtil::getInstance($messageTemplate)->validate($objectToValidate, $parentPropertyName);
         return $this;
     }
     

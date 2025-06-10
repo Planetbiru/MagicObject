@@ -1434,7 +1434,7 @@ from overriding its value.</p>
 <div class="method-identity">2. <span class="method-label">__construct</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">__construct</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">self</span>|<span class="parameter-type">array</span>|<span class="parameter-type">stdClass</span>|<span class="parameter-type">object</span>|<span class="parameter-type">null</span> <span class="parameter-name">$data <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">MagicObject</span>|<span class="parameter-type">array</span>|<span class="parameter-type">stdClass</span>|<span class="parameter-type">object</span>|<span class="parameter-type">null</span> <span class="parameter-name">$data <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">PicoDatabase</span>|<span class="parameter-type">PDO</span>|<span class="parameter-type">null</span> <span class="parameter-name">$database <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span><br>
 )<br>{<br>}</div>
 <div class='docblock'>
@@ -2414,7 +2414,7 @@ It unsets the specified property from the object.</p>
 <div class="method-identity">49. <span class="method-label">copyValueFrom</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">copyValueFrom</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">self</span>|<span class="parameter-type">mixed</span> <span class="parameter-name">$source</span>, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">MagicObject</span>|<span class="parameter-type">mixed</span> <span class="parameter-name">$source</span>, <br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">array</span>|<span class="parameter-type">null</span> <span class="parameter-name">$filter <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">bool</span> <span class="parameter-name">$includeNull <span class="parameter-equal-sign">=</span> <span class="parameter-default">false</span></span><br>
 ) : <span class="return-type">self</span><br>{<br>}</div>
@@ -2439,7 +2439,7 @@ Optionally, a filter can be applied to specify which properties to copy, and whe
 <div class="method-identity">50. <span class="method-label">mergeWith</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">mergeWith</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">self</span> <span class="parameter-name">$other</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">MagicObject</span> <span class="parameter-name">$other</span><br>
 ) : <span class="return-type">self</span><br>{<br>}</div>
 <div class='docblock'>
 <h3>Description</h3>
@@ -3647,7 +3647,7 @@ invokes the appropriate method according to its name and parameters.</p>
 <div class="method-identity">92. <span class="method-label">stringifyObject</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">stringifyObject</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">self</span> <span class="parameter-name">$value</span>, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">MagicObject</span> <span class="parameter-name">$value</span>, <br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">bool</span> <span class="parameter-name">$snake</span><br>
 ) : <span class="return-type">mixed</span><br>{<br>}</div>
 <div class='docblock'>
@@ -3692,7 +3692,8 @@ invokes the appropriate method according to its name and parameters.</p>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">validate</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span>|<span class="parameter-type">null</span> <span class="parameter-name">$parentPropertyName <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">array</span>|<span class="parameter-type">null</span> <span class="parameter-name">$messageTemplate <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">array</span>|<span class="parameter-type">null</span> <span class="parameter-name">$messageTemplate <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">MagicObject</span> <span class="parameter-name">$reference <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span><br>
 ) : <span class="return-type">self</span><br>{<br>}</div>
 <div class='docblock'>
 <h3>Description</h3>
@@ -3704,6 +3705,8 @@ If any validation rule fails, an InvalidValueException will be thrown.</p>
 <div class="parameter-description"><p>The name of the parent property, if applicable (for nested validation).</p></div>
 <div class="parameter-name">$messageTemplate</div>
 <div class="parameter-description"><p>Optional custom message templates for validation errors.</p></div>
+<div class="parameter-name">$reference</div>
+<div class="parameter-description"><p>Optional reference to another MagicObject instance for loading data.</p></div>
 <h3>Return</h3>
 <div class="return-type">self</div>
 <div class="return-description"><p>Returns the current instance for method chaining.</p></div>
@@ -10318,7 +10321,8 @@ to an internal map for further processing.</p>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">validate</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span>|<span class="parameter-type">null</span> <span class="parameter-name">$parentPropertyName <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">array</span>|<span class="parameter-type">null</span> <span class="parameter-name">$messageTemplate <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">array</span>|<span class="parameter-type">null</span> <span class="parameter-name">$messageTemplate <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">MagicObject</span> <span class="parameter-name">$reference <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span><br>
 ) : <span class="return-type">self</span><br>{<br>}</div>
 <div class='docblock'>
 <h3>Description</h3>
@@ -10330,6 +10334,8 @@ If any validation rule fails, an InvalidValueException will be thrown.</p>
 <div class="parameter-description"><p>The name of the parent property, if applicable (for nested validation).</p></div>
 <div class="parameter-name">$messageTemplate</div>
 <div class="parameter-description"><p>Optional custom message templates for validation errors.</p></div>
+<div class="parameter-name">$reference</div>
+<div class="parameter-description"><p>Optional reference object for validation context.</p></div>
 <h3>Return</h3>
 <div class="return-type">self</div>
 <div class="return-description"><p>Returns the current instance for method chaining.</p></div>
@@ -39649,7 +39655,7 @@ If any validation rule fails, an InvalidValueException is thrown.</p>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$propertyName</span>, <br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">mixed</span> <span class="parameter-name">$propertyValue</span>, <br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$docComment</span><br>
-) : <span class="return-type">bool</span><br>{<br>}</div>
+)<br>{<br>}</div>
 <div class='docblock'>
 <h3>Description</h3>
 <p>Validates the <strong><code>Valid</code></strong> annotation for nested objects.
@@ -39661,9 +39667,6 @@ This annotation triggers recursive validation for MagicObject instances.</p>
 <div class="parameter-description"><p>The current value of the property.</p></div>
 <div class="parameter-name">$docComment</div>
 <div class="parameter-description"><p>The docblock comment of the property.</p></div>
-<h3>Return</h3>
-<div class="return-type">bool</div>
-<div class="return-description"><p>True if <strong><code>Valid</code></strong> is present and handled (i.e., further validation for this property should be skipped).</p></div>
 <h3>Throws</h3>
 <div class="return-type">InvalidValueException</div>
 <div class="return-description"><p>If a nested object validation fails.</p></div>

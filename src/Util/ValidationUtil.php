@@ -64,25 +64,25 @@ class ValidationUtil // NOSONAR
     public function init($customTemplates = array())
     {
         $this->validationMessageTemplate = array(
-            'required' => "Field '%s' cannot be null",
-            'notEmpty' => "Field '%s' cannot be empty",
-            'notBlank' => "Field '%s' cannot be blank",
-            'size' => "Field '%s' must be between %d and %d characters",
-            'min' => "Field '%s' must be at least %s",
-            'max' => "Field '%s' must be less than %s",
-            'pattern' => "Invalid format for field '%s'",
-            'email' => "Invalid email address for field '%s'",
-            'past' => "Date for field '%s' must be in the past",
-            'future' => "Date for field '%s' must be in the future",
-            'decimalMin' => "Value for field '%s' must be at least %s",
-            'decimalMax' => "Value for field '%s' must be less than %s",
-            'digits' => "Value for field '%s' must have at most %d integer digits and %d fractional digits",
-            'assertTrue' => "Field '%s' must be true",
-            'futureOrPresent' => "Date for field '%s' cannot be in the past",
-            'length' => "Field '%s' must be between %d and %d characters",
-            'range' => "Value for field '%s' must be between %s and %s",
-            'noHtml' => "Field '%s' contains HTML tags and must be removed",
-            'validEnum' => "Field '%s' has an invalid value.",
+            'required' => "Field '\${property}' cannot be null",
+            'notEmpty' => "Field '\${property}' cannot be empty",
+            'notBlank' => "Field '\${property}' cannot be blank",
+            'size' => "Field '\${property}' must be between \${min} and \${max} characters",
+            'min' => "Field '\${property}' must be at least \${min}",
+            'max' => "Field '\${property}' must be less than \${max}",
+            'pattern' => "Invalid format for field '\${property}'",
+            'email' => "Invalid email address for field '\${property}'",
+            'past' => "Date for field '\${property}' must be in the past",
+            'future' => "Date for field '\${property}' must be in the future",
+            'decimalMin' => "Value for field '\${property}' must be at least \${min}",
+            'decimalMax' => "Value for field '\${property}' must be less than \${max}",
+            'digits' => "Value for field '\${property}' must have at most \${integer} integer digits and \${fraction} fractional digits",
+            'assertTrue' => "Field '\${property}' must be true",
+            'futureOrPresent' => "Date for field '\${property}' cannot be in the past",
+            'length' => "Field '\${property}' must be between \${min} and \${max} characters",
+            'range' => "Value for field '\${property}' must be between \${min} and \${max}",
+            'noHtml' => "Field '\${property}' contains HTML tags and must be removed",
+            'enum' => "Field '\${property}' has an invalid value. Allowed values: \${allowedValues}.",
         );
 
         // Process custom templates to camelize keys
@@ -156,11 +156,11 @@ class ValidationUtil // NOSONAR
 
             $propertyName = $property->getName();
             // Build the full property path for better error messages
-            $fullPropertyName = $parentPropertyName ? $parentPropertyName . '.' . $propertyName : $propertyName;
+            $fullPropertyName = isset($parentPropertyName) ? $parentPropertyName . '.' . $propertyName : $propertyName;
 
             $property->setAccessible(true); // NOSONAR
-            $propertyValue = $property->getValue($object); // NOSONAR
-
+            $propertyValue = $property->getValue($object); // NOSONAR           
+           
             // The order of validation matters: @Valid should usually be processed first
             // to allow nested object validation before individual property validations.
             if ($this->validateValidAnnotation($fullPropertyName, $propertyValue, $docComment)) {
@@ -202,23 +202,13 @@ class ValidationUtil // NOSONAR
         }
 
         $template = $this->validationMessageTemplate[$validationType];
-        
-        try {
-            // Attempt to format the message using vsprintf
-            return vsprintf($template, $values);
-        } catch (Exception $e) {
-            // Catch any exception (e.g., TypeError if arguments don't match placeholders)
-            // Log the error if a logging mechanism is available
-            error_log(
-                "ValidationUtil: Failed to format message for type '{$validationType}'. " .
-                "Template: '{$template}', Values: [" . implode(', ', array_map(function($v) {
-                    return is_scalar($v) ? (string)$v : gettype($v);
-                }, $values)) . "]. Error: " . $e->getMessage()
-            );
-            
-            // Return a generic fallback message to avoid breaking the application
-            return "Validation error for field. (Internal message formatting issue for type: {$validationType})";
+
+        // Replace placeholders like ${property}, ${min}, etc.
+        $replace = [];
+        foreach ($values as $key => $val) {
+            $replace['${' . $key . '}'] = $val;
         }
+        return str_ireplace(array_keys($replace), array_values($replace), $template);
     }
 
     /**
@@ -293,14 +283,27 @@ class ValidationUtil // NOSONAR
      * @param string $propertyName The name of the property being validated, potentially including parent path.
      * @param mixed $propertyValue The current value of the property.
      * @param string $docComment The docblock comment of the property.
-     * @return bool True if **`Valid`** is present and handled (i.e., further validation for this property should be skipped).
      * @throws InvalidValueException If a nested object validation fails.
      */
-    private function validateValidAnnotation($propertyName, $propertyValue, $docComment)
+    private function validateValidAnnotation($propertyName, $propertyValue, $docComment) // NOSONAR
     {
         if (preg_match('/@Valid/', $docComment)) {
             if (is_object($propertyValue) && $propertyValue instanceof MagicObject) {
                 // Pass the current full property name to the recursive call
+                
+                // Get @var 
+                $reference = null;
+                if (preg_match('/@var\s+([^\s]+)/', $docComment, $matches)) {
+                    $varType = $matches[1];
+                    if(class_exists($varType)) {
+                        $reference = new $varType(); // Create a new instance if needed
+                        if ($reference instanceof MagicObject) {
+                            $reference->loadData($propertyValue); // Load data from the current property value
+                        }
+                        $this->validate($reference, $propertyName);
+                        return true; // Indicates that @Valid was processed
+                    }
+                }
                 $this->validate($propertyValue, $propertyName);
             }
             return true; // Indicates that @Valid was processed
@@ -324,7 +327,7 @@ class ValidationUtil // NOSONAR
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
             if (empty($message)) {
-                $message = $this->createMessage('required', array($propertyName));
+                $message = $this->createMessage('required', array('property' => $propertyName));
             }
 
             if ($propertyValue === null) {
@@ -333,7 +336,7 @@ class ValidationUtil // NOSONAR
         }
         elseif (preg_match('/@Required(?: vigilance)?\b/', $docComment)) {
             if ($propertyValue === null) {
-                $message = $this->createMessage('required', array($propertyName));
+                $message = $this->createMessage('required', array('property' => $propertyName));
                 throw new InvalidValueException($propertyName, $message);
             }
         }
@@ -355,10 +358,10 @@ class ValidationUtil // NOSONAR
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
             if (empty($message)) {
-                $message = $this->createMessage('notEmpty', array($propertyName));
+                $message = $this->createMessage('notEmpty', array('property' => $propertyName));
             }
         } elseif (preg_match('/@NotEmpty(?: vigilance)?\b/', $docComment)) {
-            $message = $this->createMessage('notEmpty', array($propertyName));
+            $message = $this->createMessage('notEmpty', array('property' => $propertyName));
         } else {
             return;
         }
@@ -384,10 +387,10 @@ class ValidationUtil // NOSONAR
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
             if (empty($message)) {
-                $message = $this->createMessage('notBlank', array($propertyName));
+                $message = $this->createMessage('notBlank', array('property' => $propertyName));
             }
         } elseif (preg_match('/@NotBlank(?: vigilance)?\b/', $docComment)) {
-            $message = $this->createMessage('notBlank', array($propertyName));
+            $message = $this->createMessage('notBlank', array('property' => $propertyName));
         } else {
             return;
         }
@@ -414,7 +417,7 @@ class ValidationUtil // NOSONAR
             $max = $this->getAnnotationParam($params, 'max', 'int');
             $message = $this->getAnnotationParam($params, 'message', 'string');
             if (empty($message)) {
-                $message = $this->createMessage('size', array($propertyName, $min, $max));
+                $message = $this->createMessage('size', array('property' => $propertyName, 'min' => $min, 'max' => $max));
             }
 
             if (($min !== null && $max !== null) &&
@@ -446,7 +449,7 @@ class ValidationUtil // NOSONAR
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
             if (empty($message)) {
-                $message = $this->createMessage('min', array($propertyName, $min));
+                $message = $this->createMessage('min', array('property' => $propertyName, 'min' => $min));
             }
 
             if (is_numeric($propertyValue) && $propertyValue < $min) {
@@ -473,7 +476,7 @@ class ValidationUtil // NOSONAR
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
             if (empty($message)) {
-                $message = $this->createMessage('max', array($propertyName, $max));
+                $message = $this->createMessage('max', array('property' => $propertyName, 'max' => $max));
             }
 
             if (is_numeric($propertyValue) && $propertyValue > $max) {
@@ -500,7 +503,7 @@ class ValidationUtil // NOSONAR
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
             if (empty($message)) {
-                $message = $this->createMessage('pattern', array($propertyName));
+                $message = $this->createMessage('pattern', array('property' => $propertyName));
             }
 
             // Unescape double backslashes (e.g. \\d) into single backslash for PHP regex
@@ -531,7 +534,7 @@ class ValidationUtil // NOSONAR
 
             $message = $this->getAnnotationParam($params, 'message', 'string');
             if (empty($message)) {
-                $message = $this->createMessage('email', array($propertyName));
+                $message = $this->createMessage('email', array('property' => $propertyName));
             }
 
             if (is_string($propertyValue) && !filter_var($propertyValue, FILTER_VALIDATE_EMAIL)) {
@@ -557,7 +560,7 @@ class ValidationUtil // NOSONAR
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
             if (empty($message)) {
-                $message = $this->createMessage('past', array($propertyName));
+                $message = $this->createMessage('past', array('property' => $propertyName));
             }
 
             // Convert the property value to a DateTime object
@@ -587,7 +590,7 @@ class ValidationUtil // NOSONAR
 
             $message = $this->getAnnotationParam($params, 'message', 'string');
             if (empty($message)) {
-                $message = $this->createMessage('future', array($propertyName));
+                $message = $this->createMessage('future', array('property' => $propertyName));
             }
 
             // Convert the property value to a DateTime object
@@ -624,7 +627,7 @@ class ValidationUtil // NOSONAR
             }
 
             if (empty($message)) {
-                $message = $this->createMessage('decimalMin', array($propertyName, $min));
+                $message = $this->createMessage('decimalMin', array('property' => $propertyName, 'min' => $min));
             }
 
             if (is_numeric($propertyValue) && (float)$propertyValue < $min) {
@@ -655,7 +658,7 @@ class ValidationUtil // NOSONAR
             }
 
             if (empty($message)) {
-                $message = $this->createMessage('decimalMax', array($propertyName, $max));
+                $message = $this->createMessage('decimalMax', array('property' => $propertyName, 'max' => $max));
             }
 
             if (is_numeric($propertyValue) && (float)$propertyValue > $max) {
@@ -691,7 +694,7 @@ class ValidationUtil // NOSONAR
             }
 
             if (empty($message)) {
-                $message = $this->createMessage('digits', array($propertyName, $integer, $fraction));
+                $message = $this->createMessage('digits', array('property' => $propertyName, 'integer' => $integer, 'fraction' => $fraction));
             }
 
             if (is_numeric($propertyValue)) {
@@ -722,7 +725,7 @@ class ValidationUtil // NOSONAR
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
             if (empty($message)) {
-                $message = $this->createMessage('assertTrue', array($propertyName));
+                $message = $this->createMessage('assertTrue', array('property' => $propertyName));
             }
 
             if ($propertyValue !== true) {
@@ -747,7 +750,7 @@ class ValidationUtil // NOSONAR
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
             if (empty($message)) {
-                $message = $this->createMessage('futureOrPresent', array($propertyName));
+                $message = $this->createMessage('futureOrPresent', array('property' => $propertyName));
             }
 
             // Convert the property value to a DateTime object
@@ -776,7 +779,7 @@ class ValidationUtil // NOSONAR
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
             if (empty($message)) {
-                $message = $this->createMessage('length', array($propertyName, $min, $max));
+                $message = $this->createMessage('length', array('property' => $propertyName, 'min' => $min, 'max' => $max));
             }
 
             if (is_string($propertyValue) && ($min !== null && strlen($propertyValue) < $min || $max !== null && strlen($propertyValue) > $max)) {
@@ -803,7 +806,7 @@ class ValidationUtil // NOSONAR
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
             if (empty($message)) {
-                $message = $this->createMessage('range', [$propertyName, $min, $max]);
+                $message = $this->createMessage('range', array('property' => $propertyName, 'min' => $min, 'max' => $max));
             }
 
             if (is_numeric($propertyValue) && (($min !== null && $propertyValue < $min) || ($max !== null && $propertyValue > $max))) {
@@ -848,7 +851,7 @@ class ValidationUtil // NOSONAR
     private function validateNoHtmlAnnotation($propertyName, $propertyValue, $docComment)
     {
         $params = $this->parseAnnotationParameters('NoHtml', $docComment);
-        $message = $params['message'] ?? $this->createMessage('noHtml', [$propertyName]);
+        $message = isset($params['message']) ? $params['message'] : $this->createMessage('noHtml', array('property' => $propertyName));
 
         if (is_string($propertyValue) && strip_tags($propertyValue) !== $propertyValue) {
             throw new InvalidValueException($propertyName, $message);
@@ -894,9 +897,22 @@ class ValidationUtil // NOSONAR
                 }
             }
 
-            $message = $params['message'] ?? $this->createMessage('validEnum', [$propertyName]);
-            $allowedValues = $params['allowedValues'] ?? [];
-            $caseSensitive = $params['caseSensitive'] ?? true;
+            $allowedValuesArr = isset($params['allowedValues']) ? $params['allowedValues'] : array();
+            $allowedValue = '';
+            if (!empty($allowedValuesArr)) {
+                $allowedValueParts = array();
+                foreach ($allowedValuesArr as $val) {
+                    if (is_numeric($val)) {
+                        $allowedValueParts[] = $val;
+                    } else {
+                        $allowedValueParts[] = "'" . $val . "'";
+                    }
+                }
+                $allowedValue = implode(', ', $allowedValueParts);
+            }
+            $message = isset($params['message']) ? $params['message'] : $this->createMessage('enum', array('property' => $propertyName, 'allowedValues' => $allowedValue));
+            $allowedValues = $allowedValuesArr;
+            $caseSensitive = isset($params['caseSensitive']) ? $params['caseSensitive'] : true;
 
             $isValid = false;
             if (is_string($propertyValue)) {
@@ -923,5 +939,4 @@ class ValidationUtil // NOSONAR
             }
         }
     }
-
 }
