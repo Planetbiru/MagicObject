@@ -931,3 +931,12 @@ try {
     echo "Test 5: FAILED (Expected due to nested object) - " . $e->getPropertyName() . ": " . $e->getValidationMessage() . "\n";
 }
 ```
+
+Users can perform validation on objects that extend from the following base classes:
+- **MagicObject**
+- **MagicDto**
+- **InputPost**
+- **InputGet**
+
+This means that property validation is supported not only for entities derived from `MagicObject`, but also for data transfer objects (`MagicDto`) and HTTP input wrappers (`InputPost`, `InputGet`).  
+You can annotate properties in any of these classes with validation annotations, and the validation mechanism will recursively check all nested properties, ensuring robust data integrity across your application's data models and input layers.
