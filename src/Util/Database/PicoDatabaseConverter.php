@@ -973,10 +973,9 @@ class PicoDatabaseConverter // NOSONAR
      * @return string The translated MySQL CREATE TABLE statement.
      * @throws DatabaseConversionException If the SQL format is invalid.
      */
-    
     public function postgresqlToMySQL($sql) // NOSONAR
     {
-        $sql = trim(preg_replace('/\s+/', ' ', $sql)); // Normalize whitespace
+        //$sql = trim(preg_replace('/\s+/', ' ', $sql)); // Normalize whitespace
 
         $posOpen = strpos(strtoupper($sql), '(');
         if ($posOpen === false) {
@@ -1039,6 +1038,7 @@ class PicoDatabaseConverter // NOSONAR
         }
 
         $newLines = [];
+        $primaryKeys = [];
 
         foreach ($lines as $line) {
             // Convert "character varying(n)" to VARCHAR(n)
@@ -1047,16 +1047,88 @@ class PicoDatabaseConverter // NOSONAR
                 $length = $colMatch[3];
                 $rest = trim($colMatch[4]);
                 $newLines[] = "{$colName} VARCHAR({$length}) {$rest}";
-            } else {
+            }
+            // Convert BIGSERIAL/serial to BIGINT/INT AUTO_INCREMENT and detect inline PK
+            elseif (preg_match('/^("?)([^"\s]+)\1\s+(BIG)?SERIAL(.*)$/i', $line, $colMatch)) {
+                $colName = $this->quoteIdentifier($colMatch[2], 'mysql');
+                $isBig = !empty($colMatch[3]);
+                $rest = strtoupper(trim($colMatch[4]));
+                $hasPK = strpos($rest, 'PRIMARY KEY') !== false;
+                $type = $isBig ? 'BIGINT' : 'INT';
+                $mod = 'NOT NULL AUTO_INCREMENT';
+                $rest = str_ireplace('PRIMARY KEY', '', $rest);
+                $rest = trim($rest);
+                $rest = preg_replace('/\bNOT NULL\b/i', '', $rest);
+                $rest = trim($rest);
+                $newLines[] = "{$colName} {$type} {$mod}" . ($rest ? " {$rest}" : "");
+                if ($hasPK) {
+                    $primaryKeys[] = $colMatch[2];
+                }
+            }
+            // Table-level PRIMARY KEY
+            elseif (preg_match('/^PRIMARY KEY\s*\((.*?)\)/i', $line, $pkMatch)) {
+                $keyColumns = trim($pkMatch[1]);
+                $keyColumns = preg_replace_callback('/"([^"]+)"/', function ($m) {
+                    return $this->quoteIdentifier($m[1], 'mysql');
+                }, $keyColumns);
+                $primaryKeys = array_merge($primaryKeys, array_map(function($v) {
+                    return trim($v, '`" ');
+                }, explode(',', $keyColumns)));
+                $newLines[] = "PRIMARY KEY ($keyColumns)";
+            }
+            // Convert BOOLEAN to TINYINT(1)
+            elseif (preg_match('/^("?)([^"\s]+)\1\s+BOOLEAN(.*)$/i', $line, $colMatch)) {
+                $colName = $this->quoteIdentifier($colMatch[2], 'mysql');
+                $rest = trim($colMatch[3]);
+                $rest = preg_replace('/DEFAULT\s+TRUE/i', "DEFAULT TRUE", $rest);
+                $rest = preg_replace('/DEFAULT\s+FALSE/i', "DEFAULT FALSE", $rest);
+                $newLines[] = "{$colName} TINYINT(1) {$rest}";
+            }
+            // Convert TIMESTAMP WITH TIME ZONE/WITHOUT TIME ZONE
+            elseif (preg_match('/^("?)([^"\s]+)\1\s+TIMESTAMP( WITH TIME ZONE| WITHOUT TIME ZONE)?(.*)$/i', $line, $colMatch)) {
+                $colName = $this->quoteIdentifier($colMatch[2], 'mysql');
+                $rest = trim($colMatch[4]);
+                $type = (isset($colMatch[3]) && stripos($colMatch[3], 'WITHOUT') !== false) ? 'DATETIME' : 'TIMESTAMP';
+                $newLines[] = "{$colName} {$type} {$rest}";
+            }
+            // Convert JSONB to JSON
+            elseif (preg_match('/^("?)([^"\s]+)\1\s+JSONB(.*)$/i', $line, $colMatch)) {
+                $colName = $this->quoteIdentifier($colMatch[2], 'mysql');
+                $rest = trim($colMatch[3]);
+                $newLines[] = "{$colName} JSON {$rest}";
+            }
+            // Convert TEXT, DATE, etc.
+            elseif (preg_match('/^("?)([^"\s]+)\1\s+([A-Z ]+)(.*)$/i', $line, $colMatch)) {
+                $colName = $this->quoteIdentifier($colMatch[2], 'mysql');
+                $type = strtoupper(trim($colMatch[3]));
+                $rest = trim($colMatch[4]);
+                $rest = preg_replace('/\bNOT NULL\b\s*(?=.*\bNOT NULL\b)/i', '', $rest);
+                $newLines[] = "{$colName} {$type} {$rest}";
+            }
+            // Other constraints or lines
+            else {
                 // Replace PostgreSQL-style identifiers with MySQL-style
-                $line = preg_replace_callback('/"([^"]+)"/', function ($m) /* NOSONAR */{
+                $line = preg_replace_callback('/"([^"]+)"/', function ($m) {
                     return $this->quoteIdentifier($m[1], 'mysql');
                 }, $line);
+                // Add comma if not present and not last line
+                $line = rtrim($line, ',');
                 $newLines[] = $line;
             }
         }
 
-        $finalSql = "CREATE TABLE {$ifNotExists}{$tableName} (\n    " . implode(",\n    ", $newLines) . "\n)";
+        // Add commas between all lines except the last
+        $count = count($newLines);
+        foreach ($newLines as $i => &$l) {
+            $l = rtrim($l, ',');
+            $l = rtrim($l); // Remove trailing spaces
+            if ($i < $count - 1) {
+                $l .= ',';
+            }
+        }
+        unset($l);
+
+        $finalSql = "CREATE TABLE {$ifNotExists}{$tableName} (\n    " . implode("\n    ", $newLines) . "\n)";
         $finalSql .= "\nENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
         // Type translations
@@ -1089,129 +1161,6 @@ class PicoDatabaseConverter // NOSONAR
     }
 
     /**
-     * Translates a CREATE TABLE statement from PostgreSQL to SQLite.
-     *
-     * @param string $sql The PostgreSQL CREATE TABLE statement.
-     * @return string The translated SQLite CREATE TABLE statement.
-     * @throws DatabaseConversionException If the SQL format is invalid.
-     */
-    public function postgresqlToSQLite($sql) // NOSONAR
-    {
-        $sql = trim(preg_replace('/\s+/', ' ', $sql)); // Normalize whitespace
-
-        // Find opening and closing parenthesis
-        $posOpen = strpos(strtoupper($sql), '(');
-        if ($posOpen === false) {
-            throw new DatabaseConversionException("Invalid CREATE TABLE: missing opening parenthesis.");
-        }
-
-        $len = strlen($sql);
-        $parenCount = 0;
-        $posClose = false;
-        for ($i = $posOpen; $i < $len; $i++) {
-            if ($sql[$i] === '(') $parenCount++;
-            elseif ($sql[$i] === ')') $parenCount--;
-            if ($parenCount === 0) {
-                $posClose = $i;
-                break;
-            }
-        }
-        if ($posClose === false) {
-            throw new DatabaseConversionException("Invalid CREATE TABLE: unbalanced parentheses.");
-        }
-
-        // Extract table name
-        if (!preg_match('/CREATE TABLE (IF NOT EXISTS\s+)?("?)([^"\s]+)\2/i', substr($sql, 0, $posOpen), $matches)) {
-            throw new DatabaseConversionException("Cannot parse table name.");
-        }
-        $ifNotExists = isset($matches[1]) ? 'IF NOT EXISTS ' : '';
-        $tableName = $this->quoteIdentifier($matches[3], 'sqlite');
-
-        // Extract column and constraint definitions
-        $columnsDef = trim(substr($sql, $posOpen + 1, $posClose - $posOpen - 1));
-
-        // Split lines by commas outside of nested parentheses
-        $lines = [];
-        $buffer = '';
-        $parenLevel = 0;
-        for ($i = 0; $i < strlen($columnsDef); $i++) {
-            $char = $columnsDef[$i];
-            if ($char === '(') $parenLevel++;
-            elseif ($char === ')') $parenLevel--;
-            if ($char === ',' && $parenLevel === 0) {
-                $lines[] = trim($buffer);
-                $buffer = '';
-            } else {
-                $buffer .= $char;
-            }
-        }
-        if (trim($buffer) !== '') {
-            $lines[] = trim($buffer);
-        }
-
-        $newLines = [];
-
-        foreach ($lines as $line) {
-            // Convert CHARACTER VARYING(n) to NVARCHAR(n)
-            if (preg_match('/^("?)([^"\s]+)\1\s+character varying\s*\((\d+)\)(.*)$/i', ltrim($line), $colMatch)) {
-                $colName = $this->quoteIdentifier($colMatch[2], 'sqlite');
-                $length = trim($colMatch[3]);
-                $rest = trim($colMatch[4]);
-                $newLines[] = "{$colName} NVARCHAR({$length}) {$rest}";
-                continue;
-            }
-
-            // Convert SERIAL/BIGSERIAL to INTEGER (handled explicitly)
-            if (preg_match('/^("?)([^"\s]+)\1\s+(BIG)?SERIAL(.*)$/i', $line, $colMatch)) {
-                $colName = $this->quoteIdentifier($colMatch[2], 'sqlite');
-                $rest = strtoupper(trim($colMatch[4]));
-                // Remove inline PRIMARY KEY if exists
-                $rest = str_ireplace('PRIMARY KEY', '', $rest);
-                $rest = trim(preg_replace('/\s+/', ' ', $rest));
-                $newLines[] = "{$colName} INTEGER NOT NULL" . (!empty($rest) ? " {$rest}" : "");
-                continue;
-            }
-
-            // Replace PostgreSQL-style quoted identifiers
-            $line = preg_replace_callback('/"([^"]+)"/', fn($m) => $this->quoteIdentifier($m[1], 'sqlite'), $line);
-            $newLines[] = $line;
-        }
-
-        // Replace TRUE/FALSE with 1/0 for BOOLEAN types
-        foreach ($newLines as &$line) {
-            if (preg_match('/\b(BOOLEAN|TINYINT\s*\(1\))\b/i', $line)) {
-                $line = preg_replace('/DEFAULT\s+TRUE/i', 'DEFAULT 1', $line);
-                $line = preg_replace('/DEFAULT\s+FALSE/i', 'DEFAULT 0', $line);
-            }
-        }
-
-        // Convert types globally (after line-by-line handling)
-        $typeMap = [
-            'BIGINT' => 'INTEGER',
-            'TIMESTAMP WITH TIME ZONE' => 'TIMESTAMP',
-            'TIMESTAMP WITHOUT TIME ZONE' => 'TIMESTAMP',
-            'BOOLEAN' => 'BOOLEAN', // SQLite uses INTEGER for booleans
-            'JSONB' => 'JSON',
-            'JSON' => 'JSON'
-        ];
-        $finalSql = "CREATE TABLE {$ifNotExists}{$tableName} (\n    " . implode(",\n    ", $newLines) . "\n);";
-        $finalSql = str_ireplace(array_keys($typeMap), array_values($typeMap), $finalSql);
-
-        $finalSql = preg_replace('/DEFAULT\s+TRUE/i', 'DEFAULT 1', $finalSql);
-        $finalSql = preg_replace('/DEFAULT\s+FALSE/i', 'DEFAULT 0', $finalSql);
-
-        // Final cleanup to avoid duplicate PRIMARY KEY
-        $finalSql = preg_replace('/INTEGER\s+PRIMARY KEY\s+AUTOINCREMENT\s+NOT NULL\s+PRIMARY KEY/i', 'INTEGER NOT NULL', $finalSql);
-        $finalSql = preg_replace('/\s+PRIMARY KEY\s+PRIMARY KEY/i', ' PRIMARY KEY', $finalSql);
-
-        $finalSql = $this->fixLines($finalSql);
-
-        $finalSql = preg_replace('/\bNOT\s+NULL\b(?:\s+NOT\s+NULL\b)+/i', 'NOT NULL', $finalSql);
-
-        return trim($finalSql);
-    }
-
-    /**
      * Translates a CREATE TABLE statement from SQLite to MySQL.
      *
      * @param string $sql The SQLite CREATE TABLE statement.
@@ -1231,6 +1180,7 @@ class PicoDatabaseConverter // NOSONAR
         $tableName = $this->quoteIdentifier($matches[3], 'mysql');
         $columnsAndConstraints = trim($matches[5]);
 
+        // Split lines by commas outside parentheses
         $lines = $this->splitSqlByCommaRespectingParentheses($columnsAndConstraints);
         $newLines = [];
         $primaryKeyColumn = null;
@@ -1273,12 +1223,16 @@ class PicoDatabaseConverter // NOSONAR
                 }
 
                 // AUTO_INCREMENT for PRIMARY KEY column
-                if ($columnRaw === $primaryKeyColumn && preg_match('/INTEGER/i', $columnType) && preg_match('/NOT NULL/i', $columnDefinition)) {
-                    $translatedType = 'BIGINT(20)';
+                if ($columnRaw === $primaryKeyColumn && preg_match('/BIGINT\(20\)/i', $translatedType) && preg_match('/NOT NULL/i', $columnDefinition)) {
+                    $columnDefinition = preg_replace('/\bNOT NULL\b/i', '', $columnDefinition);
+                    $columnDefinition = trim($columnDefinition);
                     $columnDefinition .= ' AUTO_INCREMENT';
                 }
 
                 $definition = trim("$columnName $translatedType $columnDefinition");
+                // Remove duplicate NOT NULL
+                $definition = preg_replace('/\bNOT NULL\b\s*(?=.*\bNOT NULL\b)/i', '', $definition);
+                $definition = preg_replace('/,+$/', '', $definition); // Remove trailing commas
                 $newLines[] = preg_replace('/\s+/', ' ', $definition);
             } elseif (preg_match('/^PRIMARY KEY\s*\((.*?)\)/i', $line, $pkMatch)) {
                 // Handle table-level PRIMARY KEY if not handled above
@@ -1298,11 +1252,23 @@ class PicoDatabaseConverter // NOSONAR
                 $line = preg_replace_callback('/"([^"]+)"/', function ($m) {
                     return $this->quoteIdentifier($m[1], 'mysql');
                 }, $line);
+                $line = preg_replace('/,+$/', '', $line); // Remove trailing commas
                 $newLines[] = $line;
             }
         }
 
-        $finalSql = "CREATE TABLE " . $ifNotExists . $tableName . " (\n    " . implode(",\n    ", $newLines) . "\n)";
+        // Add commas between all lines except the last
+        $count = count($newLines);
+        foreach ($newLines as $i => &$l) {
+            $l = rtrim($l, ',');
+            $l = rtrim($l); // Remove trailing spaces
+            if ($i < $count - 1) {
+                $l .= ',';
+            }
+        }
+        unset($l);
+
+        $finalSql = "CREATE TABLE " . $ifNotExists . $tableName . " (\n    " . implode("\n    ", $newLines) . "\n)";
         $finalSql .= "\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
         $finalSql = preg_replace('/`PRIMARY` KEY/i', 'PRIMARY KEY', $finalSql);
@@ -1312,11 +1278,19 @@ class PicoDatabaseConverter // NOSONAR
     }
 
     /**
-     * Translates a CREATE TABLE statement from SQLite to PostgreSQL.
+     * Translates a CREATE TABLE statement from PostgreSQL to SQLite.
      *
-     * This method parses the SQLite CREATE TABLE SQL string, extracts columns and constraints,
-     * and converts them into a format compatible with PostgreSQL. It handles data type
-     * conversions, primary keys (both inline and table-level), and optional column definitions.
+     * @param string $sql The PostgreSQL CREATE TABLE statement.
+     * @return string The translated SQLite CREATE TABLE statement.
+     * @throws DatabaseConversionException If the SQL format is invalid.
+     */
+    public function postgresqlToSQLite($sql)
+    {
+        return $this->mysqlToSQLite($this->postgresqlToMySQL($sql));
+    }
+    
+    /**
+     * Translates a CREATE TABLE statement from SQLite to PostgreSQL.
      *
      * @param string $sql The SQLite CREATE TABLE statement.
      * @return string The translated PostgreSQL CREATE TABLE statement.
@@ -1324,132 +1298,7 @@ class PicoDatabaseConverter // NOSONAR
      */
     public function sqliteToPostgreSQL($sql)
     {
-        $sql = trim($sql);
-        $sql = preg_replace('/\s+/', ' ', $sql); // Normalize multiple spaces to single space
-
-        // Extract table name and column/constraint definitions
-        if (!preg_match('/CREATE TABLE (IF NOT EXISTS\s+)?("?)([^"\s]+)("?)\s*\((.*)\)/is', $sql, $matches)) {
-            throw new DatabaseConversionException("Invalid SQLite CREATE TABLE statement format.");
-        }
-
-        $ifNotExists = isset($matches[1]) ? 'IF NOT EXISTS ' : '';
-        $tableName = $this->quoteIdentifier($matches[3], 'postgresql');
-        $columnsAndConstraints = trim($matches[5]);
-
-        // Split column and constraint definitions, respecting parentheses inside types or expressions
-        $lines = $this->splitSqlByCommaRespectingParentheses($columnsAndConstraints);
-        $newLines = [];
-
-        $primaryKeyColumn = null;
-        $primaryKeyHandled = false;
-
-        // Step 1: Detect table-level PRIMARY KEY for a single column
-        foreach ($lines as $line) {
-            if (preg_match('/^"?PRIMARY"?\s+KEY\s*\(\s*"([^"]+)"\s*\)/i', trim($line), $pkMatch)) {
-                $primaryKeyColumn = $pkMatch[1];
-                break;
-            }
-        }
-
-        // Step 2: Process each column and constraint line
-        foreach ($lines as $line) {
-            $line = trim($line);
-            
-            if (empty($line)) continue;
-
-            // Column definition
-            if (preg_match('/^("?)([^"\s]+)\1\s+([a-zA-Z0-9_()]+)(.*)$/i', $line, $colMatches)) {
-                $columnRaw = $colMatches[2];
-                $columnName = $this->quoteIdentifier($columnRaw, 'postgresql');
-                $columnType = strtoupper(trim($colMatches[3]));
-                $columnDefinition = trim($colMatches[4]);
-
-                $translatedType = $this->translateFieldType(strtolower($columnType), 'sqlite', 'postgresql');
-
-                // Replace NVARCHAR with CHARACTER VARYING
-                if ($this->strContains($columnType, 'NVARCHAR')) {
-                    $translatedType = str_ireplace('NVARCHAR', 'CHARACTER VARYING', $translatedType);
-                }
-
-                // Replace DATETIME with TIMESTAMP WITHOUT TIME ZONE
-                if ($this->strContains($columnType, 'DATETIME')) {
-                    $translatedType = 'TIMESTAMP WITHOUT TIME ZONE';
-                }
-
-                // Detect and convert JSON column names with TEXT type to JSONB
-                if ($this->strContains($columnType, 'TEXT') && $this->strContains(strtolower($columnRaw), 'json')) {
-                    $translatedType = 'JSONB';
-                }
-
-                // Convert BOOLEAN representations
-                if (($this->strContains($translatedType, 'INTEGER') &&
-                    ($this->strContains(strtoupper($columnDefinition), 'DEFAULT 1') ||
-                    $this->strContains(strtoupper($columnDefinition), 'DEFAULT 0'))) ||
-                    $this->strContains($translatedType, 'BOOL')) {
-                    $translatedType = 'BOOLEAN';
-                    $columnDefinition = str_ireplace('DEFAULT 1', 'DEFAULT TRUE', $columnDefinition);
-                    $columnDefinition = str_ireplace('DEFAULT 0', 'DEFAULT FALSE', $columnDefinition);
-                }
-
-                // Convert INTEGER NOT NULL with table-level PK into BIGSERIAL PRIMARY KEY
-                if ($columnRaw === $primaryKeyColumn &&
-                    $columnType === 'INTEGER' &&
-                    preg_match('/NOT\s+NULL/i', $columnDefinition))
-                {
-                    $translatedType = 'BIGSERIAL';
-                    $columnDefinition = preg_replace('/NOT\s+NULL/i', '', $columnDefinition);
-                    $columnDefinition = trim($columnDefinition) . ' PRIMARY KEY NOT NULL';
-                    $primaryKeyHandled = true;
-                }
-
-                // Check if column already defines PRIMARY KEY
-                if (preg_match('/PRIMARY\s+KEY/i', $line)) {
-                    if ($primaryKeyHandled) {
-                        continue;
-                    }
-                    $primaryKeyHandled = true;
-                }
-
-                // Combine and normalize spacing
-                $definition = trim("$columnName $translatedType $columnDefinition");
-                $definition = preg_replace('/\s+/', ' ', $definition);
-                $newLines[] = $definition;
-            }
-            // Handle PRIMARY KEY constraint
-            elseif (preg_match('/^"?PRIMARY"?\s+KEY\s*\((.*?)\)/i', trim($line), $pkMatch)) {
-                if ($primaryKeyHandled) {
-                    // PRIMARY KEY already defined in a column, skip
-                    continue;
-                }
-
-                $keyColumns = trim($pkMatch[1]);
-                $keyColumns = preg_replace_callback('/"([^"]+)"/', function ($m) {
-                    return $this->quoteIdentifier($m[1], 'postgresql');
-                }, $keyColumns);
-                $newLines[] = "PRIMARY KEY ($keyColumns)";
-                $primaryKeyHandled = true;
-            }
-            // Handle UNIQUE constraint
-            elseif (preg_match('/^UNIQUE\s*\((.*?)\)/i', $line, $uqMatch)) {
-                $keyColumns = trim($uqMatch[1]);
-                $keyColumns = preg_replace_callback('/"([^"]+)"/', function ($m) {
-                    return $this->quoteIdentifier($m[1], 'postgresql');
-                }, $keyColumns);
-                $newLines[] = "UNIQUE ($keyColumns)";
-            }
-            // Handle all other lines (fallback)
-            else {
-                $line = preg_replace_callback('/"([^"]+)"/', function ($m) {
-                    return $this->quoteIdentifier($m[1], 'postgresql');
-                }, $line);
-                $newLines[] = $line;
-            }
-        }
-
-        // Final CREATE TABLE assembly
-        $finalSql = "CREATE TABLE " . $ifNotExists . $tableName . " (\n    " . implode(",\n    ", $newLines) . "\n);";
-
-        return $this->fixLine(trim($finalSql));
+        return $this->mysqlToPostgreSQL($this->sqliteToMySQL($sql));
     }
 
     /**
@@ -1631,5 +1480,4 @@ class PicoDatabaseConverter // NOSONAR
 
         return rtrim($line);
     }
-
 }
