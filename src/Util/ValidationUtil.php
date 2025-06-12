@@ -258,7 +258,7 @@ class ValidationUtil // NOSONAR
                 return strtolower($value) === 'true' || $value === '1';
             case 'string':
             default:
-                return (string) $value;
+                return trim((string) $value); // Ensure it's a string, trimmed of whitespace
         }
     }
 
@@ -352,7 +352,7 @@ class ValidationUtil // NOSONAR
             $params = $this->parseAnnotationParams($matches[1]);
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('required', array('property' => $propertyName));
             }
 
@@ -383,7 +383,7 @@ class ValidationUtil // NOSONAR
             $params = $this->parseAnnotationParams($matches[1]);
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('notEmpty', array('property' => $propertyName));
             }
         } elseif (preg_match('/@NotEmpty(?: vigilance)?\b/', $docComment)) {
@@ -412,7 +412,7 @@ class ValidationUtil // NOSONAR
             $params = $this->parseAnnotationParams($matches[1]);
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('notBlank', array('property' => $propertyName));
             }
         } elseif (preg_match('/@NotBlank(?: vigilance)?\b/', $docComment)) {
@@ -442,7 +442,7 @@ class ValidationUtil // NOSONAR
             $min = $this->getAnnotationParam($params, 'min', 'int');
             $max = $this->getAnnotationParam($params, 'max', 'int');
             $message = $this->getAnnotationParam($params, 'message', 'string');
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('size', array('property' => $propertyName, 'min' => $min, 'max' => $max));
             }
 
@@ -474,7 +474,7 @@ class ValidationUtil // NOSONAR
             $min = $this->getAnnotationParam($params, 'value', 'float');
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('min', array('property' => $propertyName, 'min' => $min));
             }
 
@@ -501,7 +501,7 @@ class ValidationUtil // NOSONAR
             $max = $this->getAnnotationParam($params, 'value', 'float');
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('max', array('property' => $propertyName, 'max' => $max));
             }
 
@@ -528,7 +528,7 @@ class ValidationUtil // NOSONAR
             $regexp = $this->getAnnotationParam($params, 'regexp', 'string');
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('pattern', array('property' => $propertyName));
             }
 
@@ -559,7 +559,7 @@ class ValidationUtil // NOSONAR
             }
 
             $message = $this->getAnnotationParam($params, 'message', 'string');
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('email', array('property' => $propertyName));
             }
 
@@ -585,7 +585,7 @@ class ValidationUtil // NOSONAR
 
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('past', array('property' => $propertyName));
             }
 
@@ -615,7 +615,7 @@ class ValidationUtil // NOSONAR
             $params = $this->parseAnnotationParams($matches[1]);
 
             $message = $this->getAnnotationParam($params, 'message', 'string');
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('future', array('property' => $propertyName));
             }
 
@@ -652,7 +652,7 @@ class ValidationUtil // NOSONAR
                 $min = 0.0;
             }
 
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('decimalMin', array('property' => $propertyName, 'min' => $min));
             }
 
@@ -683,7 +683,7 @@ class ValidationUtil // NOSONAR
                 $max = 0.0; // atau lempar exception jika perlu
             }
 
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('decimalMax', array('property' => $propertyName, 'max' => $max));
             }
 
@@ -719,7 +719,7 @@ class ValidationUtil // NOSONAR
                 $fraction = 0;
             }
 
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('digits', array('property' => $propertyName, 'integer' => $integer, 'fraction' => $fraction));
             }
 
@@ -750,7 +750,7 @@ class ValidationUtil // NOSONAR
             $params = $this->parseAnnotationParams($matches[1]);
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('assertTrue', array('property' => $propertyName));
             }
 
@@ -775,7 +775,7 @@ class ValidationUtil // NOSONAR
             $params = $this->parseAnnotationParams($matches[1]);
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('futureOrPresent', array('property' => $propertyName));
             }
 
@@ -804,7 +804,7 @@ class ValidationUtil // NOSONAR
             $max = $this->getAnnotationParam($params, 'max', 'int');
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('length', array('property' => $propertyName, 'min' => $min, 'max' => $max));
             }
 
@@ -831,7 +831,7 @@ class ValidationUtil // NOSONAR
             $max = $this->getAnnotationParam($params, 'max', 'float');
             $message = $this->getAnnotationParam($params, 'message', 'string');
 
-            if (empty($message)) {
+            if ($this->isBlank($message)) {
                 $message = $this->createMessage('range', array('property' => $propertyName, 'min' => $min, 'max' => $max));
             }
 
@@ -937,7 +937,10 @@ class ValidationUtil // NOSONAR
                 }
                 $allowedValue = implode(', ', $allowedValueParts);
             }
-            $message = isset($params['message']) ? $params['message'] : $this->createMessage('enum', array('property' => $propertyName, 'allowedValues' => $allowedValue));
+            $message = isset($params['message']) ? $params['message'] : "";
+            if($this->isBlank($message)) {
+                $message =  $this->createMessage('enum', array('property' => $propertyName, 'allowedValues' => $allowedValue));
+            }
             $allowedValues = $allowedValuesArr;
             $caseSensitive = isset($params['caseSensitive']) ? $params['caseSensitive'] : true;
 
@@ -1103,5 +1106,18 @@ class ValidationUtil // NOSONAR
                 throw new InvalidValueException($propertyName, $message);
             }
         }
+    }
+
+    /**
+     * Checks if a value is blank.
+     *
+     * @param string $value The value to check.
+     * Blank is defined as null, an empty string, or a string containing only whitespace.
+     * @return boolean True if the value is blank, false otherwise.
+     */
+    public function isBlank($value)
+    {
+        // Check if the value is null, empty string, or contains only whitespace
+        return $value === null || trim($value) === '';
     }
 }

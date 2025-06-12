@@ -7,16 +7,23 @@ use MagicObject\Exceptions\DatabaseConversionException;
 /**
  * Class PicoDatabaseConverter
  *
- * This class is responsible for translating database query structures between different SQL dialects.
- * It takes SQL queries written in one dialect (e.g., MySQL) and converts them into another dialect (e.g., PostgreSQL, SQLite).
- * The class handles differences in syntax, keywords, functions, and other database-specific features.
+ * This class provides robust conversion utilities for translating SQL table structures
+ * and queries between different SQL dialects: MySQL, PostgreSQL, and SQLite.
  *
- * Key functionalities of this class include:
- * - Translating data types between different SQL flavors.
- * - Adjusting query syntax to match the conventions of different database systems.
- * - Converting SQL-specific expressions like `AUTO_INCREMENT` to equivalent expressions in other databases.
+ * Key functionalities:
+ * - Converts CREATE TABLE statements between MySQL, PostgreSQL, and SQLite, including:
+ *   - Data type mapping and normalization
+ *   - Identifier quoting and syntax adaptation
+ *   - Handling of constraints, keys, and auto-increment fields
+ *   - Keyword and function normalization
+ * - Supports round-trip conversion (e.g., MySQL → PostgreSQL → MySQL)
+ * - Can parse and split SQL column/constraint definitions, respecting nested parentheses
+ * - Provides type translation utilities for mapping field types between dialects
+ * - Offers value quoting, escaping, and PHP type conversion helpers for SQL literals
+ * - Enables migration and data-dump scenarios between different RDBMS platforms
  *
- * This class is typically used when migrating databases or working with systems that need to support multiple database engines.
+ * This class is typically used for database migration, schema portability, and
+ * interoperability between different database engines, without requiring entity definitions.
  *
  * @package MagicObject\Util\Database
  */
