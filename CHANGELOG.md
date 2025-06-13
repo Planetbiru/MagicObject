@@ -728,6 +728,8 @@ The following validation annotations are now supported, grouped by their functio
 -   **`@Future(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the future.
 -   **`@PastOrPresent(message="...")`**: Ensures a date/time is in the past or present.
 -   **`@FutureOrPresent(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the future or the present.
+-   **`@BeforeDate(date="...", message="...")`**: Ensures a date is before a specified date.
+-   **`@AfterDate(date="...", message="...")`**: Ensures a date is after a specified date.
 
 #### Boolean
 -   **`@AssertTrue(message="...")`**: Asserts that a boolean property's value is strictly `true`.
@@ -735,8 +737,15 @@ The following validation annotations are now supported, grouped by their functio
 #### Enum & Allowed Values
 -   **`@Enum(message="...", allowedValues={...}, caseSensitive=true|false)`**: Ensures a string property's value is one of a predefined set of allowed values, with an option for case-sensitive or case-insensitive comparison.
 
+#### String Content & Structure
+-   **`@Alpha(message="...")`**: Ensures a string contains only alphabetic characters.
+-   **`@AlphaNumeric(message="...")`**: Ensures a string contains only alphanumeric characters.
+-   **`@StartsWith(prefix="...", caseSensitive=true|false, message="...")`**: Ensures a string starts with a specified prefix, with optional case sensitivity.
+-   **`@EndsWith(suffix="...", caseSensitive=true|false, message="...")`**: Ensures a string ends with a specified suffix, with optional case sensitivity.
+-   **`@Contains(substring="...", caseSensitive=true|false, message="...")`**: Ensures a string contains a specified substring, with optional case sensitivity.
+
 #### Nested Validation
--   **`@Valid`**: Recursively validates nested `MagicObject` instances.
+-   **`@Valid`**: Recursively validates nested `MagicObject` and `MagicDto` instances.
 
 **Class `UserProfile`**
 

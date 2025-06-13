@@ -92,6 +92,13 @@ class ValidationUtil // NOSONAR
             'dateFormat' => "Field '\${property}' must match the date format '\${format}'",
             'phone' => "Field '\${property}' must be a valid phone number",
             'enum' => "Field '\${property}' has an invalid value. Allowed values: \${allowedValues}.",
+            'alpha' => "Field '\${property}' must contain only alphabetic characters",
+            'alphaNumeric' => "Field '\${property}' must contain only alphanumeric characters",
+            'startsWith' => "Field '\${property}' must start with '\${prefix}'",
+            'endsWith' => "Field '\${property}' must end with '\${suffix}'",
+            'contains' => "Field '\${property}' must contain '\${substring}'",
+            'beforeDate' => "Field '\${property}' must be before '\${date}'",
+            'afterDate' => "Field '\${property}' must be after '\${date}'",
         );
 
         // Process custom templates to camelize keys
@@ -165,19 +172,24 @@ class ValidationUtil // NOSONAR
             }
 
             $propertyName = $property->getName();
-            // Build the full property path for better error messages
             $fullPropertyName = isset($parentPropertyName) ? $parentPropertyName . '.' . $propertyName : $propertyName;
 
             $property->setAccessible(true); // NOSONAR
             $propertyValue = $property->getValue($object); // NOSONAR           
-           
-            // Pass $package to validateValidAnnotation
+
             if ($this->validateValidAnnotation($fullPropertyName, $propertyValue, $docComment, $package)) {
-                continue; // If @Valid is present and handled, skip other validations for this property.   
+                continue;
             }
             $this->validateRequiredAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateNotEmptyAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateNotBlankAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validateAlphaAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validateAlphaNumericAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validateStartsWithAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validateEndsWithAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validateContainsAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validateBeforeDateAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validateAfterDateAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateSizeAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateMinAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateMaxAnnotation($fullPropertyName, $propertyValue, $docComment);
@@ -1119,5 +1131,181 @@ class ValidationUtil // NOSONAR
     {
         // Check if the value is null, empty string, or contains only whitespace
         return $value === null || trim($value) === '';
+    }
+
+    /**
+     * Validates the **`Alpha`** annotation.
+     * Ensures a string contains only alphabetic characters.
+     */
+    private function validateAlphaAnnotation($propertyName, $propertyValue, $docComment)
+    {
+        if (preg_match('/@Alpha(?:\(([^)]*)\))?/', $docComment, $matches)) {
+            $message = null;
+            if (isset($matches[1])) {
+                $params = $this->parseAnnotationParams($matches[1]);
+                $message = isset($params['message']) ? $params['message'] : null;
+            }
+            if ($this->isBlank($message)) {
+                $message = $this->createMessage('alpha', array('property' => $propertyName));
+            }
+            if (is_string($propertyValue) && !preg_match('/^[a-zA-Z]+$/', $propertyValue)) {
+                throw new InvalidValueException($propertyName, $message);
+            }
+        }
+    }
+
+    /**
+     * Validates the **`AlphaNumeric`** annotation.
+     * Ensures a string contains only alphanumeric characters.
+     */
+    private function validateAlphaNumericAnnotation($propertyName, $propertyValue, $docComment)
+    {
+        if (preg_match('/@AlphaNumeric(?:\(([^)]*)\))?/', $docComment, $matches)) {
+            $message = null;
+            if (isset($matches[1])) {
+                $params = $this->parseAnnotationParams($matches[1]);
+                $message = isset($params['message']) ? $params['message'] : null;
+            }
+            if ($this->isBlank($message)) {
+                $message = $this->createMessage('alphaNumeric', array('property' => $propertyName));
+            }
+            if (is_string($propertyValue) && !preg_match('/^[a-zA-Z0-9]+$/', $propertyValue)) {
+                throw new InvalidValueException($propertyName, $message);
+            }
+        }
+    }
+
+    /**
+     * Validates the **`StartsWith`** annotation.
+     * Ensures a string starts with a specified prefix.
+     * Supports caseSensitive=true|false.
+     */
+    private function validateStartsWithAnnotation($propertyName, $propertyValue, $docComment) // NOSONAR
+    {
+        if (preg_match('/@StartsWith\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+            $prefix = isset($params['prefix']) ? $params['prefix'] : '';
+            $caseSensitive = isset($params['caseSensitive']) ? $params['caseSensitive'] : true;
+            $message = isset($params['message']) ? $params['message'] : null;
+            if ($this->isBlank($message)) {
+                $message = $this->createMessage('startsWith', array('property' => $propertyName, 'prefix' => $prefix));
+            }
+            if (is_string($propertyValue) && $prefix !== '') {
+                if ($caseSensitive) {
+                    if (strpos($propertyValue, $prefix) !== 0) {
+                        throw new InvalidValueException($propertyName, $message);
+                    }
+                } else {
+                    if (stripos($propertyValue, $prefix) !== 0) {
+                        throw new InvalidValueException($propertyName, $message);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Validates the **`EndsWith`** annotation.
+     * Ensures a string ends with a specified suffix.
+     * Supports caseSensitive=true|false.
+     */
+    private function validateEndsWithAnnotation($propertyName, $propertyValue, $docComment) // NOSONAR
+    {
+        if (preg_match('/@EndsWith\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+            $suffix = isset($params['suffix']) ? $params['suffix'] : '';
+            $caseSensitive = isset($params['caseSensitive']) ? $params['caseSensitive'] : true;
+            $message = isset($params['message']) ? $params['message'] : null;
+            if ($this->isBlank($message)) {
+                $message = $this->createMessage('endsWith', array('property' => $propertyName, 'suffix' => $suffix));
+            }
+            if (is_string($propertyValue) && $suffix !== '') {
+                $len = strlen($suffix);
+                if ($caseSensitive) {
+                    if (substr($propertyValue, -$len) !== $suffix) {
+                        throw new InvalidValueException($propertyName, $message);
+                    }
+                } else {
+                    if (strtolower(substr($propertyValue, -$len)) !== strtolower($suffix)) {
+                        throw new InvalidValueException($propertyName, $message);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Validates the **`Contains`** annotation.
+     * Ensures a string contains a specified substring.
+     * Supports caseSensitive=true|false.
+     */
+    private function validateContainsAnnotation($propertyName, $propertyValue, $docComment) // NOSONAR
+    {
+        if (preg_match('/@Contains\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+            $substring = isset($params['substring']) ? $params['substring'] : '';
+            $caseSensitive = isset($params['caseSensitive']) ? $params['caseSensitive'] : true;
+            $message = isset($params['message']) ? $params['message'] : null;
+            if ($this->isBlank($message)) {
+                $message = $this->createMessage('contains', array('property' => $propertyName, 'substring' => $substring));
+            }
+            if (is_string($propertyValue) && $substring !== '') {
+                if ($caseSensitive) {
+                    if (strpos($propertyValue, $substring) === false) {
+                        throw new InvalidValueException($propertyName, $message);
+                    }
+                } else {
+                    if (stripos($propertyValue, $substring) === false) {
+                        throw new InvalidValueException($propertyName, $message);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Validates the **`BeforeDate`** annotation.
+     * Ensures a date is before a specified date.
+     */
+    private function validateBeforeDateAnnotation($propertyName, $propertyValue, $docComment)
+    {
+        if (preg_match('/@BeforeDate\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+            $date = isset($params['date']) ? $params['date'] : null;
+            $message = isset($params['message']) ? $params['message'] : null;
+            if ($this->isBlank($message)) {
+                $message = $this->createMessage('beforeDate', array('property' => $propertyName, 'date' => $date));
+            }
+            $valueDate = $this->convertToDateTime($propertyValue);
+            $compareDate = $this->convertToDateTime($date);
+            if ($valueDate instanceof DateTimeInterface 
+            && $compareDate instanceof DateTimeInterface 
+            && $valueDate->getTimestamp() >= $compareDate->getTimestamp()) {
+                throw new InvalidValueException($propertyName, $message);
+            }
+        }
+    }
+
+    /**
+     * Validates the **`AfterDate`** annotation.
+     * Ensures a date is after a specified date.
+     */
+    private function validateAfterDateAnnotation($propertyName, $propertyValue, $docComment)
+    {
+        if (preg_match('/@AfterDate\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+            $date = isset($params['date']) ? $params['date'] : null;
+            $message = isset($params['message']) ? $params['message'] : null;
+            if ($this->isBlank($message)) {
+                $message = $this->createMessage('afterDate', array('property' => $propertyName, 'date' => $date));
+            }
+            $valueDate = $this->convertToDateTime($propertyValue);
+            $compareDate = $this->convertToDateTime($date);
+            if ($valueDate instanceof DateTimeInterface 
+            && $compareDate instanceof DateTimeInterface 
+            && $valueDate->getTimestamp() <= $compareDate->getTimestamp()) {
+                throw new InvalidValueException($propertyName, $message);
+            }
+        }
     }
 }
