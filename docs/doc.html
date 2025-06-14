@@ -1314,7 +1314,7 @@ is present in both classes but has been redefined in the child class.</p>
 ) : <span class="return-type">self</span><br>{<br>}</div>
 <div class='docblock'>
 <h3>Description</h3>
-<p>Validate the current object using ValidationUtil.</p>
+<p>Validate the current object based on property annotations.</p>
 <p>This method checks the properties of the current object against validation annotations.
 If any validation rule fails, an InvalidValueException will be thrown.</p>
 <h3>Parameters</h3>
@@ -3725,7 +3725,7 @@ invokes the appropriate method according to its name and parameters.</p>
 ) : <span class="return-type">self</span><br>{<br>}</div>
 <div class='docblock'>
 <h3>Description</h3>
-<p>Validate the current object using ValidationUtil.</p>
+<p>Validate the current object based on property annotations.</p>
 <p>This method checks the properties of the current object against validation annotations.
 If any validation rule fails, an InvalidValueException will be thrown.</p>
 <h3>Parameters</h3>
@@ -10354,7 +10354,7 @@ to an internal map for further processing.</p>
 ) : <span class="return-type">self</span><br>{<br>}</div>
 <div class='docblock'>
 <h3>Description</h3>
-<p>Validate the current object using ValidationUtil.</p>
+<p>Validate the current object based on property annotations.</p>
 <p>This method checks the properties of the current object against validation annotations.
 If any validation rule fails, an InvalidValueException will be thrown.</p>
 <h3>Parameters</h3>
@@ -10363,7 +10363,7 @@ If any validation rule fails, an InvalidValueException will be thrown.</p>
 <div class="parameter-name">$messageTemplate</div>
 <div class="parameter-description"><p>Optional custom message templates for validation errors.</p></div>
 <div class="parameter-name">$reference</div>
-<div class="parameter-description"><p>Optional reference object for validation context.</p></div>
+<div class="parameter-description"><p>Optional reference to another MagicObject instance for loading data.</p></div>
 <h3>Return</h3>
 <div class="return-type">self</div>
 <div class="return-description"><p>Returns the current instance for method chaining.</p></div>
@@ -24393,6 +24393,18 @@ It supports options for recursively converting objects and parsing specific type
 from overriding its value.</p>
 </div>
 </div>
+<div class="property">
+<div class="property-identity">3. <span class="property-label">_fieldsRetrieved</span></div>
+<h3>Declaration</h3>
+<div class="property-declaratiopn"><span class="access-level">protected</span> <span class="property-type">array</span> <span class="property-name">$_fieldsRetrieved</span> = <span class="property-default">array()</span>;</div>
+<div class="docblock">
+<h3>Description</h3>
+<p>Array to keep track of fields that have been retrieved.</p>
+<p>This property is used to avoid redundant data retrieval and processing.
+The property name starts with an underscore to prevent child classes
+from overriding its value.</p>
+</div>
+</div>
 <h2>Methods</h2>
 <div class='method'>
 <div class="method-identity">2. <span class="method-label">requestCookie</span></div>
@@ -24447,6 +24459,18 @@ from overriding its value.</p>
 <h3>Description</h3>
 <p>Flag for recursive data processing.</p>
 <p>The property name starts with an underscore to prevent child classes
+from overriding its value.</p>
+</div>
+</div>
+<div class="property">
+<div class="property-identity">3. <span class="property-label">_fieldsRetrieved</span></div>
+<h3>Declaration</h3>
+<div class="property-declaratiopn"><span class="access-level">protected</span> <span class="property-type">array</span> <span class="property-name">$_fieldsRetrieved</span> = <span class="property-default">array()</span>;</div>
+<div class="docblock">
+<h3>Description</h3>
+<p>Array to keep track of fields that have been retrieved.</p>
+<p>This property is used to avoid redundant data retrieval and processing.
+The property name starts with an underscore to prevent child classes
 from overriding its value.</p>
 </div>
 </div>
@@ -24507,6 +24531,18 @@ from overriding its value.</p>
 from overriding its value.</p>
 </div>
 </div>
+<div class="property">
+<div class="property-identity">3. <span class="property-label">_fieldsRetrieved</span></div>
+<h3>Declaration</h3>
+<div class="property-declaratiopn"><span class="access-level">protected</span> <span class="property-type">array</span> <span class="property-name">$_fieldsRetrieved</span> = <span class="property-default">array()</span>;</div>
+<div class="docblock">
+<h3>Description</h3>
+<p>Array to keep track of fields that have been retrieved.</p>
+<p>This property is used to avoid redundant data retrieval and processing.
+The property name starts with an underscore to prevent child classes
+from overriding its value.</p>
+</div>
+</div>
 <h2>Methods</h2>
 <div class='method'>
 <div class="method-identity">2. <span class="method-label">requestGet</span></div>
@@ -24563,6 +24599,18 @@ from overriding its value.</p>
 from overriding its value.</p>
 </div>
 </div>
+<div class="property">
+<div class="property-identity">3. <span class="property-label">_fieldsRetrieved</span></div>
+<h3>Declaration</h3>
+<div class="property-declaratiopn"><span class="access-level">protected</span> <span class="property-type">array</span> <span class="property-name">$_fieldsRetrieved</span> = <span class="property-default">array()</span>;</div>
+<div class="docblock">
+<h3>Description</h3>
+<p>Array to keep track of fields that have been retrieved.</p>
+<p>This property is used to avoid redundant data retrieval and processing.
+The property name starts with an underscore to prevent child classes
+from overriding its value.</p>
+</div>
+</div>
 <h2>Methods</h2>
 <div class='method'>
 <div class="method-identity">2. <span class="method-label">requestPost</span></div>
@@ -24616,6 +24664,18 @@ from overriding its value.</p>
 <h3>Description</h3>
 <p>Flag for recursive data processing.</p>
 <p>The property name starts with an underscore to prevent child classes
+from overriding its value.</p>
+</div>
+</div>
+<div class="property">
+<div class="property-identity">3. <span class="property-label">_fieldsRetrieved</span></div>
+<h3>Declaration</h3>
+<div class="property-declaratiopn"><span class="access-level">protected</span> <span class="property-type">array</span> <span class="property-name">$_fieldsRetrieved</span> = <span class="property-default">array()</span>;</div>
+<div class="docblock">
+<h3>Description</h3>
+<p>Array to keep track of fields that have been retrieved.</p>
+<p>This property is used to avoid redundant data retrieval and processing.
+The property name starts with an underscore to prevent child classes
 from overriding its value.</p>
 </div>
 </div>
@@ -24693,6 +24753,18 @@ from overriding its value.</p>
 <h3>Description</h3>
 <p>Flag for recursive data processing.</p>
 <p>The property name starts with an underscore to prevent child classes
+from overriding its value.</p>
+</div>
+</div>
+<div class="property">
+<div class="property-identity">3. <span class="property-label">_fieldsRetrieved</span></div>
+<h3>Declaration</h3>
+<div class="property-declaratiopn"><span class="access-level">protected</span> <span class="property-type">array</span> <span class="property-name">$_fieldsRetrieved</span> = <span class="property-default">array()</span>;</div>
+<div class="docblock">
+<h3>Description</h3>
+<p>Array to keep track of fields that have been retrieved.</p>
+<p>This property is used to avoid redundant data retrieval and processing.
+The property name starts with an underscore to prevent child classes
 from overriding its value.</p>
 </div>
 </div>
@@ -24855,6 +24927,18 @@ from overriding its value.</p>
 from overriding its value.</p>
 </div>
 </div>
+<div class="property">
+<div class="property-identity">3. <span class="property-label">_fieldsRetrieved</span></div>
+<h3>Declaration</h3>
+<div class="property-declaratiopn"><span class="access-level">protected</span> <span class="property-type">array</span> <span class="property-name">$_fieldsRetrieved</span> = <span class="property-default">array()</span>;</div>
+<div class="docblock">
+<h3>Description</h3>
+<p>Array to keep track of fields that have been retrieved.</p>
+<p>This property is used to avoid redundant data retrieval and processing.
+The property name starts with an underscore to prevent child classes
+from overriding its value.</p>
+</div>
+</div>
 <h2>Methods</h2>
 <div class='method'>
 <div class="method-identity">2. <span class="method-label">getRequestBody</span></div>
@@ -24953,6 +25037,18 @@ from overriding its value.</p>
 <h3>Description</h3>
 <p>Flag for recursive data processing.</p>
 <p>The property name starts with an underscore to prevent child classes
+from overriding its value.</p>
+</div>
+</div>
+<div class="property">
+<div class="property-identity">4. <span class="property-label">_fieldsRetrieved</span></div>
+<h3>Declaration</h3>
+<div class="property-declaratiopn"><span class="access-level">protected</span> <span class="property-type">array</span> <span class="property-name">$_fieldsRetrieved</span> = <span class="property-default">array()</span>;</div>
+<div class="docblock">
+<h3>Description</h3>
+<p>Array to keep track of fields that have been retrieved.</p>
+<p>This property is used to avoid redundant data retrieval and processing.
+The property name starts with an underscore to prevent child classes
 from overriding its value.</p>
 </div>
 </div>
@@ -25556,7 +25652,7 @@ the nested array.</p>
 ) : <span class="return-type">self</span><br>{<br>}</div>
 <div class='docblock'>
 <h3>Description</h3>
-<p>Validate the current request object using ValidationUtil.</p>
+<p>Validate the current object based on property annotations.</p>
 <p>This method checks the properties of the current object against validation annotations.
 If any validation rule fails, an InvalidValueException will be thrown.</p>
 <h3>Parameters</h3>
@@ -25570,6 +25666,21 @@ If any validation rule fails, an InvalidValueException will be thrown.</p>
 <h3>Throws</h3>
 <div class="return-type">\MagicObject\Exceptions\InvalidValueException</div>
 <div class="return-description"><p>If validation fails.</p></div>
+</div>
+</div>
+<div class='method'>
+<div class="method-identity">31. <span class="method-label">formData</span></div>
+<h3>Declaration</h3>
+<div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">formData</span>() : <span class="return-type">array</span><br>{<br>}</div>
+<div class='docblock'>
+<h3>Description</h3>
+<p>Retrieve form data as an associative array.</p>
+<p>This method collects the values of all fields that have been retrieved from the object
+and returns them as an associative array. The keys are the field names, and the values
+are the corresponding values from the object.</p>
+<h3>Return</h3>
+<div class="return-type">array</div>
+<div class="return-description"><p>An associative array containing field names and their values.</p></div>
 </div>
 </div>
 </div>
