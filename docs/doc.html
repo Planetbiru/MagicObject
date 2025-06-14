@@ -1310,7 +1310,7 @@ is present in both classes but has been redefined in the child class.</p>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">validate</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span>|<span class="parameter-type">null</span> <span class="parameter-name">$parentPropertyName <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">array</span>|<span class="parameter-type">null</span> <span class="parameter-name">$messageTemplate <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">MagicObject</span> <span class="parameter-name">$reference <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">MagicObject</span>|<span class="parameter-type">null</span> <span class="parameter-name">$reference <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span><br>
 ) : <span class="return-type">self</span><br>{<br>}</div>
 <div class='docblock'>
 <h3>Description</h3>
@@ -1323,7 +1323,7 @@ If any validation rule fails, an InvalidValueException will be thrown.</p>
 <div class="parameter-name">$messageTemplate</div>
 <div class="parameter-description"><p>Optional custom message templates for validation errors.</p></div>
 <div class="parameter-name">$reference</div>
-<div class="parameter-description"><p>Optional reference to another MagicObject instance for loading data.</p></div>
+<div class="parameter-description"><p>Optional reference object. If provided and is an instance of MagicObject,</p></div>
 <h3>Return</h3>
 <div class="return-type">self</div>
 <div class="return-description"><p>Returns the current instance for method chaining.</p></div>
@@ -3721,7 +3721,7 @@ invokes the appropriate method according to its name and parameters.</p>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">validate</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span>|<span class="parameter-type">null</span> <span class="parameter-name">$parentPropertyName <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">array</span>|<span class="parameter-type">null</span> <span class="parameter-name">$messageTemplate <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">MagicObject</span> <span class="parameter-name">$reference <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">MagicObject</span>|<span class="parameter-type">null</span> <span class="parameter-name">$reference <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span><br>
 ) : <span class="return-type">self</span><br>{<br>}</div>
 <div class='docblock'>
 <h3>Description</h3>
@@ -3734,7 +3734,7 @@ If any validation rule fails, an InvalidValueException will be thrown.</p>
 <div class="parameter-name">$messageTemplate</div>
 <div class="parameter-description"><p>Optional custom message templates for validation errors.</p></div>
 <div class="parameter-name">$reference</div>
-<div class="parameter-description"><p>Optional reference to another MagicObject instance for loading data.</p></div>
+<div class="parameter-description"><p>Optional reference object. If provided and is an instance of MagicObject,</p></div>
 <h3>Return</h3>
 <div class="return-type">self</div>
 <div class="return-description"><p>Returns the current instance for method chaining.</p></div>
@@ -10350,7 +10350,7 @@ to an internal map for further processing.</p>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">validate</span>(<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span>|<span class="parameter-type">null</span> <span class="parameter-name">$parentPropertyName <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">array</span>|<span class="parameter-type">null</span> <span class="parameter-name">$messageTemplate <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span>, <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">MagicObject</span> <span class="parameter-name">$reference <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">MagicObject</span>|<span class="parameter-type">null</span> <span class="parameter-name">$reference <span class="parameter-equal-sign">=</span> <span class="parameter-default">null</span></span><br>
 ) : <span class="return-type">self</span><br>{<br>}</div>
 <div class='docblock'>
 <h3>Description</h3>
@@ -10363,7 +10363,7 @@ If any validation rule fails, an InvalidValueException will be thrown.</p>
 <div class="parameter-name">$messageTemplate</div>
 <div class="parameter-description"><p>Optional custom message templates for validation errors.</p></div>
 <div class="parameter-name">$reference</div>
-<div class="parameter-description"><p>Optional reference to another MagicObject instance for loading data.</p></div>
+<div class="parameter-description"><p>Optional reference object. If provided and is an instance of MagicObject,</p></div>
 <h3>Return</h3>
 <div class="return-type">self</div>
 <div class="return-description"><p>Returns the current instance for method chaining.</p></div>
