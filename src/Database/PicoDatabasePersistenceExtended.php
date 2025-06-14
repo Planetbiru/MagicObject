@@ -89,14 +89,14 @@ class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
     }
 
     /**
-     * Validate the current object using ValidationUtil.
+     * Validate the current object based on property annotations.
      *
      * This method checks the properties of the current object against validation annotations.
      * If any validation rule fails, an InvalidValueException will be thrown.
      *
      * @param string|null $parentPropertyName The name of the parent property, if applicable (for nested validation).
      * @param array|null $messageTemplate Optional custom message templates for validation errors.
-     * @param MagicObject $reference Optional reference object for validation context.
+     * @param MagicObject $reference Optional reference to another MagicObject instance for loading data.
      * @throws InvalidValueException If validation fails.
      * @return self Returns the current instance for method chaining.
      */

@@ -3113,7 +3113,7 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
-     * Validate the current object using ValidationUtil.
+     * Validate the current object based on property annotations.
      *
      * This method checks the properties of the current object against validation annotations.
      * If any validation rule fails, an InvalidValueException will be thrown.
