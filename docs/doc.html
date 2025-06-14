@@ -21161,6 +21161,38 @@ Optionally, it can prettify property names for human readability.</p>
 <div class="return-description"><p>The number of bytes written to the file, or false on failure.</p></div>
 </div>
 </div>
+<div class='method'>
+<div class="method-identity">11. <span class="method-label">generateValidatorClass</span></div>
+<h3>Declaration</h3>
+<div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">generateValidatorClass</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$namespace</span>, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$className</span>, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$moduleCode</span>, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">array</span> <span class="parameter-name">$validationDefinition</span>, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$applyKey</span><br>
+) : <span class="return-type">string</span><br>{<br>}</div>
+<div class='docblock'>
+<h3>Description</h3>
+<p>Generate validator class string with annotated properties.</p>
+<p>This method builds a PHP class definition as a string for a validator class. Each property in the
+class corresponds to a field defined in the validation definition and is annotated with validation
+rules and data type information.</p>
+<h3>Parameters</h3>
+<div class="parameter-name">$namespace</div>
+<div class="parameter-description"><p>The namespace of the class to be generated.</p></div>
+<div class="parameter-name">$className</div>
+<div class="parameter-description"><p>The name of the class to be generated.</p></div>
+<div class="parameter-name">$moduleCode</div>
+<div class="parameter-description"><p>The module code</p></div>
+<div class="parameter-name">$validationDefinition</div>
+<div class="parameter-description"><p>An array of field validation definitions (usually decoded from JSON).</p></div>
+<div class="parameter-name">$applyKey</div>
+<div class="parameter-description"><p>The key to determine if a rule should be applied (either 'applyInsert' or 'applyUpdate').</p></div>
+<h3>Return</h3>
+<div class="return-type">string</div>
+<div class="return-description"><p>Returns a string containing the PHP class definition with annotated properties.</p></div>
+</div>
+</div>
 </div>
 <div class="class-item" id="MagicObject-Geometry-Area">
 <h1>MagicObject\Geometry\Area</h1>
