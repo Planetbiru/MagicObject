@@ -961,3 +961,9 @@ MagicObject 3.14 introduces a new **`with()`** method within `PicoDatabasePersis
 **Key feature:**
 
 -   **`with()` Method**: Provides a convenient entry point for fluent setter chaining, returning the current object instance to allow for sequential method calls.
+
+# MagicObject Version 3.14.1
+
+## What's Changed
+
+-  Allow method chaining after validate object
