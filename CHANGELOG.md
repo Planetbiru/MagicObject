@@ -977,3 +977,12 @@ The `validate()` method now accepts a new boolean parameter:
     -   **`false`**: If a `$reference` object is provided and it has no properties, the validation process will be **skipped entirely**. This is useful when you want validation to occur _only_ if the reference model actually defines validation rules.
 
 This new parameter provides developers with more precise control over when and how validation occurs, especially in dynamic scenarios where reference models might not always contain defined properties.
+
+
+### New `@MaxLength` Validation Annotation
+
+MagicObject now supports a dedicated **`@MaxLength`** annotation for string properties. This new annotation allows you to quickly and clearly enforce a maximum length constraint without needing to specify a minimum length.
+
+-   **`@MaxLength(value=X, message="...")`**: Ensures that a string property's value does not exceed `X` characters.
+
+This simplifies common validation scenarios where only an upper bound on string length is required.
