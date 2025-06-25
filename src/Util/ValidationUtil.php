@@ -190,6 +190,7 @@ class ValidationUtil // NOSONAR
      * @param object $object The object to be validated. It's expected that properties might be
      * accessed via Reflection, so protected/private properties are handled.
      * @param string|null $parentPropertyName Optional. The name of the parent property, used for nested validation messages.
+     * @return self Returns the current instance for method chaining.
      * @throws InvalidValueException If any validation constraint is violated.
      */
     public function validate($object, $parentPropertyName = null) // NOSONAR
@@ -249,6 +250,7 @@ class ValidationUtil // NOSONAR
             $this->validatePhoneAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateEnumAnnotation($fullPropertyName, $propertyValue, $docComment);
         }
+        return $this; // Allow method chaining
     }
     
     /**
