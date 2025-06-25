@@ -966,4 +966,14 @@ MagicObject 3.14 introduces a new **`with()`** method within `PicoDatabasePersis
 
 ## What's Changed
 
--  Allow method chaining after validate object
+### Enhanced Validation Flexibility
+
+MagicObject 3.14.1 introduces an additional parameter to the `validate()` method across `MagicObject` and related input classes (`InputPost`, `InputGet`, `MagicDto`, `SetterGetter`, `SecretObject`, and `PicoDatabasePersistenceExtended`). This enhancement provides more granular control over validation behavior, particularly when utilizing a **reference object** for validation annotations.
+
+The `validate()` method now accepts a new boolean parameter:
+
+-   **`$validateIfReferenceEmpty`**:
+    -   **`true`** (default): If a `$reference` object is provided but it contains no properties (is considered "empty" in terms of its defined attributes), the validation will still proceed. In this scenario, the validation annotations from the current object (`$this`) will be used to validate the current object's data.
+    -   **`false`**: If a `$reference` object is provided and it has no properties, the validation process will be **skipped entirely**. This is useful when you want validation to occur _only_ if the reference model actually defines validation rules.
+
+This new parameter provides developers with more precise control over when and how validation occurs, especially in dynamic scenarios where reference models might not always contain defined properties.
