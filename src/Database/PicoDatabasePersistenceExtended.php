@@ -26,6 +26,21 @@ class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
     private $map = array();
 
     /**
+     * Begin a fluent setter chain.
+     *
+     * This method is primarily used to start a method chaining sequence for
+     * setting properties on the object, enhancing readability and allowing
+     * multiple setters to be called sequentially. It simply returns the
+     * current object instance.
+     *
+     * @return self Returns the current instance of the object, allowing for method chaining.
+     */
+    public function with()
+    {
+        return $this;
+    }
+
+    /**
      * Sets a property value and adds it to the internal map.
      *
      * This method sets a value to a property of the associated object and adds the property name and value 
@@ -89,14 +104,16 @@ class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
     }
 
     /**
-     * Validate the current object using ValidationUtil.
+     * Validate the current object based on property annotations.
      *
      * This method checks the properties of the current object against validation annotations.
      * If any validation rule fails, an InvalidValueException will be thrown.
      *
      * @param string|null $parentPropertyName The name of the parent property, if applicable (for nested validation).
      * @param array|null $messageTemplate Optional custom message templates for validation errors.
-     * @param MagicObject $reference Optional reference object for validation context.
+     * @param MagicObject|null $reference Optional reference object. If provided and is an instance of MagicObject,
+     *                                    validation will use the property annotations from the reference class
+     *                                    (not from the validated object's class), but the data to validate is taken from the current object.
      * @throws InvalidValueException If validation fails.
      * @return self Returns the current instance for method chaining.
      */
@@ -105,6 +122,8 @@ class PicoDatabasePersistenceExtended extends PicoDatabasePersistence
         $objectToValidate = $this->object;
         if(isset($reference) && $reference instanceof MagicObject)
         {
+            // If a reference object is provided, wrap the current object in it
+            // to validate against the reference's annotations.
             $objectToValidate = $reference->loadData($this->object);
         }
         ValidationUtil::getInstance($messageTemplate)->validate($objectToValidate, $parentPropertyName);

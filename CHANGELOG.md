@@ -595,7 +595,21 @@ try {
 
 ### Table Structure Conversion Support
 
-Added support for converting table structures between **MySQL**, **PostgreSQL**, and **SQLite**. This feature is especially useful for database **migration** scenarios where compatibility and portability are required across different RDBMS platforms.
+MagicObject 3.14 introduces a robust SQL dialect conversion utility, powered by the `PicoDatabaseConverter` class, for seamless translation of table structures between **MySQL**, **PostgreSQL**, and **SQLite**.
+
+**Key features of the conversion utility:**
+- Converts `CREATE TABLE` statements between MySQL, PostgreSQL, and SQLite, including:
+    - Data type mapping and normalization
+    - Identifier quoting and syntax adaptation
+    - Handling of constraints, keys, and auto-increment fields
+    - Keyword and function normalization
+- Supports round-trip conversion (e.g., MySQL → PostgreSQL → MySQL)
+- Can parse and split SQL column/constraint definitions, respecting nested parentheses
+- Provides type translation utilities for mapping field types between dialects
+- Offers value quoting, escaping, and PHP type conversion helpers for SQL literals
+- Enables migration and data-dump scenarios between different RDBMS platforms
+
+This class is typically used for database migration, schema portability, and interoperability between different database engines, without requiring entity definitions.
 
 Developers can now easily transform `CREATE TABLE` statements from one dialect to another with proper handling of:
 
@@ -604,17 +618,6 @@ Developers can now easily transform `CREATE TABLE` statements from one dialect t
 -   Keyword and syntax normalization
 
 Table structure conversion can be performed without the need to create entities beforehand. In addition to converting table structures, MagicObject version 3.14 also provides tools to dump data from one database to another DBMS.
-
-Developers can now easily transform `CREATE TABLE` statements from one dialect to another with proper handling of:
-
--   Data type conversion
-    
--   Identifier quoting
-    
--   Keyword and syntax normalization
-    
-Table structure conversion can be performed without the need to create entities beforehand.
-In addition to converting table structures, MagicObject version 3.14 also provides tools to dump data from one database to another DBMS.
 
 #### Example Use Case
 
@@ -688,26 +691,36 @@ echo $postgresqlConverted2 . "\n\n";
 
 The `ValidationUtil` class has been significantly enhanced to provide a robust and flexible object property validation mechanism. Inspired by Jakarta Bean Validation (JSR 380), developers can now apply a comprehensive set of annotations directly in property docblocks to enforce data integrity.
 
-The following validation annotations are now supported:
+The following validation annotations are now supported, grouped by their function:
 
--   **`@Valid`**: Recursively validates nested `MagicObject` instances.
+#### Presence & Nullability
 -   **`@Required(message="...")`**: Ensures the property value is not `null`.
 -   **`@NotEmpty(message="...")`**: Checks if a string is not empty (`""`) or an array is not empty.
 -   **`@NotBlank(message="...")`**: Validates that a string is not empty and not just whitespace characters.
--   **`@Size(min=X, max=Y, message="...")`**: Verifies that the length of a string or the count of an array is within a specified range.
+
+#### Value Range & Size
 -   **`@Min(value=X, message="...")`**: Asserts that a numeric property's value is greater than or equal to a minimum value.
 -   **`@Max(value=X, message="...")`**: Asserts that a numeric property's value is less than or equal to a maximum value.
--   **`@Pattern(regexp="...", message="...")`**: Validates a string property against a specified regular expression.
--   **`@Email(message="...")`**: Checks if a string property is a well-formed email address.
--   **`@Past(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the past.
--   **`@Future(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the future.
 -   **`@DecimalMin(value="...", message="...")`**: Validates that a numeric property (can be float/string) is greater than or equal to a specified decimal value.
 -   **`@DecimalMax(value="...", message="...")`**: Validates that a numeric property (can be float/string) is less than or equal to a specified decimal value.
--   **`@Digits(integer=X, fraction=Y, message="...")`**: Checks that a numeric property has at most `X` integer digits and `Y` fractional digits.
--   **`@AssertTrue(message="...")`**: Asserts that a boolean property's value is strictly `true`.
--   **`@FutureOrPresent(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the future or the present.
--   **`@Length(min=X, max=Y, message="...")`**: Similar to `@Size`, specifically for string lengths within a range.
 -   **`@Range(min=X, max=Y, message="...")`**: Validates that a numeric property's value falls within an inclusive range.
+-   **`@Size(min=X, max=Y, message="...")`**: Verifies that the length of a string or the count of an array is within a specified range.
+-   **`@Length(min=X, max=Y, message="...")`**: Similar to `@Size`, specifically for string lengths within a range.
+-   **`@Digits(integer=X, fraction=Y, message="...")`**: Checks that a numeric property has at most `X` integer digits and `Y` fractional digits.
+
+#### Numeric Sign
+-   **`@Positive(message="...")`**: Ensures a numeric value is positive (> 0).
+-   **`@PositiveOrZero(message="...")`**: Ensures a numeric value is positive or zero (>= 0).
+-   **`@Negative(message="...")`**: Ensures a numeric value is negative (< 0).
+-   **`@NegativeOrZero(message="...")`**: Ensures a numeric value is negative or zero (<= 0).
+
+#### Pattern & Format
+-   **`@Pattern(regexp="...", message="...")`**: Validates a string property against a specified regular expression.
+-   **`@Email(message="...")`**: Checks if a string property is a well-formed email address.
+-   **`@Url(message="...")`**: Ensures a string is a valid URL.
+-   **`@Ip(message="...")`**: Ensures a string is a valid IP address.
+-   **`@DateFormat(format="...", message="...")`**: Ensures a string matches a specific date format.
+-   **`@Phone(message="...")`**: Ensures a string is a valid phone number.
 -   **`@NoHtml(message="...")`**: Checks if a string property contains any HTML tags.
 -   **`@Positive(message="...")`**: Ensures a numeric value is positive (> 0).
 -   **`@PositiveOrZero(message="...")`**: Ensures a numeric value is positive or zero (>= 0).
@@ -718,10 +731,30 @@ The following validation annotations are now supported:
 -   **`@Ip(message="...")`**: Ensures a string is a valid IP address.
 -   **`@DateFormat(format="...", message="...")`**: Ensures a string matches a specific date format.
 -   **`@Phone(message="...")`**: Ensures a string is a valid phone number.
+
+#### Date & Time
+-   **`@Past(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the past.
+-   **`@Future(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the future.
+-   **`@PastOrPresent(message="...")`**: Ensures a date/time is in the past or present.
+-   **`@FutureOrPresent(message="...")`**: Ensures a `DateTimeInterface` property represents a date/time in the future or the present.
+-   **`@BeforeDate(date="...", message="...")`**: Ensures a date is before a specified date.
+-   **`@AfterDate(date="...", message="...")`**: Ensures a date is after a specified date.
+
+#### Boolean
+-   **`@AssertTrue(message="...")`**: Asserts that a boolean property's value is strictly `true`.
+
+#### Enum & Allowed Values
 -   **`@Enum(message="...", allowedValues={...}, caseSensitive=true|false)`**: Ensures a string property's value is one of a predefined set of allowed values, with an option for case-sensitive or case-insensitive comparison.
 
-These new validation capabilities provide a declarative and robust way to ensure data consistency and reduce boilerplate validation code in your MagicObject entities.
+#### String Content & Structure
+-   **`@Alpha(message="...")`**: Ensures a string contains only alphabetic characters.
+-   **`@AlphaNumeric(message="...")`**: Ensures a string contains only alphanumeric characters.
+-   **`@StartsWith(prefix="...", caseSensitive=true|false, message="...")`**: Ensures a string starts with a specified prefix, with optional case sensitivity.
+-   **`@EndsWith(suffix="...", caseSensitive=true|false, message="...")`**: Ensures a string ends with a specified suffix, with optional case sensitivity.
+-   **`@Contains(substring="...", caseSensitive=true|false, message="...")`**: Ensures a string contains a specified substring, with optional case sensitivity.
 
+#### Nested Validation
+-   **`@Valid`**: Recursively validates nested `MagicObject` and `MagicDto` instances.
 
 **Class `UserProfile`**
 
@@ -919,3 +952,21 @@ try {
     echo "Test 5: FAILED (Expected due to nested object) - " . $e->getPropertyName() . ": " . $e->getValidationMessage() . "\n";
 }
 ```
+
+Users can perform validation on objects that extend from the following base classes:
+- **MagicObject**
+- **MagicDto**
+- **InputPost**
+- **InputGet**
+
+This means that property validation is supported not only for entities derived from `MagicObject`, but also for data transfer objects (`MagicDto`) and HTTP input wrappers (`InputPost`, `InputGet`).  
+You can annotate properties in any of these classes with validation annotations, and the validation mechanism will recursively check all nested properties, ensuring robust data integrity across your application's data models and input layers.
+
+
+### Fluent Setter Chaining
+
+MagicObject 3.14 introduces a new **`with()`** method within `PicoDatabasePersistenceExtended`, designed to enhance the readability and flow of setting multiple properties through method chaining. This simple yet powerful addition allows developers to initiate a setter chain with improved clarity, especially when configuring objects before persistence operations.
+
+**Key feature:**
+
+-   **`with()` Method**: Provides a convenient entry point for fluent setter chaining, returning the current object instance to allow for sequential method calls.

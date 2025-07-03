@@ -9,6 +9,7 @@ use MagicObject\Exceptions\InvalidAnnotationException;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\ClassUtil\PicoObjectParser;
 use MagicObject\Util\PicoGenericObject;
+use MagicObject\Util\ValidationUtil;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -907,6 +908,33 @@ class MagicDto extends stdClass // NOSONAR
         }
         
         return false;// No parent class or method is not overridden
+    }
+
+    /**
+     * Validate the current object based on property annotations.
+     *
+     * This method checks the properties of the current object against validation annotations.
+     * If any validation rule fails, an InvalidValueException will be thrown.
+     *
+     * @param string|null $parentPropertyName The name of the parent property, if applicable (for nested validation).
+     * @param array|null $messageTemplate Optional custom message templates for validation errors.
+     * @param MagicObject|null $reference Optional reference object. If provided and is an instance of MagicObject,
+     *                                    validation will use the property annotations from the reference class
+     *                                    (not from the validated object's class), but the data to validate is taken from the current object.
+     * @throws InvalidValueException If validation fails.
+     * @return self Returns the current instance for method chaining.
+     */
+    public function validate($parentPropertyName = null, $messageTemplate = null, $reference = null)
+    {
+        $objectToValidate = $this;
+        if(isset($reference) && $reference instanceof MagicObject)
+        {
+            // If a reference object is provided, wrap the current object in it
+            // to validate against the reference's annotations.
+            $objectToValidate = $reference->loadData($this);
+        }
+        ValidationUtil::getInstance($messageTemplate)->validate($objectToValidate, $parentPropertyName);
+        return $this;
     }
 
 }
