@@ -1134,3 +1134,40 @@ $credentials->importFromUrl($url);
 ### Backward Compatibility
 
 This update is fully backward-compatible and does not change any existing behavior unless the new method is used explicitly.
+
+
+### Bug Fix: Class-Typed Default Parameters Now Compatible with PHP 5
+
+Fixed a **fatal error** caused by the use of default parameters with a class type hint (`MagicObject`, `SecretObject`, `SetterGetter`, `MagicDto`) and non-null default values in the `validate()` method.
+
+#### Before (Problematic in PHP 5):
+
+```php
+public function validate(
+    $parentPropertyName = null,
+    $messageTemplate = null,
+    MagicObject $reference = null,
+    bool $validateIfReferenceEmpty = true // ❌ Causes error in PHP 5
+)
+```
+
+After (PHP 5 Compatible):
+
+```php
+public function validate(
+    $parentPropertyName = null,
+    $messageTemplate = null,
+    MagicObject $reference = null,
+    $validateIfReferenceEmpty = true // ✅ Compatible with PHP 5
+)
+```
+
+> This change ensures full compatibility with legacy environments running PHP 5, while maintaining functionality in modern PHP versions.
+
+### Backward Compatibility
+
+-   This version is **fully backward-compatible**.
+    
+-   No breaking changes were introduced.
+    
+-   Existing codebases will continue to function as-is unless the new functionality is explicitly invoked.
