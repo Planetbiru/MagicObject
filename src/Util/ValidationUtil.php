@@ -93,7 +93,7 @@ class ValidationUtil // NOSONAR
             'ip' => "Field '\${property}' must be a valid IP address",
             'dateFormat' => "Field '\${property}' must match the date format '\${format}'",
             'phone' => "Field '\${property}' must be a valid phone number",
-            'enum' => "Field '\${property}' has an invalid value. Allowed values: \${allowedValues}.",
+            'enum' => "Field '\${property}' has an invalid value. Allowed values: \${allowedValues}",
             'alpha' => "Field '\${property}' must contain only alphabetic characters",
             'alphaNumeric' => "Field '\${property}' must contain only alphanumeric characters",
             'startsWith' => "Field '\${property}' must start with '\${prefix}'",
@@ -101,6 +101,7 @@ class ValidationUtil // NOSONAR
             'contains' => "Field '\${property}' must contain '\${substring}'",
             'beforeDate' => "Field '\${property}' must be before '\${date}'",
             'afterDate' => "Field '\${property}' must be after '\${date}'",
+            'timeRange' => "Field '\${property}' must be between \${min} and \${max}",
         );
 
         // Process custom templates to camelize keys
@@ -225,6 +226,7 @@ class ValidationUtil // NOSONAR
             $this->validateContainsAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateBeforeDateAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateAfterDateAnnotation($fullPropertyName, $propertyValue, $docComment);
+            $this->validateTimeRangeAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateSizeAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateMinAnnotation($fullPropertyName, $propertyValue, $docComment);
             $this->validateMaxAnnotation($fullPropertyName, $propertyValue, $docComment);
@@ -1367,6 +1369,42 @@ class ValidationUtil // NOSONAR
             if ($valueDate instanceof DateTimeInterface 
             && $compareDate instanceof DateTimeInterface 
             && $valueDate->getTimestamp() <= $compareDate->getTimestamp()) {
+                throw new InvalidValueException($propertyName, $message);
+            }
+        }
+    }
+    
+    /**
+     * Validates the **`TimeRange`** annotation.
+     * Ensures a time is within a specified range (min and max).
+     */
+    private function validateTimeRangeAnnotation($propertyName, $propertyValue, $docComment)
+    {
+        if (preg_match('/@TimeRange\(([^)]*)\)/', $docComment, $matches)) {
+            $params = $this->parseAnnotationParams($matches[1]);
+            $min = isset($params['min']) ? $params['min'] : '00:00'; // Default min to start of day
+            $max = isset($params['max']) ? $params['max'] : '23:59'; // Default max to end of day
+            $message = isset($params['message']) ? $params['message'] : null;
+
+            if ($this->isBlank($message)) {
+                $message = $this->createMessage('timeRange', array('property' => $propertyName, 'min' => $min, 'max' => $max));
+            }
+
+            // Convert propertyValue to a time string if it's a DateTime object
+            if ($propertyValue instanceof DateTimeInterface) {
+                $valueTime = $propertyValue->format('H:i');
+            } else {
+                $valueTime = (string) $propertyValue;
+            }
+
+            // Normalize time strings to HH:MM format for consistent comparison
+            $valueTime = date('H:i', strtotime($valueTime));
+            $minTime = date('H:i', strtotime($min));
+            $maxTime = date('H:i', strtotime($max));
+
+            // Perform the time range validation
+            // We compare as strings because 'H:i' format allows direct string comparison for time
+            if ($valueTime < $minTime || $valueTime > $maxTime) {
                 throw new InvalidValueException($propertyName, $message);
             }
         }
