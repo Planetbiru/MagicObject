@@ -1060,9 +1060,9 @@ Added support for the `@TimeRange` validation annotation to validate time values
 **Usage Example:**
 ```php
 /**
- * @TimeRange(from="08:00", to="17:00")
+ * @TimeRange(min="08:00", max="17:00")
  */
-public $jamKerja;
+public $attendanceIn;
 ````
 
 * Accepts time strings in `HH:MM` or `HH:MM:SS` format.
