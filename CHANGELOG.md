@@ -1065,7 +1065,7 @@ Added support for the `@TimeRange` validation annotation to validate time values
 public $attendanceIn;
 ````
 
-* Accepts time strings in `HH:MM` format.
+* Accepts time strings in `HH:MM` or `HH:MM:SS` format.
 * Ensures the value falls within the defined range (inclusive).
 * Useful for scheduling, availability windows, or working hours validation.
 

@@ -1376,37 +1376,48 @@ class ValidationUtil // NOSONAR
     
     /**
      * Validates the **`TimeRange`** annotation.
-     * Ensures a time is within a specified range (min and max).
+     * Ensures a time is within a specified range (min and max), supporting both HH:MM and HH:MM:SS formats.
      */
-    private function validateTimeRangeAnnotation($propertyName, $propertyValue, $docComment)
+    private function validateTimeRangeAnnotation($propertyName, $propertyValue, $docComment) // NOSONAR
     {
         if (preg_match('/@TimeRange\(([^)]*)\)/', $docComment, $matches)) {
             $params = $this->parseAnnotationParams($matches[1]);
-            $min = isset($params['min']) ? $params['min'] : '00:00'; // Default min to start of day
-            $max = isset($params['max']) ? $params['max'] : '23:59'; // Default max to end of day
+            $min = isset($params['min']) ? $params['min'] : '00:00'; // Allow HH:MM or HH:MM:SS
+            $max = isset($params['max']) ? $params['max'] : '23:59'; // Allow HH:MM or HH:MM:SS
             $message = isset($params['message']) ? $params['message'] : null;
 
             if ($this->isBlank($message)) {
-                $message = $this->createMessage('timeRange', array('property' => $propertyName, 'min' => $min, 'max' => $max));
+                $message = $this->createMessage('timeRange', [
+                    'property' => $propertyName,
+                    'min' => $min,
+                    'max' => $max
+                ]);
             }
 
-            // Convert propertyValue to a time string if it's a DateTime object
+            // Normalize time strings to HH:MM:SS
+            $normalizeTime = function ($timeString) {
+                $time = trim($timeString);
+                if (preg_match('/^\d{2}:\d{2}$/', $time)) {
+                    return $time . ':00'; // Append seconds if missing
+                }
+                return date('H:i:s', strtotime($time)); // Normalize other valid formats
+            };
+
+            // Normalize input value
             if ($propertyValue instanceof DateTimeInterface) {
-                $valueTime = $propertyValue->format('H:i');
+                $valueTime = $propertyValue->format('H:i:s');
             } else {
-                $valueTime = (string) $propertyValue;
+                $valueTime = $normalizeTime((string) $propertyValue);
             }
 
-            // Normalize time strings to HH:MM format for consistent comparison
-            $valueTime = date('H:i', strtotime($valueTime));
-            $minTime = date('H:i', strtotime($min));
-            $maxTime = date('H:i', strtotime($max));
+            $minTime = $normalizeTime($min);
+            $maxTime = $normalizeTime($max);
 
-            // Perform the time range validation
-            // We compare as strings because 'H:i' format allows direct string comparison for time
             if ($valueTime < $minTime || $valueTime > $maxTime) {
                 throw new InvalidValueException($propertyName, $message);
             }
         }
     }
+
+
 }
