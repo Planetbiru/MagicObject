@@ -1035,9 +1035,10 @@ This enhancement makes the validator generator more expressive and future-proof,
 
 
 
+
 # MagicObject Version 3.14.5
 
-## Imrovements
+## Improvements
 
 ### Enhancement: Flexible Nested Retrieval in `retrieve()` Method
 
@@ -1051,3 +1052,22 @@ Each key is automatically camelized for consistent property access.
 If any key in the chain does not exist or returns `null`, the method will return `null`.
 
 This enhancement improves developer ergonomics when working with deeply nested data structures.
+
+### Validation: New `@TimeRange` Annotation
+
+Added support for the `@TimeRange` validation annotation to validate time values within a specific range.
+
+**Usage Example:**
+```php
+/**
+ * @TimeRange(from="08:00", to="17:00")
+ */
+public $jamKerja;
+````
+
+* Accepts time strings in `HH:MM` or `HH:MM:SS` format.
+* Ensures the value falls within the defined range (inclusive).
+* Useful for scheduling, availability windows, or working hours validation.
+
+This new validation rule strengthens form-level data validation where time constraints are critical.
+
