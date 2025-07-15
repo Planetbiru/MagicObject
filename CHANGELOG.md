@@ -1058,6 +1058,7 @@ This enhancement improves developer ergonomics when working with deeply nested d
 Added support for the `@TimeRange` validation annotation to validate time values within a specific range.
 
 **Usage Example:**
+
 ```php
 /**
  * @TimeRange(min="08:00", max="17:00")
