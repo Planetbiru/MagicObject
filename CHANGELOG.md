@@ -1087,7 +1087,7 @@ Previously, in PHP 8, values like `'0'` or `'false'` could be incorrectly interp
 Now, default values are accurately converted to `TRUE` or `FALSE` based on their literal meaning.
 
 
-## MagicObject Version 3.15.0
+## MagicObject Version 3.16.0
 
 ### Features
 
