@@ -1085,3 +1085,15 @@ Fixed the parsing of default values for `tinyint(1)` columns in `CREATE TABLE` s
 Previously, in PHP 8, values like `'0'` or `'false'` could be incorrectly interpreted as `true`.
 
 Now, default values are accurately converted to `TRUE` or `FALSE` based on their literal meaning.
+
+
+## MagicObject Version 3.15.0
+
+### Features
+
+#### Add: `deleteRecordByPrimaryKey` Method
+
+Added a new method `deleteRecordByPrimaryKey($primaryKeyValue)` to allow deleting a database record by its primary key, including support for composite keys.
+
+This method ensures the database connection is active and delegates deletion to the persistence layer.
+
