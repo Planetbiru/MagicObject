@@ -345,18 +345,26 @@ class PicoSession
     }
 
     /**
-     * Saves the session to Redis.
+     * Configures PHP session storage to use Redis.
      *
-     * This method configures the session to be stored in Redis.
+     * This method sets the session handler and save path so that session data
+     * is stored in a Redis server. It supports optional authentication.
      *
-     * @param string $host Redis host.
-     * @param int $port Redis port.
-     * @param string $auth Redis authentication.
-     * @return self Returns the current instance for method chaining.
+     * @param string      $host Redis server hostname or IP address.
+     * @param int         $port Redis server port number.
+     * @param string|null $auth Optional authentication password for Redis.
+     * @return self Returns the current instance to allow method chaining.
      */
-    public function saveToRedis($host, $port, $auth)
+    public function saveToRedis($host, $port, $auth = null)
     {
-        $path = sprintf("tcp://%s:%d?auth=%s", $host, $port, $auth);
+        if(isset($auth))
+        {
+            $path = sprintf("tcp://%s:%d?auth=%s", $host, $port, $auth);
+        }
+        else
+        {
+            $path = sprintf("tcp://%s:%d", $host, $port);
+        }
         ini_set("session.save_handler", "redis");
         ini_set("session.save_path", $path);
         return $this;
