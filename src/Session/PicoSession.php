@@ -3,6 +3,7 @@
 namespace MagicObject\Session;
 
 use MagicObject\SecretObject;
+use stdClass;
 
 /**
  * Class PicoSession
@@ -61,20 +62,45 @@ class PicoSession
             $this->setSessionMaxLifeTime($sessConf->getMaxLifeTime());
         }
         if ($sessConf && $sessConf->getSaveHandler() == "redis") {
-            $path = $sessConf->getSavePath();
-            $parsed = parse_url($path);            
-            $host = isset($parsed['host']) ? $parsed['host'] : '';
-            $port = isset($parsed['port']) ? $parsed['port'] : 0;
-            $auth = null;
-            if(isset($parsed['query']))
-            {
-                parse_str($parsed['query'], $parsedStr); 
-                $auth = isset($parsedStr['auth']) ? $parsedStr['auth'] : null;
-            }
-            $this->saveToRedis($host, $port, $auth);
+            $redisParams = $this->getRedisParams($sessConf);
+            $this->saveToRedis($redisParams->host, $redisParams->port, $redisParams->auth);
         } elseif ($sessConf && $sessConf->getSaveHandler() == "files" && $sessConf->getSavePath() != "") {
             $this->saveToFiles($sessConf->getSavePath());
         }
+    }
+
+    /**
+     * Extracts Redis connection parameters from a session configuration object.
+     *
+     * Parses the Redis save path (in URL format) from the given SecretObject instance
+     * and returns an object containing the host, port, and optional authentication token.
+     *
+     * Example save path format: redis://localhost:6379?auth=yourpassword
+     *
+     * @param SecretObject $sessConf Session configuration object containing the Redis save path.
+     * @return stdClass An object with properties: `host` (string), `port` (int), and `auth` (string|null).
+     */
+    private function getRedisParams($sessConf)
+    {
+        $path = $sessConf->getSavePath();
+        $parsed = parse_url($path);            
+        $host = isset($parsed['host']) ? $parsed['host'] : '';
+        $port = isset($parsed['port']) ? $parsed['port'] : 0;
+        $auth = null;
+        if(isset($parsed['query']))
+        {
+            parse_str($parsed['query'], $parsedStr); 
+            $auth = isset($parsedStr['auth']) ? $parsedStr['auth'] : null;
+        }
+        if(!empty($host) && $port == 0)
+        {
+            $port = 6379; // Use default port
+        }
+        $params = new stdClass;
+        $params->host = $host;
+        $params->port = $port;
+        $params->auth = $auth;
+        return $params;
     }
 
     /**
