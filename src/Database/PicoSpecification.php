@@ -518,7 +518,7 @@ class PicoSpecification // NOSONAR
      * @param PicoSpecificationFilter[]|null $map The filter map defining expected filters.
      * @return PicoSpecification The constructed specification based on user input.
      */
-    public static function fromUserInput($request, $map = null)
+    public static function fromUserInput($request, $map = null) // NOSONAR
     {
         $specification = new self;
         if (self::isArray($map)) {
@@ -533,7 +533,14 @@ class PicoSpecification // NOSONAR
                     } else if(is_array($filterValue)) {
                         $specification->addAnd(self::fullTextSearchArray($filter->getColumnName(), $filterValue));
                     } elseif ($filter->isTextEquals()) {
-                        $specification->addAnd(PicoPredicate::getInstance()->equals($filter->getColumnName(), $filterValue));
+                        if($filter->isArray())
+                        {
+                            $specification->addAnd(PicoPredicate::getInstance()->in($filter->getColumnName(), $filterValue));
+                        }
+                        else
+                        {
+                            $specification->addAnd(PicoPredicate::getInstance()->equals($filter->getColumnName(), $filterValue));
+                        }
                     } else {
                         $specification->addAnd(PicoPredicate::getInstance()->like(PicoPredicate::functionLower($filter->getColumnName()), PicoPredicate::generateLikeContains(strtolower($filterValue))));
                     }

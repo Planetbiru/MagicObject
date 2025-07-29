@@ -249,7 +249,7 @@ class PicoSpecificationFilter
      */
     public function isTextEquals()
     {
-        return $this->dataType === self::DATA_TYPE_TEXT_EQUALS;
+        return strpos($this->dataType, self::DATA_TYPE_TEXT_EQUALS) !== false;
     }
 
     /**
