@@ -1058,12 +1058,13 @@ This enhancement improves developer ergonomics when working with deeply nested d
 Added support for the `@TimeRange` validation annotation to validate time values within a specific range.
 
 **Usage Example:**
+
 ```php
 /**
  * @TimeRange(min="08:00", max="17:00")
  */
 public $attendanceIn;
-````
+```
 
 * Accepts time strings in `HH:MM` or `HH:MM:SS` format.
 * Ensures the value falls within the defined range (inclusive).
@@ -1071,3 +1072,16 @@ public $attendanceIn;
 
 This new validation rule strengthens form-level data validation where time constraints are critical.
 
+
+
+# MagicObject Version 3.14.7
+
+## Bug Fixes
+
+### Fix: Default Value Parsing for `tinyint(1)` in PHP 8
+
+Fixed the parsing of default values for `tinyint(1)` columns in `CREATE TABLE` statements to ensure compatibility with PHP 5, 7, and 8.
+
+Previously, in PHP 8, values like `'0'` or `'false'` could be incorrectly interpreted as `true`.
+
+Now, default values are accurately converted to `TRUE` or `FALSE` based on their literal meaning.
