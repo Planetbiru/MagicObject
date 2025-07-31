@@ -709,7 +709,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	 * @param string $query The raw SQL string to be escaped.
 	 * @return string The escaped SQL string, safe for inclusion in SQL statements.
 	 */
-	public function escapeSQL($query)
+	public function escapeSQL($query) // NOSONAR
 	{
 		// Escape carriage return and newline for all
 		$query = str_replace(["\r", "\n"], ["\\r", "\\n"], $query);
