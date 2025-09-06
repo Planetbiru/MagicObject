@@ -13,7 +13,7 @@ Users simply create an import data configuration file dan import script as follo
 File `import.yml`
 
 ```yml
-database_target:
+databaseTarget:
   driver: mysql
   host: server1.domain.tld
   port: 3306
@@ -22,7 +22,7 @@ database_target:
   database_name: sipro
   databaseSchema: public
   timeZone: Asia/Jakarta
-database_source:
+databaseSource:
   driver: mysql
   host: server1.domain.tld
   port: 3306
@@ -31,16 +31,16 @@ database_source:
   database_name: sipro_ori
   databaseSchema: public
   timeZone: Asia/Jakarta
-maximum_record: 100
+maximumRecord: 100
 table:
   - source: modul
     target: modul
     map: 
     - 'default_data : default'
     - 'sort_order : order'
-    pre_import_script: 
+    preImportScript: 
     - "truncate modul"
-    maximum_record: 2000
+    maximumRecord: 2000
   - source: hak_akses
     target: hak_akses
     map:
@@ -48,19 +48,19 @@ table:
     - 'allowed_create : insert'
     - 'allowed_update : update'
     - 'allowed_delete : delete'
-    pre_import_script: 
+    preImportScript: 
     - "truncate hak_akses"
-    post_import_script: 
+    postImportScript: 
     - "update hak_akses set allowed_list = true, allowed_approve = true, allowed_sort_order = true"
-    maximum_record: 50
+    maximumRecord: 50
 ```
 
 **Explanation**
 
-- `database_source` is the source database configuration
-- `database_target` is the target database configuration
+- `databaseSource` is the source database configuration
+- `databaseTarget` is the target database configuration
 - `table` is an array containing all the tables to be imported. Tables not listed in `table` will not be imported.
-- `maximum_record` is the maximum number of records in a single insert query. Note that MagicObject does not care about the size of the data in bytes. If you need to adjust the maximum records per table, specify `maximum_record` on the table you want to set.
+- `maximumRecord` is the maximum number of records in a single insert query. Note that MagicObject does not care about the size of the data in bytes. If you need to adjust the maximum records per table, specify `maximumRecord` on the table you want to set.
 
 1. `source` (required)
 
@@ -70,7 +70,7 @@ Table name of the source database
 
 Table name of the target database
 
-3. `maximum_record` (optional)
+3. `maximumRecord` (optional)
 
 `maximum records` on a table is used to reset the number of records per `insert` query on a table for that table. This setting will override the global setting.
 
@@ -80,13 +80,14 @@ Table name of the target database
 
 `map` is an array of text separated by colons. On the left side of the colon are the column names in the target table and database while on the right side of the colon are the column names in the source table and database. 
 
-5. `pre_import_script` (optional)
+5. `preImportScript` (optional)
 
-`pre_import_script` is an array of queries that will be executed before the data import begins. `pre_import_script` is usually used to clear data from a table and reset all sequence or auto increment values ​​from the target table.
+`preImportScript` is an array of queries that will be executed before the data import begins. `preImportScript` is usually used to clear data from a table and reset all sequence or auto increment values ​​from the target table.
 
-6. `post_import_script` (optional)
+6. `postImportScript` (optional)
 
-`post_import_script` is an array of queries that will be executed after the data import is complete. `post_import_script` can be used for various purposes such as fixing some data on the target table including taking values ​​from other tables. Therefore post_script must be run after all tables have been successfully imported.
+`postImportScript` is an array of queries that will be executed after the data import is complete. `postImportScript` can be used for various purposes such as fixing some data on the target table including taking values ​​from other tables. Therefore post_script must be run after all tables have been successfully imported.
+
 
 **Import Script**
 
@@ -105,7 +106,7 @@ $config->loadYamlFile('import.yml', true, true, true);
 
 $fp = fopen(__DIR__.'/db.sql', 'w');
 fclose($fp);
-$sql = (new PicoDatabaseUtilMySql())->importData($config, function($sql, $source, $target){
+$sql = (new PicoDatabaseUtilMySql())->importData($config, function($sql, $tableNameSource, $tableNameTarget, $databaseSource, $databaseTarget){
     $fp = fopen(__DIR__.'/db.sql', 'a');
     fwrite($fp, $sql.";\r\n\r\n");
     fclose($fp);
@@ -118,9 +119,13 @@ $sql = (new PicoDatabaseUtilMySql())->importData($config, function($sql, $source
 php import.php
 ```
 
-MagicObject will create a database query that is saved into a file named `db.sql`. The data is taken from the `database_source` but the table and column names have been adjusted to the `database_target`. This query can be run in the `database_target`. If you want to empty a table before importing data, you can add a pre_import_script to each table. Keep in mind that all pre_import_scripts will be executed before MagicObject starts importing data.
+MagicObject will generate SQL queries based on the configuration in `import.yml`. These queries are written into `db.sql`. The data is read from the `databaseSource`, while table and column names are automatically mapped to the `databaseTarget`. The resulting `db.sql` file can then be executed on the `databaseTarget`.
 
-If the database is too complex, users can use the PicoDatabaseUtilMySql::autoConfigureImportData() method to create a configuration template to avoid missing table and column names. Users simply specify the source database and the target database. MagicObject will check the tables and columns in both databases. If a table exists in the target database but not in the source database, MagicObject will write ??? as its source name. Users can manually change the name of this table. In the same table, if a column exists in the target database but not in the source database, MagicObject will write ??? as its source name. Users can manually change the name of this column.
+If you want to clear a table before importing data, you can define a `preImportScript` for that table. All preImportScripts will be executed before MagicObject starts the data import process.
+
+For more complex databases, you can use the method `PicoDatabaseUtilMySql::autoConfigureImportData()` to generate a configuration template. This method compares the source and target databases and automatically maps tables and columns. If a table exists in the target but not in the source, MagicObject will mark its source as `???`. Likewise, if a column exists in the target table but not in the source, its source will be marked as `???`. You can then manually adjust these placeholders in the configuration file.
+
+In addition to generating an SQL file, users can also choose to **execute the generated queries directly on the target database**. This allows the import process to be performed automatically without the need to run the resulting `db.sql` file manually.
 
 Here is an example of how to create a database import configuration template.
 
@@ -129,7 +134,7 @@ Here is an example of how to create a database import configuration template.
 File `import.yml`
 
 ```yml
-database_target:
+databaseTarget:
   driver: mysql
   host: server1.domain.tld
   port: 3306
@@ -139,7 +144,7 @@ database_target:
   databaseSchema: public
   timeZone: Asia/Jakarta
   charset: utf8
-database_source:
+databaseSource:
   driver: mysql
   host: server1.domain.tld
   port: 3306
@@ -149,7 +154,7 @@ database_source:
   databaseSchema: public
   timeZone: Asia/Jakarta
   charset: utf8
-maximum_record: 100
+maximumRecord: 100
 ```
 
 **Import Template Script**
