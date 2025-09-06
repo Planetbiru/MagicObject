@@ -37,7 +37,7 @@ table:
     target: modul
     map: 
     - 'default_data : default'
-    - 'sort_order : order'
+    - 'sort_sort_order : order'
     preImportScript: 
     - "truncate modul"
     maximumRecord: 2000
@@ -99,18 +99,25 @@ File `import.php`
 use MagicObject\SecretObject;
 use MagicObject\Util\Database\PicoDatabaseUtilMySql;
 
-require_once dirname(__DIR__) . "/inc.lib/vendor/autoload.php";
+require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 $config = new SecretObject();
 $config->loadYamlFile('import.yml', true, true, true);
 
 $fp = fopen(__DIR__.'/db.sql', 'w');
 fclose($fp);
-$sql = (new PicoDatabaseUtilMySql())->importData($config, function($sql, $tableNameSource, $tableNameTarget, $databaseSource, $databaseTarget){
+$tool = new PicoDatabaseUtilMySql();
+
+$tableName = "transaction";
+$limit = 200;
+$offset = 400;
+
+$sql = $tool->importData($config, function($sql, $tableNameSource, $tableNameTarget, $databaseSource, $databaseTarget){
     $fp = fopen(__DIR__.'/db.sql', 'a');
     fwrite($fp, $sql.";\r\n\r\n");
     fclose($fp);
-});
+}, $tableName = null, $limit = null, $offset = null);
+
 ```
 
 **Executing Script**
@@ -121,11 +128,46 @@ php import.php
 
 MagicObject will generate SQL queries based on the configuration in `import.yml`. These queries are written into `db.sql`. The data is read from the `databaseSource`, while table and column names are automatically mapped to the `databaseTarget`. The resulting `db.sql` file can then be executed on the `databaseTarget`.
 
-If you want to clear a table before importing data, you can define a `preImportScript` for that table. All preImportScripts will be executed before MagicObject starts the data import process.
+**Pre- and Post-Import Scripts**
+
+If you want to clear or prepare a table before importing data, you can define a **`preImportScript`** for that table.
+
+* A `preImportScript` will only run once, before the first chunk of that table is imported.
+* Similarly, you can define a **`postImportScript`**, which will run once after the last chunk of a table is imported.
+
+This ensures setup and cleanup scripts are not executed repeatedly during chunked imports.
+
+**Chunked Import**
+
+For large tables, you can split the import into **chunks** by setting the `$limit` and `$offset` parameters:
+
+* `$limit` → maximum number of records per batch.
+* `$offset` → the starting record index.
+
+Each call to `importData()` processes only a portion of the data.
+You can run the script multiple times with different offsets to process the entire dataset in smaller parts.
+
+MagicObject will automatically return an indicator showing whether there are still records left after the current chunk.
+This makes it easy to implement **auto-chunk loops** until all data is imported.
 
 For more complex databases, you can use the method `PicoDatabaseUtilMySql::autoConfigureImportData()` to generate a configuration template. This method compares the source and target databases and automatically maps tables and columns. If a table exists in the target but not in the source, MagicObject will mark its source as `???`. Likewise, if a column exists in the target table but not in the source, its source will be marked as `???`. You can then manually adjust these placeholders in the configuration file.
 
 In addition to generating an SQL file, users can also choose to **execute the generated queries directly on the target database**. This allows the import process to be performed automatically without the need to run the resulting `db.sql` file manually.
+
+**Direct Execution**
+
+In addition to writing an SQL file, you can also choose to **execute the generated queries directly** on the target database:
+
+```php
+$sql = $tool->importData(
+    $config,
+    function($sql, $tableNameSource, $tableNameTarget, $databaseSource, $databaseTarget) {
+        $databaseTarget->exec($sql); // run query immediately
+    }
+);
+```
+
+This allows the import process to run automatically, without the need to manually execute `db.sql`.
 
 Here is an example of how to create a database import configuration template.
 
@@ -155,29 +197,42 @@ databaseSource:
   timeZone: Asia/Jakarta
   charset: utf8
 maximumRecord: 100
+table:
+  - 
+    target: acuan_pengawasan
+    source: acuan_pengawasan
+    map:
+      - "acuan_pengawasan_id : acuan_pengawasan_id"
+      - "nama : nama"
+      - "sort_order : order"
+      - "default_data : default"
+      - "aktif : aktif"
+  - 
+    target: acuan_pengawasan_pekerjaan
+    source: acuan_pengawasan_pekerjaan
+    map:
+      - "acuan_pengawasan_pekerjaan_id : acuan_pengawasan_pekerjaan_id"
+      - "pekerjaan_id : pekerjaan_id"
+      - "acuan_pengawasan_id : acuan_pengawasan_id"
+      - "aktif : aktif"
+  - 
+    target: akhir_pekan
+    source: akhir_pekan
+    preImportScript:
+      - "TRUNCATE akhir_pekan"
+    postImportScript:
+      - "UPDATE akhir_pekan SET default_data = TRUE WHERE aktif = TRUE"
+    map:
+      - "akhir_pekan_id : akhir_pekan_id"
+      - "nama : nama"
+      - "kode_hari : kode_hari"
+      - "sort_order : order"
+      - "default_data : default"
+      - "aktif : aktif"
 ```
 
-**Import Template Script**
+**Create Configuration**
 
-File `configure-import.php`
+Users can create an import configuration using **MagicAppBuilder**. This feature has been available since version **1.20.0**. Users can map table names, column names, and define pre-import and post-import scripts.
 
-```php
-<?php
-
-use MagicObject\SecretObject;
-use MagicObject\Util\Database\PicoDatabaseUtilMySql;
-
-require_once dirname(__DIR__) . "/vendor/autoload.php";
-
-$config = new SecretObject();
-$config->loadYamlFile('import.yml', true, true, true);
-
-(new PicoDatabaseUtilMySql())->autoConfigureImportData($config);
-file_put_contents('import.yml', $config->dumpYaml(0, 2));
-```
-
-**Executing Script**
-
-```bash
-php configure-import.php
-```
+MagicAppBuilder provides a starter configuration if users change their table or column naming strategy. Users only need to adjust the parts that are necessary. If there are no column name changes in a table, users do not need to map the column names—mapping the table name alone is sufficient.
