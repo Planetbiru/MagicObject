@@ -404,14 +404,25 @@ class PicoDatabaseUtilBase // NOSONAR
     }
 
     /**
-     * Imports data from the source database to the target database.
+     * Executes a full data import process from a source database to a target database.
      *
-     * This method connects to the source and target databases, executes any pre-import scripts,
-     * transfers data from the source tables to the target tables, and executes any post-import scripts.
+     * This method performs the following steps:
+     * - Establishes connections to both source and target databases using configuration details.
+     * - Executes optional pre-import SQL scripts for each table.
+     * - Transfers data from source tables to corresponding target tables, respecting record limits.
+     * - Executes optional post-import SQL scripts for each table.
      *
-     * @param SecretObject $config Configuration object containing database and table details.
-     * @param callable $callbackFunction Callback function to execute SQL scripts.
-     * @return bool Returns true on successful import, false on failure.
+     * The import process is table-driven, with each table configuration specifying source/target names,
+     * pre/post import scripts, and other metadata. SQL execution is delegated to a user-defined callback.
+     *
+     * @param SecretObject $config Configuration object containing:
+     *   - Source and target database connection parameters.
+     *   - Table mappings with source/target names and optional scripts.
+     *   - Maximum record limits for import operations.
+     * @param callable $callbackFunction A user-defined function with the signature:
+     *   function(string $sql, string $sourceTable, string $targetTable, PicoDatabase $sourceDb, PicoDatabase $targetDb): void
+     *   Used to execute pre/post import SQL scripts.
+     * @return bool True if all operations succeed; false if any exception occurs during the process.
      */
     public function importData($config, $callbackFunction)
     {
@@ -437,7 +448,7 @@ class PicoDatabaseUtilBase // NOSONAR
                 {
                     foreach($preImportScript as $sql)
                     {
-                        call_user_func($callbackFunction, $sql, $tableNameSource, $tableNameTarget);
+                        call_user_func($callbackFunction, $sql, $tableNameSource, $tableNameTarget, $databaseSource, $databaseTarget);
                     }
                 }
             }
@@ -460,7 +471,7 @@ class PicoDatabaseUtilBase // NOSONAR
                 {
                     foreach($postImportScript as $sql)
                     {
-                        call_user_func($callbackFunction, $sql, $tableNameSource, $tableNameTarget);
+                        call_user_func($callbackFunction, $sql, $tableNameSource, $tableNameTarget, $databaseSource, $databaseTarget);
                     }
                 }
             }
