@@ -1283,60 +1283,6 @@ CREATE TABLE useraccount (...);
 
 * **No naming strategy changes** were introduced. Table names remain exactly the same; only the surrounding quotes are removed.
 * If your schema relies on **case-sensitive identifiers** or **reserved keywords**, you may still need to add quotes manually.
-# MagicObject Version 3.19.0
-
-## New Feature: `XmlToJsonParser` Utility Class
-
-A new utility class **`XmlToJsonParser`** has been introduced to parse XML documents into PHP arrays/JSON.
-It supports:
-
-* **Custom flattener element**: users can configure which XML elements should be treated as array items (e.g., `<entry>`, `<item>`, etc.).
-* **Consistent output**: empty XML elements are automatically converted into `null` instead of empty arrays.
-* **Round-trip support**: arrays can also be converted back into XML, with configurable wrapper element names.
-
-This allows developers to manage application configuration using XML files, which are **less error-prone compared to YAML**, especially in environments where indentation issues are common.
-
-**Example Usage:**
-
-```php
-$parser = new XmlToJsonParser(['entry', 'item']);
-$config = $parser->parse(file_get_contents('config.xml'));
-```
-
-## Enhancement: `PicoCurlUtil` — Alternative to `curl`
-
-A new class **`PicoCurlUtil`** has been added under `MagicObject\Util`.
-This class provides an interface for making HTTP requests with **automatic fallback**:
-
-* Uses **cURL** if the PHP `curl` extension is available.
-* Falls back to **PHP streams** (`file_get_contents` + stream context) when `curl` is not available.
-
-### Features
-
-* Supports **GET** and **POST** requests (with planned extensions for PUT, DELETE, etc.).
-* Allows setting **headers**, request body, and **SSL verification options**.
-* Provides access to **response headers**, **body**, and **HTTP status code**.
-* Automatically throws **`CurlException`** on error, for consistent error handling.
-
-**Example Usage:**
-
-```php
-use MagicObject\Util\PicoCurlUtil;
-
-$http = new PicoCurlUtil();
-$response = $http->get("https://example.com/api/data");
-
-if ($http->getHttpCode() === 200) {
-    echo $response;
-}
-```
-
-### Why It Matters?
-
-* **Greater Flexibility:** Developers can now use XML configuration files instead of YAML.
-* **Better Portability:** Applications can run even in environments where the `curl` extension is not installed.
-* **Consistent API:** Whether using cURL or streams, you always interact via `PicoCurlUtil`.
-
 
 # MagicObject Version 3.18.0
 
