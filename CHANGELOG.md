@@ -1408,4 +1408,3 @@ if ($http->getHttpCode() === 200) {
 * **Better Portability:** Applications can run even in environments where the `curl` extension is not installed.
 * **Consistent API:** Whether using cURL or streams, you always interact via `PicoCurlUtil`.
 
-
