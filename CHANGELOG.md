@@ -1337,6 +1337,23 @@ if ($http->getHttpCode() === 200) {
 * **Better Portability:** Applications can run even in environments where the `curl` extension is not installed.
 * **Consistent API:** Whether using cURL or streams, you always interact via `PicoCurlUtil`.
 
+
+# MagicObject Version 3.18.0
+
+## Enhancement: Database Migration
+
+A new parameter has been added to **Database Migration** to provide greater flexibility.
+Previously, all migration queries had to be dumped into a SQL file before execution.
+With this update, developers can now choose to **run queries directly on the target database**, reducing steps and improving efficiency in deployment workflows.
+
+This makes migrations faster, easier to automate, and less error-prone—especially useful for CI/CD pipelines.
+
+## Bug Fixes: Undefined Array Index in `PicoPageData::applySubqueryResult()`
+
+Fixed an issue where an **undefined array index** error could occur when the provided data structure did not match the expected format.
+This patch ensures more robust handling of unexpected input, improving the **stability and reliability** of query result processing.
+
+
 # MagicObject Version 3.19.0
 
 ## New Feature: `XmlToJsonParser` Utility Class
@@ -1391,17 +1408,6 @@ if ($http->getHttpCode() === 200) {
 * **Better Portability:** Applications can run even in environments where the `curl` extension is not installed.
 * **Consistent API:** Whether using cURL or streams, you always interact via `PicoCurlUtil`.
 
-
-# MagicObject Version 3.18.0
-
-## Enhancement: Database Migration
-
-A new parameter has been added to **Database Migration** to provide greater flexibility.
-Previously, all migration queries had to be dumped into a SQL file before execution.
-With this update, developers can now choose to **run queries directly on the target database**, reducing steps and improving efficiency in deployment workflows.
-
-This makes migrations faster, easier to automate, and less error-prone—especially useful for CI/CD pipelines.
-
 ## Enhancement: PicoSession Redis Database Parameter
 
 **PicoSession** now supports specifying a **Redis database index** via the session save path.
@@ -1420,9 +1426,4 @@ MagicObject now includes a **fallback mechanism** for HTTP requests.
 If the **cURL extension** is not available in the PHP environment, the library will automatically fall back to using **`stream_context_create`** with **`file_get_contents`**.
 
 This ensures better **portability** and compatibility across different hosting environments where cURL may be disabled by default.
-
-## Bug Fixes: Undefined Array Index in `PicoPageData::applySubqueryResult()`
-
-Fixed an issue where an **undefined array index** error could occur when the provided data structure did not match the expected format.
-This patch ensures more robust handling of unexpected input, improving the **stability and reliability** of query result processing.
 
