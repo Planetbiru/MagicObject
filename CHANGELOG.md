@@ -1283,6 +1283,7 @@ CREATE TABLE useraccount (...);
 
 * **No naming strategy changes** were introduced. Table names remain exactly the same; only the surrounding quotes are removed.
 * If your schema relies on **case-sensitive identifiers** or **reserved keywords**, you may still need to add quotes manually.
+
 # MagicObject Version 3.19.0
 
 ## New Feature: `XmlToJsonParser` Utility Class
