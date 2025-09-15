@@ -143,6 +143,13 @@ class XmlToJsonParser
      * @param string           $currentName The current element name.
      * @param string           $itemName    The name to use for array items.
      * @return void
+     *
+     * This function traverses the input array or scalar value and appends it to the given XML element.
+     * - If the value is an array, it checks if it is associative or sequential.
+     * - Sequential arrays are wrapped using the provided itemName.
+     * - Associative arrays are processed by key, handling text nodes ("#text") and attributes ("@attr").
+     * - Scalar values are added as text nodes.
+     * - Boolean false is converted to string "false" instead of null.
      */
     private function arrayToXml($data, &$xmlElement, $currentName, $itemName)
     {
@@ -150,7 +157,7 @@ class XmlToJsonParser
             $isAssoc = array_keys($data) !== range(0, count($data) - 1);
 
             if (!$isAssoc) {
-                // array serial → bungkus pakai itemName dari parameter
+                // Sequential array → wrap using itemName parameter
                 foreach ($data as $value) {
                     $child = $xmlElement->addChild($itemName);
                     $this->arrayToXml($value, $child, $itemName, $itemName);
@@ -158,9 +165,11 @@ class XmlToJsonParser
             } else {
                 foreach ($data as $key => $value) {
                     if ($key === "#text") {
-                        $xmlElement[0] = htmlspecialchars((string)$value);
+                        // Add text node
+                        $xmlElement[0] = htmlspecialchars($value === false ? "false" : (string)$value);
                     } elseif (strpos($key, "@") === 0) {
-                        $xmlElement->addAttribute(substr($key, 1), (string)$value);
+                        // Add attribute
+                        $xmlElement->addAttribute(substr($key, 1), $value === false ? "false" : (string)$value);
                     } else {
                         if (is_array($value)) {
                             $isAssocChild = array_keys($value) !== range(0, count($value) - 1);
@@ -174,13 +183,15 @@ class XmlToJsonParser
                                 }
                             }
                         } else {
-                            $xmlElement->addChild($key, htmlspecialchars((string)$value));
+                            // Add child element with value, convert false to string "false"
+                            $xmlElement->addChild($key, htmlspecialchars($value === false ? "false" : (string)$value));
                         }
                     }
                 }
             }
         } elseif ($data !== null) {
-            $xmlElement[0] = htmlspecialchars((string)$data);
+            // Add scalar value, convert false to string "false"
+            $xmlElement[0] = htmlspecialchars($data === false ? "false" : (string)$data);
         }
     }
 }
