@@ -1337,7 +1337,6 @@ if ($http->getHttpCode() === 200) {
 * **Better Portability:** Applications can run even in environments where the `curl` extension is not installed.
 * **Consistent API:** Whether using cURL or streams, you always interact via `PicoCurlUtil`.
 
-
 # MagicObject Version 3.18.0
 
 ## Enhancement: Database Migration
@@ -1407,4 +1406,23 @@ if ($http->getHttpCode() === 200) {
 * **Greater Flexibility:** Developers can now use XML configuration files instead of YAML.
 * **Better Portability:** Applications can run even in environments where the `curl` extension is not installed.
 * **Consistent API:** Whether using cURL or streams, you always interact via `PicoCurlUtil`.
+
+## Enhancement: PicoSession Redis Database Parameter
+
+**PicoSession** now supports specifying a **Redis database index** via the session save path.
+This allows developers to isolate sessions in different Redis databases (e.g., separating staging and production data) without requiring additional Redis instances.
+The parameter can be set using query options like `db`, `dbindex`, or `database` in the Redis connection string.
+
+Example:
+
+```
+tcp://localhost:6379?db=3
+```
+
+## Enhancement: HTTP Request Fallback without cURL
+
+MagicObject now includes a **fallback mechanism** for HTTP requests.
+If the **cURL extension** is not available in the PHP environment, the library will automatically fall back to using **`stream_context_create`** with **`file_get_contents`**.
+
+This ensures better **portability** and compatibility across different hosting environments where cURL may be disabled by default.
 
