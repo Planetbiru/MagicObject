@@ -426,7 +426,7 @@ class PicoSession // NOSONAR
         {
             $params['database'] = (int)$db;
         }
-        if(isset($auth))
+        if(isset($auth) && !empty($auth))
         {
             $params['auth'] = $auth;
         }
