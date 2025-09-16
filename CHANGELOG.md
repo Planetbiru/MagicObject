@@ -1284,3 +1284,31 @@ CREATE TABLE useraccount (...);
 * **No naming strategy changes** were introduced. Table names remain exactly the same; only the surrounding quotes are removed.
 * If your schema relies on **case-sensitive identifiers** or **reserved keywords**, you may still need to add quotes manually.
 
+
+# MagicObject Version 3.18.0
+
+## Enhancement: Database Migration
+
+A new parameter has been added to **Database Migration** to provide greater flexibility.
+Previously, all migration queries had to be dumped into a SQL file before execution.
+With this update, developers can now choose to **run queries directly on the target database**, reducing steps and improving efficiency in deployment workflows.
+
+This makes migrations faster, easier to automate, and less error-prone—especially useful for CI/CD pipelines.
+
+## Enhancement: PicoSession Redis Database Parameter
+
+**PicoSession** now supports specifying a **Redis database index** via the session save path.
+This allows developers to isolate sessions in different Redis databases (e.g., separating staging and production data) without requiring additional Redis instances.
+The parameter can be set using query options like `db`, `dbindex`, or `database` in the Redis connection string.
+
+Example:
+
+```
+tcp://localhost:6379?db=3
+```
+
+## Bug Fixes: Undefined Array Index in `PicoPageData::applySubqueryResult()`
+
+Fixed an issue where an **undefined array index** error could occur when the provided data structure did not match the expected format.
+This patch ensures more robust handling of unexpected input, improving the **stability and reliability** of query result processing.
+
