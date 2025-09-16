@@ -36531,7 +36531,7 @@ MagicObject<h4>Authors</h4>
 </ol>
 <h2>Description</h2>
 <p>Class PicoCurlUtil</p>
-<p>This class provides an interface for making HTTP requests using cURL.</p>
+<p>This class provides an interface for making HTTP requests using cURL or PHP streams as a fallback.</p>
 </div>
 <h2>Properties</h2>
 <div class="property">
@@ -36544,7 +36544,16 @@ MagicObject<h4>Authors</h4>
 </div>
 </div>
 <div class="property">
-<div class="property-identity">2. <span class="property-label">responseHeaders</span></div>
+<div class="property-identity">2. <span class="property-label">isCurlAvailable</span></div>
+<h3>Declaration</h3>
+<div class="property-declaratiopn"><span class="access-level">private</span> <span class="property-type">bool</span> <span class="property-name">$isCurlAvailable</span> = <span class="property-default">false</span>;</div>
+<div class="docblock">
+<h3>Description</h3>
+<p>Flag to indicate if the cURL extension is available</p>
+</div>
+</div>
+<div class="property">
+<div class="property-identity">3. <span class="property-label">responseHeaders</span></div>
 <h3>Declaration</h3>
 <div class="property-declaratiopn"><span class="access-level">private</span> <span class="property-type">string[]</span> <span class="property-name">$responseHeaders</span> = <span class="property-default">array()</span>;</div>
 <div class="docblock">
@@ -36553,7 +36562,7 @@ MagicObject<h4>Authors</h4>
 </div>
 </div>
 <div class="property">
-<div class="property-identity">3. <span class="property-label">responseBody</span></div>
+<div class="property-identity">4. <span class="property-label">responseBody</span></div>
 <h3>Declaration</h3>
 <div class="property-declaratiopn"><span class="access-level">private</span> <span class="property-type">string</span> <span class="property-name">$responseBody</span> = <span class="property-default">&#039;&#039;</span>;</div>
 <div class="docblock">
@@ -36562,7 +36571,7 @@ MagicObject<h4>Authors</h4>
 </div>
 </div>
 <div class="property">
-<div class="property-identity">4. <span class="property-label">httpCode</span></div>
+<div class="property-identity">5. <span class="property-label">httpCode</span></div>
 <h3>Declaration</h3>
 <div class="property-declaratiopn"><span class="access-level">private</span> <span class="property-type">int</span> <span class="property-name">$httpCode</span> = <span class="property-default">0</span>;</div>
 <div class="docblock">
@@ -36578,7 +36587,7 @@ MagicObject<h4>Authors</h4>
 <div class='docblock'>
 <h3>Description</h3>
 <p>PicoCurlUtil constructor.
-Initializes the cURL handle.</p>
+Initializes the cURL handle if available, otherwise sets the fallback flag.</p>
 </div>
 </div>
 <div class='method'>
@@ -36633,7 +36642,7 @@ Initializes the cURL handle.</p>
 <div class="return-description"><p>Response body</p></div>
 <h3>Throws</h3>
 <div class="return-type">CurlException</div>
-<div class="return-description"><p>If an error occurs during cURL execution</p></div>
+<div class="return-description"><p>If an error occurs during execution</p></div>
 </div>
 </div>
 <div class='method'>
@@ -36660,64 +36669,13 @@ Initializes the cURL handle.</p>
 <div class="return-description"><p>Response body</p></div>
 <h3>Throws</h3>
 <div class="return-type">CurlException</div>
-<div class="return-description"><p>If an error occurs during cURL execution</p></div>
+<div class="return-description"><p>If an error occurs during execution</p></div>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">6. <span class="method-label">put</span></div>
+<div class="method-identity">6. <span class="method-label">executeCurl</span></div>
 <h3>Declaration</h3>
-<div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">put</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$url</span>, <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">mixed</span> <span class="parameter-name">$data</span>, <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">array</span> <span class="parameter-name">$headers <span class="parameter-equal-sign">=</span> <span class="parameter-default">array (
-)</span></span><br>
-) : <span class="return-type">string</span><br>{<br>}</div>
-<div class='docblock'>
-<h3>Description</h3>
-<p>Executes a PUT request.</p>
-<h3>Parameters</h3>
-<div class="parameter-name">$url</div>
-<div class="parameter-description"><p>URL for the request</p></div>
-<div class="parameter-name">$data</div>
-<div class="parameter-description"><p>Data to send</p></div>
-<div class="parameter-name">$headers</div>
-<div class="parameter-description"><p>Additional headers for the request</p></div>
-<h3>Return</h3>
-<div class="return-type">string</div>
-<div class="return-description"><p>Response body</p></div>
-<h3>Throws</h3>
-<div class="return-type">CurlException</div>
-<div class="return-description"><p>If an error occurs during cURL execution</p></div>
-</div>
-</div>
-<div class='method'>
-<div class="method-identity">7. <span class="method-label">delete</span></div>
-<h3>Declaration</h3>
-<div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">delete</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$url</span>, <br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">array</span> <span class="parameter-name">$headers <span class="parameter-equal-sign">=</span> <span class="parameter-default">array (
-)</span></span><br>
-) : <span class="return-type">string</span><br>{<br>}</div>
-<div class='docblock'>
-<h3>Description</h3>
-<p>Executes a DELETE request.</p>
-<h3>Parameters</h3>
-<div class="parameter-name">$url</div>
-<div class="parameter-description"><p>URL for the request</p></div>
-<div class="parameter-name">$headers</div>
-<div class="parameter-description"><p>Additional headers for the request</p></div>
-<h3>Return</h3>
-<div class="return-type">string</div>
-<div class="return-description"><p>Response body</p></div>
-<h3>Throws</h3>
-<div class="return-type">CurlException</div>
-<div class="return-description"><p>If an error occurs during cURL execution</p></div>
-</div>
-</div>
-<div class='method'>
-<div class="method-identity">8. <span class="method-label">execute</span></div>
-<h3>Declaration</h3>
-<div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">execute</span>() : <span class="return-type">string</span><br>{<br>}</div>
+<div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">executeCurl</span>() : <span class="return-type">string</span><br>{<br>}</div>
 <div class='docblock'>
 <h3>Description</h3>
 <p>Executes the cURL request and processes the response.</p>
@@ -36730,7 +36688,36 @@ Initializes the cURL handle.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">9. <span class="method-label">getHttpCode</span></div>
+<div class="method-identity">7. <span class="method-label">executeStream</span></div>
+<h3>Declaration</h3>
+<div class="method-declaratiopn"><span class="access-level">private</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">executeStream</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$url</span>, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">string</span> <span class="parameter-name">$method</span>, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">mixed</span> <span class="parameter-name">$data</span>, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="parameter-type">array</span> <span class="parameter-name">$headers</span><br>
+) : <span class="return-type">string</span><br>{<br>}</div>
+<div class='docblock'>
+<h3>Description</h3>
+<p>Executes the request using PHP streams.</p>
+<h3>Parameters</h3>
+<div class="parameter-name">$url</div>
+<div class="parameter-description"></div>
+<div class="parameter-name">$method</div>
+<div class="parameter-description"></div>
+<div class="parameter-name">$data</div>
+<div class="parameter-description"></div>
+<div class="parameter-name">$headers</div>
+<div class="parameter-description"></div>
+<h3>Return</h3>
+<div class="return-type">string</div>
+<div class="return-description"></div>
+<h3>Throws</h3>
+<div class="return-type">CurlException</div>
+<div class="return-description"></div>
+</div>
+</div>
+<div class='method'>
+<div class="method-identity">8. <span class="method-label">getHttpCode</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">getHttpCode</span>() : <span class="return-type">int</span><br>{<br>}</div>
 <div class='docblock'>
@@ -36742,7 +36729,7 @@ Initializes the cURL handle.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">10. <span class="method-label">getResponseHeaders</span></div>
+<div class="method-identity">9. <span class="method-label">getResponseHeaders</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">getResponseHeaders</span>() : <span class="return-type">array</span><br>{<br>}</div>
 <div class='docblock'>
@@ -36754,7 +36741,7 @@ Initializes the cURL handle.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">11. <span class="method-label">close</span></div>
+<div class="method-identity">10. <span class="method-label">close</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">close</span>()<br>{<br>}</div>
 <div class='docblock'>
@@ -36763,7 +36750,7 @@ Initializes the cURL handle.</p>
 </div>
 </div>
 <div class='method'>
-<div class="method-identity">12. <span class="method-label">__destruct</span></div>
+<div class="method-identity">11. <span class="method-label">__destruct</span></div>
 <h3>Declaration</h3>
 <div class="method-declaratiopn"><span class="access-level">public</span> <span class="access-level"></span> <span class="php-keyword">function</span> <span class="method-name">__destruct</span>()<br>{<br>}</div>
 <div class='docblock'>

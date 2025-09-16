@@ -1307,6 +1307,13 @@ Example:
 tcp://localhost:6379?db=3
 ```
 
+## Enhancement: HTTP Request Fallback without cURL
+
+MagicObject now includes a **fallback mechanism** for HTTP requests.
+If the **cURL extension** is not available in the PHP environment, the library will automatically fall back to using **`stream_context_create`** with **`file_get_contents`**.
+
+This ensures better **portability** and compatibility across different hosting environments where cURL may be disabled by default.
+
 ## Bug Fixes: Undefined Array Index in `PicoPageData::applySubqueryResult()`
 
 Fixed an issue where an **undefined array index** error could occur when the provided data structure did not match the expected format.
