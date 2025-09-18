@@ -69,7 +69,7 @@ class SqliteSessionHandler
             CREATE TABLE IF NOT EXISTS {$this->table} (
                 id TEXT PRIMARY KEY,
                 data TEXT,
-                timestamp INTEGER
+                time_creation INTEGER
             )
         ");
     }
@@ -125,9 +125,9 @@ class SqliteSessionHandler
     {
         $time = time();
         $stmt = $this->pdo->prepare("
-            INSERT INTO {$this->table} (id, data, timestamp)
+            INSERT INTO {$this->table} (id, data, time_creation)
             VALUES (:id, :data, :time)
-            ON CONFLICT(id) DO UPDATE SET data = :data, timestamp = :time
+            ON CONFLICT(id) DO UPDATE SET data = :data, time_creation = :time
         ");
 
         return $stmt->execute(array(
@@ -162,6 +162,6 @@ class SqliteSessionHandler
     public function gc($maxlifetime)
     {
         $old = time() - $maxlifetime;
-        return $this->pdo->exec("DELETE FROM {$this->table} WHERE timestamp < $old") !== false;
+        return $this->pdo->exec("DELETE FROM {$this->table} WHERE time_creation < $old") !== false;
     }
 }
