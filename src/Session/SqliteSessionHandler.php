@@ -153,9 +153,9 @@ class SqliteSessionHandler
         ");
 
         // Bind parameters
-        $stmt->bindValue(':id', $id, PDO::PARAM_STR);
-        $stmt->bindValue(':data', $data, PDO::PARAM_LOB);   // pakai LOB untuk BLOB
-        $stmt->bindValue(':time', $time, PDO::PARAM_INT);
+        $stmt->bindValue(':id', $id, PDO::PARAM_STR); // Use PARAM_STR for text data
+        $stmt->bindValue(':data', $data, PDO::PARAM_LOB); // Use PARAM_LOB for binary data
+        $stmt->bindValue(':time', $time, PDO::PARAM_INT); // Use PARAM_INT for integer data
 
         return $stmt->execute();
     }
