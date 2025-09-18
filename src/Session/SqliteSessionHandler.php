@@ -35,41 +35,67 @@ class SqliteSessionHandler
      * then initializes the SQLite connection and creates the
      * sessions table if it does not exist.
      *
-     * @param string $path Absolute path to the SQLite database file.
+     * Behavior:
+     * - If the provided path points to a directory, a default filename
+     *   `sessions.sqlite` will be appended.
+     * - If the file does not exist, the directory will be created (if missing),
+     *   write access will be checked, and an empty file will be created.
+     * - If the path is still a directory after these checks, an exception is thrown.
      *
-     * @throws \RuntimeException If the target directory is not writable.
+     * @param string $path Absolute path to the SQLite database file or directory.
+     *
+     * @throws InvalidFileAccessException If the target directory is not writable
+     *                                    or the path cannot be resolved.
      */
     public function __construct($path)
     {
-        // Ensure the parent directory exists
-        $dir = dirname($path);
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
+        // If the path is a directory, append a default filename
+        if (is_dir($path)) {
+            $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . "sessions.sqlite";
         }
 
-        // Validate that the directory is writable
-        if (!is_writable($dir)) {
-            throw new InvalidFileAccessException("Folder not writable: " . $dir);
+        // If the file does not exist
+        if (!file_exists($path)) {
+            $dir = dirname($path);
+
+            // Create the directory if it does not exist
+            if (!is_dir($dir)) {
+                if (!mkdir($dir, 0777, true) && !is_dir($dir)) {
+                    throw new InvalidFileAccessException("Failed to create directory: " . $dir);
+                }
+            }
+
+            // Ensure the directory is writable
+            if (!is_writable($dir)) {
+                throw new InvalidFileAccessException("Folder not writable: " . $dir);
+            }
+
+            // Create an empty file for SQLite
+            file_put_contents($path, "");
         }
 
-        // Resolve real path, if file does not exist then create an empty one
+        // Validation: if the path is still a directory (edge case)
+        if (is_dir($path)) {
+            throw new InvalidFileAccessException("Target path is a directory, expected a file: " . $path);
+        }
+
+        // Resolve the real path
         $real = realpath($path);
         if ($real === false) {
-            file_put_contents($path, "");
-            $real = realpath($path);
+            throw new InvalidFileAccessException("Cannot resolve path: " . $path);
         }
 
-        // Build DSN for SQLite connection
+        // Build DSN for SQLite
         $dsn = "sqlite:" . $real;
         $this->pdo = new PDO($dsn);
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // Create session table if it does not exist
+        // Create the sessions table if it does not exist
         $this->pdo->exec("
             CREATE TABLE IF NOT EXISTS {$this->table} (
                 id TEXT PRIMARY KEY,
                 data TEXT,
-                time_creation INTEGER
+                timestamp INTEGER
             )
         ");
     }
