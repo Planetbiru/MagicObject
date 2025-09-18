@@ -35,67 +35,47 @@ class SqliteSessionHandler
      * then initializes the SQLite connection and creates the
      * sessions table if it does not exist.
      *
-     * Behavior:
-     * - If the provided path points to a directory, a default filename
-     *   `sessions.sqlite` will be appended.
-     * - If the file does not exist, the directory will be created (if missing),
-     *   write access will be checked, and an empty file will be created.
-     * - If the path is still a directory after these checks, an exception is thrown.
+     * @param string $path Absolute path to the SQLite database file.
      *
-     * @param string $path Absolute path to the SQLite database file or directory.
-     *
-     * @throws InvalidFileAccessException If the target directory is not writable
-     *                                    or the path cannot be resolved.
+     * @throws \RuntimeException If the target directory is not writable.
      */
     public function __construct($path)
     {
-        // If the path is a directory, append a default filename
+        // If path is a directory, append default filename
         if (is_dir($path)) {
             $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . "sessions.sqlite";
         }
 
-        // If the file does not exist
-        if (!file_exists($path)) {
-            $dir = dirname($path);
-
-            // Create the directory if it does not exist
-            if (!is_dir($dir)) {
-                if (!mkdir($dir, 0777, true) && !is_dir($dir)) {
-                    throw new InvalidFileAccessException("Failed to create directory: " . $dir);
-                }
-            }
-
-            // Ensure the directory is writable
-            if (!is_writable($dir)) {
-                throw new InvalidFileAccessException("Folder not writable: " . $dir);
-            }
-
-            // Create an empty file for SQLite
-            file_put_contents($path, "");
+        // Ensure the parent directory exists
+        $dir = dirname($path);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
         }
 
-        // Validation: if the path is still a directory (edge case)
-        if (is_dir($path)) {
-            throw new InvalidFileAccessException("Target path is a directory, expected a file: " . $path);
+        // Validate that the directory is writable
+        if (!is_writable($dir)) {
+            throw new InvalidFileAccessException("Folder not writable: " . $dir);
         }
 
-        // Resolve the real path
+        // Resolve real path, if file does not exist then create an empty one
         $real = realpath($path);
         if ($real === false) {
-            throw new InvalidFileAccessException("Cannot resolve path: " . $path);
+            file_put_contents($path, "");
+            $real = realpath($path);
         }
 
-        // Build DSN for SQLite
+        // Build DSN for SQLite connection
         $dsn = "sqlite:" . $real;
         $this->pdo = new PDO($dsn);
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // Create the sessions table if it does not exist
+        // Create session table if it does not exist
         $this->pdo->exec("
             CREATE TABLE IF NOT EXISTS {$this->table} (
                 id TEXT PRIMARY KEY,
-                data TEXT,
-                timestamp INTEGER
+                data BLOB,
+                time_creation INTEGER,
+                last_access INTEGER
             )
         ");
     }
@@ -132,10 +112,23 @@ class SqliteSessionHandler
      */
     public function read($id)
     {
+        // Get session data
         $stmt = $this->pdo->prepare("SELECT data FROM {$this->table} WHERE id = :id");
-        $stmt->execute(array(':id' => $id));
+        $stmt->bindValue(':id', $id, PDO::PARAM_STR);
+        $stmt->execute();
+
+        // Fetch the row
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        if ($row) {
+            // Update last access time meskipun data tidak berubah
+            $stmt = $this->pdo->prepare("UPDATE {$this->table} SET last_access = :time WHERE id = :id");
+            $stmt->bindValue(':time', time(), PDO::PARAM_INT);
+            $stmt->bindValue(':id', $id, PDO::PARAM_STR);
+            $stmt->execute();
+        }
+
+        // Return session data or empty string if not found
         return isset($row['data']) ? $row['data'] : '';
     }
 
@@ -149,18 +142,22 @@ class SqliteSessionHandler
      */
     public function write($id, $data)
     {
+        // Current timestamp
         $time = time();
+
+        // Use INSERT ... ON CONFLICT untuk SQLite
         $stmt = $this->pdo->prepare("
-            INSERT INTO {$this->table} (id, data, time_creation)
-            VALUES (:id, :data, :time)
-            ON CONFLICT(id) DO UPDATE SET data = :data, time_creation = :time
+            INSERT INTO {$this->table} (id, data, time_creation, last_access)
+            VALUES (:id, :data, :time, :time)
+            ON CONFLICT(id) DO UPDATE SET data = :data, last_access = :time
         ");
 
-        return $stmt->execute(array(
-            ':id'   => $id,
-            ':data' => $data,
-            ':time' => $time
-        ));
+        // Bind parameters
+        $stmt->bindValue(':id', $id, PDO::PARAM_STR);
+        $stmt->bindValue(':data', $data, PDO::PARAM_LOB);   // pakai LOB untuk BLOB
+        $stmt->bindValue(':time', $time, PDO::PARAM_INT);
+
+        return $stmt->execute();
     }
 
     /**
@@ -172,6 +169,7 @@ class SqliteSessionHandler
      */
     public function destroy($id)
     {
+        // Delete session record
         $stmt = $this->pdo->prepare("DELETE FROM {$this->table} WHERE id = :id");
         return $stmt->execute(array(':id' => $id));
     }
@@ -187,7 +185,8 @@ class SqliteSessionHandler
      */
     public function gc($maxlifetime)
     {
+        // Calculate the cutoff time
         $old = time() - $maxlifetime;
-        return $this->pdo->exec("DELETE FROM {$this->table} WHERE time_creation < $old") !== false;
+        return $this->pdo->exec("DELETE FROM {$this->table} WHERE last_access < $old") !== false;
     }
 }
