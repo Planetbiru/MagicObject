@@ -1422,13 +1422,6 @@ A new method isPdoConnected() has been introduced to allow developers to verify 
 Here’s the corrected version with improved grammar and clarity:
 
 
-## New Feature: PDO Connection Verification Method
-
-A new method isPdoConnected() has been introduced to allow developers to verify not only the TCP-level connection, but also the ability of PHP to execute SQL statements on the database.
-
-Here’s the corrected version with improved grammar and clarity:
-
-
 ## Bug Fix: Handle Exception in method getDatabaseCredentialsFromPdo($pdo, $driver, $dbType)
 
 If an error occurs when executing:
