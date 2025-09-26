@@ -1391,6 +1391,23 @@ This provides a **persistent session storage** mechanism using **SQLite** as the
 * **Lightweight:** Suitable for shared hosting or small applications.
 * **Reliability:** Prevents session loss when PHP restarts, unlike file-based sessions.
 
+## New Feature: PDO Connection Verification Method
+
+A new method isPdoConnected() has been introduced to allow developers to verify not only the TCP-level connection, but also the ability of PHP to execute SQL statements on the database.
+
+Here’s the corrected version with improved grammar and clarity:
+
+
+## Bug Fix: Handle Exception in method getDatabaseCredentialsFromPdo($pdo, $driver, $dbType)
+
+If an error occurs when executing:
+
+```php
+$dsn = $pdo->getAttribute(PDO::ATTR_CONNECTION_STATUS);
+```
+
+`getDatabaseCredentialsFromPdo($pdo, $driver, $dbType)` will return an empty instance of `SecretObject`.
+
 ## Enhancement: Improved `getDatabaseCredentialsFromPdo` Handling
 
 The method **`getDatabaseCredentialsFromPdo`** has been updated to better handle 
