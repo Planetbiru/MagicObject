@@ -1391,44 +1391,34 @@ This provides a **persistent session storage** mechanism using **SQLite** as the
 * **Lightweight:** Suitable for shared hosting or small applications.
 * **Reliability:** Prevents session loss when PHP restarts, unlike file-based sessions.
 
-# MagicObject Version 3.20.0
+## Enhancement: Improved `getDatabaseCredentialsFromPdo` Handling
 
-## Change: Removal of Math-Related Classes
+The method **`getDatabaseCredentialsFromPdo`** has been updated to better handle 
+PDO drivers that do not support certain attributes (e.g., `PDO::ATTR_CONNECTION_STATUS`).
 
-In this release, several math-related classes have been **removed** from MagicObject to keep the core library lightweight and focused.
+### Key Improvements
 
-### Removed Modules
+* **Warning Suppression**  
+  Suppresses warnings when `PDO::getAttribute(PDO::ATTR_CONNECTION_STATUS)` 
+  is not supported by the active PDO driver (e.g., SQLite).
 
-1. Complex Numbers  
-2. Matrix Operations  
-3. Geometry Utilities  
+* **Graceful Fallback**  
+  Introduced an optional `$databaseCredentials` parameter, which is used as a 
+  fallback source for host, port, and database name if they cannot be extracted 
+  from the PDO connection.
 
-### Migration
+* **Driver-Agnostic Behavior**  
+  Ensures compatibility across multiple database drivers (MySQL, PostgreSQL, SQLite, etc.) 
+  without causing runtime warnings.
 
-These classes are **not discontinued**, but have been moved into a **new dedicated repository**:
+* **Consistent Output**  
+  Always returns a populated `SecretObject` with connection details.  
+  If extraction fails, either the provided `$databaseCredentials` is returned, 
+  or a new empty `SecretObject` is created.
 
-👉 [Planetbiru/Math](https://github.com/Planetbiru/Math)
+### Why It Matters?
 
-Developers who rely on these math utilities should install the new package separately:
-
-```bash
-composer require planetbiru/math
-```
-
-## New Feature: PDO Connection Verification Method
-
-A new method isPdoConnected() has been introduced to allow developers to verify not only the TCP-level connection, but also the ability of PHP to execute SQL statements on the database.
-
-Here’s the corrected version with improved grammar and clarity:
-
-
-## Bug Fix: Handle Exception in method getDatabaseCredentialsFromPdo($pdo, $driver, $dbType)
-
-If an error occurs when executing:
-
-```php
-$dsn = $pdo->getAttribute(PDO::ATTR_CONNECTION_STATUS);
-```
-
-`getDatabaseCredentialsFromPdo($pdo, $driver, $dbType)` will return an empty instance of `SecretObject`.
+* Prevents noisy **PHP warnings** in environments where PDO drivers expose limited attributes.  
+* Provides a **more reliable and consistent mechanism** for retrieving database credentials.  
+* Ensures **backward compatibility** while making the method more robust in multi-database environments.
 
