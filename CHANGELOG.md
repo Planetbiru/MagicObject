@@ -1407,7 +1407,7 @@ In this release, several math-related classes have been **removed** from MagicOb
 
 These classes are **not discontinued**, but have been moved into a **new dedicated repository**:
 
-👉 [Planetbiru/Math](https://github.com/Planetbiru/MagicMath)
+👉 [Planetbiru/MagicMath](https://github.com/Planetbiru/MagicMath)
 
 Developers who rely on these math utilities should install the new package separately:
 
