@@ -201,6 +201,20 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
     }
 
     /**
+     * Checks if the given type is a boolean type.
+     *
+     * This method determines if the provided data type string corresponds to a boolean type.
+     * It checks for common boolean type names, ignoring case.
+     *
+     * @param string $type The data type to check.
+     * @return bool true if the type is a boolean type, false otherwise.
+     */
+    public static function isTypeBoolean($type)
+    {
+        return in_array(strtolower($type), array('bool', 'boolean'));
+    }
+
+    /**
      * Dumps a single record into an SQL INSERT statement.
      *
      * This method takes a data record and constructs an SQL INSERT statement 

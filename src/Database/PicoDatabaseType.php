@@ -63,4 +63,11 @@ class PicoDatabaseType
      * @var string
      */
     const DATABASE_TYPE_SQLSERVER = "sqlsrv";
+
+    /**
+     * Constant for Firebird database type.
+     *
+     * @var string
+     */
+    const DATABASE_TYPE_FIREBIRD = "firebird";
 }

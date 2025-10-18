@@ -120,6 +120,16 @@ class PicoDatabaseQueryBuilder // NOSONAR
     }
 
     /**
+     * Check if the database type is Firebird.
+     *
+     * @return bool true if the database type is Firebird, false otherwise.
+     */
+    public function isFirebird()
+    {
+        return strcasecmp($this->databaseType, PicoDatabaseType::DATABASE_TYPE_FIREBIRD) == 0;
+    }
+
+    /**
      * Check if the database type is PostgreSQL.
      *
      * @return bool true if the database type is PostgreSQL, false otherwise.
@@ -649,7 +659,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	 */
 	public function startTransaction() 
 	{
-		if ($this->isMySql() || $this->isPgSql()) {
+		if ($this->isMySql() || $this->isPgSql() || $this->isFirebird()) {
 			return "START TRANSACTION";
 		}
 		elseif ($this->isSqlite() || $this->isSqlServer()) {
@@ -665,7 +675,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	 */
 	public function commit()
 	{
-		if ($this->isMySql() || $this->isPgSql() || $this->isSqlite()) {
+		if ($this->isMySql() || $this->isPgSql() || $this->isSqlite() || $this->isFirebird()) {
 			return "COMMIT";
 		}
 		elseif ($this->isSqlServer()) {
@@ -681,7 +691,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	 */
 	public function rollback()
 	{
-		if ($this->isMySql() || $this->isPgSql() || $this->isSqlite()) {
+		if ($this->isMySql() || $this->isPgSql() || $this->isSqlite() || $this->isFirebird()) {
 			return "ROLLBACK";
 		}
 		elseif ($this->isSqlServer()) {
@@ -735,6 +745,11 @@ class PicoDatabaseQueryBuilder // NOSONAR
 
 		if (stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_SQLITE) !== false) {
 			// SQLite: only escape single quote
+			return str_replace("'", "''", $query);
+		}
+
+		if (stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_FIREBIRD) !== false) {
+			// Firebird: only escape single quote
 			return str_replace("'", "''", $query);
 		}
 
@@ -817,7 +832,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	 */
 	public function createBoolean($value)
 	{
-		if($this->isSqlite())
+		if($this->isSqlite() || $this->isFirebird() || $this->isSqlServer())
 		{
 			return $value ? '1' : '0';
 		}
@@ -847,7 +862,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	 */
 	public function executeFunction($name, $params)
 	{
-		if ($this->isMySql() || $this->isPgSql() || $this->isSqlServer()) {
+		if ($this->isMySql() || $this->isPgSql() || $this->isSqlServer() || $this->isFirebird()) {
 			return "SELECT $name($params)";
 		}
 		return null;
@@ -870,6 +885,10 @@ class PicoDatabaseQueryBuilder // NOSONAR
 		}
 		elseif ($this->isSqlServer()) {
 			return "EXEC $name $params"; // SQL Server uses EXEC to call stored procedures
+		}
+		else if ($this->isFirebird()) {
+			// Firebird uses EXECUTE PROCEDURE
+			return "EXECUTE PROCEDURE $name($params)";
 		}
 		return null;
 	}
@@ -894,6 +913,10 @@ class PicoDatabaseQueryBuilder // NOSONAR
 		else if ($this->isSqlServer()) {
 			$this->buffer .= "SCOPE_IDENTITY()"; // SQL Server uses SCOPE_IDENTITY() to get the last inserted ID
 		}
+		else if ($this->isFirebird()) {
+			// Firebird does not have a function like LAST_INSERT_ID(). It's handled differently.
+			// This method is for query construction, so we can't do much here.
+		}
 		return $this;
 	}
 
@@ -904,7 +927,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	 */
 	public function currentDate()
 	{
-		if ($this->isMySql() || $this->isPgSql() || $this->isSqlite()) {
+		if ($this->isMySql() || $this->isPgSql() || $this->isSqlite() || $this->isFirebird()) {
 			return "CURRENT_DATE";
 		}
 		else if ($this->isSqlServer()) {
@@ -920,7 +943,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	 */
 	public function currentTime()
 	{
-		if ($this->isMySql() || $this->isPgSql() || $this->isSqlite()) {
+		if ($this->isMySql() || $this->isPgSql() || $this->isSqlite() || $this->isFirebird()) {
 			return "CURRENT_TIME";
 		}
 		else if ($this->isSqlServer()) {
@@ -936,7 +959,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	 */
 	public function currentTimestamp()
 	{
-		if ($this->isMySql() || $this->isPgSql() || $this->isSqlite()) {
+		if ($this->isMySql() || $this->isPgSql() || $this->isSqlite() || $this->isFirebird()) {
 			return "CURRENT_TIMESTAMP";
 		}
 		else if ($this->isSqlServer()) {
@@ -953,7 +976,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	 */
 	public function now($precision = 0)
 	{
-		if ($this->isSqlite()) {
+		if ($this->isSqlite() || $this->isFirebird()) {
 			return "CURRENT_TIMESTAMP";
 		}
 
@@ -1059,6 +1082,11 @@ class PicoDatabaseQueryBuilder // NOSONAR
 				// SQL Server
 				$queryString .= "\r\nOFFSET $offset ROWS FETCH NEXT $limit ROWS ONLY";
 			}
+			else if($this->isFirebird())
+			{
+				// Firebird
+				$queryString = preg_replace('/SELECT/i', "SELECT FIRST $limit SKIP $offset", $queryString, 1);
+			}
 		}
 		
 		return $queryString;
@@ -1090,7 +1118,12 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	{
 		$sql = $this->buffer;
 		if ($this->limitOffset) {
-			if ($this->isMySql()) {
+			if($this->isFirebird())
+			{
+				// Add FIRST and SKIP to SELECT clause for Firebird
+				$sql = preg_replace('/^\s*SELECT/i', "SELECT FIRST ".$this->limit." SKIP ".$this->offset, $sql, 1);
+			}
+			else if ($this->isMySql()) {
 				$sql .= "LIMIT " . $this->offset . ", " . $this->limit;
 			} else if ($this->isPgSql() || $this->isSqlite()) {
 				$sql .= "LIMIT " . $this->limit . " OFFSET " . $this->offset;
