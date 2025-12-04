@@ -943,12 +943,31 @@ class PicoDatabasePersistence // NOSONAR
         return implode(" and ", $wheres);
     }
 
+    /**
+     * Builds a WHERE clause based on the table's primary key columns.
+     *
+     * This method constructs a WHERE clause for an SQL query using the primary keys
+     * defined in the provided table information. It retrieves the values from the
+     * current object, escapes them using the query builder, and generates conditions
+     * for each primary key. If a value is null, the condition will use "IS NULL".
+     *
+     * @param PicoTableInfo $info Table information containing primary key definitions.
+     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder used to escape values safely.
+     * @return stdClass An object containing:
+     *                  - columns: associative array of column names and their values
+     *                  - whereClause: the constructed WHERE clause string
+     * @throws NoPrimaryKeyDefinedException If no primary keys are defined in the table.
+     */
     private function getWhereWithColumns($info, $queryBuilder)
     {
+        $result = new stdClass;
         if($this->whereIsDefinedFirst && !empty($this->whereStr))
         {
-            return $this->whereStr;
+            $result->columns = array();
+            $result->whereClause = $this->whereStr;
+            return $result;
         }
+        
         $wheres = array();
         $columns = array();
         foreach($info->getPrimaryKeys() as $property=>$column)
@@ -971,7 +990,7 @@ class PicoDatabasePersistence // NOSONAR
         {
             throw new NoPrimaryKeyDefinedException("No primary key defined");
         }
-        $result = new stdClass;
+        
         $result->columns = $columns;
         $result->whereClause = implode(" and ", $wheres);
         return $result;
