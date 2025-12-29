@@ -78,6 +78,8 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
             $createStatement .= " IF NOT EXISTS";
         }
         $autoIncrementKeys = $this->getAutoIncrementKey($tableInfo);
+        $primaryKeys = $this->getPrimaryKeyNames($tableInfo->getPrimaryKeys());
+        $multiplePk = count($primaryKeys) > 1;
 
         $query[] = "$createStatement `$tableName` (";
 
@@ -87,8 +89,12 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
         {
             if(isset($cols[$columnName]))
             {
-                $columns[] = $this->createColumn($cols[$columnName], $autoIncrementKeys, $tableInfo->getPrimaryKeys());
+                $columns[] = $this->createColumn($cols[$columnName], $autoIncrementKeys, $primaryKeys);
             }
+        }
+        if($multiplePk)
+        {
+            $columns[] = "\tPRIMARY KEY(".implode(", ", $primaryKeys).")";
         }
         $query[] = implode(",\r\n", $columns);
         $query[] = ") ENGINE=$engine DEFAULT CHARSET=$charset;";
@@ -117,10 +123,7 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
      */
     public function createColumn($column, $autoIncrementKeys, $primaryKeys)
     {
-        $pkCols = array();
-        foreach ($primaryKeys as $col) {
-            $pkCols[] = $col['name'];
-        }
+        $multiplePk = count($primaryKeys) > 1;
 
         $col = array();
         $col[] = "\t";  // Adding indentation for readability in SQL statements
@@ -131,7 +134,7 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
         $col[] = strtoupper($columnType);  // Add the column type (e.g., INT, VARCHAR)
 
         // Check if the column is part of primary keys
-        if (in_array($columnName, $pkCols)) {
+        if (in_array($columnName, $primaryKeys) && !$multiplePk) {
             $col[] = 'PRIMARY KEY';
         }
 

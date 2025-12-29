@@ -15,6 +15,26 @@ class PicoDatabaseUtilBase // NOSONAR
     const KEY_PRIMARY_KEY = "primary_key";
     const KEY_NULLABLE = "nullable";
     const KEY_AUTO_INCREMENT = "auto_increment";
+    
+    /**
+     * Extracts column names from an array of primary key definitions.
+     *
+     * This helper method iterates through a list of primary key attribute arrays 
+     * and retrieves only the 'name' identifier for each column. It is typically 
+     * used to determine if a table has a composite primary key.
+     *
+     * @param array[] $primaryKeys An array of associative arrays, where each element 
+     * must contain a 'name' key representing the column name.
+     * @return string[] An array containing only the names of the primary key columns.
+     */
+    public function getPrimaryKeyNames($primaryKeys)
+    {
+        $pkCols = array();
+        foreach ($primaryKeys as $col) {
+            $pkCols[] = $col['name'];
+        }
+        return $pkCols;
+    }
 
     /**
      * Gets the auto-increment keys from the provided table information.

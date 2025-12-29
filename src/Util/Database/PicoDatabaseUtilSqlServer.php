@@ -113,6 +113,8 @@ class PicoDatabaseUtilSqlServer extends PicoDatabaseUtilBase implements PicoData
             $createStatement .= " IF NOT EXISTS";
         }
         $autoIncrementKeys = $this->getAutoIncrementKey($tableInfo);
+        $primaryKeys = $this->getPrimaryKeyNames($tableInfo->getPrimaryKeys());
+        $multiplePk = count($primaryKeys) > 1;
 
         $query[] = "$createStatement [$tableName] (";
 
@@ -122,8 +124,12 @@ class PicoDatabaseUtilSqlServer extends PicoDatabaseUtilBase implements PicoData
         {
             if(isset($cols[$columnName]))
             {
-                $columns[] = $this->createColumn($cols[$columnName], $autoIncrementKeys, $tableInfo->getPrimaryKeys());
+                $columns[] = $this->createColumn($cols[$columnName], $autoIncrementKeys, $primaryKeys);
             }
+        }
+        if($multiplePk)
+        {
+            $columns[] = "\tPRIMARY KEY(".implode(", ", $primaryKeys).")";
         }
         $query[] = implode(",\r\n", $columns);
         $query[] = ");";
@@ -152,10 +158,7 @@ class PicoDatabaseUtilSqlServer extends PicoDatabaseUtilBase implements PicoData
      */
     public function createColumn($column, $autoIncrementKeys, $primaryKeys)
     {
-        $pkCols = array();
-        foreach ($primaryKeys as $col) {
-            $pkCols[] = $col['name'];
-        }
+        $multiplePk = count($primaryKeys) > 1;
 
         $col = array();
         $col[] = "\t";  // Adding indentation for readability in SQL statements
@@ -171,7 +174,7 @@ class PicoDatabaseUtilSqlServer extends PicoDatabaseUtilBase implements PicoData
         }
 
         // Check if the column is part of primary keys
-        if (in_array($columnName, $pkCols)) {
+        if (in_array($columnName, $primaryKeys) && !$multiplePk) {
             $col[] = 'PRIMARY KEY';
         }
 

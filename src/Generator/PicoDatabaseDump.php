@@ -45,6 +45,92 @@ class PicoDatabaseDump // NOSONAR
      * @var array
      */
     protected $columns = array();
+    
+    /**
+     * Generates a SQL CREATE TABLE statement based on the provided entity schema.
+     * * This method detects the database type and utilizes the appropriate utility 
+     * class to format columns, primary keys, and auto-increment constraints. 
+     * It supports MySQL, MariaDB, PostgreSQL, SQLite, and SQL Server.
+     *
+     * @param array $entity The entity schema containing 'name' and 'columns' (an array of column definitions).
+     * @param string $databaseType The type of database (e.g., PicoDatabaseType::DATABASE_TYPE_MARIADB).
+     * @param bool $createIfNotExists Whether to add the "IF NOT EXISTS" clause to the CREATE statement.
+     * @param bool $dropIfExists Whether to prepend a commented-out "DROP TABLE IF EXISTS" statement.
+     * @param string $engine The storage engine to use (default is 'InnoDB', primarily for MySQL/MariaDB).
+     * @param string $charset The character set for the table (default is 'utf8mb4').
+     * * @return string The generated SQL DDL statement or an empty string if the database type is unsupported.
+     */
+    public function dumpStructureFromSchema($entity, $databaseType, $createIfNotExists = false, $dropIfExists = false, $engine = 'InnoDB', $charset = 'utf8mb4')
+    {
+        $tableName = $entity['name'];
+        
+        // 1. Initialize Tool based on Database Type
+        switch ($databaseType) {
+            case PicoDatabaseType::DATABASE_TYPE_MARIADB:
+            case PicoDatabaseType::DATABASE_TYPE_MYSQL:
+                $tool = new PicoDatabaseUtilMySql();
+                break;
+            case PicoDatabaseType::DATABASE_TYPE_PGSQL:
+                $tool = new PicoDatabaseUtilPostgreSql();
+                break;
+            case PicoDatabaseType::DATABASE_TYPE_SQLITE:
+                $tool = new PicoDatabaseUtilSqlite();
+                break;
+            case PicoDatabaseType::DATABASE_TYPE_SQLSERVER:
+                $tool = new PicoDatabaseUtilSqlServer();
+                break;
+            default:
+                return "";
+        }
+
+        $columns = array();
+        $primaryKeys = array();
+        $autoIncrementKeys = array();
+
+        // 2. Mapping Key Constraints
+        foreach($entity['columns'] as $col) {
+            if($col['primaryKey']) {
+                $primaryKeys[] = $col['name'];
+            }
+            if($col['autoIncrement']) {
+                $autoIncrementKeys[] = $col['name'];
+            }
+        }
+
+        // 3. Generate Column Definitions
+        foreach($entity['columns'] as $col) {
+            $columns[] = $tool->createColumn($col, $autoIncrementKeys, $primaryKeys);
+        }
+
+        // 4. Only append table-level PRIMARY KEY if it's a composite key (more than 1)
+        if(count($primaryKeys) > 1)
+        {
+            $columns[] = "\tPRIMARY KEY (" . implode(", ", $primaryKeys) . ")";
+        }
+
+        $query = array();
+
+        // 5. Add DROP TABLE with comment
+        if ($dropIfExists) {
+            $query[] = "-- DROP TABLE IF EXISTS $tableName;";
+            $query[] = "";
+        }
+
+        // 6. Create Statement
+        $createStatement = "CREATE TABLE" . ($createIfNotExists ? " IF NOT EXISTS" : "");
+        $query[] = "$createStatement $tableName (";
+        $query[] = implode(",\r\n", $columns);
+        
+        // 7. Handle Engine & Charset only for MySQL/MariaDB
+        $tableOptions = "";
+        if ($databaseType == PicoDatabaseType::DATABASE_TYPE_MARIADB || $databaseType == PicoDatabaseType::DATABASE_TYPE_MYSQL) {
+            $tableOptions = " ENGINE=$engine DEFAULT CHARSET=$charset";
+        }
+        
+        $query[] = ")" . $tableOptions . ";";
+
+        return implode("\r\n", $query);
+    }
 
     /**
      * Dump the structure of a table for the specified entity.
