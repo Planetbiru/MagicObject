@@ -984,6 +984,22 @@ class PicoDatabaseUtilBase // NOSONAR
     }
 
     /**
+     * Determine whether a given column definition is marked as nullable.
+     *
+     * This method checks the column metadata array for the `KEY_NULLABLE` flag.
+     * It returns true if the flag is explicitly set to boolean `true` or
+     * the string value `"true"` (case-insensitive, with surrounding whitespace trimmed).
+     *
+     * @param array $column The column definition array containing metadata keys.
+     *
+     * @return bool Returns true if the column is nullable, false otherwise.
+     */
+    public static function isNullable($column)
+    {
+        return isset($column[self::KEY_NULLABLE]) && ($column[self::KEY_NULLABLE] === true || strtolower(trim($column[self::KEY_NULLABLE])) == 'true');
+    }
+
+    /**
      * Checks if the given value is an array.
      *
      * This function checks if the provided `$value` is set and is an array.

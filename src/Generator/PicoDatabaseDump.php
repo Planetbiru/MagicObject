@@ -14,6 +14,7 @@ use MagicObject\Util\Database\PicoDatabaseUtilMySql;
 use MagicObject\Util\Database\PicoDatabaseUtilPostgreSql;
 use MagicObject\Util\Database\PicoDatabaseUtilSqlite;
 use MagicObject\Util\Database\PicoDatabaseUtilSqlServer;
+use stdClass;
 
 /**
  * Database dump class for managing and generating SQL statements
@@ -71,6 +72,7 @@ class PicoDatabaseDump // NOSONAR
                 $tool = new PicoDatabaseUtilMySql();
                 break;
             case PicoDatabaseType::DATABASE_TYPE_PGSQL:
+            case PicoDatabaseType::DATABASE_TYPE_POSTGRESQL:
                 $tool = new PicoDatabaseUtilPostgreSql();
                 break;
             case PicoDatabaseType::DATABASE_TYPE_SQLITE:
@@ -99,6 +101,14 @@ class PicoDatabaseDump // NOSONAR
 
         // 3. Generate Column Definitions
         foreach($entity['columns'] as $col) {
+            if(!empty($col['length']))
+            {
+                $col['type'] = $col['type']."(".$col['length'].")";
+            }
+            else if(stripos($col['type'], 'enum') === 0 && !empty($col['values']))
+            {
+                $col['type'] = $col['type']."(".$col['values'].")";
+            }
             $columns[] = $tool->createColumn($col, $autoIncrementKeys, $primaryKeys);
         }
 
@@ -129,7 +139,128 @@ class PicoDatabaseDump // NOSONAR
         
         $query[] = ")" . $tableOptions . ";";
 
-        return implode("\r\n", $query);
+        return implode("\r\n", $query)."\r\n\r\n";
+    }
+    
+    /**
+     * Dumps data from a schema entity into batched SQL INSERT statements.
+     *
+     * @param array $entity The entity containing table name, columns, and data.
+     * @param string $databaseType The database type (e.g., MySQL, PostgreSQL).
+     * @param int $batchSize Number of records per INSERT statement.
+     * @return string The generated SQL script.
+     */
+    public function dumpDataFromSchema($entity, $databaseType, $batchSize = 100)
+    {
+        // Check if the target database is PostgreSQL
+        $isPgSql = $databaseType == PicoDatabaseType::DATABASE_TYPE_PGSQL || $databaseType == PicoDatabaseType::DATABASE_TYPE_POSTGRESQL;
+        $columnInfo = array();
+        $tableName = $entity['name'];
+
+        // 1. Prepare Column Information for type-casting
+        if (isset($entity['columns']) && is_array($entity['columns'])) {
+            foreach ($entity['columns'] as $column) {
+                $columnInfo[$column['name']] = $this->getColumnInfo($column);
+            }
+        }
+
+        $validColumnNames = array_keys($columnInfo);
+
+        $allSql = "";
+
+        // 2. Process Data with Batching
+        if (isset($entity['data']) && is_array($entity['data']) && !empty($entity['data'])) {
+            // Split the data into smaller chunks based on the batch size
+            $batches = array_chunk($entity['data'], $batchSize);
+
+            foreach ($batches as $batch) {
+                $sqlInsert = array();
+
+                // 1. Filter setiap row agar hanya kolom valid
+                $filteredBatch = array();
+                foreach ($batch as $data) {
+                    $filteredBatch[] = array_intersect_key(
+                        $data,
+                        array_flip($validColumnNames)
+                    );
+                }
+
+                if (empty($filteredBatch)) {
+                    continue;
+                }
+
+                // 2. Ambil column names dari hasil filter
+                $columnNames = implode(", ", array_keys($filteredBatch[0]));
+                $sqlInsert[] = "INSERT INTO $tableName ($columnNames) VALUES";
+
+                $rows = array();
+                foreach ($filteredBatch as $data) {
+                    $rows[] = "(" . implode(", ", $this->fixData($data, $columnInfo, $isPgSql)) . ")";
+                }
+
+                $allSql .= implode("\r\n", $sqlInsert)
+                    . "\r\n"
+                    . implode(",\r\n", $rows)
+                    . ";\r\n\r\n";
+            }
+
+        }
+
+        return $allSql;
+    }
+    
+    /**
+     * Formats raw data values based on column metadata and database requirements.
+     *
+     * @param array $data Associative array of column => value.
+     * @param array $columnInfo Metadata for each column.
+     * @param bool $isPgSql Whether the target database is PostgreSQL.
+     * @return array The formatted data array.
+     */
+    public function fixData($data, $columnInfo, $isPgSql)
+    {
+        foreach ($data as $key => $value) {
+            if ($value === null) {
+                // Handle NULL values
+                $data[$key] = 'null';
+            } else if (isset($columnInfo[$key]) && in_array($columnInfo[$key]->normalizedType, ['integer', 'float'])) {
+                // Keep numeric values as they are (no quotes)
+                $data[$key] = $value;
+            } else if (isset($columnInfo[$key]) && in_array($columnInfo[$key]->normalizedType, ['boolean', 'bool']) && $isPgSql) {
+                // Handle PostgreSQL boolean conversion
+                $data[$key] = $this->toBoolean($value) ? 'true' : 'false';
+            } else {
+                // Treat as string: escape single quotes and wrap in quotes
+                $data[$key] = "'" . str_replace("'", "''", $value) . "'";
+            }
+        }
+        return $data;
+    }
+    
+    /**
+     * Converts a value to a boolean representation.
+     *
+     * @param mixed $value The value to check.
+     * @return bool
+     */
+    public function toBoolean($value)
+    {
+        return $value === 1 || $value === 'true' || $value === 'TRUE' || $value === '1' || $value === true;
+    }
+    
+    /**
+     * Normalizes column metadata into a standard object.
+     *
+     * @param array $column The column definition from schema.
+     * @return stdClass
+     */
+    public function getColumnInfo($column)
+    {
+        $ret = new stdClass;
+        $ret->type = $column['type'];
+        $ret->length = isset($column['length']) ? $column['length'] : null;
+        $ret->normalizedType = $this->normalizeDbType($column['type'], $ret->length);
+        return $ret;
     }
 
     /**
@@ -204,6 +335,90 @@ class PicoDatabaseDump // NOSONAR
             $result = $tool->dumpStructure($tableInfo, $picoTableName, $createIfNotExists, $dropIfExists, $engine, $charset);
         }
         return $result;
+    }
+    
+    /**
+     * Normalize a database-specific column type into a generic type.
+     *
+     * Supported DBMS: MySQL, MariaDB, PostgreSQL, SQLite, SQL Server
+     *
+     * Possible return values:
+     * - string
+     * - integer
+     * - float
+     * - boolean
+     * - date
+     * - time
+     * - datetime
+     * - binary
+     * - json
+     * - uuid
+     * - enum
+     * - geometry
+     * - unknown
+     *
+     * @param string $dbType The raw column type from the database (e.g., VARCHAR(255), INT, NUMERIC(10,2), TEXT, etc.)
+     * @return string One of the normalized type names listed above.
+     */
+    public function normalizeDbType($dbType, $length = null)
+    {
+        $normalized = 'string'; // default fallback
+        $rawType = strtolower(trim($dbType));
+
+        // Special case: MySQL TINYINT(1) → boolean
+        if ($rawType === 'tinyint' && isset($length) && (string) $length === '1') {
+            return 'boolean'; // acceptable early return for explicit edge-case
+        }
+
+        // Remove size & precision: varchar(255) → varchar
+        $type = preg_replace('/\(.+\)/', '', $rawType);
+
+        $map = [
+            'integer' => [
+                'int', 'integer', 'smallint', 'mediumint',
+                'bigint', 'serial', 'bigserial', 'tinyint'
+            ],
+            'float' => [
+                'float', 'double', 'decimal', 'numeric',
+                'real', 'money', 'smallmoney'
+            ],
+            'boolean' => [
+                'boolean', 'bool', 'bit'
+            ],
+            'string' => [
+                'char', 'varchar', 'text', 'tinytext',
+                'mediumtext', 'longtext', 'nchar',
+                'nvarchar', 'citext'
+            ],
+            'uuid' => [
+                'uuid'
+            ],
+            'json' => [
+                'json', 'jsonb'
+            ],
+            'binary' => [
+                'blob', 'binary', 'varbinary',
+                'image', 'bytea'
+            ],
+            'date' => [
+                'date'
+            ],
+            'time' => [
+                'time'
+            ],
+            'datetime' => [
+                'datetime', 'timestamp', 'year'
+            ]
+        ];
+
+        foreach ($map as $result => $types) {
+            if (in_array($type, $types, true)) {
+                $normalized = $result;
+                break;
+            }
+        }
+
+        return $normalized;
     }
 
     /**

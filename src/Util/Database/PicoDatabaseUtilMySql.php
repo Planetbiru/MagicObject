@@ -126,7 +126,6 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
         $multiplePk = count($primaryKeys) > 1;
 
         $col = array();
-        $col[] = "\t";  // Adding indentation for readability in SQL statements
         $columnName = $column[MagicObject::KEY_NAME];
         $columnType = $column[MagicObject::KEY_TYPE];
 
@@ -144,7 +143,7 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
         }
 
         // Determine if the column allows NULL values
-        if (isset($column[self::KEY_NULLABLE]) && strtolower(trim($column[self::KEY_NULLABLE])) == 'true') {
+        if (parent::isNullable($column)) {
             $col[] = "NULL";
         } else {
             $col[] = "NOT NULL";
@@ -157,7 +156,7 @@ class PicoDatabaseUtilMySql extends PicoDatabaseUtilBase implements PicoDatabase
             $col[] = "DEFAULT $defaultValue";
         }
 
-        return implode(" ", $col);
+        return "\t".implode(" ", $col);
     }
 
 

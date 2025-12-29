@@ -87,7 +87,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
             $columnName = $column[MagicObject::KEY_NAME];
             $columnType = $column[MagicObject::KEY_TYPE];
             $length = isset($column[MagicObject::KEY_LENGTH]) ? $column[MagicObject::KEY_LENGTH] : null;
-            $nullable = (isset($column[self::KEY_NULLABLE]) && $column[self::KEY_NULLABLE] === 'true') ? ' NULL' : ' NOT NULL';
+            $nullable = parent::isNullable($column) ? ' NULL' : ' NOT NULL';
             $defaultValue = isset($column[MagicObject::KEY_DEFAULT_VALUE]) ? " DEFAULT ".$column[MagicObject::KEY_DEFAULT_VALUE] : '';
 
             // Convert column type for SQL
@@ -494,7 +494,6 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
         
         $columnType = $this->mysqlToSqliteType($column[MagicObject::KEY_TYPE]);  // Convert MySQL type to SQLite type
         $col = array();
-        $col[] = "\t";  // Indentation for readability
         $col[] = "" . $column[MagicObject::KEY_NAME] . "";  // Column name
         
         // Handle primary key and auto-increment columns
@@ -520,7 +519,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
         }
 
         // Handle nullability
-        if (isset($column[self::KEY_NULLABLE]) && strtolower(trim($column[self::KEY_NULLABLE])) == 'true') {
+        if (parent::isNullable($column)) {
             $col[] = "NULL";  // Allow NULL values
         } else {
             $col[] = "NOT NULL";  // Disallow NULL values
@@ -534,7 +533,7 @@ class PicoDatabaseUtilSqlite extends PicoDatabaseUtilBase implements PicoDatabas
         }
 
         // Join all parts into a single string for the final SQL column definition
-        return implode(" ", $col);
+        return "\t".implode(" ", $col);
     }
 
     /**

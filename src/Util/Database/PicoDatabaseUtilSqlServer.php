@@ -161,7 +161,6 @@ class PicoDatabaseUtilSqlServer extends PicoDatabaseUtilBase implements PicoData
         $multiplePk = count($primaryKeys) > 1;
 
         $col = array();
-        $col[] = "\t";  // Adding indentation for readability in SQL statements
         $columnName = $column[MagicObject::KEY_NAME];
         $columnType = $column[MagicObject::KEY_TYPE];
 
@@ -179,7 +178,7 @@ class PicoDatabaseUtilSqlServer extends PicoDatabaseUtilBase implements PicoData
         }
 
         // Determine if the column allows NULL values
-        if (isset($column[self::KEY_NULLABLE]) && strtolower(trim($column[self::KEY_NULLABLE])) == 'true') {
+        if (parent::isNullable($column)) {
             $col[] = "NULL";
         } else {
             $col[] = "NOT NULL";
@@ -192,7 +191,7 @@ class PicoDatabaseUtilSqlServer extends PicoDatabaseUtilBase implements PicoData
             $col[] = "DEFAULT $defaultValue";
         }
 
-        return implode(" ", $col);
+        return "\t".implode(" ", $col);
     }
 
     /**

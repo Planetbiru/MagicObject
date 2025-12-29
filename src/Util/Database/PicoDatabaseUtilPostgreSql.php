@@ -233,7 +233,6 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
             $columnType = $this->getColumnType($column[MagicObject::KEY_TYPE]); // Use the specified type if not auto-incrementing.
         }
 
-        $col[] = "\t";  // Add tab indentation for readability.
         $col[] = $columnName;  // Add the column name.
         $col[] = strtoupper($columnType);  // Add the column type (SERIAL or BIGSERIAL, or custom type).
 
@@ -243,7 +242,7 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
         }
 
         // Determine nullability and add it to the definition.
-        if (isset($column[self::KEY_NULLABLE]) && strtolower(trim($column[self::KEY_NULLABLE])) == 'true') {
+        if (parent::isNullable($column)) {
             $col[] = "NULL"; // Allow NULL values.
         } else {
             $col[] = "NOT NULL"; // Disallow NULL values.
@@ -257,7 +256,7 @@ class PicoDatabaseUtilPostgreSql extends PicoDatabaseUtilBase implements PicoDat
         }
 
         // Join all parts into a single string to form the complete column definition.
-        return implode(" ", $col);
+        return "\t".implode(" ", $col);
     }
 
     /**
