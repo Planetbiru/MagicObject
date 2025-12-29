@@ -403,7 +403,11 @@ class PicoDatabase // NOSONAR
             throw new InvalidDatabaseConfiguration("Database path may not be empty. Please check your database configuration on {database_file_path}!");
         }
         try {
-            $this->databaseConnection = new PDO("sqlite:" . $path);
+            if(stripos($path, 'sqlite:') === false)
+            {
+                $path = 'sqlite:' . $path;
+            }
+            $this->databaseConnection = new PDO($path);
             $this->databaseConnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $connected = true;
             $this->connected = true;
