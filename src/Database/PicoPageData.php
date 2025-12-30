@@ -363,8 +363,6 @@ class PicoPageData // NOSONAR
         return $data;
     }
 
-
-
     /**
      * Get the current page number in the pagination context.
      *
