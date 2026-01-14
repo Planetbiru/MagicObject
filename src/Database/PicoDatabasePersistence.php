@@ -1143,6 +1143,15 @@ class PicoDatabasePersistence // NOSONAR
                 $this->generatedValue = true;
             }
         }
+        else if(stripos($strategy, "TIMEBASED") !== false)
+        {
+            if($firstCall && ($this->object->get($prop) == null || $this->object->get($prop) == "") && !$this->generatedValue)
+            {
+                $generatedValue = $this->database->generateTimeBasedId();
+                $this->object->set($prop, $generatedValue);
+                $this->generatedValue = true;
+            }
+        }
         else if(stripos($strategy, "IDENTITY") !== false)
         {
             if($firstCall)
