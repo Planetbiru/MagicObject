@@ -29,14 +29,6 @@ use stdClass;
  * - Fetching results in different formats (array, object, etc.).
  * - Generating unique IDs and retrieving the last inserted ID.
  *
- * **Example:**
- * ```php
- * <?php
- * $db = new PicoDatabase($credentials);
- * $db->connect();
- * $result = $db->fetch("SELECT * FROM users WHERE id = ?", 123);
- * ```
- *
  * @author Kamshory
  * @package MagicObject\Database
  * @link https://github.com/Planetbiru/MagicObject
