@@ -711,12 +711,10 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	 */
 	public function escapeSQL($query) // NOSONAR
 	{
-		// Escape carriage return and newline for all
-		$query = str_replace(["\r", "\n"], ["\\r", "\\n"], $query);
-
 		if (stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_MYSQL) !== false
 			|| stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_MARIADB) !== false) {
-			// MySQL/MariaDB: escape both backslash and single quote
+
+			// MySQL / MariaDB
 			return str_replace(
 				["\\", "'"],
 				["\\\\", "\\'"],
@@ -725,25 +723,28 @@ class PicoDatabaseQueryBuilder // NOSONAR
 		}
 
 		if (stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_PGSQL) !== false) {
-			// PostgreSQL: double single quotes and backslashes (E'' required at usage site)
+
+			// PostgreSQL (without E'')
 			return str_replace(
-				["\\", "'"],
-				["\\\\", "''"],
+				["'", "\\"],
+				["''", "\\\\"],
 				$query
 			);
 		}
 
 		if (stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_SQLITE) !== false) {
-			// SQLite: only escape single quote
+
+			// SQLite
 			return str_replace("'", "''", $query);
 		}
 
 		if (stripos($this->databaseType, PicoDatabaseType::DATABASE_TYPE_SQLSERVER) !== false) {
-			// SQL Server: only escape single quote
+
+			// SQL Server
 			return str_replace("'", "''", $query);
 		}
 
-		// Default fallback: treat like MySQL
+		// Default fallback
 		return str_replace(
 			["\\", "'"],
 			["\\\\", "\\'"],
