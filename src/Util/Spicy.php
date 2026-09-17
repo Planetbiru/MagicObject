@@ -2,6 +2,7 @@
 
 namespace MagicObject\Util;
 
+use Exception;
 use MagicObject\Exceptions\YamlException;
 use stdClass;
 
@@ -57,9 +58,9 @@ class Spicy // NOSONAR
     /**
      * Indicates if a group anchor is present in the YAML document.
      *
-     * @var bool
+     * @var string
      */
-    private $_containsGroupAnchor = false; // NOSONAR
+    private $_containsGroupAnchor = null; // NOSONAR
 
     /**
      * Indicates if a group alias is present in the YAML document.
@@ -568,6 +569,8 @@ class Spicy // NOSONAR
 
         $this->path = array();
         $this->result = array();
+
+        $literalBlock = '';
 
         $cnt = count($source);
         for ($i = 0; $i < $cnt; $i++) {
@@ -1130,7 +1133,7 @@ class Spicy // NOSONAR
                     $this->savedGroups[$this->_containsGroupAnchor][$incomingIndent + 2] = $k;
                 }
             }
-            $this->_containsGroupAnchor = false;
+            $this->_containsGroupAnchor = null;
         }
         return $this;
     }

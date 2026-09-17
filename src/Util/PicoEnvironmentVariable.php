@@ -109,6 +109,9 @@ class PicoEnvironmentVariable
      */
     public static function replaceWithOtherProperties($value, $collection)
     {
+        if(!isset($value)) {
+            return $value;
+        }
         if(stripos($value, '$') !== false)
         {
             $result = $value;
@@ -117,9 +120,9 @@ class PicoEnvironmentVariable
             $pair = array_combine($matches[0], $matches[1]);
             if(!empty($pair))
             {
-                foreach($pair as $key=>$value)
+                foreach($pair as $key=>$val)
                 {
-                    $otherValue = self::getOtherValue($value, $collection);
+                    $otherValue = self::getOtherValue($val, $collection);
                     if($otherValue !== null)
                     {
                         // found
@@ -212,9 +215,9 @@ class PicoEnvironmentVariable
         $pair = array_combine($matches[0], $matches[1]);
         if(!empty($pair))
         {
-            foreach($pair as $key=>$value)
+            foreach($pair as $key=>$val)
             {
-                $systemEnv = getenv($value);
+                $systemEnv = getenv($val);
                 if($systemEnv === false)
                 {
                     // not found

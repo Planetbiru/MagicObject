@@ -6,6 +6,7 @@ use MagicObject\Exceptions\InvalidAnnotationException;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\PicoStringUtil;
 use ReflectionClass;
+use ReflectionProperty;
 use stdClass;
 
 /**

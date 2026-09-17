@@ -1526,3 +1526,14 @@ $secretConfig->retrieve('database', 'credentials', 'username');
 
 
 With this fix, MagicObject now handles optional or missing fields more reliably during insert operations.
+
+
+# MagicObject Version 3.22.2
+
+## Bug Fixes
+
+Several bug fixes and codesmell
+
+## Update Documentation
+
+Update docblock

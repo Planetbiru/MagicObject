@@ -3,6 +3,7 @@
 namespace MagicObject;
 
 use MagicObject\Exceptions\InvalidAnnotationException;
+use MagicObject\Exceptions\InvalidValueException;
 use MagicObject\Util\PicoEnvironmentVariable;
 use MagicObject\Secret\PicoSecret;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
@@ -418,7 +419,7 @@ class SecretObject extends stdClass // NOSONAR
      * This method encrypts the provided data, which can be an object, array, or scalar value.
      * It handles nested structures by encrypting each value individually.
      *
-     * @param MagicObject|PicoGenericObject|self|array|stdClass|string|number $data The data to encrypt.
+     * @param MagicObject|PicoGenericObject|self|array|stdClass|string|int|float $data The data to encrypt.
      * @param string|null $hexKey The encryption key in hexadecimal format. If null, a secure key will be generated.
      * @return mixed The encrypted data.
      */

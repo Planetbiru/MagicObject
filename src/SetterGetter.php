@@ -3,11 +3,13 @@
 namespace MagicObject;
 
 use MagicObject\Exceptions\InvalidAnnotationException;
+use MagicObject\Exceptions\InvalidValueException;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\PicoArrayUtil;
 use MagicObject\Util\PicoStringUtil;
 use MagicObject\Util\ValidationUtil;
 use ReflectionClass;
+use ReflectionProperty;
 use stdClass;
 
 /**
@@ -212,7 +214,7 @@ class SetterGetter extends stdClass
      *
      * Optionally converts property names to snake_case for the returned object.
      *
-     * @param bool $snakeCase Flag to determine if property names should be converted to snake_case.
+     * @param string $name Flag to determine if property names should be converted to snake_case.
      * @return stdClass Returns an object with property values.
      */
     public function __unset($name)

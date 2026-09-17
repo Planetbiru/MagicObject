@@ -354,7 +354,6 @@ class PicoDatabase // NOSONAR
      * Establishes a connection to the specified database type. Optionally selects a database if the
      * connection is to an RDMS and the flag is set.
      *
-     * @param int $timeout Connection timeout in seconds.
      * @param bool $withDatabase Flag to select the database when connected (default is true).
      * @return bool true if the connection is successful, false if it fails.
      */
@@ -441,7 +440,12 @@ class PicoDatabase // NOSONAR
             }
 
             // Get charset from the database credentials
-            $charset = addslashes($this->databaseCredentials->getCharset());
+            $charset = $this->databaseCredentials->getCharset();
+            if(isset($charset)) {
+                $charset = addslashes($charset);
+            } else {
+                $charset = 'utf8';
+            }
 
             // Handle PostgreSQL-specific connection settings
             if ($this->getDatabaseType() == PicoDatabaseType::DATABASE_TYPE_PGSQL) {
@@ -811,7 +815,7 @@ class PicoDatabase // NOSONAR
      * The method generates the appropriate SQL command based on the type of the database (e.g., PostgreSQL, MySQL, etc.)
      * and executes it to apply the time zone setting.
      *
-     * @param string $timeZoneOffset The time zone offset to set for the session. It can either be a valid UTC offset (e.g., '+00:00')
+     * @param string $timezone The time zone offset to set for the session. It can either be a valid UTC offset (e.g., '+00:00')
      *                               or a named time zone (e.g., 'Europe/London').
      * @return self Returns the current instance for method chaining.
      */
@@ -1404,7 +1408,7 @@ class PicoDatabase // NOSONAR
      */
     public function __toString()
     {
-        $val = new stdClass;
+        $val = new stdClass();
         $val->databaseType = $this->databaseType;
         $val->autocommit = $this->autocommit;
         $val->connected = $this->connected;

@@ -2,6 +2,7 @@
 
 namespace MagicObject\Util;
 
+use Exception;
 use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
     

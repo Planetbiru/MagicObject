@@ -1054,6 +1054,10 @@ class ValidationUtil // NOSONAR
     /**
      * Validates the **`Positive`** annotation.
      * Ensures a numeric value is positive (> 0).
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validatePositiveAnnotation($propertyName, $propertyValue, $docComment)
     {
@@ -1068,6 +1072,10 @@ class ValidationUtil // NOSONAR
     /**
      * Validates the **`PositiveOrZero`** annotation.
      * Ensures a numeric value is positive or zero (>= 0).
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validatePositiveOrZeroAnnotation($propertyName, $propertyValue, $docComment)
     {
@@ -1082,6 +1090,10 @@ class ValidationUtil // NOSONAR
     /**
      * Validates the **`Negative`** annotation.
      * Ensures a numeric value is negative (< 0).
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validateNegativeAnnotation($propertyName, $propertyValue, $docComment)
     {
@@ -1096,6 +1108,10 @@ class ValidationUtil // NOSONAR
     /**
      * Validates the **`NegativeOrZero`** annotation.
      * Ensures a numeric value is negative or zero (<= 0).
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validateNegativeOrZeroAnnotation($propertyName, $propertyValue, $docComment)
     {
@@ -1110,6 +1126,10 @@ class ValidationUtil // NOSONAR
     /**
      * Validates the **`PastOrPresent`** annotation.
      * Ensures a date/time is in the past or present.
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validatePastOrPresentAnnotation($propertyName, $propertyValue, $docComment)
     {
@@ -1125,6 +1145,10 @@ class ValidationUtil // NOSONAR
     /**
      * Validates the **`Url`** annotation.
      * Ensures a string is a valid URL.
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validateUrlAnnotation($propertyName, $propertyValue, $docComment)
     {
@@ -1139,6 +1163,10 @@ class ValidationUtil // NOSONAR
     /**
      * Validates the **`Ip`** annotation.
      * Ensures a string is a valid IP address.
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validateIpAnnotation($propertyName, $propertyValue, $docComment)
     {
@@ -1153,6 +1181,10 @@ class ValidationUtil // NOSONAR
     /**
      * Validates the **`DateFormat`** annotation.
      * Ensures a string matches a specific date format.
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validateDateFormatAnnotation($propertyName, $propertyValue, $docComment)
     {
@@ -1173,6 +1205,10 @@ class ValidationUtil // NOSONAR
     /**
      * Validates the **`Phone`** annotation.
      * Ensures a string is a valid phone number (basic pattern).
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validatePhoneAnnotation($propertyName, $propertyValue, $docComment)
     {
@@ -1201,6 +1237,10 @@ class ValidationUtil // NOSONAR
     /**
      * Validates the **`Alpha`** annotation.
      * Ensures a string contains only alphabetic characters.
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validateAlphaAnnotation($propertyName, $propertyValue, $docComment)
     {
@@ -1222,6 +1262,10 @@ class ValidationUtil // NOSONAR
     /**
      * Validates the **`AlphaNumeric`** annotation.
      * Ensures a string contains only alphanumeric characters.
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validateAlphaNumericAnnotation($propertyName, $propertyValue, $docComment)
     {
@@ -1244,6 +1288,10 @@ class ValidationUtil // NOSONAR
      * Validates the **`StartsWith`** annotation.
      * Ensures a string starts with a specified prefix.
      * Supports caseSensitive=true|false.
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validateStartsWithAnnotation($propertyName, $propertyValue, $docComment) // NOSONAR
     {
@@ -1273,6 +1321,10 @@ class ValidationUtil // NOSONAR
      * Validates the **`EndsWith`** annotation.
      * Ensures a string ends with a specified suffix.
      * Supports caseSensitive=true|false.
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validateEndsWithAnnotation($propertyName, $propertyValue, $docComment) // NOSONAR
     {
@@ -1303,6 +1355,10 @@ class ValidationUtil // NOSONAR
      * Validates the **`Contains`** annotation.
      * Ensures a string contains a specified substring.
      * Supports caseSensitive=true|false.
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validateContainsAnnotation($propertyName, $propertyValue, $docComment) // NOSONAR
     {
@@ -1331,6 +1387,10 @@ class ValidationUtil // NOSONAR
     /**
      * Validates the **`BeforeDate`** annotation.
      * Ensures a date is before a specified date.
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validateBeforeDateAnnotation($propertyName, $propertyValue, $docComment)
     {
@@ -1354,6 +1414,10 @@ class ValidationUtil // NOSONAR
     /**
      * Validates the **`AfterDate`** annotation.
      * Ensures a date is after a specified date.
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validateAfterDateAnnotation($propertyName, $propertyValue, $docComment)
     {
@@ -1377,6 +1441,10 @@ class ValidationUtil // NOSONAR
     /**
      * Validates the **`TimeRange`** annotation.
      * Ensures a time is within a specified range (min and max), supporting both HH:MM and HH:MM:SS formats.
+     * 
+     * @param string $propertyName Property name
+     * @param string $propertyValue Property value
+     * @param string $docComment Doc comment
      */
     private function validateTimeRangeAnnotation($propertyName, $propertyValue, $docComment) // NOSONAR
     {

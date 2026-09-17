@@ -1835,7 +1835,7 @@ class MagicObject extends stdClass // NOSONAR
         }
         else
         {
-            $match = $persist->countAll($specification, $pageable, $sortable);
+            $match = $persist->countAll($specification);
         }
         return $match;
     }
@@ -2095,11 +2095,11 @@ class MagicObject extends stdClass // NOSONAR
                 $persist = new PicoDatabasePersistence($this->_database, $this);
                 if($specification != null && $specification instanceof PicoSpecification)
                 {
-                    $result = $persist->countAll($specification, $pageable, $sortable);
+                    $result = $persist->countAll($specification);
                 }
                 else
                 {
-                    $result = $persist->countAll(null, null, null);
+                    $result = $persist->countAll(null);
                 }
             }
             else
@@ -2206,7 +2206,6 @@ class MagicObject extends stdClass // NOSONAR
      *
      * @param string $method The method to find by
      * @param mixed $params The parameters for the search
-     * @param PicoSpecification|null $specification The specification for filtering
      * @param PicoPageable|string|null $pageable The pagination information
      * @param PicoSortable|string|null $sortable The sorting criteria
      * @param bool $passive Flag indicating whether the object is passive

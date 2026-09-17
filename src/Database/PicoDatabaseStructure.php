@@ -4,6 +4,7 @@ namespace MagicObject\Database;
 
 use MagicObject\Exceptions\InvalidAnnotationException;
 use MagicObject\Exceptions\MandatoryTableNameException;
+use MagicObject\MagicObject;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 
 /**
