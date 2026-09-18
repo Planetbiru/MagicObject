@@ -1269,6 +1269,288 @@ class PicoDatabasePersistence // NOSONAR
     }
 
     /**
+     * Insert multiple objects into the database.
+     *
+     * When $returnIds is false, the method uses multi-row INSERT statements
+     * and never calls insert() for individual records. The number of rows
+     * in each SQL statement is limited by $batchSize.
+     *
+     * When $returnIds is true, the existing insert() mechanism is used so
+     * that generated database IDs can be retrieved.
+     *
+     * @param array $objects Array of entity objects, associative arrays, or stdClass objects.
+     * @param bool $includeNull Whether to include NULL values in the insert operation.
+     * @param bool $returnIds Whether to return generated primary key values.
+     * @param int $batchSize Maximum number of rows per INSERT statement.
+     * @return int|array Number of inserted records, or generated IDs.
+     * @throws EntityException If the entity or insert operation is invalid.
+     */
+    public function insertAll(
+        $objects,
+        $includeNull = false,
+        $returnIds = false,
+        $batchSize = 1000
+    )
+    {
+        if(!is_array($objects))
+        {
+            throw new InvalidParameterException(
+                "Objects must be an array"
+            );
+        }
+
+        if(empty($objects))
+        {
+            return $returnIds ? array() : 0;
+        }
+
+        $batchSize = (int) $batchSize;
+
+        if($batchSize < 1)
+        {
+            throw new InvalidParameterException(
+                "Batch size must be greater than zero"
+            );
+        }
+
+        $info = $this->getTableInfo();
+
+        /*
+        * Normalize all input data into entity objects.
+        */
+        $entities = array();
+
+        foreach($objects as $object)
+        {
+            if($object instanceof $this->className)
+            {
+                $entity = $object;
+            }
+            else
+            {
+                $entity = new $this->className(
+                    $object,
+                    $this->database
+                );
+            }
+
+            if(!($entity instanceof MagicObject))
+            {
+                throw new InvalidParameterException(
+                    "Invalid entity object: " . get_class($entity)
+                );
+            }
+
+            $entity->currentDatabase($this->database);
+
+            $entities[] = $entity;
+        }
+
+        /*
+        * ID retrieval is intentionally not part of the fast bulk path.
+        *
+        * When requested, use the existing insert() mechanism because it
+        * already handles database-generated primary keys.
+        */
+        if($returnIds)
+        {
+            $ids = array();
+
+            foreach($entities as $entity)
+            {
+                $persist = new self(
+                    $this->database,
+                    $entity
+                );
+
+                $persist->insert($includeNull);
+
+                $primaryKeys = $info->getPrimaryKeys();
+
+                if(count($primaryKeys) == 1)
+                {
+                    $propertyName = key($primaryKeys);
+
+                    $ids[] = $entity->get($propertyName);
+                }
+                else
+                {
+                    $primaryKeyValues = array();
+
+                    foreach($primaryKeys as $propertyName=>$primaryKey)
+                    {
+                        $primaryKeyValues[$propertyName] =
+                            $entity->get($propertyName);
+                    }
+
+                    $ids[] = $primaryKeyValues;
+                }
+            }
+
+            return $ids;
+        }
+
+        /*
+        * Fast bulk-insert path.
+        *
+        * Rows with the same column structure are grouped together.
+        * This allows includeNull=false to preserve database defaults.
+        */
+        $groups = array();
+
+        foreach($entities as $entity)
+        {
+            $persist = new self(
+                $this->database,
+                $entity
+            );
+
+            $persist->flagIncludeNull = $includeNull;
+
+            /*
+            * Generate UUID/TIMEBASED/LEGACY_TIMEBASED values before
+            * collecting the values.
+            *
+            * IDENTITY values remain database-generated.
+            */
+            $persist->addGeneratedValue(
+                $info,
+                true
+            );
+
+            $queryBuilder = new PicoDatabaseQueryBuilder(
+                $this->database
+            );
+
+            $values = $persist->getValues(
+                $info,
+                $queryBuilder
+            );
+
+            $values = $persist->fixInsertableValues(
+                $values,
+                $info
+            );
+
+            if(empty($values))
+            {
+                throw new NoInsertableColumnException(
+                    "No insertable column"
+                );
+            }
+
+            /*
+            * The keys represent the actual columns that will be inserted.
+            *
+            * Two rows can only be placed in the same INSERT statement when
+            * they have exactly the same column structure.
+            */
+            $groupKey = implode(
+                "\x1F",
+                array_keys($values)
+            );
+
+            if(!isset($groups[$groupKey]))
+            {
+                $groups[$groupKey] = array();
+            }
+
+            $groups[$groupKey][] = $values;
+        }
+
+        /*
+        * Execute each group in batches.
+        */
+        $inserted = 0;
+
+        foreach($groups as $rows)
+        {
+            $totalRows = count($rows);
+
+            for(
+                $offset = 0;
+                $offset < $totalRows;
+                $offset += $batchSize
+            )
+            {
+                $batch = array_slice(
+                    $rows,
+                    $offset,
+                    $batchSize
+                );
+
+                if(empty($batch))
+                {
+                    continue;
+                }
+
+                $queryBuilder = new PicoDatabaseQueryBuilder(
+                    $this->database
+                );
+
+                $queryBuilder = $this->createBulkInsertQuery(
+                    $queryBuilder,
+                    $info,
+                    $batch
+                );
+
+                /*
+                * Execute exactly one multi-row INSERT for this batch.
+                */
+                $this->database->executeInsert(
+                    $queryBuilder
+                );
+
+                $inserted += count($batch);
+            }
+        }
+
+        return $inserted;
+    }
+
+    /**
+     * Create a bulk INSERT query.
+     *
+     * The values are expected to have already been escaped by the
+     * persistence layer.
+     *
+     * @param PicoDatabaseQueryBuilder $queryBuilder Query builder.
+     * @param PicoTableInfo $info Table information.
+     * @param array $rows Rows of associative column/value pairs.
+     * @return PicoDatabaseQueryBuilder The generated query.
+     */
+    private function createBulkInsertQuery(
+        $queryBuilder,
+        $info,
+        $rows
+    )
+    {
+        if(empty($rows))
+        {
+            throw new NoInsertableColumnException(
+                "No insertable column"
+            );
+        }
+
+        $firstRow = reset($rows);
+
+        $queryBuilder
+            ->newQuery()
+            ->insert()
+            ->into($info->getTableName())
+            ->fields($this->createStatementFields($firstRow));
+
+        foreach($rows as $values)
+        {
+            $queryBuilder->values(
+                $this->createStatementValues($values)
+            );
+        }
+
+        return $queryBuilder;
+    }
+
+    /**
      * Filter the values to only include those that are insertable based on table info.
      *
      * @param array $values Values to be filtered.
@@ -4129,6 +4411,28 @@ class PicoDatabasePersistence // NOSONAR
             ->from($info->getTableName())
             ->where($where)
         ;
+    }
+
+    /**
+     * Delete all record by specification
+     * 
+     * @param PicoSpecification $specification Specification
+     * @return PDOStatement
+     */
+    public function deleteAll($specification)
+    {
+        if($specification === null)
+        {
+            throw new InvalidParameterException(
+                "Specification is required"
+            );
+        }
+
+        $persistence = $this->whereWithSpecification(
+            $specification
+        );
+
+        return $persistence->delete();
     }
 
     /**

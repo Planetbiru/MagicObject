@@ -1537,3 +1537,18 @@ Several bug fixes and codesmell
 ## Update Documentation
 
 Update docblock
+
+
+# MagicObject Version 3.22.2
+
+### Added
+
+- `insertAll()` and `deleteAll()` for bulk database operation
+- Added parameter to PicoSpecification for operation:
+   - GREATER_THAN
+   - GREATER_THAN_OR_EQUALS
+   - LESS_THAN
+   - LESS_THAN_OR_EQUALS
+   - NOT_EQUALS
+   - LIKE
+   - IN

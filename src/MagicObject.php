@@ -946,6 +946,41 @@ class MagicObject extends stdClass // NOSONAR
     }
 
     /**
+     * Insert multiple entities into the database.
+     *
+     * By default, this method performs a bulk insert and returns the number
+     * of inserted records. Generated IDs are not retrieved.
+     *
+     * @param PicoDatabase $database Database connection.
+     * @param array $objects Array of entity objects, associative arrays, or stdClass objects.
+     * @param bool $includeNull Whether to include NULL values in the insert operation.
+     * @param bool $returnIds Whether to return generated primary key values.
+     * @return int|array Number of inserted records, or generated IDs.
+     */
+    public static function insertAll(
+        $database,
+        $objects,
+        $includeNull = false,
+        $returnIds = false
+    )
+    {
+        $className = get_called_class();
+
+        $entity = new $className(null, $database);
+
+        $persistence = new PicoDatabasePersistence(
+            $database,
+            $entity
+        );
+
+        return $persistence->insertAll(
+            $objects,
+            $includeNull,
+            $returnIds
+        );
+    }
+
+    /**
      * Update data in the database.
      *
      * This method updates the current object's data in the database. If `$includeNull` is TRUE, 
@@ -1033,6 +1068,37 @@ class MagicObject extends stdClass // NOSONAR
         {
             throw new NoDatabaseConnectionException(self::MESSAGE_NO_DATABASE_CONNECTION);
         }
+    }
+
+    /**
+     * Delete multiple entities using a specification.
+     *
+     * The operation is executed as a native bulk DELETE statement.
+     *
+     * @param PicoDatabase $database Database connection.
+     * @param PicoSpecification $specification Specification used to identify records.
+     * @return int Number of deleted records.
+     */
+    public static function deleteAll(
+        $database,
+        $specification
+    )
+    {
+        $className = get_called_class();
+
+        $entity = new $className(
+            null,
+            $database
+        );
+
+        $persistence = new PicoDatabasePersistence(
+            $database,
+            $entity
+        );
+
+        return $persistence->deleteAll(
+            $specification
+        );
     }
     
     /**
