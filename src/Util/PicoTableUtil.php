@@ -92,6 +92,7 @@ class PicoTableUtil
         {
             throw new InvalidParameterException("Invalid parameter for ".__CLASS__."::parseElementAttributes(). Expected value to be string, array given.");
         }
+        $attrs = array();
         if(PicoStringUtil::isNotNullAndNotEmpty($attributes))
         {
             $attributes = trim($attributes);

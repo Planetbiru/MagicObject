@@ -466,6 +466,7 @@ class PicoDatabaseQueryBuilder // NOSONAR
 	public function createMatchedValue($args)
 	{
 		$result = "";
+		$j = 0;
 		if (count($args) > 1) {
 			$format = $args[0];
 			$formats = explode('?', $format);

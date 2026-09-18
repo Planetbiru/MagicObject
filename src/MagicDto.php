@@ -6,6 +6,7 @@ use DateTime;
 use DOMDocument;
 use InvalidArgumentException;
 use MagicObject\Exceptions\InvalidAnnotationException;
+use MagicObject\Exceptions\InvalidValueException;
 use MagicObject\Util\ClassUtil\PicoAnnotationParser;
 use MagicObject\Util\ClassUtil\PicoObjectParser;
 use MagicObject\Util\PicoGenericObject;

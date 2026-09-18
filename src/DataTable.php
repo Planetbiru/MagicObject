@@ -12,6 +12,7 @@ use MagicObject\Util\PicoGenericObject;
 use MagicObject\Util\PicoStringUtil;
 use MagicObject\Util\PicoTableUtil;
 use ReflectionClass;
+use ReflectionProperty;
 use stdClass;
 
 /**

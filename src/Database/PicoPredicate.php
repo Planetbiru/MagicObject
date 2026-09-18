@@ -47,11 +47,42 @@ class PicoPredicate // NOSONAR
      *
      * @param string|null $field The name of the field.
      * @param mixed|null $value The value to compare against.
+     * @param string|null $operator The operator
      */
-    public function __construct($field = null, $value = null)
+    public function __construct($field = null, $value = null, $operator = null)
     {
-        if ($field !== null) {
-            is_array($value) ? $this->in($field, $value) : $this->equals($field, $value);
+        if ($operator !== null) {
+            switch ($operator) {
+                case PicoDataComparation::GREATER_THAN:
+                    $this->greaterThan($field, $value);
+                    break;
+                case PicoDataComparation::GREATER_THAN_OR_EQUALS:
+                    $this->greaterThanOrEquals($field, $value);
+                    break;
+                case PicoDataComparation::LESS_THAN:
+                    $this->lessThan($field, $value);
+                    break;
+                case PicoDataComparation::LESS_THAN_OR_EQUALS:
+                    $this->lessThanOrEquals($field, $value);
+                    break;
+                case PicoDataComparation::NOT_EQUALS:
+                    $this->notEquals($field, $value);
+                    break;
+                case PicoDataComparation::LIKE:
+                    $this->like($field, $value);
+                    break;
+                case PicoDataComparation::IN:
+                    $this->in($field, (array)$value);
+                    break;
+                default:
+                    if ($field !== null) {
+                        is_array($value) ? $this->in($field, $value) : $this->equals($field, $value);
+                    }
+            }
+        } else {
+            if ($field !== null) {
+                is_array($value) ? $this->in($field, $value) : $this->equals($field, $value);
+            }
         }
     }
 

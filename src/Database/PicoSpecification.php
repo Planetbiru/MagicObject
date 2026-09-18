@@ -142,14 +142,13 @@ class PicoSpecification // NOSONAR
      */
     public function addAnd($predicate)
     {
-        if(isset($predicate))
-        {
+        if ($predicate !== null) {
             if ($predicate instanceof PicoPredicate) {
                 $this->addFilter($predicate, self::LOGIC_AND);
             } elseif ($predicate instanceof PicoSpecification) {
                 $this->addSubfilter($predicate, self::LOGIC_AND);
-            } elseif (is_array($predicate) && count($predicate) > 1 && is_string($predicate[0])) {
-                $this->addFilter(new PicoPredicate($predicate[0], $predicate[1]), self::LOGIC_AND);
+            } elseif (is_array($predicate)) {
+                $this->addPredicateArray($predicate, self::LOGIC_AND);
             } elseif (is_string($predicate)) {
                 $this->addFilter($predicate, self::LOGIC_AND);
             }
@@ -171,19 +170,46 @@ class PicoSpecification // NOSONAR
      */
     public function addOr($predicate)
     {
-        if(isset($predicate))
-        {
+        if ($predicate !== null) {
             if ($predicate instanceof PicoPredicate) {
                 $this->addFilter($predicate, self::LOGIC_OR);
             } elseif ($predicate instanceof PicoSpecification) {
                 $this->addSubfilter($predicate, self::LOGIC_OR);
-            } elseif (is_array($predicate) && count($predicate) > 1 && is_string($predicate[0])) {
-                $this->addFilter(new PicoPredicate($predicate[0], $predicate[1]), self::LOGIC_OR);
+            } elseif (is_array($predicate)) {
+                $this->addPredicateArray($predicate, self::LOGIC_OR);
             } elseif (is_string($predicate)) {
                 $this->addFilter($predicate, self::LOGIC_OR);
             }
         }
         return $this;
+    }
+
+    /**
+     * Adds a predicate condition from an array representation.
+     *
+     * This helper method converts an array into a PicoPredicate and applies it
+     * with the specified logical operator (AND/OR).
+     *
+     * Expected array formats:
+     *   - [field, value] → Creates an equality predicate.
+     *   - [field, value, operator] → Creates a predicate with the given operator.
+     *
+     * @param array  $predicate The array representing the condition.
+     *                          Must contain at least two elements:
+     *                          - index 0: column name (string)
+     *                          - index 1: value
+     *                          - index 2: operator (optional)
+     * @param string $logic     The logical operator to apply (e.g., self::LOGIC_AND, self::LOGIC_OR).
+     *
+     * @return void
+     */
+    private function addPredicateArray($predicate, $logic)
+    {
+        if (count($predicate) >= 3 && is_string($predicate[0])) {
+            $this->addFilter(new PicoPredicate($predicate[0], $predicate[1], $predicate[2]), $logic);
+        } elseif (count($predicate) >= 2 && is_string($predicate[0])) {
+            $this->addFilter(new PicoPredicate($predicate[0], $predicate[1]), $logic);
+        }
     }
 
     /**

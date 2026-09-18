@@ -187,10 +187,13 @@ class PicoIniUtil
     }
 
     /**
-     * Check if the line is invalid (empty or a comment).
+     * Check whether the result of a regular expression match is valid.
      *
-     * @param string $line The line to check.
-     * @return bool true if the line is invalid, false otherwise.
+     * Returns true if the match array is not empty and its first element
+     * is set. Typically used to validate the output of preg_match().
+     *
+     * @param array $matches The array of regex match results.
+     * @return bool True if the match result is valid, false otherwise.
      */
     public static function matchValue($matches)
     {
